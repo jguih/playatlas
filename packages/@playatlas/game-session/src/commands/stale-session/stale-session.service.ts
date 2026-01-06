@@ -1,42 +1,42 @@
 import type { LogService } from "@playatlas/common/application";
 import type { CommandHandler } from "@playatlas/common/common";
-import { makeClosedGameSession } from "../../domain/game-session.entity";
+import { makeStaleGameSession } from "../../domain/game-session.entity";
 import type { GameSessionRepository } from "../../infra/game-session.repository.port";
 import type { GameInfoProvider } from "../../types/game-info-provider";
-import type { CloseGameSessionCommand } from "./close-session.command";
+import { StaleGameSessionCommand } from "./stale-session.command";
 
-export type CloseGameSessionServiceDeps = {
+export type StaleGameSessionServiceDeps = {
   gameSessionRepository: GameSessionRepository;
   logService: LogService;
   gameInfoProvider: GameInfoProvider;
 };
 
-export type CloseGameSessionServiceResult = {
+export type StaleGameSessionServiceResult = {
   created: boolean;
   closed: boolean;
 };
 
-export type CloseGameSessionCommandHandler = CommandHandler<
-  CloseGameSessionCommand,
-  CloseGameSessionServiceResult
+export type StaleGameSessionCommandHandler = CommandHandler<
+  StaleGameSessionCommand,
+  StaleGameSessionServiceResult
 >;
 
-export const makeCloseGameSessionCommandHandler = ({
+export const makeStaleGameSessionCommandHandler = ({
   gameSessionRepository,
   logService,
   gameInfoProvider,
-}: CloseGameSessionServiceDeps): CloseGameSessionCommandHandler => {
+}: StaleGameSessionServiceDeps): StaleGameSessionCommandHandler => {
   return {
     execute: (
-      command: CloseGameSessionCommand
-    ): CloseGameSessionServiceResult => {
+      command: StaleGameSessionCommand
+    ): StaleGameSessionServiceResult => {
       const session = gameSessionRepository.getById(command.sessionId);
       const serverUtcNow = Date.now();
       const gameName = gameInfoProvider.getGameName(command.gameId);
 
       if (!session) {
         logService.warning(
-          `Session not found: ${command.sessionId}. Creating closed session...`
+          `Session not found: ${command.sessionId}. Creating stale session...`
         );
 
         const clientUtcNow = command.clientUtcNow.getTime();
@@ -44,21 +44,18 @@ export const makeCloseGameSessionCommandHandler = ({
         const startTime = new Date(
           new Date(command.startTime).getTime() - driftMs
         );
-        const endTime = new Date(new Date(command.endTime).getTime() - driftMs);
 
         logService.info(
           `Calculated time drift between client (PlayAtlas Exporter) and server: ${driftMs}ms`
         );
 
-        const closed = makeClosedGameSession({
+        const stale = makeStaleGameSession({
           sessionId: command.sessionId,
           gameId: command.gameId,
           gameName: gameName,
           startTime: startTime,
-          endTime: endTime,
-          duration: command.duration,
         });
-        gameSessionRepository.add(closed);
+        gameSessionRepository.add(stale);
 
         logService.info(
           `Created closed session ${command.sessionId} for ${gameName}`
@@ -66,10 +63,7 @@ export const makeCloseGameSessionCommandHandler = ({
         return { created: true, closed: false };
       }
 
-      session.close({
-        endTime: new Date(serverUtcNow),
-        duration: command.duration,
-      });
+      session.stale();
 
       gameSessionRepository.update(session);
       logService.info(`Closed session ${session.getSessionId()}`);

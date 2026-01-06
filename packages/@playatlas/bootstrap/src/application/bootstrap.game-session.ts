@@ -4,6 +4,8 @@ import { GameRepository } from "@playatlas/game-library/infra";
 import {
   makeCloseGameSessionCommandHandler,
   makeOpenGameSessionCommandHandler,
+  makeStaleGameSessionCommandHandler,
+  StaleGameSessionCommandHandler,
   type CloseGameSessionCommandHandler,
   type OpenGameSessionCommandHandler,
 } from "@playatlas/game-session/commands";
@@ -24,6 +26,7 @@ export type PlayAtlasApiGameSession = {
   commands: {
     getOpenGameSessionCommandHandler: () => OpenGameSessionCommandHandler;
     getCloseGameSessionCommandHandler: () => CloseGameSessionCommandHandler;
+    getStaleGameSessionCommandHandler: () => StaleGameSessionCommandHandler;
   };
 };
 
@@ -42,6 +45,7 @@ export const bootstrapGameSession = ({
     getDb,
     logService: logServiceFactory.build("GameSessionRepository"),
   });
+
   const _open_game_session_command_handler = makeOpenGameSessionCommandHandler({
     gameSessionRepository: _game_session_repo,
     gameInfoProvider: {
@@ -49,6 +53,7 @@ export const bootstrapGameSession = ({
     },
     logService: logServiceFactory.build("OpenGameSessionCommandHandler"),
   });
+
   const _close_game_session_command_handler =
     makeCloseGameSessionCommandHandler({
       gameSessionRepository: _game_session_repo,
@@ -56,6 +61,15 @@ export const bootstrapGameSession = ({
         getGameName: (id) => gameRepository.getById(id)?.getName(),
       },
       logService: logServiceFactory.build("CloseGameSessionCommandHandler"),
+    });
+
+  const _stale_game_session_command_handler =
+    makeStaleGameSessionCommandHandler({
+      gameSessionRepository: _game_session_repo,
+      gameInfoProvider: {
+        getGameName: (id) => gameRepository.getById(id)?.getName(),
+      },
+      logService: logServiceFactory.build("StaleGameSessionCommandHandler"),
     });
 
   const gameSession: PlayAtlasApiGameSession = {
@@ -67,6 +81,8 @@ export const bootstrapGameSession = ({
         _close_game_session_command_handler,
       getOpenGameSessionCommandHandler: () =>
         _open_game_session_command_handler,
+      getStaleGameSessionCommandHandler: () =>
+        _stale_game_session_command_handler,
     },
   };
   return Object.freeze(gameSession);
