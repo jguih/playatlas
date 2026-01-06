@@ -1,11 +1,11 @@
-import type { DateFilter } from "@playatlas/common/domain";
+import { DateFilter } from "@playatlas/common/common";
 import {
-  repositoryCall,
+  makeBaseRepository,
   type BaseRepositoryDeps,
 } from "@playatlas/common/infra";
 import z from "zod";
 import { sessionStatus } from "../domain/game-session.constants";
-import type { GameSession } from "../domain/game-session.entity";
+import type { GameSession, GameSessionId } from "../domain/game-session.entity";
 import type { GameSessionStatus } from "../domain/game-session.types";
 import { gameSessionMapper } from "../game-session.mapper";
 import type { GameSessionRepository } from "./game-session.repository.port";
@@ -38,6 +38,31 @@ export const makeGameSessionRepository = ({
   getDb,
   logService,
 }: BaseRepositoryDeps): GameSessionRepository => {
+  const TABLE_NAME = "game_session";
+  const COLUMNS: (keyof GameSessionModel)[] = [
+    "SessionId",
+    "GameId",
+    "StartTime",
+    "Duration",
+    "EndTime",
+    "GameName",
+    "Status",
+  ];
+  const base = makeBaseRepository<GameSessionId, GameSession, GameSessionModel>(
+    {
+      getDb,
+      logService,
+      config: {
+        tableName: TABLE_NAME,
+        idColumn: "SessionId",
+        insertColumns: COLUMNS,
+        updateColumns: COLUMNS.filter((c) => c !== "SessionId"),
+        mapper: gameSessionMapper,
+        modelSchema: gameSessionSchema,
+      },
+    }
+  );
+
   const _getWhereClauseAndParamsFromFilters = (
     filters?: GameSessionFilters
   ) => {
@@ -98,135 +123,33 @@ export const makeGameSessionRepository = ({
     };
   };
 
-  const getById: GameSessionRepository["getById"] = (sessionId) => {
-    return repositoryCall(
-      logService,
-      () => {
-        const db = getDb();
-        const query = `SELECT * FROM game_session WHERE SessionId = (?)`;
-        const stmt = db.prepare(query);
-        const result = stmt.get(sessionId);
-        const model = z.optional(gameSessionSchema).parse(result);
-        return model ? gameSessionMapper.toDomain(model) : null;
-      },
-      `getById(${sessionId})`
-    );
-  };
-
   const add: GameSessionRepository["add"] = (session) => {
-    return repositoryCall(
-      logService,
-      () => {
-        const persistence = gameSessionMapper.toPersistence(session);
-        gameSessionSchema.parse(persistence);
-        const db = getDb();
-        const query = `
-        INSERT INTO game_session
-          (SessionId, GameId, GameName, StartTime, EndTime, Duration, Status)
-        VALUES
-          (?, ?, ?, ?, ?, ?, ?)
-      `;
-        const stmt = db.prepare(query);
-        stmt.run(
-          persistence.SessionId,
-          persistence.GameId,
-          persistence.GameName,
-          persistence.StartTime,
-          persistence.EndTime,
-          persistence.Duration,
-          persistence.Status
-        );
-        logService.debug(`Created session ${persistence.SessionId}`);
-        return true;
-      },
-      `add(${session.getSessionId()}, ${session.getGameName()})`
-    );
+    base._add(session);
   };
 
   const update: GameSessionRepository["update"] = (session) => {
-    return repositoryCall(
-      logService,
-      () => {
-        const persistence = gameSessionMapper.toPersistence(session);
-        gameSessionSchema.parse(persistence);
-        const query = `
-          UPDATE game_session
-          SET
-            GameId = ?,
-            GameName = ?,
-            StartTime = ?,
-            EndTime = ?,
-            Duration = ?,
-            Status = ?
-          WHERE
-            SessionId = ?
-        `;
-        const db = getDb();
-        const stmt = db.prepare(query);
-        stmt.run(
-          persistence.GameId,
-          persistence.GameName,
-          persistence.StartTime,
-          persistence.EndTime,
-          persistence.Duration,
-          persistence.Status,
-          persistence.SessionId
-        );
-        logService.debug(`Updated session ${persistence.SessionId}`);
-        return true;
-      },
-      `update(${session.getSessionId()}, ${session.getGameName()})`
-    );
-  };
-
-  const all: GameSessionRepository["all"] = () => {
-    return repositoryCall(
-      logService,
-      () => {
-        const db = getDb();
-        const query = `SELECT * FROM game_session ORDER BY StartTime DESC`;
-        const stmt = db.prepare(query);
-        const result = stmt.all();
-        const sessions = z.array(gameSessionSchema).parse(result);
-        const entities: GameSession[] = [];
-        for (const session of sessions) {
-          const domainEntity = gameSessionMapper.toDomain(session);
-          entities.push(domainEntity);
-        }
-        logService.debug(`Found ${entities?.length ?? 0} sessions`);
-        return entities;
-      },
-      `all()`
-    );
+    base._update(session);
   };
 
   const getAllBy: GameSessionRepository["getAllBy"] = (args) => {
-    return repositoryCall(
-      logService,
-      () => {
-        const db = getDb();
-        let query = `
-        SELECT * 
-        FROM game_session 
-      `;
-        const { where, params } = _getWhereClauseAndParamsFromFilters(
-          args.filters
-        );
-        query += where;
-        query += ` ORDER BY StartTime DESC;`;
-        const stmt = db.prepare(query);
-        const result = stmt.all(...params);
-        const sessions = z.array(gameSessionSchema).parse(result);
-        const entities: GameSession[] = [];
-        for (const session of sessions) {
-          const domainEntity = gameSessionMapper.toDomain(session);
-          entities.push(domainEntity);
-        }
-        return entities;
-      },
-      `getAllBy()`
-    );
+    return base.run(({ db }) => {
+      let query = `SELECT * FROM game_session`;
+      const { where, params } = _getWhereClauseAndParamsFromFilters(
+        args.filters
+      );
+      query += where;
+      query += ` ORDER BY StartTime DESC;`;
+      const stmt = db.prepare(query);
+      const result = stmt.all(...params);
+      const sessions = z.array(gameSessionSchema).parse(result);
+      const entities: GameSession[] = [];
+      for (const session of sessions) {
+        const domainEntity = gameSessionMapper.toDomain(session);
+        entities.push(domainEntity);
+      }
+      return entities;
+    }, `getAllBy()`);
   };
 
-  return { getById, add, update, all, getAllBy };
+  return { ...base.public, add, update, getAllBy };
 };

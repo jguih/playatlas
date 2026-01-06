@@ -2,6 +2,7 @@ import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapAuth } from "./bootstrap.auth";
 import { bootstrapConfig } from "./bootstrap.config";
 import { bootstrapGameLibrary } from "./bootstrap.game-library";
+import { bootstrapGameSession } from "./bootstrap.game-session";
 import { bootstrapInfra } from "./bootstrap.infra";
 import { bootstrapPlayniteIntegration } from "./bootstrap.playnite-integration";
 import { BootstrapDeps, PlayAtlasApi } from "./bootstrap.service.types";
@@ -47,12 +48,20 @@ export const bootstrap = async ({
     platformRepository: gameLibrary.getPlatformRepository(),
   });
 
+  const gameSession = bootstrapGameSession({
+    ...baseDeps,
+    gameRepository: gameLibrary.getGameRepository(),
+  });
+
   return {
+    unsafe: {
+      infra,
+    },
     config,
-    infra,
     gameLibrary,
     auth,
     playniteIntegration,
+    gameSession,
     getLogService: () => backendLogService,
   };
 };

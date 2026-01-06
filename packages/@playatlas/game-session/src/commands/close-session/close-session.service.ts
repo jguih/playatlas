@@ -1,11 +1,14 @@
 import type { LogService } from "@playatlas/common/application";
+import type { CommandHandler } from "@playatlas/common/common";
 import { makeClosedGameSession } from "../../domain/game-session.entity";
 import type { GameSessionRepository } from "../../infra/game-session.repository.port";
+import type { GameInfoProvider } from "../../types/game-info-provider";
 import type { CloseGameSessionCommand } from "./close-session.command";
 
 export type CloseGameSessionServiceDeps = {
-  repository: GameSessionRepository;
+  gameSessionRepository: GameSessionRepository;
   logService: LogService;
+  gameInfoProvider: GameInfoProvider;
 };
 
 export type CloseGameSessionServiceResult = {
@@ -13,16 +16,23 @@ export type CloseGameSessionServiceResult = {
   closed: boolean;
 };
 
-export const makeCloseGameSessionService = ({
-  repository,
+export type CloseGameSessionCommandHandler = CommandHandler<
+  CloseGameSessionCommand,
+  CloseGameSessionServiceResult
+>;
+
+export const makeCloseGameSessionCommandHandler = ({
+  gameSessionRepository,
   logService,
-}: CloseGameSessionServiceDeps) => {
+  gameInfoProvider,
+}: CloseGameSessionServiceDeps): CloseGameSessionCommandHandler => {
   return {
     execute: (
       command: CloseGameSessionCommand
     ): CloseGameSessionServiceResult => {
-      const session = repository.getById(command.sessionId);
+      const session = gameSessionRepository.getById(command.sessionId);
       const serverUtcNow = Date.now();
+      const gameName = gameInfoProvider.getGameName(command.gameId);
 
       if (!session) {
         logService.warning(
@@ -43,15 +53,15 @@ export const makeCloseGameSessionService = ({
         const closed = makeClosedGameSession({
           sessionId: command.sessionId,
           gameId: command.gameId,
-          gameName: command.gameName,
+          gameName: gameName,
           startTime: startTime,
           endTime: endTime,
           duration: command.duration,
         });
-        repository.add(closed);
+        gameSessionRepository.add(closed);
 
         logService.info(
-          `Created closed session ${command.sessionId} for ${command.gameName}`
+          `Created closed session ${command.sessionId} for ${gameName}`
         );
         return { created: true, closed: false };
       }
@@ -61,7 +71,7 @@ export const makeCloseGameSessionService = ({
         duration: command.duration,
       });
 
-      repository.update(session);
+      gameSessionRepository.update(session);
       logService.info(`Closed session ${session.getSessionId()}`);
       return { created: false, closed: true };
     },

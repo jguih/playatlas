@@ -4,17 +4,14 @@ export type OpenGameSessionCommand = {
   clientUtcNow: string;
   sessionId: string;
   gameId: string;
-  gameName?: string | null;
 };
 
-export const makeGameSessionCommand = (
-  requestDto: OpenGameSessionRequestDto,
-  gameName: string | null
+export const makeOpenGameSessionCommand = (
+  requestDto: OpenGameSessionRequestDto
 ): OpenGameSessionCommand => {
   return {
     clientUtcNow: requestDto.ClientUtcNow,
     sessionId: requestDto.SessionId,
     gameId: requestDto.GameId,
-    gameName,
   };
 };

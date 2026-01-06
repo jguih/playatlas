@@ -22,8 +22,8 @@ export const bootstrapTest = ({ api }: BootstrapTestDeps): PlayAtlasTestApi => {
     api,
     factory,
     resetDbToMemory: async () => {
-      api.infra.getDb().close();
-      await api.infra.initDb();
+      api.unsafe.infra.getDb().close();
+      await api.unsafe.infra.initDb();
     },
   };
 };

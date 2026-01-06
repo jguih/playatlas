@@ -45,7 +45,7 @@ export type BootstrapGameLibraryDeps = {
 export const bootstrapGameLibrary = ({
   getDb,
   logServiceFactory,
-}: BootstrapGameLibraryDeps) => {
+}: BootstrapGameLibraryDeps): PlayAtlasApiGameLibrary => {
   const _company_repository = makeCompanyRepository({
     getDb,
     logService: logServiceFactory.build("CompanyRepository"),

@@ -11,7 +11,7 @@ let _api: PlayAtlasApi;
 export const init: ServerInit = async () => {
 	_api = await bootstrap({ env });
 	_services = makeServerServices({
-		getDb: () => _api.infra.getDb(),
+		getDb: () => _api.unsafe.infra.getDb(),
 		env: {
 			DATA_DIR: _api.config.getSystemConfig().getDataDir(),
 			PLAYNITE_HOST_ADDRESS: env.PLAYATLAS_PLAYNITE_HOST_ADDRESS,

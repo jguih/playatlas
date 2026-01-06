@@ -53,6 +53,7 @@
 		"@playatlas/game-library": "workspace:*",
 		"@playatlas/auth": "workspace:*",
 		"@playatlas/playnite-integration": "workspace:*",
+		"@playatlas/game-session": "workspace:*",
 		"@playnite-insights/core": "workspace:*",
 		"@playnite-insights/infra": "workspace:*",
 		"@playnite-insights/lib": "workspace:*",

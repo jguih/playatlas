@@ -1,3 +1,4 @@
+import { BaseEntity } from "@playatlas/common/domain";
 import {
   EndTimeBeforeStartTimeError,
   GameSessionAlreadyClosedError,
@@ -19,17 +20,18 @@ type GameSessionGameId = string | null;
 type GameSessionGameName = string | null;
 export type GameSessionDuration = number | null;
 
-export type GameSession = Readonly<{
-  getSessionId: () => GameSessionId;
-  getStartTime: () => GameSessionStartTime;
-  getStatus: () => GameSessionStatus;
-  getEndTime: () => GameSessionEndTime;
-  getGameId: () => GameSessionGameId;
-  getGameName: () => GameSessionGameName;
-  getDuration: () => GameSessionDuration;
-  close(props: CloseGameSessionProps): void;
-  stale: () => void;
-}>;
+export type GameSession = BaseEntity<GameSessionId> &
+  Readonly<{
+    getSessionId: () => GameSessionId;
+    getStartTime: () => GameSessionStartTime;
+    getStatus: () => GameSessionStatus;
+    getEndTime: () => GameSessionEndTime;
+    getGameId: () => GameSessionGameId;
+    getGameName: () => GameSessionGameName;
+    getDuration: () => GameSessionDuration;
+    close(props: CloseGameSessionProps): void;
+    stale: () => void;
+  }>;
 
 export const makeGameSession = (props: MakeGameSessionProps): GameSession => {
   const _sessionId: GameSessionId = props.sessionId;
@@ -41,6 +43,8 @@ export const makeGameSession = (props: MakeGameSessionProps): GameSession => {
   let _duration: GameSessionDuration = null;
 
   const newSession: GameSession = Object.freeze({
+    getId: () => _sessionId,
+    getSafeId: () => _sessionId,
     getSessionId: () => _sessionId,
     getStatus: () => _status,
     getStartTime: () => _startTime,
@@ -50,7 +54,7 @@ export const makeGameSession = (props: MakeGameSessionProps): GameSession => {
     getDuration: () => _duration,
     close: (props) => {
       if (_status !== "in_progress") throw new GameSessionNotInProgressError();
-      if (props.endTime < _startTime) throw new EndTimeBeforeStartTimeError();
+      if (props.endTime <= _startTime) throw new EndTimeBeforeStartTimeError();
       if (props.duration < 0)
         throw new InvalidGameSessionDurationError({
           sessionDuration: props.duration,
@@ -62,6 +66,7 @@ export const makeGameSession = (props: MakeGameSessionProps): GameSession => {
     stale: () => {
       _status = "stale";
     },
+    validate: () => {},
   });
   return Object.freeze(newSession);
 };
@@ -78,6 +83,8 @@ export const makeClosedGameSession = (
   let _duration: GameSessionDuration = props.duration;
 
   const newSession: GameSession = Object.freeze({
+    getId: () => _sessionId,
+    getSafeId: () => _sessionId,
     getSessionId: () => _sessionId,
     getStatus: () => _status,
     getStartTime: () => _startTime,
@@ -91,6 +98,7 @@ export const makeClosedGameSession = (
     stale: () => {
       throw new GameSessionAlreadyClosedError();
     },
+    validate: () => {},
   });
   return newSession;
 };
@@ -107,6 +115,8 @@ export const makeStaleGameSession = (
   let _duration: GameSessionDuration = null;
 
   const newSession: GameSession = Object.freeze({
+    getId: () => _sessionId,
+    getSafeId: () => _sessionId,
     getSessionId: () => _sessionId,
     getStatus: () => _status,
     getStartTime: () => _startTime,
@@ -120,6 +130,7 @@ export const makeStaleGameSession = (
     stale: () => {
       throw new GameSessionAlreadyStaleError();
     },
+    validate: () => {},
   });
   return newSession;
 };

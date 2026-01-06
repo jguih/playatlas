@@ -9,7 +9,7 @@ import {
   type CloseGameSessionRequestDto,
 } from "../../src/commands/close-session/close-session.request.dto";
 import {
-  makeCloseGameSessionService,
+  makeCloseGameSessionCommandHandler,
   type CloseGameSessionServiceDeps,
 } from "../../src/commands/close-session/close-session.service";
 import {
@@ -29,17 +29,21 @@ let deps = {
     info: vi.fn(),
     success: vi.fn(),
     debug: vi.fn(),
+    getRequestDescription: vi.fn(),
   },
-  repository: {
+  gameSessionRepository: {
     getById: vi.fn(),
     add: vi.fn(),
     update: vi.fn(),
     all: vi.fn(),
     getAllBy: vi.fn(),
   },
+  gameInfoProvider: {
+    getGameName: (gameId) => gameId,
+  },
 } satisfies CloseGameSessionServiceDeps;
 
-const service = makeCloseGameSessionService({ ...deps });
+const service = makeCloseGameSessionCommandHandler({ ...deps });
 
 const factory = {
   makeInProgressSession: (): GameSession =>
@@ -77,19 +81,17 @@ describe("Close Game Session Service", () => {
       EndTime: now.toISOString(),
       Duration: 1200,
     };
-    const command: CloseGameSessionCommand = makeCloseGameSessionCommand(
-      requestDto,
-      faker.lorem.words(3)
-    );
-    deps.repository.getById.mockReturnValueOnce(undefined);
-    deps.repository.add.mockReturnValueOnce(true);
+    const command: CloseGameSessionCommand =
+      makeCloseGameSessionCommand(requestDto);
+    deps.gameSessionRepository.getById.mockReturnValueOnce(undefined);
+    deps.gameSessionRepository.add.mockReturnValueOnce(true);
     // Act
     const result = service.execute(command);
     // Assert
     expect(() =>
       closeGameSessionRequestDtoSchema.parse(requestDto)
     ).not.toThrow();
-    expect(deps.repository.add).toHaveBeenCalledOnce();
+    expect(deps.gameSessionRepository.add).toHaveBeenCalledOnce();
     expect(result.created).toBeTruthy();
   });
 
@@ -105,19 +107,17 @@ describe("Close Game Session Service", () => {
       EndTime: now.toISOString(),
       Duration: 1200,
     };
-    const command: CloseGameSessionCommand = makeCloseGameSessionCommand(
-      requestDto,
-      inProgressSession.getGameName()
-    );
-    deps.repository.getById.mockReturnValueOnce(inProgressSession);
-    deps.repository.update.mockReturnValueOnce(true);
+    const command: CloseGameSessionCommand =
+      makeCloseGameSessionCommand(requestDto);
+    deps.gameSessionRepository.getById.mockReturnValueOnce(inProgressSession);
+    deps.gameSessionRepository.update.mockReturnValueOnce(true);
     // Act
     const result = service.execute(command);
     // Assert
     expect(() =>
       closeGameSessionRequestDtoSchema.parse(requestDto)
     ).not.toThrow();
-    expect(deps.repository.update).toHaveBeenCalledOnce();
+    expect(deps.gameSessionRepository.update).toHaveBeenCalledOnce();
     expect(result.created).toBeFalsy();
     expect(result.closed).toBeTruthy();
   });
@@ -136,11 +136,9 @@ describe("Close Game Session Service", () => {
         EndTime: now.toISOString(),
         Duration: duration,
       };
-      const command: CloseGameSessionCommand = makeCloseGameSessionCommand(
-        requestDto,
-        inProgress.getGameName()
-      );
-      deps.repository.getById.mockReturnValueOnce(inProgress);
+      const command: CloseGameSessionCommand =
+        makeCloseGameSessionCommand(requestDto);
+      deps.gameSessionRepository.getById.mockReturnValueOnce(inProgress);
       // Act & Assert
       expect(() =>
         closeGameSessionRequestDtoSchema.parse(requestDto)
@@ -148,7 +146,7 @@ describe("Close Game Session Service", () => {
       expect(() => service.execute(command)).toThrowError(
         InvalidGameSessionDurationError
       );
-      expect(deps.repository.update).not.toHaveBeenCalled();
+      expect(deps.gameSessionRepository.update).not.toHaveBeenCalled();
     }
   );
 
@@ -164,11 +162,8 @@ describe("Close Game Session Service", () => {
       EndTime: closed.getEndTime()!.toISOString(),
       Duration: closed.getDuration()!,
     };
-    const command = makeCloseGameSessionCommand(
-      requestDto,
-      closed.getGameName()
-    );
-    deps.repository.getById.mockReturnValueOnce(closed);
+    const command = makeCloseGameSessionCommand(requestDto);
+    deps.gameSessionRepository.getById.mockReturnValueOnce(closed);
     // Act & Assert
     expect(() =>
       closeGameSessionRequestDtoSchema.parse(requestDto)
@@ -176,6 +171,6 @@ describe("Close Game Session Service", () => {
     expect(() => service.execute(command)).toThrowError(
       GameSessionAlreadyClosedError
     );
-    expect(deps.repository.update).not.toHaveBeenCalled();
+    expect(deps.gameSessionRepository.update).not.toHaveBeenCalled();
   });
 });

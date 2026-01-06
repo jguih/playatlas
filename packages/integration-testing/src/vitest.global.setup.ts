@@ -21,7 +21,7 @@ export default function teardown() {
     api
       .getLogService()
       .warning(`Deleting integration test work dir at ${workDir}`);
-    await api.infra
+    await api.unsafe.infra
       .getFsService()
       .rm(workDir, { force: true, recursive: true });
   };

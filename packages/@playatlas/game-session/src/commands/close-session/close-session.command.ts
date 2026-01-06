@@ -7,12 +7,10 @@ export type CloseGameSessionCommand = {
   startTime: Date;
   endTime: Date;
   duration: number;
-  gameName: string | null;
 };
 
 export const makeCloseGameSessionCommand = (
-  requestDto: CloseGameSessionRequestDto,
-  gameName: string | null
+  requestDto: CloseGameSessionRequestDto
 ): CloseGameSessionCommand => {
   return {
     clientUtcNow: new Date(requestDto.ClientUtcNow),
@@ -21,6 +19,5 @@ export const makeCloseGameSessionCommand = (
     startTime: new Date(requestDto.StartTime),
     endTime: new Date(requestDto.EndTime),
     duration: requestDto.Duration,
-    gameName,
   };
 };

@@ -16,7 +16,9 @@ const successResponse = (status: 200 | 201 = 200) => {
 };
 
 export const apiResponse = {
+	ok: () => successResponse(200),
 	error: errorResponse,
 	success: successResponse,
 	notModified: () => new Response(undefined, { status: 304 }),
+	created: () => successResponse(201),
 };

@@ -1,19 +1,40 @@
 import { extensionAuthMiddleware } from '$lib/server/api/middleware/auth.middleware';
+import { apiResponse } from '$lib/server/api/responses';
+import {
+	makeOpenGameSessionCommand,
+	openGameSessionRequestDtoSchema,
+} from '@playatlas/game-session/commands';
 import { defaultSSEManager } from '@playnite-insights/infra';
-import { badRequest, emptyResponse, openGameSessionSchema } from '@playnite-insights/lib/client';
-import { json, type RequestHandler } from '@sveltejs/kit';
+import { emptyResponse } from '@playnite-insights/lib/client';
+import { type RequestHandler } from '@sveltejs/kit';
 
-export const POST: RequestHandler = async ({ request, locals: { services, api } }) =>
+export const POST: RequestHandler = async ({ request, locals: { api } }) =>
 	extensionAuthMiddleware({ request, api }, async (result) => {
-		console.log('Hey, look at this:', result);
 		if (!result.body) {
-			return json({ error: { message: 'Empty body' } }, { status: 400 });
+			return apiResponse.error({ error: { message: 'Empty body' } }, { status: 400 });
 		}
-		const command = openGameSessionSchema.parse(JSON.parse(result.body));
-		const openResult = services.gameSessionService.open(command);
-		if (openResult) {
-			defaultSSEManager.broadcast({ type: 'sessionOpened', data: true });
-			return emptyResponse(200);
+
+		const { success, data, error } = openGameSessionRequestDtoSchema.safeParse(
+			JSON.parse(result.body),
+		);
+
+		if (!success) {
+			api
+				.getLogService()
+				.error(
+					`${api.getLogService().getRequestDescription(request)}: Validation error while handling request`,
+					error.issues.slice(0, 10),
+				);
+			return apiResponse.error({
+				error: { message: 'Validation error', details: error.issues },
+			});
 		}
-		return badRequest();
+
+		const command = makeOpenGameSessionCommand(data);
+
+		api.gameSession.commands.getOpenGameSessionCommandHandler().execute(command);
+
+		defaultSSEManager.broadcast({ type: 'sessionOpened', data: true });
+
+		return emptyResponse(200);
 	});

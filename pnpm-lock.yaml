@@ -377,6 +377,9 @@ importers:
       '@playatlas/game-library':
         specifier: workspace:*
         version: link:../packages/@playatlas/game-library
+      '@playatlas/game-session':
+        specifier: workspace:*
+        version: link:../packages/@playatlas/game-session
       '@playatlas/playnite-integration':
         specifier: workspace:*
         version: link:../packages/@playatlas/playnite-integration
