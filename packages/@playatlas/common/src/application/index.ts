@@ -1,4 +1,7 @@
 export type * from "./entity-mapper.port";
+export * from "./event-bus";
+export type * from "./event-bus.port";
+export type * from "./event-bus.types";
 export type * from "./file-system.service.port";
 export * from "./log-service.constants";
 export type * from "./log-service.port";

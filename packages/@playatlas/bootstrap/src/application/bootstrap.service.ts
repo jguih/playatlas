@@ -1,3 +1,4 @@
+import { makeEventBus } from "@playatlas/common/application";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapAuth } from "./bootstrap.auth";
 import { bootstrapConfig } from "./bootstrap.config";
@@ -28,6 +29,10 @@ export const bootstrap = async ({
   backendLogService.info("Initializing database");
   await infra.initDb();
 
+  const eventBus = makeEventBus({
+    logService: logServiceFactory.build("EventBus"),
+  });
+
   const baseDeps = { getDb: infra.getDb, logServiceFactory };
 
   const gameLibrary = bootstrapGameLibrary({ ...baseDeps });
@@ -57,6 +62,7 @@ export const bootstrap = async ({
     unsafe: {
       infra,
     },
+    eventBus,
     config,
     gameLibrary,
     auth,

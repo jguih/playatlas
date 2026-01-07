@@ -1,4 +1,4 @@
-import { type LogService } from "@playatlas/common/application";
+import type { DomainEventBus, LogService } from "@playatlas/common/application";
 import { type EnvServiceDeps } from "@playatlas/system/infra";
 import { type PlayAtlasApiAuth } from "./bootstrap.auth";
 import { type PlayAtlasApiConfig } from "./bootstrap.config";
@@ -22,6 +22,7 @@ export type PlayAtlasApi = {
   playniteIntegration: PlayAtlasApiPlayniteIntegration;
   gameSession: PlayAtlasApiGameSession;
   getLogService: () => LogService;
+  eventBus: DomainEventBus;
 };
 
 export type BootstrapDeps = {
