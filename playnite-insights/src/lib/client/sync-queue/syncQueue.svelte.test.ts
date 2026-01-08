@@ -1,3 +1,10 @@
+import { GameNoteRepository } from '$lib/modules/common/infra/db/gameNotesRepository.svelte';
+import {
+	INDEXEDDB_CURRENT_VERSION,
+	INDEXEDDB_NAME,
+	openIndexedDbAsync,
+} from '$lib/modules/common/infra/db/indexeddb';
+import { SyncQueueRepository } from '$lib/modules/common/infra/db/syncQueueRepository.svelte';
 import {
 	FetchClientStrategyError,
 	GameNoteFactory,
@@ -10,9 +17,6 @@ import {
 import 'fake-indexeddb/auto';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IndexedDbSignal } from '../app-state/indexeddbManager.svelte';
-import { GameNoteRepository } from '../db/gameNotesRepository.svelte';
-import { INDEXEDDB_CURRENT_VERSION, INDEXEDDB_NAME, openIndexedDbAsync } from '../db/indexeddb';
-import { SyncQueueRepository } from '../db/syncQueueRepository.svelte';
 import { type IDateTimeHandler } from '../utils/dateTimeHandler.svelte';
 import { SyncQueue } from './syncQueue.svelte';
 

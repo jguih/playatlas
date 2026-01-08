@@ -1,3 +1,6 @@
+import { IndexedDBNotInitializedError } from '$lib/modules/common/errors/indexeddbNotInitialized';
+import type { GameNoteRepository } from '$lib/modules/common/infra/db/gameNotesRepository.svelte';
+import type { KeyValueRepository } from '$lib/modules/common/infra/db/keyValueRepository.svelte';
 import {
 	AppClientError,
 	EmptyStrategy,
@@ -7,9 +10,6 @@ import {
 	type ClientSyncReconciliationCommand,
 	type IFetchClient,
 } from '@playnite-insights/lib/client';
-import { IndexedDBNotInitializedError } from '../db/errors/indexeddbNotInitialized';
-import type { GameNoteRepository } from '../db/gameNotesRepository.svelte';
-import type { KeyValueRepository } from '../db/keyValueRepository.svelte';
 import type { ILogService } from '../logService.svelte';
 
 export type SynchronizationServiceDeps = {

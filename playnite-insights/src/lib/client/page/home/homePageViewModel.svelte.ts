@@ -1,11 +1,11 @@
 import type { ApplicationSettingsStore } from '$lib/client/app-state/stores/applicationSettingsStore.svelte';
-import type { GameStore } from '$lib/client/app-state/stores/gameStore.svelte';
+import { getPlayniteGameImageUrl } from '$lib/client/utils/playnite-game';
+import type { GameStore } from '$lib/modules/game-library/stores/gameStore.svelte';
 import type {
 	GameStoreFiltersParams,
 	GameStorePaginationParams,
 	GameStoreSortingParams,
-} from '$lib/client/app-state/stores/gameStore.types';
-import { getPlayniteGameImageUrl } from '$lib/client/utils/playnite-game';
+} from '$lib/modules/game-library/stores/gameStore.types';
 import { m } from '$lib/paraglide/messages';
 import { gamePageSizes, type GameSortBy, type GameSortOrder } from '@playatlas/game-library/domain';
 import type { GameResponseDto } from '@playatlas/game-library/dtos';

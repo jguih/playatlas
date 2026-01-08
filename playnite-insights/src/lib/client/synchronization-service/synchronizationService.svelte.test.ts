@@ -7,8 +7,7 @@ import {
 } from '@playnite-insights/lib/client';
 import { makeMocks } from '@playnite-insights/testing';
 import 'fake-indexeddb/auto';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { INDEXEDDB_NAME } from '../db/indexeddb';
+import { INDEXEDDB_NAME } from '../../modules/common/infra/db/indexeddb';
 
 const mocks = makeMocks();
 const fetchClient = mocks.fetchClient;

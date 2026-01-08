@@ -1,7 +1,7 @@
+import type { GameStore } from '$lib/modules/game-library/stores/gameStore.svelte';
 import { monthNames } from '$lib/utils/date';
 import type { FullGame } from '@playnite-insights/lib/client';
 import type { ApplicationSettingsStore } from '../app-state/stores/applicationSettingsStore.svelte';
-import type { GameStore } from '../app-state/stores/gameStore.svelte';
 import type { LibraryMetricsStore } from '../app-state/stores/libraryMetricsStore.svelte';
 import { getPlaytimeInHoursAndMinutes } from '../utils/playnite-game';
 
@@ -51,7 +51,7 @@ export class DashPageViewModel {
 	}
 
 	private getLibraryMetrics = (): DashPageLibraryMetrics => {
-		const games = this.#gameStore.gameList ?? [];
+		const games = this.#gameStore.dataSignal.raw ?? [];
 		const totalGamesInLibrary = games.length;
 		const totalPlaytimeSeconds = games.reduce((prev, current) => prev + current.Playtime, 0);
 		const totalPlaytime = getPlaytimeInHoursAndMinutes(totalPlaytimeSeconds);
@@ -112,7 +112,7 @@ export class DashPageViewModel {
 	}
 
 	get isLoading() {
-		return this.#gameStore.isLoading || this.#gameStore.gameList === null;
+		return this.#gameStore.isLoading || this.#gameStore.dataSignal.raw === null;
 	}
 
 	getPlaytime = (playtime: number): string => getPlaytimeInHoursAndMinutes(playtime);

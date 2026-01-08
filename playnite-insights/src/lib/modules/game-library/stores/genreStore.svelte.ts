@@ -1,3 +1,7 @@
+import {
+	ApiDataStore,
+	type ApiDataStoreDeps,
+} from '$lib/client/app-state/stores/apiDataStore.svelte';
 import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
 import {
 	FetchClientStrategyError,
@@ -5,7 +9,6 @@ import {
 	JsonStrategy,
 	type GetAllGenresResponse,
 } from '@playnite-insights/lib/client';
-import { ApiDataStore, type ApiDataStoreDeps } from './apiDataStore.svelte';
 
 export type GenreStoreDeps = ApiDataStoreDeps;
 

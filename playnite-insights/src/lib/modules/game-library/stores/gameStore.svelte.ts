@@ -1,7 +1,7 @@
+import { ApiDataStore } from '$lib/client/app-state/stores/apiDataStore.svelte';
 import { gameResponseDtoSchema, type GameResponseDto } from '@playatlas/game-library/dtos';
 import { FetchClientStrategyError, JsonStrategy } from '@playnite-insights/lib/client';
 import z from 'zod';
-import { ApiDataStore } from './apiDataStore.svelte';
 import type {
 	GameStoreDataSignal,
 	GameStoreDeps,

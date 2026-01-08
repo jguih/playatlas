@@ -1,8 +1,8 @@
+import type { IDateTimeHandler } from '$lib/client/utils/dateTimeHandler.svelte';
+import type { IndexedDbSignal } from '$lib/modules/bootstrap/modules/bootstrap.infra.types';
 import { GameNoteFactory, SyncQueueFactory, type GameNote } from '@playnite-insights/lib/client';
 import 'fake-indexeddb/auto';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import type { IndexedDbSignal } from '../app-state/indexeddbManager.svelte';
-import { type IDateTimeHandler } from '../utils/dateTimeHandler.svelte';
 import { GameNoteRepository } from './gameNotesRepository.svelte';
 import { INDEXEDDB_CURRENT_VERSION, INDEXEDDB_NAME, openIndexedDbAsync } from './indexeddb';
 import { SyncQueueRepository } from './syncQueueRepository.svelte';

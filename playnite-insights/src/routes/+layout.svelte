@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import {
 		ClientServiceLocator,
@@ -34,23 +33,6 @@
 	};
 
 	const initInstance = async () => {
-		try {
-			addLoading('instanceRegistered');
-			const registered = await locator.instanceManager.isRegistered();
-			if (!registered) {
-				await goto('/auth/register', { replaceState: true });
-			}
-		} catch (error) {
-			if (error instanceof AppClientError) {
-				if (error.code === 'server_error')
-					toast.error({
-						category: 'app',
-						message: 'Failed to check instance registration, please check application logs.',
-					});
-			}
-		} finally {
-			removeLoading('instanceRegistered');
-		}
 		try {
 			addLoading('applicationSettings');
 			await locator.applicationSettingsStore.loadSettings();
