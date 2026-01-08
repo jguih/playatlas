@@ -3,7 +3,7 @@ import {
 	INDEXEDDB_NAME,
 	openIndexedDbAsync,
 } from '$lib/modules/common/infra/db/indexeddb';
-import type { IClientInfraModulePort, IndexedDbSignal } from './bootstrap.infra.types';
+import type { IClientInfraModulePort, IndexedDbSignal } from './infra.module.port';
 
 export class ClientInfraModule implements IClientInfraModulePort {
 	readonly indexedDbSignal: IndexedDbSignal;
