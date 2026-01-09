@@ -28,6 +28,7 @@ export class ClientBootstrapper {
 				},
 				Command: {
 					SyncGames: this.gameLibrary.syncGamesCommandHandler,
+					SyncGenres: this.gameLibrary.syncGenresCommandHandler,
 				},
 			},
 		};

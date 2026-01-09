@@ -3,6 +3,10 @@ import {
 	type ISyncGamesCommandHandlerPort,
 } from '$lib/modules/game-library/commands/sync-games';
 import {
+	SyncGenresCommandHandler,
+	type ISyncGenresCommandHandlerPort,
+} from '$lib/modules/game-library/commands/sync-genres';
+import {
 	GameRepository,
 	GenreRepository,
 	type IGameRepositoryPort,
@@ -24,6 +28,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly genreRepository: IGenreRepositoryPort;
 	readonly getGamesQueryHandler: IGetGamesQueryHandlerPort;
 	readonly syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
+	readonly syncGenresCommandHandler: ISyncGenresCommandHandlerPort;
 
 	constructor({ indexedDbSignal }: ClientGameLibraryModuleDeps) {
 		this.gameRepository = new GameRepository({ indexedDbSignal });
@@ -31,6 +36,9 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.getGamesQueryHandler = new GetGamesQueryHandler({ gameRepository: this.gameRepository });
 		this.syncGamesCommandHandler = new SyncGamesCommandHandler({
 			gameRepository: this.gameRepository,
+		});
+		this.syncGenresCommandHandler = new SyncGenresCommandHandler({
+			genreRepository: this.genreRepository,
 		});
 	}
 }

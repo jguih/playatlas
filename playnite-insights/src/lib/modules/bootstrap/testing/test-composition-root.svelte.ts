@@ -1,5 +1,5 @@
 import type { IHttpClientPort, ILogServicePort } from '$lib/modules/common/application';
-import { gameRepositorySchema } from '$lib/modules/game-library/infra';
+import { gameRepositorySchema, genreRepositorySchema } from '$lib/modules/game-library/infra';
 import { GameFactory } from '$lib/modules/game-library/testing/game-factory';
 import { type ClientApi } from '../application/client-api.svelte';
 import { ClientBootstrapper } from '../application/client-bootstrapper.svelte';
@@ -31,7 +31,7 @@ export class TestCompositionRoot {
 	build = (): ClientApi => {
 		const infra: IClientInfraModulePort = new ClientInfraModule({
 			logService: this.mocks.logService,
-			schemas: [gameRepositorySchema],
+			schemas: [gameRepositorySchema, genreRepositorySchema],
 		});
 		infra.initialize();
 
