@@ -11,9 +11,10 @@ export const gameRepositoryMeta: GameRepositoryMeta = {
 };
 
 export const gameRepositorySchema: IIndexedDbSchema = {
-	define({ db, oldVersion }) {
-		if (oldVersion < 1) {
+	define({ db }) {
+		if (!db.objectStoreNames.contains(gameRepositoryMeta.storeName)) {
 			const store = db.createObjectStore(gameRepositoryMeta.storeName, { keyPath: 'Id' });
+			store.createIndex(gameRepositoryMeta.index.byId, 'Id');
 			store.createIndex(gameRepositoryMeta.index.bySourceUpdatedAt, 'SourceUpdatedAt');
 			store.createIndex(gameRepositoryMeta.index.byDeletedAt, 'DeletedAt');
 		}
