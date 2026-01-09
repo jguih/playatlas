@@ -1,5 +1,6 @@
+export type GameId = string;
 export type Game = {
-	Id: string;
+	Id: GameId;
 	Name: string | null;
 	Description: string | null;
 	ReleaseDate: Date | null;

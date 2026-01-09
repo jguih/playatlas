@@ -1,4 +1,3 @@
-import type { IDateTimeHandler } from '$lib/client/utils/dateTimeHandler.svelte';
 import {
 	IndexedDBRepository,
 	type IndexedDBRepositoryDeps,
@@ -7,13 +6,9 @@ import type { Game } from '../domain/game.entity';
 import type { IGameRepositoryPort } from './game.repository.port';
 import type { GameQueryResult, GameRepositoryIndex } from './game.repository.types';
 
-export type GameRepositoryDeps = {
-	dateTimeHandler: IDateTimeHandler;
-} & IndexedDBRepositoryDeps;
+export type GameRepositoryDeps = IndexedDBRepositoryDeps;
 
 export class GameRepository extends IndexedDBRepository implements IGameRepositoryPort {
-	#dateTimeHandler: GameRepositoryDeps['dateTimeHandler'];
-
 	static STORE_NAME = 'games' as const;
 
 	static INDEX = {
@@ -25,45 +20,28 @@ export class GameRepository extends IndexedDBRepository implements IGameReposito
 		Id: 'Id',
 	} as const;
 
-	constructor({ indexedDbSignal, dateTimeHandler }: GameRepositoryDeps) {
+	constructor({ indexedDbSignal }: GameRepositoryDeps) {
 		super({ indexedDbSignal });
-		this.#dateTimeHandler = dateTimeHandler;
 	}
 
-	addAsync: IGameRepositoryPort['addAsync'] = async ({ game }) => {
-		const key = await this.runTransaction(
-			[GameRepository.STORE_NAME],
-			'readwrite',
-			async ({ tx }) => {
-				const gamesStore = tx.objectStore(GameRepository.STORE_NAME);
-				const key = await this.runRequest(gamesStore.add(game));
-				return key;
-			},
-		);
-		return key as string;
-	};
-
-	putAsync: IGameRepositoryPort['putAsync'] = async ({ game }) => {
-		const now = new Date(this.#dateTimeHandler.getUtcNow());
-
-		return await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
+	addAsync: IGameRepositoryPort['addAsync'] = async (game) => {
+		await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
 			const gamesStore = tx.objectStore(GameRepository.STORE_NAME);
-
-			game.SourceUpdatedAt = now;
-
-			await this.runRequest(gamesStore.put(game));
-
-			return true;
+			await this.runRequest(gamesStore.add(game));
 		});
 	};
 
-	deleteAsync: IGameRepositoryPort['deleteAsync'] = async ({ gameId }) => {
-		return await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
+	putAsync: IGameRepositoryPort['putAsync'] = async (game) => {
+		await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
 			const gamesStore = tx.objectStore(GameRepository.STORE_NAME);
+			await this.runRequest(gamesStore.put(game));
+		});
+	};
 
+	deleteAsync: IGameRepositoryPort['deleteAsync'] = async (gameId) => {
+		await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
+			const gamesStore = tx.objectStore(GameRepository.STORE_NAME);
 			await this.runRequest(gamesStore.delete(gameId));
-
-			return true;
 		});
 	};
 
@@ -75,20 +53,16 @@ export class GameRepository extends IndexedDBRepository implements IGameReposito
 		});
 	};
 
-	syncAsync: IGameRepositoryPort['syncAsync'] = async (games, ops) => {
-		const shouldOverride = ops?.override === true;
+	syncAsync: IGameRepositoryPort['syncAsync'] = async (game) => {
+		const games = Array.isArray(game) ? game : [game];
 		if (games.length === 0) return;
 
-		return await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
+		await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
 			const store = tx.objectStore(GameRepository.STORE_NAME);
 
 			for (const game of games) {
 				const existing = await this.runRequest<Game | undefined>(store.get(game.Id));
-				if (
-					shouldOverride ||
-					!existing ||
-					new Date(game.SourceUpdatedAt) > new Date(existing.SourceUpdatedAt)
-				) {
+				if (!existing || new Date(game.SourceUpdatedAt) > new Date(existing.SourceUpdatedAt)) {
 					await this.runRequest(store.put(game));
 				}
 			}

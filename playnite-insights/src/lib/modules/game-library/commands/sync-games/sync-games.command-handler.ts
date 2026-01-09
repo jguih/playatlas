@@ -16,7 +16,6 @@ export class SyncGamesCommandHandler implements ISyncGamesCommandHandlerPort {
 	}
 
 	executeAsync: ISyncGamesCommandHandlerPort['executeAsync'] = async (command) => {
-		const games = Array.isArray(command.games) ? command.games : [command.games];
-		return await this.gameRepository.syncAsync(games);
+		return await this.gameRepository.syncAsync(command.games);
 	};
 }

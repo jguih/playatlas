@@ -38,7 +38,6 @@ export class TestCompositionRoot {
 
 		const infra: IClientInfraModulePort = new ClientInfraModule();
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
-			dateTimeHandler,
 			indexedDbSignal: infra.indexedDbSignal,
 		});
 
