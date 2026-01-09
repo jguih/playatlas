@@ -1,6 +1,8 @@
+import { HttpClient } from '$lib/modules/common/application/http-client';
 import { GameNoteRepository } from '$lib/modules/common/infra/db/gameNotesRepository.svelte';
 import { KeyValueRepository } from '$lib/modules/common/infra/db/keyValueRepository.svelte';
 import { SyncQueueRepository } from '$lib/modules/common/infra/db/syncQueueRepository.svelte';
+import { ServerTimeStore } from '$lib/modules/common/stores/server-time.store.svelte';
 import { GameStore } from '$lib/modules/game-library/stores/gameStore.svelte';
 import { GenreStore } from '$lib/modules/game-library/stores/genreStore.svelte';
 import {
@@ -32,7 +34,6 @@ import { GameSessionStore } from './stores/gameSessionStore.svelte';
 import { LibraryMetricsStore } from './stores/libraryMetricsStore.svelte';
 import { PlatformStore } from './stores/platformStore.svelte';
 import { ScreenshotStore } from './stores/screenshotStore.svelte';
-import { ServerTimeStore } from './stores/serverTimeStore.svelte';
 
 export class ClientServiceLocator {
 	// Services
@@ -311,8 +312,11 @@ export class ClientServiceLocator {
 	get serverTimeStore(): ServerTimeStore {
 		if (!this._serverTimeStore) {
 			this._serverTimeStore = new ServerTimeStore({
-				httpClient: this.httpClient,
-				serverHeartbeat: this.serverHeartbeat,
+				httpClient: new HttpClient({
+					getHeaders: this.#getHttpClientGlobalHeaders,
+					url: window.location.origin,
+				}),
+				logService: this.logService,
 			});
 		}
 		return this._serverTimeStore;
