@@ -1,10 +1,3 @@
-import { HttpClient } from '$lib/modules/common/application/http-client';
-import { GameNoteRepository } from '$lib/modules/common/infra/db/gameNotesRepository.svelte';
-import { KeyValueRepository } from '$lib/modules/common/infra/db/keyValueRepository.svelte';
-import { SyncQueueRepository } from '$lib/modules/common/infra/db/syncQueueRepository.svelte';
-import { ServerTimeStore } from '$lib/modules/common/stores/server-time.store.svelte';
-import { GameStore } from '$lib/modules/game-library/stores/gameStore.svelte';
-import { GenreStore } from '$lib/modules/game-library/stores/genreStore.svelte';
 import {
 	FetchClient,
 	GameNoteFactory,
@@ -14,8 +7,12 @@ import {
 } from '@playnite-insights/lib/client';
 import { getContext, setContext } from 'svelte';
 import { AuthService } from '../auth-service/authService.svelte';
+import { GameNoteRepository } from '../db/gameNotesRepository.svelte';
+import { KeyValueRepository } from '../db/keyValueRepository.svelte';
+import { SyncQueueRepository } from '../db/syncQueueRepository.svelte';
 import { EventSourceManager } from '../event-source-manager/eventSourceManager.svelte';
 import { ServerHeartbeat } from '../event-source-manager/serverHeartbeat.svelte';
+import { InstanceManager } from '../instanceManager.svelte';
 import { LogService, type ILogService } from '../logService.svelte';
 import { ServiceWorkerManager } from '../serviceWorkerManager.svelte';
 import { SyncQueue } from '../sync-queue/syncQueue.svelte';
@@ -31,9 +28,12 @@ import { CompanyStore } from './stores/companyStore.svelte';
 import { ExtensionRegistrationStore } from './stores/extensionRegistrationStore.svelte';
 import { GameNoteStore } from './stores/gameNoteStore.svelte';
 import { GameSessionStore } from './stores/gameSessionStore.svelte';
+import { GameStore } from './stores/gameStore.svelte';
+import { GenreStore } from './stores/genreStore.svelte';
 import { LibraryMetricsStore } from './stores/libraryMetricsStore.svelte';
 import { PlatformStore } from './stores/platformStore.svelte';
 import { ScreenshotStore } from './stores/screenshotStore.svelte';
+import { ServerTimeStore } from './stores/serverTimeStore.svelte';
 
 export class ClientServiceLocator {
 	// Services
@@ -44,6 +44,7 @@ export class ClientServiceLocator {
 	protected _serviceWorkerManager: ServiceWorkerManager | null = null;
 	protected _serverHeartbeat: ServerHeartbeat | null = null;
 	protected _httpClient: IFetchClient | null = null;
+	protected _instanceManager: InstanceManager | null = null;
 	protected _syncService: SynchronizationService | null = null;
 	protected _authService: AuthService | null = null;
 	protected _logService: ILogService | null = null;
@@ -143,6 +144,20 @@ export class ClientServiceLocator {
 	}
 	set httpClient(client: IFetchClient) {
 		this._httpClient = client;
+	}
+
+	get instanceManager(): InstanceManager {
+		if (!this._instanceManager) {
+			this._instanceManager = new InstanceManager({
+				httpClient: this.httpClient,
+				keyValueRepository: this.keyValueRepository,
+				logService: this.logService,
+			});
+		}
+		return this._instanceManager;
+	}
+	set instanceManager(manager: InstanceManager) {
+		this._instanceManager = manager;
 	}
 
 	get syncService(): SynchronizationService {
@@ -263,7 +278,6 @@ export class ClientServiceLocator {
 		if (!this._gameStore) {
 			this._gameStore = new GameStore({
 				httpClient: this.httpClient,
-				applicationSettingsStore: this.applicationSettingsStore,
 			});
 		}
 		return this._gameStore;
@@ -312,11 +326,8 @@ export class ClientServiceLocator {
 	get serverTimeStore(): ServerTimeStore {
 		if (!this._serverTimeStore) {
 			this._serverTimeStore = new ServerTimeStore({
-				httpClient: new HttpClient({
-					getHeaders: this.#getHttpClientGlobalHeaders,
-					url: window.location.origin,
-				}),
-				logService: this.logService,
+				httpClient: this.httpClient,
+				serverHeartbeat: this.serverHeartbeat,
 			});
 		}
 		return this._serverTimeStore;

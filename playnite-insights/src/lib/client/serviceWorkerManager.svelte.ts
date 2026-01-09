@@ -1,8 +1,8 @@
-import type { GameStore } from '$lib/modules/game-library/stores/gameStore.svelte';
-import type { GenreStore } from '$lib/modules/game-library/stores/genreStore.svelte';
 import { m } from '$lib/paraglide/messages';
 import type { CompanyStore } from './app-state/stores/companyStore.svelte';
 import type { GameSessionStore } from './app-state/stores/gameSessionStore.svelte';
+import type { GameStore } from './app-state/stores/gameStore.svelte';
+import type { GenreStore } from './app-state/stores/genreStore.svelte';
 import type { LibraryMetricsStore } from './app-state/stores/libraryMetricsStore.svelte';
 import type { PlatformStore } from './app-state/stores/platformStore.svelte';
 import type { ScreenshotStore } from './app-state/stores/screenshotStore.svelte';

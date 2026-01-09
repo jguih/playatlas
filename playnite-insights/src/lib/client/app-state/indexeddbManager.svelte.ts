@@ -1,8 +1,4 @@
-import {
-	INDEXEDDB_CURRENT_VERSION,
-	INDEXEDDB_NAME,
-	openIndexedDbAsync,
-} from '../../modules/common/infra/db/indexeddb';
+import { INDEXEDDB_CURRENT_VERSION, INDEXEDDB_NAME, openIndexedDbAsync } from '../db/indexeddb';
 
 export type IndexedDbManagerDeps = {
 	onOpen?: (db: IDBDatabase) => void;

@@ -1,7 +1,7 @@
+import { GameNoteRepository } from '$lib/client/db/gameNotesRepository.svelte';
+import { KeyValueRepository } from '$lib/client/db/keyValueRepository.svelte';
+import { SyncQueueRepository } from '$lib/client/db/syncQueueRepository.svelte';
 import { GameRepository } from '$lib/modules/game-library/infra/game.repository';
-import { GameNoteRepository } from './gameNotesRepository.svelte';
-import { KeyValueRepository } from './keyValueRepository.svelte';
-import { SyncQueueRepository } from './syncQueueRepository.svelte';
 
 export const INDEXEDDB_NAME = 'PlayAtlasDb';
 export const INDEXEDDB_CURRENT_VERSION = 6;

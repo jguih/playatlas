@@ -1,6 +1,7 @@
-import { DateTimeHandler, type IDateTimeHandler } from '$lib/client/utils/dateTimeHandler.svelte';
 import type { IHttpClientPort } from '$lib/modules/common/application/http-client.port';
 import type { ILogServicePort } from '$lib/modules/common/application/log-service.port';
+import { DateTimeHandler } from '$lib/modules/common/infra/date-time-handler';
+import type { IDateTimeHandlerPort } from '$lib/modules/common/infra/date-time-handler.port';
 import type { IServerTimeStorePort } from '$lib/modules/common/stores/server-time.store.port';
 import { ServerTimeStore } from '$lib/modules/common/stores/server-time.store.svelte';
 import type { ClientApi } from '../client-api.svelte';
@@ -31,7 +32,7 @@ export class TestCompositionRoot {
 			logService: this.mocks.logService,
 			httpClient: this.mocks.httpClient,
 		});
-		const dateTimeHandler: IDateTimeHandler = new DateTimeHandler({ serverTimeStore });
+		const dateTimeHandler: IDateTimeHandlerPort = new DateTimeHandler({ serverTimeStore });
 
 		const infra: IClientInfraModulePort = new ClientInfraModule();
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({

@@ -1,4 +1,4 @@
-import { getServerUtcNowResponseSchema, JsonStrategy } from '@playnite-insights/lib/client';
+import { getServerUtcNowResponseSchema } from '@playnite-insights/lib/client';
 import type { ILogServicePort } from '../application/log-service.port';
 import { HttpDataStore, type HttpDataStoreDeps } from './http-data.store.svelte';
 import type { IServerTimeStorePort, ServerTimeSignal } from './server-time.store.port';
@@ -20,13 +20,15 @@ export class ServerTimeStore extends HttpDataStore implements IServerTimeStorePo
 	loadServerTime = async () => {
 		try {
 			this.serverTimeSignal.isLoading = true;
-			const result = await this.httpClient.httpGetAsync({
-				endpoint: '/api/time/now',
-				strategy: new JsonStrategy(getServerUtcNowResponseSchema),
-			});
-			this.serverTimeSignal.utcNow = result ? new Date(result.utcNow).getTime() : null;
-			this.serverTimeSignal.syncPoint = performance.now();
-			return result;
+			const response = await this.httpClient.getAsync('/api/time/now');
+			const jsonBody = await response.json();
+			const { success, data } = getServerUtcNowResponseSchema.safeParse(jsonBody);
+			if (success) {
+				this.serverTimeSignal.utcNow = new Date(data.utcNow).getTime();
+				this.serverTimeSignal.syncPoint = performance.now();
+				return data;
+			}
+			return null;
 		} catch (err) {
 			this.#logService.error(`[loadServerTime] failed to fetch /api/time/now`, err);
 			return null;

@@ -1,4 +1,5 @@
 import { type SyncQueueItem } from '@playnite-insights/lib/client';
+import { runRequest, runTransaction } from './indexeddb';
 import type { ISyncQueueRepository } from './ISyncQueueRepository';
 import { IndexedDBRepository, type IndexedDBRepositoryDeps } from './repository.svelte';
 
@@ -23,38 +24,41 @@ export class SyncQueueRepository extends IndexedDBRepository implements ISyncQue
 	}
 
 	getAsync: ISyncQueueRepository['getAsync'] = async (props) => {
-		return await this.runTransaction('syncQueue', 'readonly', async ({ tx }) => {
-			const syncQueueStore = tx.objectStore(SyncQueueRepository.STORE_NAME);
-			let queueItem: SyncQueueItem | null = null;
+		return this.withDb(async (db) => {
+			return await runTransaction(db, 'syncQueue', 'readonly', async ({ tx }) => {
+				const syncQueueStore = tx.objectStore(SyncQueueRepository.STORE_NAME);
+				let queueItem: SyncQueueItem | null = null;
 
-			switch (props.filterBy) {
-				case SyncQueueRepository.FILTER_BY.Id: {
-					queueItem =
-						(await this.runRequest<SyncQueueItem | undefined>(syncQueueStore.get(props.Id))) ??
-						null;
-					break;
+				switch (props.filterBy) {
+					case SyncQueueRepository.FILTER_BY.Id: {
+						queueItem =
+							(await runRequest<SyncQueueItem | undefined>(syncQueueStore.get(props.Id))) ?? null;
+						break;
+					}
+					case SyncQueueRepository.FILTER_BY.Entity_PayloadId_Status_Type: {
+						const index = syncQueueStore.index(
+							SyncQueueRepository.INDEX.Entity_PayloadId_Status_Type,
+						);
+						queueItem =
+							(await runRequest<SyncQueueItem | undefined>(
+								index.get([props.Entity, props.PayloadId, props.Status, props.Type]),
+							)) ?? null;
+						break;
+					}
 				}
-				case SyncQueueRepository.FILTER_BY.Entity_PayloadId_Status_Type: {
-					const index = syncQueueStore.index(
-						SyncQueueRepository.INDEX.Entity_PayloadId_Status_Type,
-					);
-					queueItem =
-						(await this.runRequest<SyncQueueItem | undefined>(
-							index.get([props.Entity, props.PayloadId, props.Status, props.Type]),
-						)) ?? null;
-					break;
-				}
-			}
 
-			return queueItem;
+				return queueItem;
+			});
 		});
 	};
 
 	getAllAsync: ISyncQueueRepository['getAllAsync'] = async () => {
-		return await this.runTransaction('syncQueue', 'readonly', async ({ tx }) => {
-			const syncQueueStore = tx.objectStore(SyncQueueRepository.STORE_NAME);
-			const queueItems = await this.runRequest<SyncQueueItem[]>(syncQueueStore.getAll());
-			return queueItems;
+		return this.withDb(async (db) => {
+			return await runTransaction(db, 'syncQueue', 'readonly', async ({ tx }) => {
+				const syncQueueStore = tx.objectStore(SyncQueueRepository.STORE_NAME);
+				const queueItems = await runRequest<SyncQueueItem[]>(syncQueueStore.getAll());
+				return queueItems;
+			});
 		});
 	};
 

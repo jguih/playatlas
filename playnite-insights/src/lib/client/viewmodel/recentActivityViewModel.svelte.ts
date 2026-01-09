@@ -1,6 +1,6 @@
-import type { GameStore } from '$lib/modules/game-library/stores/gameStore.svelte';
 import type { FullGame, GameActivity, GameSession } from '@playnite-insights/lib/client';
 import type { GameSessionStore } from '../app-state/stores/gameSessionStore.svelte';
+import type { GameStore } from '../app-state/stores/gameStore.svelte';
 import type { IDateTimeHandler } from '../utils/dateTimeHandler.svelte';
 
 export type RecentActivityViewModelProps = {
@@ -74,7 +74,7 @@ export class RecentActivityViewModel {
 
 		this.#inProgressGame = $derived.by(() => {
 			const activity = this.#inProgressActivity;
-			const games = this.#gameStore.dataSignal.raw ?? [];
+			const games = this.#gameStore.gameList ?? [];
 			if (!activity) return null;
 			return games.find((g) => g.Id === activity.gameId) ?? null;
 		});

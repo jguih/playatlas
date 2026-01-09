@@ -1,7 +1,7 @@
+import { IndexedDBNotInitializedError } from '$lib/client/db/errors/indexeddbNotInitialized';
+import type { KeyValueRepository } from '$lib/client/db/keyValueRepository.svelte';
 import type { ILogService } from '$lib/client/logService.svelte';
 import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
-import { IndexedDBNotInitializedError } from '$lib/modules/common/errors/indexeddbNotInitialized';
-import type { KeyValueRepository } from '$lib/modules/common/infra/db/keyValueRepository.svelte';
 import { AppClientError, type ApplicationSettings } from '@playnite-insights/lib/client';
 
 export type ApplicationSettingsStoreDeps = {

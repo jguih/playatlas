@@ -1,7 +1,7 @@
-import type { GameStore } from '$lib/modules/game-library/stores/gameStore.svelte';
 import { monthNames } from '$lib/utils/date';
 import type { FullGame } from '@playnite-insights/lib/client';
 import type { ApplicationSettingsStore } from '../app-state/stores/applicationSettingsStore.svelte';
+import type { GameStore } from '../app-state/stores/gameStore.svelte';
 import type { LibraryMetricsStore } from '../app-state/stores/libraryMetricsStore.svelte';
 import { getPlaytimeInHoursAndMinutes } from '../utils/playnite-game';
 
