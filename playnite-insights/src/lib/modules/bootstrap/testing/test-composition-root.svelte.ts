@@ -1,10 +1,8 @@
-import type { IHttpClientPort } from '$lib/modules/common/application/http-client.port';
-import type { ILogServicePort } from '$lib/modules/common/application/log-service.port';
-import { DateTimeHandler } from '$lib/modules/common/infra/date-time-handler';
-import type { IDateTimeHandlerPort } from '$lib/modules/common/infra/date-time-handler.port';
-import type { IServerTimeStorePort } from '$lib/modules/common/stores/server-time.store.port';
-import { ServerTimeStore } from '$lib/modules/common/stores/server-time.store.svelte';
-import type { ClientApi } from '../client-api.svelte';
+import type { IHttpClientPort, ILogServicePort } from '$lib/modules/common/application';
+import { DateTimeHandler, type IDateTimeHandlerPort } from '$lib/modules/common/infra';
+import { ServerTimeStore, type IServerTimeStorePort } from '$lib/modules/common/stores';
+import { type ClientApi } from '../application/client-api.svelte';
+import { ClientBootstrapper } from '../application/client-bootstrapper.svelte';
 import type { IClientGameLibraryModulePort } from '../modules/game-library.module.port';
 import { ClientGameLibraryModule } from '../modules/game-library.module.svelte';
 import type { IClientInfraModulePort } from '../modules/infra.module.port';
@@ -40,9 +38,21 @@ export class TestCompositionRoot {
 			indexedDbSignal: infra.indexedDbSignal,
 		});
 
-		const api: ClientApi = {
-			GetGamesQueryHandler: gameLibrary.getGamesQueryHandler,
-		};
-		return Object.freeze(api);
+		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary } });
+		return bootstrapper.bootstrap();
+	};
+
+	cleanup = async (): Promise<void> => {
+		const dbs = await indexedDB.databases();
+
+		await Promise.all(
+			dbs.map(
+				(db) =>
+					new Promise<void>((resolve) => {
+						const req = indexedDB.deleteDatabase(db.name!);
+						req.onsuccess = req.onerror = req.onblocked = () => resolve();
+					}),
+			),
+		);
 	};
 }

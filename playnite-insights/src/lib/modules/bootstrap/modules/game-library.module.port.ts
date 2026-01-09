@@ -1,5 +1,5 @@
-import type { IGameRepositoryPort } from '$lib/modules/game-library/infra/game.repository.port';
-import type { IGetGamesQueryHandler } from '$lib/modules/game-library/queries/get-games/get-games.query-handler.port';
+import type { IGameRepositoryPort } from '$lib/modules/game-library/infra';
+import type { IGetGamesQueryHandler } from '$lib/modules/game-library/queries/get-games';
 
 export interface IClientGameLibraryModulePort {
 	get gameRepository(): IGameRepositoryPort;

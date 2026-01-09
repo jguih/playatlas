@@ -1,6 +1,6 @@
-import type { IDateTimeHandlerPort } from '$lib/modules/common/infra/date-time-handler.port';
-import { GameRepository } from '$lib/modules/game-library/infra/game.repository';
-import { GetGamesQueryHandler } from '$lib/modules/game-library/queries/get-games/get-games.query-handler.svelte';
+import type { IDateTimeHandlerPort } from '$lib/modules/common/infra';
+import { GameRepository } from '$lib/modules/game-library/infra';
+import { GetGamesQueryHandler } from '$lib/modules/game-library/queries/get-games';
 import type { IClientGameLibraryModulePort } from './game-library.module.port';
 import type { IndexedDbSignal } from './infra.module.port';
 

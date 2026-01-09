@@ -1,5 +1,5 @@
 import type { IndexedDbSignal } from '$lib/client/app-state/indexeddbManager.svelte';
-import { IndexedDBNotInitializedError } from '../../errors/indexeddbNotInitialized';
+import { IndexedDBNotInitializedError } from '../../errors/indexeddb-not-initialized.error';
 import type { StoreNames } from './indexeddb';
 
 export type IndexedDBRepositoryDeps = {

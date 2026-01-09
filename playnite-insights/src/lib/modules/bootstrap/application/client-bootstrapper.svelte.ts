@@ -1,6 +1,6 @@
+import type { IClientGameLibraryModulePort } from '../modules/game-library.module.port';
+import type { IClientInfraModulePort } from '../modules/infra.module.port';
 import type { ClientApi } from './client-api.svelte';
-import type { IClientGameLibraryModulePort } from './modules/game-library.module.port';
-import type { IClientInfraModulePort } from './modules/infra.module.port';
 
 export type ClientModules = {
 	infra: IClientInfraModulePort;

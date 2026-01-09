@@ -2,7 +2,7 @@ import {
 	INDEXEDDB_CURRENT_VERSION,
 	INDEXEDDB_NAME,
 	openIndexedDbAsync,
-} from '$lib/modules/common/infra/db/indexeddb';
+} from '$lib/modules/common/infra';
 import type { IClientInfraModulePort, IndexedDbSignal } from './infra.module.port';
 
 export class ClientInfraModule implements IClientInfraModulePort {

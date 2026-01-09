@@ -1,15 +1,28 @@
-import { TestCompositionRoot } from '$lib/modules/bootstrap/testing/test-composition-root.svelte';
+import type { ClientApi } from '$lib/modules/bootstrap/application';
+import { TestCompositionRoot } from '$lib/modules/bootstrap/testing';
 import 'fake-indexeddb/auto';
 
 describe('Game Repository', () => {
-	beforeEach(() => vi.resetAllMocks());
+	let root: TestCompositionRoot;
+	let api: ClientApi;
 
-	it('works', () => {
+	beforeEach(() => {
+		root = new TestCompositionRoot();
+		api = root.build();
+		vi.resetAllMocks();
+	});
+
+	afterEach(async () => {
+		await root.cleanup();
+	});
+
+	it('works', async () => {
 		// Arrange
-		const root = new TestCompositionRoot();
-		const api = root.build();
+
+		// Act
+		const result = await api.GetGamesQueryHandler.executeAsync({ limit: 1, sort: 'recent' });
 
 		// Assert
-		expect(api.GetGamesQueryHandler).toBeTruthy();
+		expect(result.items).toHaveLength(0);
 	});
 });
