@@ -1,4 +1,9 @@
-export interface IClientEntityRepository<TEntity, TEntityKey> {
+import type { ClientEntity } from '../common/client-entity';
+
+export interface IClientEntityRepository<
+	TEntity extends ClientEntity<TEntityKey>,
+	TEntityKey extends IDBValidKey,
+> {
 	/**
 	 * Add an entity
 	 * @returns The entity key if created successfully

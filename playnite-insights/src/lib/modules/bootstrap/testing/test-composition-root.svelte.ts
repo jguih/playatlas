@@ -1,6 +1,5 @@
 import type { IHttpClientPort, ILogServicePort } from '$lib/modules/common/application';
-import { DateTimeHandler, type IDateTimeHandlerPort } from '$lib/modules/common/infra';
-import { ServerTimeStore, type IServerTimeStorePort } from '$lib/modules/common/stores';
+import { gameRepositorySchema } from '$lib/modules/game-library/infra';
 import { GameFactory } from '$lib/modules/game-library/testing/game-factory';
 import { type ClientApi } from '../application/client-api.svelte';
 import { ClientBootstrapper } from '../application/client-bootstrapper.svelte';
@@ -30,13 +29,16 @@ export class TestCompositionRoot {
 	};
 
 	build = (): ClientApi => {
-		const serverTimeStore: IServerTimeStorePort = new ServerTimeStore({
-			logService: this.mocks.logService,
-			httpClient: this.mocks.httpClient,
-		});
-		const dateTimeHandler: IDateTimeHandlerPort = new DateTimeHandler({ serverTimeStore });
+		// const serverTimeStore: IServerTimeStorePort = new ServerTimeStore({
+		// 	logService: this.mocks.logService,
+		// 	httpClient: this.mocks.httpClient,
+		// });
+		// const dateTimeHandler: IDateTimeHandlerPort = new DateTimeHandler({ serverTimeStore });
 
-		const infra: IClientInfraModulePort = new ClientInfraModule();
+		const infra: IClientInfraModulePort = new ClientInfraModule({
+			logService: this.mocks.logService,
+			schemas: [gameRepositorySchema],
+		});
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			indexedDbSignal: infra.indexedDbSignal,
 		});

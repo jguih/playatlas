@@ -1,73 +1,18 @@
-import {
-	IndexedDBRepository,
-	type IndexedDBRepositoryDeps,
-} from '$lib/modules/common/infra/db/repository.svelte';
-import type { Game } from '../domain/game.entity';
+import { ClientEntityRepository, type ClientEntityRepositoryDeps } from '$lib/modules/common/infra';
+import type { Game, GameId } from '../domain/game.entity';
 import type { IGameRepositoryPort } from './game.repository.port';
-import type { GameQueryResult, GameRepositoryIndex } from './game.repository.types';
+import { gameRepositoryMeta } from './game.repository.schema';
+import type { GameQueryResult } from './game.repository.types';
 
-export type GameRepositoryDeps = IndexedDBRepositoryDeps;
+export type GameRepositoryDeps = ClientEntityRepositoryDeps;
 
-export class GameRepository extends IndexedDBRepository implements IGameRepositoryPort {
-	static STORE_NAME = 'games' as const;
-
-	static INDEX = {
-		byId: 'byId',
-		bySourceUpdatedAt: 'bySourceUpdatedAt',
-	} satisfies Record<GameRepositoryIndex, GameRepositoryIndex>;
-
-	static FILTER_BY = {
-		Id: 'Id',
-	} as const;
-
+export class GameRepository
+	extends ClientEntityRepository<Game, GameId>
+	implements IGameRepositoryPort
+{
 	constructor({ indexedDbSignal }: GameRepositoryDeps) {
-		super({ indexedDbSignal });
+		super({ indexedDbSignal, storeName: gameRepositoryMeta.storeName });
 	}
-
-	addAsync: IGameRepositoryPort['addAsync'] = async (game) => {
-		await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
-			const gamesStore = tx.objectStore(GameRepository.STORE_NAME);
-			await this.runRequest(gamesStore.add(game));
-		});
-	};
-
-	putAsync: IGameRepositoryPort['putAsync'] = async (game) => {
-		await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
-			const gamesStore = tx.objectStore(GameRepository.STORE_NAME);
-			await this.runRequest(gamesStore.put(game));
-		});
-	};
-
-	deleteAsync: IGameRepositoryPort['deleteAsync'] = async (gameId) => {
-		await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
-			const gamesStore = tx.objectStore(GameRepository.STORE_NAME);
-			await this.runRequest(gamesStore.delete(gameId));
-		});
-	};
-
-	getByIdAsync: IGameRepositoryPort['getByIdAsync'] = async (gameId) => {
-		return await this.runTransaction([GameRepository.STORE_NAME], 'readonly', async ({ tx }) => {
-			const gamesStore = tx.objectStore(GameRepository.STORE_NAME);
-			const game = await this.runRequest<Game | undefined>(gamesStore.get(gameId));
-			return game ?? null;
-		});
-	};
-
-	syncAsync: IGameRepositoryPort['syncAsync'] = async (game) => {
-		const games = Array.isArray(game) ? game : [game];
-		if (games.length === 0) return;
-
-		await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
-			const store = tx.objectStore(GameRepository.STORE_NAME);
-
-			for (const game of games) {
-				const existing = await this.runRequest<Game | undefined>(store.get(game.Id));
-				if (!existing || new Date(game.SourceUpdatedAt) > new Date(existing.SourceUpdatedAt)) {
-					await this.runRequest(store.put(game));
-				}
-			}
-		});
-	};
 
 	queryAsync: IGameRepositoryPort['queryAsync'] = async ({
 		index,
@@ -75,8 +20,8 @@ export class GameRepository extends IndexedDBRepository implements IGameReposito
 		afterKey = null,
 		limit,
 	}) => {
-		return await this.runTransaction([GameRepository.STORE_NAME], 'readonly', async ({ tx }) => {
-			const store = tx.objectStore(GameRepository.STORE_NAME);
+		return await this.runTransaction([this.storeName], 'readonly', async ({ tx }) => {
+			const store = tx.objectStore(this.storeName);
 			const idx = store.index(index);
 
 			const items: Game[] = [];
@@ -109,22 +54,5 @@ export class GameRepository extends IndexedDBRepository implements IGameReposito
 				};
 			});
 		});
-	};
-
-	static defineSchema = ({
-		db,
-	}: {
-		db: IDBDatabase;
-		tx: IDBTransaction;
-		oldVersion: number;
-		newVersion: number | null;
-	}): void => {
-		if (!db.objectStoreNames.contains(this.STORE_NAME)) {
-			const store = db.createObjectStore(this.STORE_NAME, { keyPath: 'Id' });
-			store.createIndex(this.INDEX.byId, 'Id', { unique: true });
-			store.createIndex(this.INDEX.bySourceUpdatedAt, 'SourceUpdatedAt');
-		}
-
-		// Future migrations
 	};
 }

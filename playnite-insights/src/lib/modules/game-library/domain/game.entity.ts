@@ -1,6 +1,7 @@
+import type { ClientEntity } from '$lib/modules/common/common';
+
 export type GameId = string;
-export type Game = {
-	Id: GameId;
+export type Game = ClientEntity<GameId> & {
 	Name: string | null;
 	Description: string | null;
 	ReleaseDate: Date | null;
@@ -19,7 +20,6 @@ export type Game = {
 	Publishers: string[];
 	Genres: string[];
 	Platforms: string[];
-	SourceUpdatedAt: Date;
 	DeletedAt: Date | null;
 	DeleteAfter: Date | null;
 	// Front-end specific
