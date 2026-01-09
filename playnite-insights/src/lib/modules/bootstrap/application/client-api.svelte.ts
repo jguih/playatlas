@@ -1,5 +1,13 @@
-import type { IGetGamesQueryHandler } from '$lib/modules/game-library/queries/get-games';
+import type { ISyncGamesCommandHandlerPort } from '$lib/modules/game-library/commands/sync-games';
+import type { IGetGamesQueryHandlerPort } from '$lib/modules/game-library/queries/get-games';
 
 export interface ClientApi {
-	get GetGamesQueryHandler(): IGetGamesQueryHandler;
+	GameLibrary: {
+		Query: {
+			GetGames: IGetGamesQueryHandlerPort;
+		};
+		Command: {
+			SyncGames: ISyncGamesCommandHandlerPort;
+		};
+	};
 }

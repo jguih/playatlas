@@ -18,7 +18,7 @@ export class GameRepository extends IndexedDBRepository implements IGameReposito
 
 	static INDEX = {
 		byId: 'byId',
-		byUpdatedAt: 'byUpdatedAt',
+		bySourceUpdatedAt: 'bySourceUpdatedAt',
 	} satisfies Record<GameRepositoryIndex, GameRepositoryIndex>;
 
 	static FILTER_BY = {
@@ -49,7 +49,7 @@ export class GameRepository extends IndexedDBRepository implements IGameReposito
 		return await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
 			const gamesStore = tx.objectStore(GameRepository.STORE_NAME);
 
-			game.UpdatedAt = now;
+			game.SourceUpdatedAt = now;
 
 			await this.runRequest(gamesStore.put(game));
 
@@ -75,18 +75,19 @@ export class GameRepository extends IndexedDBRepository implements IGameReposito
 		});
 	};
 
-	upsertOrDeleteManyAsync: IGameRepositoryPort['upsertOrDeleteManyAsync'] = async (games, ops) => {
+	syncAsync: IGameRepositoryPort['syncAsync'] = async (games, ops) => {
 		const shouldOverride = ops?.override === true;
 		if (games.length === 0) return;
 
 		return await this.runTransaction([GameRepository.STORE_NAME], 'readwrite', async ({ tx }) => {
 			const store = tx.objectStore(GameRepository.STORE_NAME);
+
 			for (const game of games) {
 				const existing = await this.runRequest<Game | undefined>(store.get(game.Id));
 				if (
 					shouldOverride ||
 					!existing ||
-					new Date(game.UpdatedAt) > new Date(existing.UpdatedAt)
+					new Date(game.SourceUpdatedAt) > new Date(existing.SourceUpdatedAt)
 				) {
 					await this.runRequest(store.put(game));
 				}
@@ -121,7 +122,8 @@ export class GameRepository extends IndexedDBRepository implements IGameReposito
 						return;
 					}
 
-					items.push(cursor.value);
+					const game: Game = cursor.value;
+					if (!game.DeletedAt) items.push(cursor.value);
 
 					if (items.length === limit) {
 						nextKey = cursor.key;
@@ -146,7 +148,7 @@ export class GameRepository extends IndexedDBRepository implements IGameReposito
 		if (!db.objectStoreNames.contains(this.STORE_NAME)) {
 			const store = db.createObjectStore(this.STORE_NAME, { keyPath: 'Id' });
 			store.createIndex(this.INDEX.byId, 'Id', { unique: true });
-			store.createIndex(this.INDEX.byUpdatedAt, 'UpdatedAt');
+			store.createIndex(this.INDEX.bySourceUpdatedAt, 'SourceUpdatedAt');
 		}
 
 		// Future migrations

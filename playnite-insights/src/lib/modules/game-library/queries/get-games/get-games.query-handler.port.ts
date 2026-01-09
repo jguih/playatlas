@@ -1,4 +1,4 @@
-import type { IAsyncQueryHandler } from '$lib/modules/common/common';
+import type { IAsyncQueryHandlerPort } from '$lib/modules/common/common';
 import type { GameQueryResult } from '../../infra/game.repository.types';
 
 export type GetGamesQuery = {
@@ -13,4 +13,4 @@ export type GetGamesQuery = {
 
 export type GetGamesQueryResult = GameQueryResult;
 
-export type IGetGamesQueryHandler = IAsyncQueryHandler<GetGamesQuery, GameQueryResult>;
+export type IGetGamesQueryHandlerPort = IAsyncQueryHandlerPort<GetGamesQuery, GameQueryResult>;

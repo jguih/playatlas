@@ -18,10 +18,13 @@ export type Game = {
 	Publishers: string[];
 	Genres: string[];
 	Platforms: string[];
+	SourceUpdatedAt: Date;
+	DeletedAt: Date | null;
+	DeleteAfter: Date | null;
 	// Front-end specific
 	Sync: {
 		Status: 'pending' | 'synced' | 'error';
 		ErrorMessage: string | null;
+		LastSyncedAt: Date | null;
 	};
-	UpdatedAt: Date;
 };

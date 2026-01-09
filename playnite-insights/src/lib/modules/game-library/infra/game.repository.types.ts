@@ -1,6 +1,6 @@
 import type { Game } from '../domain/game.entity';
 
-export type GameRepositoryIndex = 'byId' | 'byUpdatedAt';
+export type GameRepositoryIndex = 'byId' | 'bySourceUpdatedAt';
 
 export type GameQuery = {
 	index: GameRepositoryIndex;

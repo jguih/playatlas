@@ -32,12 +32,12 @@ export interface IGameRepositoryPort {
 	getByIdAsync: (gameId: Game['Id']) => Promise<Game | null>;
 	/**
 	 * Sync provided list of games with local db, creating, updating
-	 * or deleting games
+	 * or marking games as deleted
 	 * @param props
 	 * @returns An array of games
 	 * @throws {IndexedDBNotInitializedError} If the DB is not ready
 	 * @throws {DOMException} If a transaction fails
 	 */
-	upsertOrDeleteManyAsync: (note: Game[], opts?: { override?: boolean }) => Promise<void>;
+	syncAsync: (games: Game[], opts?: { override?: boolean }) => Promise<void>;
 	queryAsync(query: GameQuery): Promise<GameQueryResult>;
 }

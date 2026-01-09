@@ -12,8 +12,8 @@ export type ClientBootstrapperDeps = {
 };
 
 export class ClientBootstrapper {
-	readonly infra: IClientInfraModulePort;
-	readonly gameLibrary: IClientGameLibraryModulePort;
+	private readonly infra: IClientInfraModulePort;
+	private readonly gameLibrary: IClientGameLibraryModulePort;
 
 	constructor({ modules }: ClientBootstrapperDeps) {
 		this.infra = modules.infra;
@@ -22,7 +22,14 @@ export class ClientBootstrapper {
 
 	bootstrap(): ClientApi {
 		const api: ClientApi = {
-			GetGamesQueryHandler: this.gameLibrary.getGamesQueryHandler,
+			GameLibrary: {
+				Query: {
+					GetGames: this.gameLibrary.getGamesQueryHandler,
+				},
+				Command: {
+					SyncGames: this.gameLibrary.syncGamesCommandHandler,
+				},
+			},
 		};
 
 		return Object.freeze(api);

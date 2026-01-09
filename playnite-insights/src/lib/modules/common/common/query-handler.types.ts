@@ -1,7 +1,7 @@
-export interface IQueryHandler<TQuery, TQueryResult> {
+export interface IQueryHandlerPort<TQuery, TQueryResult> {
 	execute(query: TQuery): TQueryResult;
 }
 
-export interface IAsyncQueryHandler<TQuery, TQueryResult> {
+export interface IAsyncQueryHandlerPort<TQuery, TQueryResult> {
 	executeAsync(query: TQuery): Promise<TQueryResult>;
 }

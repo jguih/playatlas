@@ -26,11 +26,14 @@ export class GameFactory implements IGameFactoryPort {
 			Publishers: [],
 			Genres: [],
 			Platforms: [],
+			SourceUpdatedAt: faker.date.recent(),
+			DeleteAfter: null,
+			DeletedAt: null,
 			Sync: {
 				Status: 'synced',
 				ErrorMessage: null,
+				LastSyncedAt: faker.date.recent(),
 			},
-			UpdatedAt: faker.date.recent(),
 		};
 	};
 
