@@ -14,24 +14,19 @@ export type ClientInfraModuleDeps = {
 export class ClientInfraModule implements IClientInfraModulePort {
 	readonly indexedDbSignal: IndexedDbSignal;
 	private logService: ILogServicePort;
+	private schemas: IIndexedDbSchema[];
 
 	constructor({ logService, schemas }: ClientInfraModuleDeps) {
 		this.logService = logService;
+		this.schemas = schemas;
+
 		this.indexedDbSignal = $state({
 			db: null,
 			dbReady: Promise.resolve(),
 		});
-
-		this.indexedDbSignal.dbReady = this.openIndexedDbAsync({
-			dbName: INDEXEDDB_NAME,
-			version: INDEXEDDB_CURRENT_VERSION,
-			schemas,
-		}).then((db) => {
-			this.indexedDbSignal.db = db;
-		});
 	}
 
-	openIndexedDbAsync = (props: {
+	private openIndexedDbAsync = (props: {
 		dbName: string;
 		version: number;
 		schemas: IIndexedDbSchema[];
@@ -61,6 +56,16 @@ export class ClientInfraModule implements IClientInfraModulePort {
 					schema.define({ db, tx, oldVersion, newVersion });
 				}
 			};
+		});
+	};
+
+	public initialize = () => {
+		this.indexedDbSignal.dbReady = this.openIndexedDbAsync({
+			dbName: INDEXEDDB_NAME,
+			version: INDEXEDDB_CURRENT_VERSION,
+			schemas: this.schemas,
+		}).then((db) => {
+			this.indexedDbSignal.db = db;
 		});
 	};
 }

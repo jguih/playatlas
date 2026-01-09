@@ -1,10 +1,10 @@
-import type { StoreNames } from '$lib/modules/common/infra';
+import type { ClientRepositoryStoreName } from '$lib/modules/common/infra';
 import type { Game } from '../domain/game.entity';
 
 export type GameRepositoryIndex = 'byId' | 'bySourceUpdatedAt' | 'byDeletedAt';
 
 export type GameRepositoryMeta = {
-	storeName: StoreNames;
+	storeName: ClientRepositoryStoreName;
 	index: Record<GameRepositoryIndex, GameRepositoryIndex>;
 };
 

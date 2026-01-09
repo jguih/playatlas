@@ -29,16 +29,12 @@ export class TestCompositionRoot {
 	};
 
 	build = (): ClientApi => {
-		// const serverTimeStore: IServerTimeStorePort = new ServerTimeStore({
-		// 	logService: this.mocks.logService,
-		// 	httpClient: this.mocks.httpClient,
-		// });
-		// const dateTimeHandler: IDateTimeHandlerPort = new DateTimeHandler({ serverTimeStore });
-
 		const infra: IClientInfraModulePort = new ClientInfraModule({
 			logService: this.mocks.logService,
 			schemas: [gameRepositorySchema],
 		});
+		infra.initialize();
+
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			indexedDbSignal: infra.indexedDbSignal,
 		});

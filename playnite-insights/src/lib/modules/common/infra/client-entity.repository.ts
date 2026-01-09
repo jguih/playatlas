@@ -1,8 +1,7 @@
 import type { ClientEntity } from '../common/client-entity';
 import { IndexedDBNotInitializedError } from '../errors';
 import type { IClientEntityRepository } from './client-entity.repository.port';
-import type { IndexedDbSignal } from './client-entity.repository.types';
-import type { StoreNames } from './db';
+import type { ClientRepositoryStoreName, IndexedDbSignal } from './client-entity.repository.types';
 
 export type ClientEntityRepositoryDeps = {
 	indexedDbSignal: IndexedDbSignal;
@@ -14,12 +13,12 @@ export class ClientEntityRepository<
 > implements IClientEntityRepository<TEntity, TEntityKey>
 {
 	#indexedDbSignal: ClientEntityRepositoryDeps['indexedDbSignal'];
-	storeName: StoreNames;
+	storeName: ClientRepositoryStoreName;
 
 	constructor({
 		indexedDbSignal,
 		storeName,
-	}: ClientEntityRepositoryDeps & { storeName: StoreNames }) {
+	}: ClientEntityRepositoryDeps & { storeName: ClientRepositoryStoreName }) {
 		this.#indexedDbSignal = indexedDbSignal;
 		this.storeName = storeName;
 	}
@@ -37,7 +36,7 @@ export class ClientEntityRepository<
 	}
 
 	runTransaction = async <T>(
-		storeName: StoreNames | StoreNames[],
+		storeName: ClientRepositoryStoreName | ClientRepositoryStoreName[],
 		mode: IDBTransactionMode,
 		callback: (props: { tx: IDBTransaction }) => Promise<T> | T,
 	): Promise<T> => {
