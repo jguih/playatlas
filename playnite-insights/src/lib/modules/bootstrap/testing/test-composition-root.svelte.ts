@@ -1,6 +1,7 @@
 import type { IHttpClientPort, ILogServicePort } from '$lib/modules/common/application';
 import { DateTimeHandler, type IDateTimeHandlerPort } from '$lib/modules/common/infra';
 import { ServerTimeStore, type IServerTimeStorePort } from '$lib/modules/common/stores';
+import { GameFactory } from '$lib/modules/game-library/testing/game-factory';
 import { type ClientApi } from '../application/client-api.svelte';
 import { ClientBootstrapper } from '../application/client-bootstrapper.svelte';
 import type { IClientGameLibraryModulePort } from '../modules/game-library.module.port';
@@ -23,6 +24,9 @@ export class TestCompositionRoot {
 			putAsync: vi.fn(),
 			deleteAsync: vi.fn(),
 		} satisfies IHttpClientPort,
+	};
+	readonly factories = {
+		game: new GameFactory(),
 	};
 
 	build = (): ClientApi => {

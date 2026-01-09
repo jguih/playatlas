@@ -4,14 +4,14 @@ export type Game = {
 	Description: string | null;
 	ReleaseDate: Date | null;
 	Playtime: number;
-	LastActivity: string | null;
+	LastActivity: Date | null;
 	Added: Date | null;
 	InstallDirectory: string | null;
-	IsInstalled: number;
+	IsInstalled: boolean;
 	BackgroundImage: string | null;
 	CoverImage: string | null;
 	Icon: string | null;
-	Hidden: number;
+	Hidden: boolean;
 	CompletionStatusId: string | null;
 	ContentHash: string;
 	Developers: string[];
