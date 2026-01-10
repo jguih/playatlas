@@ -1,7 +1,7 @@
 import type { ClientRepositoryStoreName } from '$lib/modules/common/infra';
 import type { Game } from '../domain/game.entity';
 
-export type GameRepositoryIndex = 'byId' | 'bySourceUpdatedAt' | 'byDeletedAt';
+export type GameRepositoryIndex = 'bySourceUpdatedAt' | 'byDeletedAt';
 
 export type GameRepositoryMeta = {
 	storeName: ClientRepositoryStoreName;

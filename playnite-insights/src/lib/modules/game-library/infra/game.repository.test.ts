@@ -19,15 +19,18 @@ describe('Game Repository', () => {
 	});
 
 	it('persists and retrieves games', async () => {
+		// Arrange
 		const games = root.factories.game.buildList(200);
 
 		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
 
+		// Act
 		const { items } = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 200,
 			sort: 'recent',
 		});
 
+		// Assert
 		expect(items).toHaveLength(200);
 		for (let i = 1; i < items.length; i++) {
 			expect(items[i - 1].SourceUpdatedAt >= items[i].SourceUpdatedAt).toBe(true);

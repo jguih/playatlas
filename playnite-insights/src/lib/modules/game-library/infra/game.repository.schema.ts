@@ -4,7 +4,6 @@ import type { GameRepositoryMeta } from './game.repository.types';
 export const gameRepositoryMeta: GameRepositoryMeta = {
 	storeName: 'games',
 	index: {
-		byId: 'byId',
 		bySourceUpdatedAt: 'bySourceUpdatedAt',
 		byDeletedAt: 'byDeletedAt',
 	},
@@ -14,7 +13,6 @@ export const gameRepositorySchema: IIndexedDbSchema = {
 	define({ db }) {
 		if (!db.objectStoreNames.contains(gameRepositoryMeta.storeName)) {
 			const store = db.createObjectStore(gameRepositoryMeta.storeName, { keyPath: 'Id' });
-			store.createIndex(gameRepositoryMeta.index.byId, 'Id');
 			store.createIndex(gameRepositoryMeta.index.bySourceUpdatedAt, 'SourceUpdatedAt');
 			store.createIndex(gameRepositoryMeta.index.byDeletedAt, 'DeletedAt');
 		}

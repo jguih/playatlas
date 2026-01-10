@@ -1,6 +1,6 @@
 import type { IHttpClientPort, ILogServicePort } from '$lib/modules/common/application';
 import { gameRepositorySchema, genreRepositorySchema } from '$lib/modules/game-library/infra';
-import { GameFactory } from '$lib/modules/game-library/testing/game-factory';
+import { GameFactory, GenreFactory } from '$lib/modules/game-library/testing';
 import { type ClientApi } from '../application/client-api.svelte';
 import { ClientBootstrapper } from '../application/client-bootstrapper.svelte';
 import type { IClientGameLibraryModulePort } from '../modules/game-library.module.port';
@@ -26,6 +26,7 @@ export class TestCompositionRoot {
 	};
 	readonly factories = {
 		game: new GameFactory(),
+		genre: new GenreFactory(),
 	};
 
 	build = (): ClientApi => {

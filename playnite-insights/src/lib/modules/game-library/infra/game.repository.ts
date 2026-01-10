@@ -36,16 +36,20 @@ export class GameRepository
 
 				request.onsuccess = () => {
 					const cursor = request.result;
+
 					if (!cursor) {
 						resolve({ items, nextKey: null });
 						return;
 					}
 
 					const game: Game = cursor.value;
-					if (!game.DeletedAt) items.push(cursor.value);
+
+					if (!game.DeletedAt) {
+						nextKey = cursor.key;
+						items.push(cursor.value);
+					}
 
 					if (items.length === limit) {
-						nextKey = cursor.key;
 						resolve({ items, nextKey });
 						return;
 					}
