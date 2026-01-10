@@ -1,1 +1,1 @@
-export * from './test-composition-root.svelte';
+export * from './test-composition-root';

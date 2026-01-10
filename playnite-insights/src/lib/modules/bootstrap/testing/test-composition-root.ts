@@ -2,9 +2,9 @@ import type { IHttpClientPort, ILogServicePort } from '$lib/modules/common/appli
 import { gameRepositorySchema, genreRepositorySchema } from '$lib/modules/game-library/infra';
 import { GameFactory, GenreFactory } from '$lib/modules/game-library/testing';
 import { type ClientApi } from '../application/client-api.svelte';
-import { ClientBootstrapper } from '../application/client-bootstrapper.svelte';
+import { ClientBootstrapper } from '../application/client-bootstrapper';
+import { ClientGameLibraryModule } from '../modules/game-library.module';
 import type { IClientGameLibraryModulePort } from '../modules/game-library.module.port';
-import { ClientGameLibraryModule } from '../modules/game-library.module.svelte';
 import type { IClientInfraModulePort } from '../modules/infra.module.port';
 import { ClientInfraModule } from '../modules/infra.module.svelte';
 

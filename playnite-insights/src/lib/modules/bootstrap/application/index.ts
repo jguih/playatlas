@@ -1,2 +1,2 @@
 export * from './client-api.svelte';
-export * from './client-bootstrapper.svelte';
+export * from './client-bootstrapper';
