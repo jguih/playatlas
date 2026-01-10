@@ -25,6 +25,7 @@ export class ClientBootstrapper {
 			GameLibrary: {
 				Query: {
 					GetGames: this.gameLibrary.getGamesQueryHandler,
+					GetGamesByIds: this.gameLibrary.getGamesByIdsQueryHandler,
 					GetGenreById: this.gameLibrary.getGenreByIdQueryHandler,
 					GetGenresByIds: this.gameLibrary.getGenresByIdsQueryHandler,
 				},

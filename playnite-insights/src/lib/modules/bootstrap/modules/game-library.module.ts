@@ -17,6 +17,10 @@ import {
 	type IGetGamesQueryHandlerPort,
 } from '$lib/modules/game-library/queries/get-games';
 import {
+	GetGamesByIdsQueryHandler,
+	type IGetGamesByIdsQueryHandlerPort,
+} from '$lib/modules/game-library/queries/get-games-by-ids';
+import {
 	GetGenresByIdQueryHandler,
 	type IGetGenreByIdQueryHandlerPort,
 } from '$lib/modules/game-library/queries/get-genre-by-id';
@@ -35,6 +39,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameRepository: IGameRepositoryPort;
 	readonly genreRepository: IGenreRepositoryPort;
 	readonly getGamesQueryHandler: IGetGamesQueryHandlerPort;
+	readonly getGamesByIdsQueryHandler: IGetGamesByIdsQueryHandlerPort;
 	readonly getGenreByIdQueryHandler: IGetGenreByIdQueryHandlerPort;
 	readonly getGenresByIdsQueryHandler: IGetGenresByIdsQueryHandlerPort;
 	readonly syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
@@ -44,6 +49,9 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.gameRepository = new GameRepository({ indexedDbSignal });
 		this.genreRepository = new GenreRepository({ indexedDbSignal });
 		this.getGamesQueryHandler = new GetGamesQueryHandler({ gameRepository: this.gameRepository });
+		this.getGamesByIdsQueryHandler = new GetGamesByIdsQueryHandler({
+			gameRepository: this.gameRepository,
+		});
 		this.getGenreByIdQueryHandler = new GetGenresByIdQueryHandler({
 			genreRepository: this.genreRepository,
 		});
