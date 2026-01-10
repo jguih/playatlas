@@ -2,12 +2,14 @@ import type { ISyncGamesCommandHandlerPort } from '$lib/modules/game-library/com
 import type { ISyncGenresCommandHandlerPort } from '$lib/modules/game-library/commands/sync-genres';
 import type { IGetGamesQueryHandlerPort } from '$lib/modules/game-library/queries/get-games';
 import type { IGetGenreByIdQueryHandlerPort } from '$lib/modules/game-library/queries/get-genre-by-id';
+import type { IGetGenresByIdsQueryHandlerPort } from '$lib/modules/game-library/queries/get-genres-by-ids';
 
 export interface ClientApi {
 	GameLibrary: {
 		Query: {
 			GetGames: IGetGamesQueryHandlerPort;
 			GetGenreById: IGetGenreByIdQueryHandlerPort;
+			GetGenresByIds: IGetGenresByIdsQueryHandlerPort;
 		};
 		Command: {
 			SyncGames: ISyncGamesCommandHandlerPort;

@@ -2,9 +2,9 @@ import type { ClientApi } from '$lib/modules/bootstrap/application';
 import { TestCompositionRoot } from '$lib/modules/bootstrap/testing';
 import { faker } from '@faker-js/faker';
 import 'fake-indexeddb/auto';
-import type { Game } from '../domain';
+import type { Game } from '../game-library/domain';
 
-describe('Game Repository', () => {
+describe('GameLibrary / Games (integration)', () => {
 	let root: TestCompositionRoot;
 	let api: ClientApi;
 

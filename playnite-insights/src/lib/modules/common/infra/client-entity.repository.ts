@@ -99,10 +99,15 @@ export class ClientEntityRepository<
 		entityId,
 	) => {
 		const ids = Array.isArray(entityId) ? entityId : [entityId];
+
 		return await this.runTransaction([this.storeName], 'readonly', async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
-			const entity = await this.runRequest<TEntity[]>(store.getAll(ids));
-			return entity;
+
+			const requests = ids.map((key) => this.runRequest<TEntity | undefined>(store.get(key)));
+
+			const results = await Promise.all(requests);
+
+			return results.filter((e) => e !== undefined);
 		});
 	};
 
