@@ -95,6 +95,17 @@ export class ClientEntityRepository<
 		});
 	};
 
+	getByIdsAsync: IClientEntityRepository<TEntity, TEntityKey>['getByIdsAsync'] = async (
+		entityId,
+	) => {
+		const ids = Array.isArray(entityId) ? entityId : [entityId];
+		return await this.runTransaction([this.storeName], 'readonly', async ({ tx }) => {
+			const store = tx.objectStore(this.storeName);
+			const entity = await this.runRequest<TEntity[]>(store.getAll(ids));
+			return entity;
+		});
+	};
+
 	syncAsync: IClientEntityRepository<TEntity, TEntityKey>['syncAsync'] = async (entity) => {
 		const entities = Array.isArray(entity) ? entity : [entity];
 		if (entities.length === 0) return;

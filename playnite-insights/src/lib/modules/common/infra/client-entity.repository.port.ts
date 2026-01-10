@@ -33,6 +33,13 @@ export interface IClientEntityRepository<
 	 */
 	getByIdAsync: (entityId: TEntityKey) => Promise<TEntity | null>;
 	/**
+	 * Finds and returns entities by its ids
+	 * @returns An array of entities
+	 * @throws {IndexedDBNotInitializedError} If the DB is not ready
+	 * @throws {DOMException} If a transaction fails
+	 */
+	getByIdsAsync: (entityId: TEntityKey[]) => Promise<TEntity[]>;
+	/**
 	 * Sync provided list of entities with local db, creating, updating
 	 * or marking entities as deleted
 	 * @param props
