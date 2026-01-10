@@ -1,3 +1,7 @@
+export * from './company.repository';
+export type * from './company.repository.port';
+export * from './company.repository.schema';
+export type * from './company.repository.types';
 export * from './game.repository';
 export type * from './game.repository.port';
 export * from './game.repository.schema';

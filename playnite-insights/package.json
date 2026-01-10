@@ -13,9 +13,10 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
 		"preversion": "npm run test",
-		"test": "npm run test:unit",
+		"test": "vitest run",
 		"test:watch": "vitest run -w",
-		"test:unit": "vitest run"
+		"test:unit": "vitest run --project unit",
+		"test:integration": "vitest run --project integration"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",

@@ -9,6 +9,7 @@
     "./infra": "./src/infra/index.ts"
   },
   "scripts": {
+    "test": "vitest run",
     "test:unit": "vitest run",
     "test:watch": "vitest --watch"
   },

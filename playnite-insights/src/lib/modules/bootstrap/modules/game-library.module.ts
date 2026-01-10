@@ -1,4 +1,8 @@
 import {
+	SyncCompaniesCommandHandler,
+	type ISyncCompaniesCommandHandlerPort,
+} from '$lib/modules/game-library/commands/sync-companies';
+import {
 	SyncGamesCommandHandler,
 	type ISyncGamesCommandHandlerPort,
 } from '$lib/modules/game-library/commands/sync-games';
@@ -7,11 +11,17 @@ import {
 	type ISyncGenresCommandHandlerPort,
 } from '$lib/modules/game-library/commands/sync-genres';
 import {
+	CompanyRepository,
 	GameRepository,
 	GenreRepository,
+	type ICompanyRepositoryPort,
 	type IGameRepositoryPort,
 	type IGenreRepositoryPort,
 } from '$lib/modules/game-library/infra';
+import {
+	GetCompaniesByIdsQueryHandler,
+	type IGetCompaniesByIdsQueryHandlerPort,
+} from '$lib/modules/game-library/queries/get-companies-by-ids';
 import {
 	GetGamesQueryHandler,
 	type IGetGamesQueryHandlerPort,
@@ -38,16 +48,23 @@ export type ClientGameLibraryModuleDeps = {
 export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameRepository: IGameRepositoryPort;
 	readonly genreRepository: IGenreRepositoryPort;
+	readonly companyRepository: ICompanyRepositoryPort;
+
 	readonly getGamesQueryHandler: IGetGamesQueryHandlerPort;
 	readonly getGamesByIdsQueryHandler: IGetGamesByIdsQueryHandlerPort;
 	readonly getGenreByIdQueryHandler: IGetGenreByIdQueryHandlerPort;
 	readonly getGenresByIdsQueryHandler: IGetGenresByIdsQueryHandlerPort;
+	readonly getCompaniesByIdsQueryHandler: IGetCompaniesByIdsQueryHandlerPort;
+
 	readonly syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
 	readonly syncGenresCommandHandler: ISyncGenresCommandHandlerPort;
+	readonly syncCompaniesCommandHandler: ISyncCompaniesCommandHandlerPort;
 
 	constructor({ indexedDbSignal }: ClientGameLibraryModuleDeps) {
 		this.gameRepository = new GameRepository({ indexedDbSignal });
 		this.genreRepository = new GenreRepository({ indexedDbSignal });
+		this.companyRepository = new CompanyRepository({ indexedDbSignal });
+
 		this.getGamesQueryHandler = new GetGamesQueryHandler({ gameRepository: this.gameRepository });
 		this.getGamesByIdsQueryHandler = new GetGamesByIdsQueryHandler({
 			gameRepository: this.gameRepository,
@@ -58,11 +75,18 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.getGenresByIdsQueryHandler = new GetGenresByIdsQueryHandler({
 			genreRepository: this.genreRepository,
 		});
+		this.getCompaniesByIdsQueryHandler = new GetCompaniesByIdsQueryHandler({
+			companyRepository: this.companyRepository,
+		});
+
 		this.syncGamesCommandHandler = new SyncGamesCommandHandler({
 			gameRepository: this.gameRepository,
 		});
 		this.syncGenresCommandHandler = new SyncGenresCommandHandler({
 			genreRepository: this.genreRepository,
+		});
+		this.syncCompaniesCommandHandler = new SyncCompaniesCommandHandler({
+			companyRepository: this.companyRepository,
 		});
 	}
 }
