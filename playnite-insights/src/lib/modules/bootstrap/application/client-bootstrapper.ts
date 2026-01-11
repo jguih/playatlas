@@ -29,11 +29,13 @@ export class ClientBootstrapper {
 					GetGenreById: this.gameLibrary.getGenreByIdQueryHandler,
 					GetGenresByIds: this.gameLibrary.getGenresByIdsQueryHandler,
 					GetCompaniesByIds: this.gameLibrary.getCompaniesByIdsQueryHandler,
+					GetPlatformsByIds: this.gameLibrary.getPlatformsByIdsQueryHandler,
 				},
 				Command: {
 					SyncGames: this.gameLibrary.syncGamesCommandHandler,
 					SyncGenres: this.gameLibrary.syncGenresCommandHandler,
 					SyncCompanies: this.gameLibrary.syncCompaniesCommandHandler,
+					SyncPlatforms: this.gameLibrary.syncPlatformsCommandHandler,
 				},
 			},
 		};

@@ -3,9 +3,11 @@ import {
 	companyRepositorySchema,
 	gameRepositorySchema,
 	genreRepositorySchema,
+	platformRepositorySchema,
 } from '$lib/modules/game-library/infra';
 import { GameFactory, GenreFactory } from '$lib/modules/game-library/testing';
 import { CompanyFactory } from '$lib/modules/game-library/testing/company-factory';
+import { PlatformFactory } from '$lib/modules/game-library/testing/platform-factory';
 import { type ClientApi } from '../application/client-api.svelte';
 import { ClientBootstrapper } from '../application/client-bootstrapper';
 import { ClientGameLibraryModule } from '../modules/game-library.module';
@@ -29,16 +31,23 @@ export class TestCompositionRoot {
 			deleteAsync: vi.fn(),
 		} satisfies IHttpClientPort,
 	};
+
 	readonly factories = {
 		game: new GameFactory(),
 		genre: new GenreFactory(),
 		company: new CompanyFactory(),
+		platform: new PlatformFactory(),
 	};
 
 	build = (): ClientApi => {
 		const infra: IClientInfraModulePort = new ClientInfraModule({
 			logService: this.mocks.logService,
-			schemas: [gameRepositorySchema, genreRepositorySchema, companyRepositorySchema],
+			schemas: [
+				gameRepositorySchema,
+				genreRepositorySchema,
+				companyRepositorySchema,
+				platformRepositorySchema,
+			],
 		});
 		infra.initialize();
 

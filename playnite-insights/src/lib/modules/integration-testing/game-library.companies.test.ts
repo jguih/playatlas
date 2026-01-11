@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';
 import type { ClientApi } from '../bootstrap/application';
 import { TestCompositionRoot } from '../bootstrap/testing';
 
-describe('GameLibrary / Genres (integration)', () => {
+describe('GameLibrary / Companies', () => {
 	let root: TestCompositionRoot;
 	let api: ClientApi;
 

@@ -27,7 +27,7 @@
     "preview": "pnpm --filter playnite-insights run preview",
     "test:unit": "pnpm -r run test:unit",
     "test:integration": "pnpm -r run test:integration",
-    "test": "pnpm -r --parallel test",
+    "test": "pnpm -r test",
     "release-beta": "standard-version --prerelease beta",
     "release": "standard-version",
     "prepare": "husky"

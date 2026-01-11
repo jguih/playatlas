@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker';
 import 'fake-indexeddb/auto';
 import type { Genre } from '../game-library/domain';
 
-describe('GameLibrary / Genres (integration)', () => {
+describe('GameLibrary / Genres', () => {
 	let root: TestCompositionRoot;
 	let api: ClientApi;
 
