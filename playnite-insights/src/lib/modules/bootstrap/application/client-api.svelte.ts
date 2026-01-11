@@ -1,3 +1,4 @@
+import type { IPlayAtlasClientPort } from '$lib/modules/game-library/application';
 import type { ISyncCompaniesCommandHandlerPort } from '$lib/modules/game-library/commands/sync-companies';
 import type { ISyncGamesCommandHandlerPort } from '$lib/modules/game-library/commands/sync-games';
 import type { ISyncGenresCommandHandlerPort } from '$lib/modules/game-library/commands/sync-genres';
@@ -25,5 +26,6 @@ export interface ClientApi {
 			SyncCompanies: ISyncCompaniesCommandHandlerPort;
 			SyncPlatforms: ISyncPlatformsCommandHandlerPort;
 		};
+		PlayAtlasClient: IPlayAtlasClientPort;
 	};
 }

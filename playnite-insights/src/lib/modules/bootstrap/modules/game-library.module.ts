@@ -1,3 +1,5 @@
+import type { IHttpClientPort } from '$lib/modules/common/application';
+import { PlayAtlasClient, type IPlayAtlasClientPort } from '$lib/modules/game-library/application';
 import {
 	SyncCompaniesCommandHandler,
 	type ISyncCompaniesCommandHandlerPort,
@@ -53,6 +55,7 @@ import type { IndexedDbSignal } from './infra.module.port';
 
 export type ClientGameLibraryModuleDeps = {
 	indexedDbSignal: IndexedDbSignal;
+	httpClient: IHttpClientPort;
 };
 
 export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
@@ -73,7 +76,9 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly syncCompaniesCommandHandler: ISyncCompaniesCommandHandlerPort;
 	readonly syncPlatformsCommandHandler: ISyncPlatformsCommandHandlerPort;
 
-	constructor({ indexedDbSignal }: ClientGameLibraryModuleDeps) {
+	readonly playAtlasClient: IPlayAtlasClientPort;
+
+	constructor({ indexedDbSignal, httpClient }: ClientGameLibraryModuleDeps) {
 		this.gameRepository = new GameRepository({ indexedDbSignal });
 		this.genreRepository = new GenreRepository({ indexedDbSignal });
 		this.companyRepository = new CompanyRepository({ indexedDbSignal });
@@ -108,5 +113,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.syncPlatformsCommandHandler = new SyncPlatformsCommandHandler({
 			platformRepository: this.platformRepository,
 		});
+
+		this.playAtlasClient = new PlayAtlasClient({ httpClient });
 	}
 }

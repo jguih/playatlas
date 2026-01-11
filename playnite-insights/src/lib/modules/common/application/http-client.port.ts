@@ -1,6 +1,20 @@
+import type { HttpClientCommonFnExtraArgs, HttpClientCommonFnProps } from './http-client.types';
+
 export interface IHttpClientPort {
-	getAsync: (endpoint: string, props?: Omit<RequestInit, 'method'>) => Promise<Response>;
-	postAsync: (endpoint: string, props?: Omit<RequestInit, 'method'>) => Promise<Response>;
-	putAsync: (endpoint: string, props?: Omit<RequestInit, 'method'>) => Promise<Response>;
-	deleteAsync: (endpoint: string, props?: Omit<RequestInit, 'method'>) => Promise<Response>;
+	getAsync: (
+		props: HttpClientCommonFnProps,
+		extraArgs?: HttpClientCommonFnExtraArgs,
+	) => Promise<Response>;
+	postAsync: (
+		props: HttpClientCommonFnProps,
+		extraArgs?: HttpClientCommonFnExtraArgs,
+	) => Promise<Response>;
+	putAsync: (
+		props: HttpClientCommonFnProps,
+		extraArgs?: HttpClientCommonFnExtraArgs,
+	) => Promise<Response>;
+	deleteAsync: (
+		props: HttpClientCommonFnProps,
+		extraArgs?: HttpClientCommonFnExtraArgs,
+	) => Promise<Response>;
 }

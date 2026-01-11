@@ -1,4 +1,5 @@
 import type { IHttpClientPort } from './http-client.port';
+import type { HttpClientSearchParams } from './http-client.types';
 
 export type HttpClientDeps = {
 	getHeaders: () => Headers | Promise<Headers>;
@@ -6,21 +7,23 @@ export type HttpClientDeps = {
 };
 
 export class HttpClient implements IHttpClientPort {
-	#getHeaders: HttpClientDeps['getHeaders'];
-	#url: string;
+	private readonly getHeaders: HttpClientDeps['getHeaders'];
+	private readonly url: string;
 
 	constructor({ getHeaders, url }: HttpClientDeps) {
-		this.#getHeaders = getHeaders;
-		this.#url = url;
+		this.getHeaders = getHeaders;
+		this.url = url;
 	}
 
-	private safeJoinUrlAndEndpoint = (endpoint?: string) => {
-		if (!endpoint) return this.#url;
-		const parsedEndpoint = endpoint.startsWith('/')
-			? endpoint.substring(1, endpoint.length)
-			: endpoint;
-		const parsedApiUrl = this.#url.endsWith('/') ? this.#url : `${this.#url}/`;
-		return `${parsedApiUrl}${parsedEndpoint}`;
+	private parseUrl = (endpoint: string, searchParams?: HttpClientSearchParams): URL => {
+		const resolvedUrl = new URL(endpoint, this.url);
+
+		if (searchParams) {
+			for (const [key, value] of Object.entries(searchParams))
+				if (value !== undefined && value !== null) resolvedUrl.searchParams.set(key, String(value));
+		}
+
+		return resolvedUrl;
 	};
 
 	private mergeHeaders(...all: (HeadersInit | undefined)[]): Headers {
@@ -35,9 +38,9 @@ export class HttpClient implements IHttpClientPort {
 		return merged;
 	}
 
-	getAsync: IHttpClientPort['getAsync'] = async (endpoint, props = {}) => {
-		const url = this.safeJoinUrlAndEndpoint(endpoint);
-		const headers = await this.#getHeaders();
+	getAsync: IHttpClientPort['getAsync'] = async ({ endpoint, searchParams }, props = {}) => {
+		const url = this.parseUrl(endpoint, searchParams);
+		const headers = await this.getHeaders();
 		return await fetch(url, {
 			...props,
 			method: 'GET',
@@ -45,9 +48,9 @@ export class HttpClient implements IHttpClientPort {
 		});
 	};
 
-	postAsync: IHttpClientPort['postAsync'] = async (endpoint, props = {}) => {
-		const url = this.safeJoinUrlAndEndpoint(endpoint);
-		const headers = await this.#getHeaders();
+	postAsync: IHttpClientPort['postAsync'] = async ({ endpoint, searchParams }, props = {}) => {
+		const url = this.parseUrl(endpoint, searchParams);
+		const headers = await this.getHeaders();
 		return await fetch(url, {
 			...props,
 			method: 'POST',
@@ -55,9 +58,9 @@ export class HttpClient implements IHttpClientPort {
 		});
 	};
 
-	putAsync: IHttpClientPort['putAsync'] = async (endpoint, props = {}) => {
-		const url = this.safeJoinUrlAndEndpoint(endpoint);
-		const headers = await this.#getHeaders();
+	putAsync: IHttpClientPort['putAsync'] = async ({ endpoint, searchParams }, props = {}) => {
+		const url = this.parseUrl(endpoint, searchParams);
+		const headers = await this.getHeaders();
 		return await fetch(url, {
 			...props,
 			method: 'PUT',
@@ -65,9 +68,9 @@ export class HttpClient implements IHttpClientPort {
 		});
 	};
 
-	deleteAsync: IHttpClientPort['deleteAsync'] = async (endpoint, props = {}) => {
-		const url = this.safeJoinUrlAndEndpoint(endpoint);
-		const headers = await this.#getHeaders();
+	deleteAsync: IHttpClientPort['deleteAsync'] = async ({ endpoint, searchParams }, props = {}) => {
+		const url = this.parseUrl(endpoint, searchParams);
+		const headers = await this.getHeaders();
 		return await fetch(url, {
 			...props,
 			method: 'DELETE',

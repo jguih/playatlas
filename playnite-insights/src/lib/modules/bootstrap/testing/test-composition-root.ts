@@ -53,6 +53,7 @@ export class TestCompositionRoot {
 
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			indexedDbSignal: infra.indexedDbSignal,
+			httpClient: this.mocks.httpClient,
 		});
 
 		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary } });
