@@ -3,13 +3,13 @@ import type {
   ISignatureServicePort,
 } from "@playatlas/common/application";
 import { createHash, timingSafeEqual } from "crypto";
-import type { ExtensionRegistrationRepository } from "../infra";
+import type { IExtensionRegistrationRepositoryPort } from "../infra";
 import type { IExtensionAuthServicePort } from "./extension-auth.service.port";
 
 export type ExtensionAuthServiceDeps = {
   logService: ILogServicePort;
   signatureService: ISignatureServicePort;
-  extensionRegistrationRepository: ExtensionRegistrationRepository;
+  extensionRegistrationRepository: IExtensionRegistrationRepositoryPort;
 };
 
 export const makeExtensionAuthService = ({

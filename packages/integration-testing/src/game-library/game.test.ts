@@ -7,7 +7,7 @@ describe("Game Library / Game", () => {
     const games = factory.getGameFactory().buildList(100);
     const randomGame = faker.helpers.arrayElement(games);
     // Act
-    root.seedGames(games);
+    root.seedGame(games);
     const queryResult = api.gameLibrary.queries
       .getGetAllGamesQueryHandler()
       .execute();
@@ -30,7 +30,7 @@ describe("Game Library / Game", () => {
     root.seedCompany(dev);
 
     const game = factory.getGameFactory().build({ developerIds: [devId] });
-    root.seedGames(game);
+    root.seedGame(game);
 
     // Act
     const result = api.gameLibrary.queries
@@ -54,7 +54,7 @@ describe("Game Library / Game", () => {
     const game = factory
       .getGameFactory()
       .build({ publisherIds: [publisherId] });
-    root.seedGames(game);
+    root.seedGame(game);
 
     // Act
     const result = api.gameLibrary.queries
@@ -76,7 +76,7 @@ describe("Game Library / Game", () => {
     root.seedGenre(genre);
 
     const game = factory.getGameFactory().build({ genreIds: [genreId] });
-    root.seedGames(game);
+    root.seedGame(game);
 
     // Act
     const result = api.gameLibrary.queries
@@ -98,7 +98,7 @@ describe("Game Library / Game", () => {
     root.seedPlatform(platform);
 
     const game = factory.getGameFactory().build({ platformIds: [platformId] });
-    root.seedGames(game);
+    root.seedGame(game);
 
     // Act
     const result = api.gameLibrary.queries
@@ -117,7 +117,7 @@ describe("Game Library / Game", () => {
     // Arrange
     const game = factory.getGameFactory().build();
     const gameId = game.getId();
-    root.seedGames(game);
+    root.seedGame(game);
 
     // Act
     await api.playniteIntegration.getLibraryManifestService().write();
@@ -145,7 +145,7 @@ describe("Game Library / Game", () => {
     const games = factory.getGameFactory().buildList(listLength);
     const gameIds = games.map((g) => g.getId());
     const oneGame = faker.helpers.arrayElement(games);
-    root.seedGames(games);
+    root.seedGame(games);
     // Act
     const result = api.gameLibrary.queries
       .getGetAllGamesQueryHandler()
@@ -202,7 +202,7 @@ describe("Game Library / Game", () => {
       developerIds: null,
       publisherIds: null,
     });
-    root.seedGames([game]);
+    root.seedGame([game]);
     // Act
     const result = api.gameLibrary.queries
       .getGetAllGamesQueryHandler()
@@ -232,7 +232,7 @@ describe("Game Library / Game", () => {
       icon: null,
       completionStatusId: null,
     });
-    root.seedGames([game]);
+    root.seedGame([game]);
     // Act
     const result = api.gameLibrary.queries
       .getGetAllGamesQueryHandler()
@@ -257,7 +257,7 @@ describe("Game Library / Game", () => {
   it("returns 'not_modified' when provided a valid etag", () => {
     // Arrange
     const games = factory.getGameFactory().buildList(200);
-    root.seedGames(games);
+    root.seedGame(games);
     // Act
     const result = api.gameLibrary.queries
       .getGetAllGamesQueryHandler()

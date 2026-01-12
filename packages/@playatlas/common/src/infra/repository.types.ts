@@ -1,4 +1,4 @@
-export type EntityRepository<TEntityId, TEntity> = {
+export type IEntityRepositoryPort<TEntityId, TEntity> = {
   add: (entity: TEntity | TEntity[]) => void;
   update: (entity: TEntity) => void;
   getById: (id: TEntityId) => TEntity | null;

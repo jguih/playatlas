@@ -1,10 +1,10 @@
-import { EntityRepository } from "@playatlas/common/infra";
+import { IEntityRepositoryPort } from "@playatlas/common/infra";
 import {
   InstanceSession,
   InstanceSessionId,
 } from "../domain/instance-session.entity";
 
-export type InstanceSessionRepository = EntityRepository<
+export type InstanceSessionRepository = IEntityRepositoryPort<
   InstanceSessionId,
   InstanceSession
 >;

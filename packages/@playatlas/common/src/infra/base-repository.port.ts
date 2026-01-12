@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import { EntityRepository } from "./repository.types";
+import { IEntityRepositoryPort } from "./repository.types";
 
 type ToPersistenceFnOverride<TEntity, TPersistence> = {
   toPersistence?: (entity: TEntity) => TPersistence;
@@ -7,7 +7,7 @@ type ToPersistenceFnOverride<TEntity, TPersistence> = {
 
 export type BaseRepositoryPort<TEntityId, TEntity, TPersistence> = {
   public: Pick<
-    EntityRepository<TEntityId, TEntity>,
+    IEntityRepositoryPort<TEntityId, TEntity>,
     "all" | "remove" | "getById" | "exists"
   >;
   /**

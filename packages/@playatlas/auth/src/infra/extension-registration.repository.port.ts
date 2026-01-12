@@ -1,11 +1,11 @@
-import { EntityRepository } from "@playatlas/common/infra";
+import { IEntityRepositoryPort } from "@playatlas/common/infra";
 import type {
   ExtensionRegistration,
   ExtensionRegistrationExtensionId,
   ExtensionRegistrationId,
 } from "../domain/extension-registration.entity";
 
-export type ExtensionRegistrationRepository = EntityRepository<
+export type IExtensionRegistrationRepositoryPort = IEntityRepositoryPort<
   ExtensionRegistrationId,
   ExtensionRegistration
 > & {

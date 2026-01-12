@@ -1,10 +1,10 @@
 import { type ILogServicePort } from "@playatlas/common/application";
-import { type CommandHandler } from "@playatlas/common/common";
-import { type ExtensionRegistrationRepository } from "../../infra/extension-registration.repository.port";
+import { type ICommandHandlerPort } from "@playatlas/common/common";
+import { type IExtensionRegistrationRepositoryPort } from "../../infra/extension-registration.repository.port";
 import { type RevokeExtensionRegistrationCommand } from "./revoke-extension-registration.command";
 
 export type RevokeExtensionRegistrationServiceDeps = {
-  extensionRegistrationRepository: ExtensionRegistrationRepository;
+  extensionRegistrationRepository: IExtensionRegistrationRepositoryPort;
   logService: ILogServicePort;
 };
 
@@ -20,10 +20,11 @@ export type RevokeExtensionRegistrationServiceResult =
       reason_code: "ok";
     };
 
-export type IRevokeExtensionRegistrationCommandHandlerPort = CommandHandler<
-  RevokeExtensionRegistrationCommand,
-  RevokeExtensionRegistrationServiceResult
->;
+export type IRevokeExtensionRegistrationCommandHandlerPort =
+  ICommandHandlerPort<
+    RevokeExtensionRegistrationCommand,
+    RevokeExtensionRegistrationServiceResult
+  >;
 
 export const makeRevokeExtensionRegistrationHandler = ({
   logService,

@@ -26,7 +26,7 @@ export type TestRoot = {
   cleanup: () => Promise<void>;
   factory: ITestFactoryModulePort;
   seedCompany: (company: Company | Company[]) => void;
-  seedGames: (game: Game | Game[]) => void;
+  seedGame: (game: Game | Game[]) => void;
   seedGenre: (genre: Genre | Genre[]) => void;
   seedPlatform: (platform: Platform | Platform[]) => void;
   resetDbAsync: () => Promise<void>;
@@ -141,7 +141,7 @@ export const makeTestCompositionRoot = ({
     gameLibrary.getCompanyRepository().upsert(company);
   };
 
-  const seedGames = (game: Game | Game[]) => {
+  const seedGame = (game: Game | Game[]) => {
     gameLibrary.getGameRepository().upsert(game);
   };
 
@@ -164,7 +164,7 @@ export const makeTestCompositionRoot = ({
     factory,
     cleanup,
     seedCompany,
-    seedGames,
+    seedGame,
     seedGenre,
     seedPlatform,
     resetDbAsync,

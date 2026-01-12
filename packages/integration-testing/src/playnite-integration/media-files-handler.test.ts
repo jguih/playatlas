@@ -274,7 +274,7 @@ describe("Playnite Media Files Handler", () => {
     const game = factory
       .getGameFactory()
       .build({ backgroundImage: null, icon: null, coverImage: null });
-    root.seedGames(game);
+    root.seedGame(game);
 
     const gameFolder = join(
       api.system.getSystemConfig().getLibFilesDir(),

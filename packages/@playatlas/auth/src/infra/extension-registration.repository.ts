@@ -10,7 +10,7 @@ import {
   ExtensionRegistrationId,
 } from "../domain/extension-registration.entity";
 import { extensionRegistrationMapper } from "../extension-registration.mapper";
-import { ExtensionRegistrationRepository } from "./extension-registration.repository.port";
+import { IExtensionRegistrationRepositoryPort } from "./extension-registration.repository.port";
 
 export const extensionRegistrationSchema = z.object({
   Id: z.number(), // AUTO-INCREMENT
@@ -31,7 +31,7 @@ export type ExtensionRegistrationModel = z.infer<
 export const makeExtensionRegistrationRepository = ({
   getDb,
   logService,
-}: BaseRepositoryDeps): ExtensionRegistrationRepository => {
+}: BaseRepositoryDeps): IExtensionRegistrationRepositoryPort => {
   const TABLE_NAME = `extension_registration`;
   const COLUMNS: (keyof ExtensionRegistrationModel)[] = [
     "Id",
@@ -62,21 +62,21 @@ export const makeExtensionRegistrationRepository = ({
     },
   });
 
-  const add: ExtensionRegistrationRepository["add"] = (entity) => {
+  const add: IExtensionRegistrationRepositoryPort["add"] = (entity) => {
     const results = base._add(entity);
     for (const [entity, _, { lastInsertRowid }] of results)
       entity.setId(lastInsertRowid as ExtensionRegistrationId);
   };
 
-  const update: ExtensionRegistrationRepository["update"] = (entity) => {
+  const update: IExtensionRegistrationRepositoryPort["update"] = (entity) => {
     base._update(entity);
   };
 
-  const upsert: ExtensionRegistrationRepository["upsert"] = (entity) => {
+  const upsert: IExtensionRegistrationRepositoryPort["upsert"] = (entity) => {
     base._upsert(entity);
   };
 
-  const getByExtensionId: ExtensionRegistrationRepository["getByExtensionId"] =
+  const getByExtensionId: IExtensionRegistrationRepositoryPort["getByExtensionId"] =
     (extensionId) => {
       const query = `SELECT * FROM ${TABLE_NAME} WHERE ExtensionId = ?`;
       return base.run(({ db }) => {
