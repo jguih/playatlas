@@ -1,5 +1,6 @@
-import { ILogServicePort } from "@playatlas/common/application";
-import { IExtensionRegistrationRepositoryPort } from "../../infra/extension-registration.repository.port";
+import type { ILogServicePort } from "@playatlas/common/application";
+import type { ExtensionRegistrationId } from "@playatlas/common/domain";
+import type { IExtensionRegistrationRepositoryPort } from "../../infra/extension-registration.repository.port";
 
 export type RegisterExtensionCommandResult =
   | {
@@ -10,7 +11,8 @@ export type RegisterExtensionCommandResult =
   | {
       success: true;
       reason: string;
-      reason_code: "ok";
+      reason_code: "extension_registered" | "extension_already_registered";
+      registrationId: ExtensionRegistrationId;
     };
 
 export type RegisterExtensionCommandHandlerDeps = {

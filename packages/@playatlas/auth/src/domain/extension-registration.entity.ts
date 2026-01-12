@@ -1,6 +1,7 @@
 import { validation } from "@playatlas/common/application";
 import {
   BaseEntity,
+  ExtensionRegistrationId,
   InvalidOperationError,
   InvalidStateError,
 } from "@playatlas/common/domain";
@@ -14,7 +15,7 @@ import {
 
 export type ExtensionRegistrationStatus =
   keyof typeof extensionRegistrationStatus;
-export type ExtensionRegistrationId = number;
+
 export type ExtensionRegistrationExtensionId = string;
 
 export type ExtensionRegistration = BaseEntity<ExtensionRegistrationId> &

@@ -1,16 +1,14 @@
 import { ISODateSchema } from "@playatlas/common/common";
+import type { ExtensionRegistrationId } from "@playatlas/common/domain";
 import {
   BaseRepositoryDeps,
   makeBaseRepository,
 } from "@playatlas/common/infra";
 import z from "zod";
 import { extensionRegistrationStatus } from "../domain/extension-registration.constants";
-import {
-  ExtensionRegistration,
-  ExtensionRegistrationId,
-} from "../domain/extension-registration.entity";
+import { ExtensionRegistration } from "../domain/extension-registration.entity";
 import { extensionRegistrationMapper } from "../extension-registration.mapper";
-import { IExtensionRegistrationRepositoryPort } from "./extension-registration.repository.port";
+import type { IExtensionRegistrationRepositoryPort } from "./extension-registration.repository.port";
 
 export const extensionRegistrationSchema = z.object({
   Id: z.number(), // AUTO-INCREMENT

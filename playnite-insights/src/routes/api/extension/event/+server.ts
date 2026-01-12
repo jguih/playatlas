@@ -17,7 +17,7 @@ export const GET: RequestHandler = async ({ request, locals: { api } }) =>
 			start(controller) {
 				api.getLogService().info('Created exporter event stream');
 
-				const unsubscribe = api.eventBus.subscribe((event) => {
+				const unsubscribe = api.getEventBus().subscribe((event) => {
 					if (closed) return;
 
 					controller.enqueue(

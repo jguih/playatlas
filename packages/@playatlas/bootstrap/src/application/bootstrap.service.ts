@@ -1,4 +1,7 @@
-import { DomainEventBus, ILogServicePort } from "@playatlas/common/application";
+import {
+  IDomainEventBusPort,
+  ILogServicePort,
+} from "@playatlas/common/application";
 import {
   IAuthModulePort,
   IGameLibraryModulePort,
@@ -19,7 +22,7 @@ export type BootstrapDeps = {
     playniteIntegration: IPlayniteIntegrationModulePort;
   };
   backendLogService: ILogServicePort;
-  eventBus: DomainEventBus;
+  eventBus: IDomainEventBusPort;
 };
 
 export const bootstrapV1 = ({
@@ -63,6 +66,8 @@ export const bootstrapV1 = ({
           auth.commands.getRejectExtensionRegistrationCommandHandler,
         getRemoveExtensionRegistrationCommandHandler:
           auth.commands.getRemoveExtensionRegistrationCommandHandler,
+        getRegisterExtensionCommandHandler:
+          auth.commands.getRegisterExtensionCommandHandler,
       },
       queries: {
         getGetAllExtensionRegistrationsQueryHandler:
@@ -90,7 +95,7 @@ export const bootstrapV1 = ({
       },
     },
     getLogService: () => backendLogService,
-    eventBus,
+    getEventBus: () => eventBus,
   };
 
   return Object.freeze(api);

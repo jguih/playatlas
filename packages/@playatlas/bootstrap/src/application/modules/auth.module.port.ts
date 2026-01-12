@@ -5,19 +5,20 @@ import type {
 } from "@playatlas/auth/application";
 import type {
   IApproveExtensionRegistrationCommandHandlerPort,
+  IRegisterExtensionCommandHandlerPort,
   IRejectExtensionRegistrationCommandHandlerPort,
   IRemoveExtensionRegistrationCommandHandlerPort,
   IRevokeExtensionRegistrationCommandHandlerPort,
 } from "@playatlas/auth/commands";
 import type {
-  ExtensionRegistrationRepository,
+  IExtensionRegistrationRepositoryPort,
   InstanceAuthSettingsRepository,
   InstanceSessionRepository,
 } from "@playatlas/auth/infra";
 import type { IGetAllExtensionRegistrationsQueryHandlerPort } from "@playatlas/auth/queries";
 
 export type IAuthModulePort = {
-  getExtensionRegistrationRepository: () => ExtensionRegistrationRepository;
+  getExtensionRegistrationRepository: () => IExtensionRegistrationRepositoryPort;
   getInstanceAuthSettingsRepository: () => InstanceAuthSettingsRepository;
   getInstanceSessionRepository: () => InstanceSessionRepository;
   getExtensionAuthService: () => IExtensionAuthServicePort;
@@ -28,6 +29,7 @@ export type IAuthModulePort = {
     getRejectExtensionRegistrationCommandHandler: () => IRejectExtensionRegistrationCommandHandlerPort;
     getRevokeExtensionRegistrationCommandHandler: () => IRevokeExtensionRegistrationCommandHandlerPort;
     getRemoveExtensionRegistrationCommandHandler: () => IRemoveExtensionRegistrationCommandHandlerPort;
+    getRegisterExtensionCommandHandler: () => IRegisterExtensionCommandHandlerPort;
   };
   queries: {
     getGetAllExtensionRegistrationsQueryHandler: () => IGetAllExtensionRegistrationsQueryHandlerPort;

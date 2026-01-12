@@ -5,13 +5,14 @@ import type {
 } from "@playatlas/auth/application";
 import type {
   IApproveExtensionRegistrationCommandHandlerPort,
+  IRegisterExtensionCommandHandlerPort,
   IRejectExtensionRegistrationCommandHandlerPort,
   IRemoveExtensionRegistrationCommandHandlerPort,
   IRevokeExtensionRegistrationCommandHandlerPort,
 } from "@playatlas/auth/commands";
 import type { IGetAllExtensionRegistrationsQueryHandlerPort } from "@playatlas/auth/queries";
 import type {
-  DomainEventBus,
+  IDomainEventBusPort,
   ILogServicePort,
 } from "@playatlas/common/application";
 import type {
@@ -54,6 +55,7 @@ export type PlayAtlasApiV1 = {
       getRejectExtensionRegistrationCommandHandler: () => IRejectExtensionRegistrationCommandHandlerPort;
       getRevokeExtensionRegistrationCommandHandler: () => IRevokeExtensionRegistrationCommandHandlerPort;
       getRemoveExtensionRegistrationCommandHandler: () => IRemoveExtensionRegistrationCommandHandlerPort;
+      getRegisterExtensionCommandHandler: () => IRegisterExtensionCommandHandlerPort;
     };
     queries: {
       getGetAllExtensionRegistrationsQueryHandler: () => IGetAllExtensionRegistrationsQueryHandlerPort;
@@ -75,5 +77,5 @@ export type PlayAtlasApiV1 = {
     };
   };
   getLogService: () => ILogServicePort;
-  eventBus: DomainEventBus;
+  getEventBus: () => IDomainEventBusPort;
 };

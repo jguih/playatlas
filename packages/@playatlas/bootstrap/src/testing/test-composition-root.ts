@@ -42,13 +42,17 @@ export const makeTestCompositionRoot = ({
   });
   const backendLogService = logServiceFactory.build("SvelteBackend");
 
+  const eventBus = makeEventBus({
+    logService: logServiceFactory.build("EventBus"),
+  });
+
   const infra = makeInfraModule({
     logServiceFactory,
     envService: system.getEnvService(),
     systemConfig: system.getSystemConfig(),
   });
 
-  const baseDeps = { getDb: infra.getDb, logServiceFactory };
+  const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus };
 
   const gameLibrary = makeGameLibraryModule({ ...baseDeps });
 
@@ -87,10 +91,6 @@ export const makeTestCompositionRoot = ({
     await infra.initEnvironment();
     backendLogService.info("Initializing database");
     await infra.initDb();
-
-    const eventBus = makeEventBus({
-      logService: logServiceFactory.build("EventBus"),
-    });
 
     const auth = makeAuthModule({
       ...baseDeps,

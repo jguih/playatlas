@@ -27,7 +27,8 @@ export const makeRegisterExtensionHandler = ({
         return {
           success: true,
           reason: "Extension is already registered",
-          reason_code: "ok",
+          reason_code: "extension_already_registered",
+          registrationId: existing.getId(),
         };
       }
 
@@ -43,7 +44,8 @@ export const makeRegisterExtensionHandler = ({
       return {
         success: true,
         reason: "Extension registered successfully",
-        reason_code: "ok",
+        reason_code: "extension_registered",
+        registrationId: registration.getId(),
       };
     },
   };

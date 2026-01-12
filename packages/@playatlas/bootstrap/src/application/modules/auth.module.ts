@@ -5,6 +5,7 @@ import {
 } from "@playatlas/auth/application";
 import {
   makeApproveExtensionRegistrationHandler,
+  makeRegisterExtensionHandler,
   makeRejectExtensionRegistrationHandler,
   makeRemoveExtensionRegistrationHandler,
   makeRevokeExtensionRegistrationHandler,
@@ -16,23 +17,26 @@ import {
 } from "@playatlas/auth/infra";
 import { makeGetAllExtensionRegistrationsQueryHandler } from "@playatlas/auth/queries";
 import type {
+  IDomainEventBusPort,
   ISignatureServicePort,
   LogServiceFactory,
 } from "@playatlas/common/application";
 import type { BaseRepositoryDeps } from "@playatlas/common/infra";
 import type { IAuthModulePort } from "./auth.module.port";
 
-export type BootstrapAuthDeps = {
+export type AuthModuleDeps = {
   getDb: BaseRepositoryDeps["getDb"];
   logServiceFactory: LogServiceFactory;
   signatureService: ISignatureServicePort;
+  eventBus: IDomainEventBusPort;
 };
 
 export const makeAuthModule = ({
   getDb,
   logServiceFactory,
   signatureService,
-}: BootstrapAuthDeps): IAuthModulePort => {
+  eventBus,
+}: AuthModuleDeps): IAuthModulePort => {
   const _extension_registration_repo = makeExtensionRegistrationRepository({
     getDb,
     logService: logServiceFactory.build("ExtensionRegistrationRepository"),
@@ -63,6 +67,7 @@ export const makeAuthModule = ({
         "ApproveExtensionRegistrationCommandHandler"
       ),
       extensionRegistrationRepository: _extension_registration_repo,
+      eventBus,
     });
   const _reject_extension_registration_command_handler =
     makeRejectExtensionRegistrationHandler({
@@ -85,6 +90,10 @@ export const makeAuthModule = ({
       ),
       extensionRegistrationRepository: _extension_registration_repo,
     });
+  const _register_extension_command_handler = makeRegisterExtensionHandler({
+    extensionRegistrationRepository: _extension_registration_repo,
+    logService: logServiceFactory.build("RegisterExtensionCommandHandler"),
+  });
   const _get_all_extension_registrations_query_handler =
     makeGetAllExtensionRegistrationsQueryHandler({
       extensionRegistrationRepository: _extension_registration_repo,
@@ -106,6 +115,8 @@ export const makeAuthModule = ({
         _revoke_extension_registration_command_handler,
       getRemoveExtensionRegistrationCommandHandler: () =>
         _remove_extension_registration_command_handler,
+      getRegisterExtensionCommandHandler: () =>
+        _register_extension_command_handler,
     },
     queries: {
       getGetAllExtensionRegistrationsQueryHandler: () =>
