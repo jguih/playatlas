@@ -2,7 +2,6 @@ import { makeEventBus } from "@playatlas/common/application";
 import type { AppEnvironmentVariables } from "@playatlas/common/common";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapV1 } from "./bootstrap.service";
-import type { PlayAtlasApiV1 } from "./bootstrap.service.types";
 import {
   makeAuthModule,
   makeGameLibraryModule,
@@ -12,6 +11,7 @@ import { makeGameSessionModule } from "./modules/game-session.module";
 import { makeInfraModule } from "./modules/infra.module";
 import type { IInfraModulePort } from "./modules/infra.module.port";
 import { makePlayniteIntegrationModule } from "./modules/playnite-integration.module";
+import type { PlayAtlasApiV1 } from "./playatlas.api.v1";
 
 export type AppCompositionRootDeps = {
   env: AppEnvironmentVariables;

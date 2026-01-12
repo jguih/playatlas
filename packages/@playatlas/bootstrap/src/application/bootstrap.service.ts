@@ -1,5 +1,4 @@
 import { DomainEventBus, ILogServicePort } from "@playatlas/common/application";
-import { type PlayAtlasApiV1 } from "./bootstrap.service.types";
 import {
   IAuthModulePort,
   IGameLibraryModulePort,
@@ -8,6 +7,7 @@ import {
 import { IGameSessionModulePort } from "./modules/game-session.module.port";
 import { IInfraModulePort } from "./modules/infra.module.port";
 import { IPlayniteIntegrationModulePort } from "./modules/playnite-integration.module.port";
+import { type PlayAtlasApiV1 } from "./playatlas.api.v1";
 
 export type BootstrapDeps = {
   modules: {
