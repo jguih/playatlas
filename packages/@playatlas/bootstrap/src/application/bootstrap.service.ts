@@ -1,5 +1,5 @@
 import { DomainEventBus, ILogServicePort } from "@playatlas/common/application";
-import { type PlayAtlasApi } from "./bootstrap.service.types";
+import { type PlayAtlasApiV1 } from "./bootstrap.service.types";
 import {
   IAuthModulePort,
   IGameLibraryModulePort,
@@ -22,7 +22,7 @@ export type BootstrapDeps = {
   eventBus: DomainEventBus;
 };
 
-export const bootstrap = ({
+export const bootstrapV1 = ({
   modules: {
     auth,
     gameLibrary,
@@ -33,8 +33,8 @@ export const bootstrap = ({
   },
   backendLogService,
   eventBus,
-}: BootstrapDeps): PlayAtlasApi => {
-  const api: PlayAtlasApi = {
+}: BootstrapDeps): PlayAtlasApiV1 => {
+  const api: PlayAtlasApiV1 = {
     system: {
       getSystemConfig: system.getSystemConfig,
     },

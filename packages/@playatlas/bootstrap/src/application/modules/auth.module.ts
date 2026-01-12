@@ -19,11 +19,11 @@ import type {
   ISignatureServicePort,
   LogServiceFactory,
 } from "@playatlas/common/application";
-import { IAuthModulePort } from "./auth.module.port";
-import type { PlayAtlasApiInfra } from "./infra.module";
+import type { BaseRepositoryDeps } from "@playatlas/common/infra";
+import type { IAuthModulePort } from "./auth.module.port";
 
 export type BootstrapAuthDeps = {
-  getDb: PlayAtlasApiInfra["getDb"];
+  getDb: BaseRepositoryDeps["getDb"];
   logServiceFactory: LogServiceFactory;
   signatureService: ISignatureServicePort;
 };

@@ -1,4 +1,4 @@
-import type { PlayAtlasApi } from "../application/bootstrap.service.types";
+import type { PlayAtlasApiV1 } from "../application/bootstrap.service.types";
 import {
   bootstrapTestFactories,
   type PlayAtlasTestApiFactories,
@@ -6,7 +6,7 @@ import {
 import type { BootstrapTestDeps } from "./bootstrap-test.service.types";
 
 export type PlayAtlasTestApi = {
-  api: PlayAtlasApi;
+  api: PlayAtlasApiV1;
   factory: PlayAtlasTestApiFactories;
   /**
    * Close the current database connection and create a new in-memory one.

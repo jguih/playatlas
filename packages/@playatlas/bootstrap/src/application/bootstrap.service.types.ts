@@ -33,7 +33,7 @@ import type { ISyncGamesCommandHandlerPort } from "@playatlas/playnite-integrati
 import type { IPlayniteMediaFilesHandlerPort } from "@playatlas/playnite-integration/infra";
 import type { SystemConfig } from "@playatlas/system/infra";
 
-export type PlayAtlasApi = {
+export type PlayAtlasApiV1 = {
   system: {
     getSystemConfig: () => SystemConfig;
   };

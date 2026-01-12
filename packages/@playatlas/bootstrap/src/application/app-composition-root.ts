@@ -1,8 +1,8 @@
 import { makeEventBus } from "@playatlas/common/application";
 import type { AppEnvironmentVariables } from "@playatlas/common/common";
 import { makeLogServiceFactory } from "@playatlas/system/application";
-import { bootstrap } from "./bootstrap.service";
-import type { PlayAtlasApi } from "./bootstrap.service.types";
+import { bootstrapV1 } from "./bootstrap.service";
+import type { PlayAtlasApiV1 } from "./bootstrap.service.types";
 import {
   makeAuthModule,
   makeGameLibraryModule,
@@ -18,7 +18,7 @@ export type AppCompositionRootDeps = {
 };
 
 export type AppRoot = {
-  buildAsync: () => Promise<PlayAtlasApi>;
+  buildAsync: () => Promise<PlayAtlasApiV1>;
   /**
    * Used for compatibility with old API.
    * Will be removed with old API.
@@ -45,34 +45,37 @@ export const makeAppCompositionRoot = ({
     systemConfig: system.getSystemConfig(),
   });
 
-  const buildAsync = async (): Promise<PlayAtlasApi> => {
+  const baseDeps = { getDb: infra.getDb, logServiceFactory };
+
+  const gameLibrary = makeGameLibraryModule({ ...baseDeps });
+
+  const playniteIntegration = makePlayniteIntegrationModule({
+    ...baseDeps,
+    fileSystemService: infra.getFsService(),
+    systemConfig: system.getSystemConfig(),
+    gameRepository: gameLibrary.getGameRepository(),
+    companyRepository: gameLibrary.getCompanyRepository(),
+    completionStatusRepository: gameLibrary.getCompletionStatusRepository(),
+    genreRepository: gameLibrary.getGenreRepository(),
+    platformRepository: gameLibrary.getPlatformRepository(),
+  });
+
+  const initEnvironmentAsync = async () => {
     backendLogService.info("Initializing environment");
     await infra.initEnvironment();
     backendLogService.info("Initializing database");
     await infra.initDb();
+    await playniteIntegration.getLibraryManifestService().write();
+  };
 
+  const buildAsync = async (): Promise<PlayAtlasApiV1> => {
     const eventBus = makeEventBus({
       logService: logServiceFactory.build("EventBus"),
     });
 
-    const baseDeps = { getDb: infra.getDb, logServiceFactory };
-
-    const gameLibrary = makeGameLibraryModule({ ...baseDeps });
-
     const auth = makeAuthModule({
       ...baseDeps,
       signatureService: infra.getSignatureService(),
-    });
-
-    const playniteIntegration = makePlayniteIntegrationModule({
-      ...baseDeps,
-      fileSystemService: infra.getFsService(),
-      systemConfig: system.getSystemConfig(),
-      gameRepository: gameLibrary.getGameRepository(),
-      companyRepository: gameLibrary.getCompanyRepository(),
-      completionStatusRepository: gameLibrary.getCompletionStatusRepository(),
-      genreRepository: gameLibrary.getGenreRepository(),
-      platformRepository: gameLibrary.getPlatformRepository(),
     });
 
     const gameSession = makeGameSessionModule({
@@ -80,7 +83,9 @@ export const makeAppCompositionRoot = ({
       gameRepository: gameLibrary.getGameRepository(),
     });
 
-    return bootstrap({
+    await initEnvironmentAsync();
+
+    return bootstrapV1({
       backendLogService,
       eventBus,
       modules: {

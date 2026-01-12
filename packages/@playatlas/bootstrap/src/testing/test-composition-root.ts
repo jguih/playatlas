@@ -3,7 +3,7 @@ import type { AppEnvironmentVariables } from "@playatlas/common/common";
 import { Company, Game, Genre, Platform } from "@playatlas/game-library/domain";
 import { makeGameFactory } from "@playatlas/game-library/testing";
 import { makeLogServiceFactory } from "@playatlas/system/application";
-import { type PlayAtlasApi, bootstrap } from "../application";
+import { type PlayAtlasApiV1, bootstrapV1 } from "../application";
 import {
   makeAuthModule,
   makeGameLibraryModule,
@@ -22,7 +22,7 @@ export type TestCompositionRootDeps = {
 };
 
 export type TestRoot = {
-  buildAsync: () => Promise<PlayAtlasApi>;
+  buildAsync: () => Promise<PlayAtlasApiV1>;
   cleanup: () => Promise<void>;
   factory: ITestFactoryModulePort;
   seedCompany: (company: Company | Company[]) => void;
@@ -82,7 +82,7 @@ export const makeTestCompositionRoot = ({
     );
   };
 
-  const buildAsync = async (): Promise<PlayAtlasApi> => {
+  const buildAsync = async (): Promise<PlayAtlasApiV1> => {
     backendLogService.info("Initializing environment");
     await infra.initEnvironment();
     backendLogService.info("Initializing database");
@@ -115,7 +115,7 @@ export const makeTestCompositionRoot = ({
 
     await setupGameFactoryAsync();
 
-    return bootstrap({
+    return bootstrapV1({
       backendLogService,
       eventBus,
       modules: {

@@ -1,5 +1,5 @@
-import { PlayAtlasApi } from "../application/bootstrap.service.types";
+import { PlayAtlasApiV1 } from "../application/bootstrap.service.types";
 
 export type BootstrapTestDeps = {
-  api: PlayAtlasApi;
+  api: PlayAtlasApiV1;
 };
