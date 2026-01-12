@@ -29,6 +29,7 @@ export type TestRoot = {
   seedGames: (game: Game | Game[]) => void;
   seedGenre: (genre: Genre | Genre[]) => void;
   seedPlatform: (platform: Platform | Platform[]) => void;
+  resetDbAsync: () => Promise<void>;
 };
 
 export const makeTestCompositionRoot = ({
@@ -53,14 +54,7 @@ export const makeTestCompositionRoot = ({
 
   const factory = makeTestFactoryModule();
 
-  const resetDbToMemory = async () => {
-    infra.getDb().close();
-    await infra.initDb();
-  };
-
   const setupGameFactoryAsync = async () => {
-    await resetDbToMemory();
-
     const completionStatusList = factory
       .getCompletionStatusFactory()
       .buildDefaultCompletionStatusList();
@@ -159,6 +153,12 @@ export const makeTestCompositionRoot = ({
     gameLibrary.getPlatformRepository().upsert(platform);
   };
 
+  const resetDbAsync = async () => {
+    infra.getDb().close();
+    await infra.initDb();
+    await setupGameFactoryAsync();
+  };
+
   return {
     buildAsync,
     factory,
@@ -167,5 +167,6 @@ export const makeTestCompositionRoot = ({
     seedGames,
     seedGenre,
     seedPlatform,
+    resetDbAsync,
   };
 };

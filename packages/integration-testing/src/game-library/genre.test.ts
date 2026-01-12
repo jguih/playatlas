@@ -1,15 +1,39 @@
-import { api, factory, root } from "../../vitest.setup";
+import { api, factory, root } from "../vitest.global.setup";
 
-describe("Get All Genres Query Handler", () => {
-  it("returns genres array", () => {
+describe("Game Library / Genre", () => {
+  it("persists a new genre", () => {
     // Arrange
+    const genre = factory.getGenreFactory().build();
+    root.seedGenre(genre);
+
     // Act
-    const queryResult = api.gameLibrary.queries
+    const result = api.gameLibrary.queries
       .getGetAllGenresQueryHandler()
       .execute();
+    const genres = result.type === "ok" ? result.data : [];
+    const addedGenre = genres.find((g) => g.Id === genre.getId());
     // Assert
-    if (queryResult.type !== "ok") throw new Error("Invalid query result type");
-    expect(queryResult.data.length).toBeGreaterThanOrEqual(1);
+    expect(addedGenre).toBeTruthy();
+    expect(addedGenre).toMatchObject({
+      Id: genre.getId(),
+      Name: genre.getName(),
+    });
+  });
+
+  it("returns a big list of genres", () => {
+    // Arrange
+    const newGenresCount = 3000;
+    const newGenres = factory.getGenreFactory().buildList(newGenresCount);
+    root.seedGenre(newGenres);
+
+    // Act
+    const result = api.gameLibrary.queries
+      .getGetAllGenresQueryHandler()
+      .execute();
+    const genres = result.type === "ok" ? result.data : [];
+
+    // Assert
+    expect(genres.length).toBeGreaterThanOrEqual(newGenresCount);
   });
 
   it("return 'not_modified' when provided a matching etag", () => {

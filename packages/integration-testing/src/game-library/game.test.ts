@@ -1,7 +1,135 @@
 import { faker } from "@faker-js/faker";
-import { api, factory, root } from "../../vitest.setup";
+import { api, factory, root } from "../vitest.global.setup";
 
-describe("Get All Games Query", () => {
+describe("Game Library / Game", () => {
+  it("persists games", () => {
+    // Arrange
+    const games = factory.getGameFactory().buildList(100);
+    const randomGame = faker.helpers.arrayElement(games);
+    // Act
+    root.seedGames(games);
+    const queryResult = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
+    // Assert
+    if (queryResult.type !== "ok") throw new Error("Invalid query result");
+    const added = queryResult.data;
+    const addedRandomGame = added.find((g) => g.Id === randomGame.getId());
+    expect(added).toHaveLength(games.length);
+    expect(addedRandomGame?.Id).toBe(randomGame.getId());
+    expect(addedRandomGame?.Name).toBe(randomGame.getName());
+    expect(addedRandomGame?.CompletionStatusId).toBe(
+      randomGame.getCompletionStatusId()
+    );
+  });
+
+  it("persists a game and eager load its developers", () => {
+    // Arrange
+    const dev = factory.getCompanyFactory().build();
+    const devId = dev.getId();
+    root.seedCompany(dev);
+
+    const game = factory.getGameFactory().build({ developerIds: [devId] });
+    root.seedGames(game);
+
+    // Act
+    const result = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
+    const games = result.type === "ok" ? result.data : null;
+    const insertedGame = games?.find((g) => g.Id === game.getId());
+
+    // Assert
+    expect(games).toBeTruthy();
+    expect(insertedGame).toBeTruthy();
+    expect(new Set(insertedGame?.Developers)).toEqual(new Set([devId]));
+  });
+
+  it("persists a game and eager load its publishers", () => {
+    // Arrange
+    const publisher = factory.getCompanyFactory().build();
+    const publisherId = publisher.getId();
+    root.seedCompany(publisher);
+
+    const game = factory
+      .getGameFactory()
+      .build({ publisherIds: [publisherId] });
+    root.seedGames(game);
+
+    // Act
+    const result = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
+    const games = result.type === "ok" ? result.data : null;
+    const insertedGame = games?.find((g) => g.Id === game.getId());
+
+    // Assert
+    expect(games).toBeTruthy();
+    expect(insertedGame).toBeTruthy();
+    expect(new Set(insertedGame?.Publishers)).toEqual(new Set([publisherId]));
+  });
+
+  it("persists a game and eager load its genres", () => {
+    // Arrange
+    const genre = factory.getGenreFactory().build();
+    const genreId = genre.getId();
+    root.seedGenre(genre);
+
+    const game = factory.getGameFactory().build({ genreIds: [genreId] });
+    root.seedGames(game);
+
+    // Act
+    const result = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
+    const games = result.type === "ok" ? result.data : null;
+    const insertedGame = games?.find((g) => g.Id === game.getId());
+
+    // Assert
+    expect(games).toBeTruthy();
+    expect(insertedGame).toBeTruthy();
+    expect(new Set(insertedGame?.Genres)).toEqual(new Set([genreId]));
+  });
+
+  it("persists a game and eager load its platforms", () => {
+    // Arrange
+    const platform = factory.getPlatformFactory().build();
+    const platformId = platform.getId();
+    root.seedPlatform(platform);
+
+    const game = factory.getGameFactory().build({ platformIds: [platformId] });
+    root.seedGames(game);
+
+    // Act
+    const result = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
+    const games = result.type === "ok" ? result.data : null;
+    const insertedGame = games?.find((g) => g.Id === game.getId());
+
+    // Assert
+    expect(games).toBeTruthy();
+    expect(insertedGame).toBeTruthy();
+    expect(new Set(insertedGame?.Platforms)).toEqual(new Set([platformId]));
+  });
+
+  it("returns game manifest data", async () => {
+    // Arrange
+    const game = factory.getGameFactory().build();
+    const gameId = game.getId();
+    root.seedGames(game);
+
+    // Act
+    await api.playniteIntegration.getLibraryManifestService().write();
+    const manifest = await api.playniteIntegration
+      .getLibraryManifestService()
+      .get();
+
+    // Assert
+    expect(manifest).toBeTruthy();
+    expect(manifest?.gamesInLibrary.map((g) => g.gameId)).toContain(gameId);
+  });
+
   it("returns empty games array", () => {
     // Act
     const result = api.gameLibrary.queries

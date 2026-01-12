@@ -82,7 +82,18 @@ export const makeLibraryManifestService = ({
         systemConfig.getLibraryManifestFilePath(),
         "utf-8"
       );
-      const manifest = libraryManifestSchema.parse(content.toString());
+      const {
+        success,
+        data: manifest,
+        error,
+      } = libraryManifestSchema.safeParse(JSON.parse(content));
+      if (!success) {
+        logService.error(
+          `Failed to read/parse library manifest file`,
+          error.issues
+        );
+        return null;
+      }
       logService.debug(
         `Read and parsed library manifest file: { totalGamesInLibrary: [${manifest.totalGamesInLibrary} entries], gamesInLibrary: [${manifest.gamesInLibrary.length} entries], mediaExistsFor: [${manifest.mediaExistsFor.length} entries] }`
       );

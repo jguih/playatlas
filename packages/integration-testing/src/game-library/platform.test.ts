@@ -1,18 +1,50 @@
-import { api, factory, root } from "../../vitest.setup";
+import { PlatformResponseDto } from "@playatlas/game-library/dtos";
+import { api, factory, root } from "../vitest.global.setup";
 
-describe("Get All Platforms Query Handler", () => {
-  it("returns an array of platforms", () => {
+describe("Game Library / Platform", () => {
+  it("persists a new platform", () => {
     // Arrange
+    const platform = factory.getPlatformFactory().build();
+    root.seedPlatform(platform);
+
     // Act
     const result = api.gameLibrary.queries
       .getGetAllPlatformsQueryHandler()
       .execute();
+    const platforms = result.type === "ok" ? result.data : [];
+    const addedPlatform = platforms.find((p) => p.Id === platform.getId());
+
     // Assert
-    if (result.type !== "ok") throw new Error("Result type must be 'ok'");
-    expect(result.data.length).toBeGreaterThan(1);
+    expect(addedPlatform).not.toBe(null);
+    expect(addedPlatform).toMatchObject({
+      Id: platform.getId(),
+      Name: platform.getName(),
+      SpecificationId: platform.getSpecificationId(),
+      Background: platform.getBackground(),
+      Cover: platform.getCover(),
+      Icon: platform.getIcon(),
+    } satisfies PlatformResponseDto);
   });
 
-  it("returns null values as 'null' and not empty string", () => {
+  it("handles a big list of platforms", () => {
+    // Arrange
+    const newPlatformsCount = 3000;
+    const newPlatforms = factory
+      .getPlatformFactory()
+      .buildList(newPlatformsCount);
+    root.seedPlatform(newPlatforms);
+
+    // Act
+    const result = api.gameLibrary.queries
+      .getGetAllPlatformsQueryHandler()
+      .execute();
+    const platforms = result.type === "ok" ? result.data : [];
+
+    // Assert
+    expect(platforms.length).toBeGreaterThanOrEqual(newPlatformsCount);
+  });
+
+  it("query returns null values as 'null' and not empty string", () => {
     // Arrange
     const onePlatform = factory
       .getPlatformFactory()
@@ -23,14 +55,13 @@ describe("Get All Platforms Query Handler", () => {
       .getGetAllPlatformsQueryHandler()
       .execute();
     if (result.type !== "ok") throw new Error("Result type must be 'ok'");
-    const oneResult = result.data.find((p) => p.Id === onePlatform.getId());
     // Assert
     expect(onePlatform.getBackground()).toBe(null);
     expect(onePlatform.getCover()).toBe(null);
     expect(onePlatform.getIcon()).toBe(null);
   });
 
-  it("return 'not_modified' when provided a matching etag", () => {
+  it("query returns 'not_modified' when provided a matching etag", () => {
     // Arrange
     // Act
     const firstResult = api.gameLibrary.queries
@@ -44,7 +75,7 @@ describe("Get All Platforms Query Handler", () => {
     expect(secondResult.type === "not_modified").toBeTruthy();
   });
 
-  it("does not return 'not_modified' when platform list changes after first call", () => {
+  it("query does not return 'not_modified' when platform list changes after first call", () => {
     // Arrange
     const newPlatform = factory.getPlatformFactory().build();
     // Act

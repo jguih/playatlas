@@ -7,9 +7,10 @@ import {
 import { createHash, Hash } from "crypto";
 import { once } from "events";
 import { createReadStream, openAsBlob } from "fs";
+import * as fsAsync from "fs/promises";
 import { extname, join } from "path";
 import sharp from "sharp";
-import { api, factory, fixturesDirPath } from "../vitest.global.setup";
+import { api, factory, fixturesDirPath, root } from "../vitest.global.setup";
 
 const placeholdersDirPath = join(fixturesDirPath, "/images", "/placeholder");
 const images: Array<{
@@ -98,17 +99,15 @@ const buildCanonicalHashBase64 = async (props: {
 
 describe("Playnite Media Files Handler", () => {
   beforeEach(async () => {
-    const dir = api.config.getSystemConfig().getLibFilesDir();
-    const entries = await api.unsafe.infra
-      .getFsService()
-      .readdir(dir, { withFileTypes: true });
+    const dir = api.system.getSystemConfig().getLibFilesDir();
+    const entries = await fsAsync.readdir(dir, { withFileTypes: true });
 
     await Promise.all(
       entries.map((entry) => {
         api
           .getLogService()
           .warning(`Deleting ${join(entry.parentPath, entry.name)}`);
-        return api.unsafe.infra.getFsService().rm(join(dir, entry.name), {
+        return fsAsync.rm(join(dir, entry.name), {
           recursive: true,
           force: true,
         });
@@ -127,9 +126,7 @@ describe("Playnite Media Files Handler", () => {
         // Assert
         expect(context.getStreamResults()).toHaveLength(3);
         for (const result of context.getStreamResults()) {
-          const stats = await api.unsafe.infra
-            .getFsService()
-            .stat(result.filepath);
+          const stats = await fsAsync.stat(result.filepath);
           expect(stats.isFile()).toBe(true);
         }
       });
@@ -180,7 +177,7 @@ describe("Playnite Media Files Handler", () => {
       expect(isValid).toBe(true);
       for (const { filepath, name } of optimizedResults) {
         const preset = MEDIA_PRESETS[name];
-        const stats = await api.unsafe.infra.getFsService().stat(filepath);
+        const stats = await fsAsync.stat(filepath);
         const ext = extname(filepath);
         const metadata = await sharp(filepath).metadata();
 
@@ -214,13 +211,13 @@ describe("Playnite Media Files Handler", () => {
       await handler.processImages(context);
       await handler.moveProcessedImagesToGameFolder(context);
       const gameFolder = join(
-        api.config.getSystemConfig().getLibFilesDir(),
+        api.system.getSystemConfig().getLibFilesDir(),
         context.getGameId()
       );
-      const stats = await api.unsafe.infra.getFsService().stat(gameFolder);
-      const fileEntries = await api.unsafe.infra
-        .getFsService()
-        .readdir(gameFolder, { withFileTypes: true });
+      const stats = await fsAsync.stat(gameFolder);
+      const fileEntries = await fsAsync.readdir(gameFolder, {
+        withFileTypes: true,
+      });
       // Assert
       expect(isValid).toBe(true);
       expect(stats.isDirectory()).toBe(true);
@@ -254,12 +251,10 @@ describe("Playnite Media Files Handler", () => {
       // Act
       const isValid = await handler.verifyIntegrity(context);
       await handler.writeContentHashFileToGameFolder(context);
-      const stats = await api.unsafe.infra
-        .getFsService()
-        .stat(context.getGameDirPath());
-      const fileEntries = await api.unsafe.infra
-        .getFsService()
-        .readdir(context.getGameDirPath(), { withFileTypes: true });
+      const stats = await fsAsync.stat(context.getGameDirPath());
+      const fileEntries = await fsAsync.readdir(context.getGameDirPath(), {
+        withFileTypes: true,
+      });
       // Assert
       expect(isValid).toBe(true);
       expect(stats.isDirectory()).toBe(true);
@@ -279,9 +274,10 @@ describe("Playnite Media Files Handler", () => {
     const game = factory
       .getGameFactory()
       .build({ backgroundImage: null, icon: null, coverImage: null });
-    api.gameLibrary.getGameRepository().upsert(game);
+    root.seedGames(game);
+
     const gameFolder = join(
-      api.config.getSystemConfig().getLibFilesDir(),
+      api.system.getSystemConfig().getLibFilesDir(),
       game.getId()
     );
     const gameId = game.getId();
@@ -295,19 +291,23 @@ describe("Playnite Media Files Handler", () => {
     const request = buildRequest(formData);
     request.headers.set("X-ContentHash", canonicalDigestBase64);
     const service = api.playniteIntegration.getPlayniteSyncService();
+
     // Act
     const result = await service.handleMediaFilesSynchronizationRequest(
       request
     );
-    const updatedGame = api.gameLibrary
-      .getGameRepository()
-      .getById(game.getId());
+    const queryResult = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
+    const queryGames = queryResult.type === "ok" ? queryResult.data : [];
+    const updatedGame = queryGames.find((g) => g.Id === game.getId());
+
     // Assert
     expect(result.success).toBeTruthy();
-    expect(updatedGame).toBeTruthy();
-    const fileEntries = await api.unsafe.infra
-      .getFsService()
-      .readdir(gameFolder, { withFileTypes: true });
+    expect(updatedGame).toBeDefined();
+    const fileEntries = await fsAsync.readdir(gameFolder, {
+      withFileTypes: true,
+    });
     for (const entry of fileEntries) {
       if (entry.name.match(/contentHash/i)) {
         wroteContentHash = true;
@@ -320,9 +320,9 @@ describe("Playnite Media Files Handler", () => {
       expect(ext).toBe(".webp");
       expect(metadata.format).toBe("webp");
     }
-    expect(updatedGame!.getBackgroundImage()).not.toBe(null);
-    expect(updatedGame!.getIcon()).not.toBe(null);
-    expect(updatedGame!.getCoverImage()).not.toBe(null);
+    expect(updatedGame!.BackgroundImage).not.toBe(null);
+    expect(updatedGame!.Icon).not.toBe(null);
+    expect(updatedGame!.CoverImage).not.toBe(null);
     expect(wroteContentHash).toBe(true);
   });
 });
