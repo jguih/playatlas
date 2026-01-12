@@ -1,6 +1,6 @@
 import { extractSyncData } from "./sync-data.extractor";
 import type {
-  SyncGamesCommandHandler,
+  ISyncGamesCommandHandlerPort,
   SyncGamesServiceDeps,
 } from "./sync-games.service.type";
 
@@ -12,7 +12,7 @@ export const makeSyncGamesCommandHandler = ({
   companyRepository,
   completionStatusRepository,
   libraryManifestService,
-}: SyncGamesServiceDeps): SyncGamesCommandHandler => {
+}: SyncGamesServiceDeps): ISyncGamesCommandHandlerPort => {
   return {
     executeAsync: async ({ payload }) => {
       logService.info(

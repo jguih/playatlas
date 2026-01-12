@@ -1,7 +1,7 @@
 import {
   logLevel,
   LogLevelNumber,
-  type LogService,
+  type ILogServicePort,
 } from "@playatlas/common/application";
 import { ZodError } from "zod/v4";
 
@@ -10,7 +10,7 @@ export const DEFAULT_SOURCE = "PlayAtlasServer";
 export const makeLogService = (
   source: string = DEFAULT_SOURCE,
   getCurrentLogLevel: () => LogLevelNumber
-): LogService => {
+): ILogServicePort => {
   const getDateTimeString = (): string => {
     const now = new Date();
     return now.toLocaleString();
@@ -59,7 +59,7 @@ export const makeLogService = (
     console.info(`[${getDateTimeString()}] [INFO] [${source}] ${message}`);
   };
 
-  const getRequestDescription: LogService["getRequestDescription"] = (
+  const getRequestDescription: ILogServicePort["getRequestDescription"] = (
     request
   ) => {
     const url = new URL(request.url);

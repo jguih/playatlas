@@ -1,7 +1,7 @@
 import type { DatabaseSync } from "node:sqlite";
 import { ZodSchema } from "zod";
 import { EntityMapper } from "../application";
-import type { LogService } from "../application/log-service.port";
+import type { ILogServicePort } from "../application/log-service.port";
 
 export type BaseRepositoryConfig<TEntity, TPersistence> = {
   tableName: string;
@@ -14,7 +14,7 @@ export type BaseRepositoryConfig<TEntity, TPersistence> = {
 };
 
 export type BaseRepositoryDeps = {
-  logService: LogService;
+  logService: ILogServicePort;
   getDb: () => DatabaseSync;
 };
 

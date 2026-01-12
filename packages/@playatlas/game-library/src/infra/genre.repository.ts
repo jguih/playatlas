@@ -4,7 +4,7 @@ import {
 } from "@playatlas/common/infra";
 import z from "zod";
 import { genreMapper } from "../genre.mapper";
-import { GenreRepository } from "./genre.repository.port";
+import { IGenreRepositoryPort } from "./genre.repository.port";
 
 export const genreSchema = z.object({
   Id: z.string(),
@@ -16,7 +16,7 @@ export type GenreModel = z.infer<typeof genreSchema>;
 export const makeGenreRepository = ({
   getDb,
   logService,
-}: BaseRepositoryDeps): GenreRepository => {
+}: BaseRepositoryDeps): IGenreRepositoryPort => {
   const TABLE_NAME = "genre";
   const COLUMNS: (keyof GenreModel)[] = ["Id", "Name"];
   const base = makeBaseRepository({
@@ -32,15 +32,15 @@ export const makeGenreRepository = ({
     },
   });
 
-  const add: GenreRepository["add"] = (genre) => {
+  const add: IGenreRepositoryPort["add"] = (genre) => {
     base._add(genre);
   };
 
-  const upsert: GenreRepository["upsert"] = (genre) => {
+  const upsert: IGenreRepositoryPort["upsert"] = (genre) => {
     base._upsert(genre);
   };
 
-  const update: GenreRepository["update"] = (genre) => {
+  const update: IGenreRepositoryPort["update"] = (genre) => {
     base._update(genre);
   };
 

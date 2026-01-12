@@ -1,8 +1,8 @@
 import type { DomainEvent, Listener } from "./event-bus.types";
-import { LogService } from "./log-service.port";
+import { ILogServicePort } from "./log-service.port";
 
 export type EventBusDeps = {
-  logService: LogService;
+  logService: ILogServicePort;
 };
 
 export const makeEventBus = ({ logService }: EventBusDeps) => {

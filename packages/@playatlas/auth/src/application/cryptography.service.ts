@@ -1,10 +1,10 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
-import { CryptographyService } from "./cryptography.service.port";
+import { ICryptographyServicePort } from "./cryptography.service.port";
 
-export const makeCryptographyService = (): CryptographyService => {
+export const makeCryptographyService = (): ICryptographyServicePort => {
   const SESSION_ID_LENGTH = 32;
 
-  const hashPassword: CryptographyService["hashPassword"] = async (
+  const hashPassword: ICryptographyServicePort["hashPassword"] = async (
     password
   ) => {
     const salt = randomBytes(256);
@@ -12,7 +12,7 @@ export const makeCryptographyService = (): CryptographyService => {
     return { salt: salt.toString("hex"), hash: derivedKey.toString("hex") };
   };
 
-  const verifyPassword: CryptographyService["verifyPassword"] = (
+  const verifyPassword: ICryptographyServicePort["verifyPassword"] = (
     password,
     { hash, salt }
   ) => {
@@ -20,11 +20,11 @@ export const makeCryptographyService = (): CryptographyService => {
     return timingSafeEqual(Buffer.from(hash, "hex"), derivedKey);
   };
 
-  const createSessionId: CryptographyService["createSessionId"] = () => {
+  const createSessionId: ICryptographyServicePort["createSessionId"] = () => {
     return randomBytes(SESSION_ID_LENGTH).toString("hex");
   };
 
-  const compareSessionIds: CryptographyService["compareSessionIds"] = (
+  const compareSessionIds: ICryptographyServicePort["compareSessionIds"] = (
     id1,
     id2
   ) => {

@@ -1,8 +1,8 @@
 import { GameResponseDto } from "../../dtos/game.response.dto";
-import { type GameRepository } from "../../infra/game.repository.port";
+import { type IGameRepositoryPort } from "../../infra/game.repository.port";
 
 export type GetAllGamesQueryHandlerDeps = {
-  gameRepository: GameRepository;
+  gameRepository: IGameRepositoryPort;
 };
 
 export type GetAllGamesQueryResult =

@@ -1,8 +1,8 @@
 import { CompanyResponseDto } from "../../dtos/company.response.dto";
-import { CompanyRepository } from "../../infra";
+import { ICompanyRepositoryPort } from "../../infra";
 
 export type GetAllCompaniesQueryHandlerDeps = {
-  companyRepository: CompanyRepository;
+  companyRepository: ICompanyRepositoryPort;
 };
 
 export type GetAllCompaniesQueryResult =

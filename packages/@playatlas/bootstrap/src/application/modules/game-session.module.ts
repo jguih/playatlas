@@ -1,46 +1,25 @@
 import { LogServiceFactory } from "@playatlas/common/application";
 import { BaseRepositoryDeps } from "@playatlas/common/infra";
-import { GameRepository } from "@playatlas/game-library/infra";
+import { IGameRepositoryPort } from "@playatlas/game-library/infra";
 import {
   makeCloseGameSessionCommandHandler,
   makeOpenGameSessionCommandHandler,
   makeStaleGameSessionCommandHandler,
-  StaleGameSessionCommandHandler,
-  type CloseGameSessionCommandHandler,
-  type OpenGameSessionCommandHandler,
 } from "@playatlas/game-session/commands";
-import {
-  GameSessionRepository,
-  makeGameSessionRepository,
-} from "@playatlas/game-session/infra";
+import { makeGameSessionRepository } from "@playatlas/game-session/infra";
+import { IGameSessionModulePort } from "./game-session.module.port";
 
-export type PlayAtlasApiGameSession = {
-  /**
-   * UNSAFE — low-level access intended for testing and infrastructure only.
-   *
-   * @deprecated Do not use in application code. Intended for tests/bootstrap only.
-   */
-  unsafe: {
-    getGameSessionRepository: () => GameSessionRepository;
-  };
-  commands: {
-    getOpenGameSessionCommandHandler: () => OpenGameSessionCommandHandler;
-    getCloseGameSessionCommandHandler: () => CloseGameSessionCommandHandler;
-    getStaleGameSessionCommandHandler: () => StaleGameSessionCommandHandler;
-  };
-};
-
-export type BootstrapGameSessionDeps = {
+export type GameSessionModuleDeps = {
   getDb: BaseRepositoryDeps["getDb"];
   logServiceFactory: LogServiceFactory;
-  gameRepository: GameRepository;
+  gameRepository: IGameRepositoryPort;
 };
 
-export const bootstrapGameSession = ({
+export const makeGameSessionModule = ({
   getDb,
   logServiceFactory,
   gameRepository,
-}: BootstrapGameSessionDeps): PlayAtlasApiGameSession => {
+}: GameSessionModuleDeps): IGameSessionModulePort => {
   const _game_session_repo = makeGameSessionRepository({
     getDb,
     logService: logServiceFactory.build("GameSessionRepository"),
@@ -72,10 +51,8 @@ export const bootstrapGameSession = ({
       logService: logServiceFactory.build("StaleGameSessionCommandHandler"),
     });
 
-  const gameSession: PlayAtlasApiGameSession = {
-    unsafe: {
-      getGameSessionRepository: () => _game_session_repo,
-    },
+  const gameSession: IGameSessionModulePort = {
+    getGameSessionRepository: () => _game_session_repo,
     commands: {
       getCloseGameSessionCommandHandler: () =>
         _close_game_session_command_handler,

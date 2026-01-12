@@ -1,14 +1,14 @@
-import { LogService } from "@playatlas/common/application";
+import { ILogServicePort } from "@playatlas/common/application";
 import {
   InstanceAuthSettingsRepository,
   InstanceSessionRepository,
 } from "../infra";
-import { CryptographyService } from "./cryptography.service.port";
-import { InstanceAuthService } from "./instance-auth.service.port";
+import { ICryptographyServicePort } from "./cryptography.service.port";
+import { IInstanceAuthServicePort } from "./instance-auth.service.port";
 
 export type InstanceAuthServiceDeps = {
-  logService: LogService;
-  cryptographyService: CryptographyService;
+  logService: ILogServicePort;
+  cryptographyService: ICryptographyServicePort;
   instanceAuthSettingsRepository: InstanceAuthSettingsRepository;
   instanceSessionRepository: InstanceSessionRepository;
 };
@@ -18,8 +18,8 @@ export const makeInstanceAuthService = ({
   cryptographyService,
   instanceAuthSettingsRepository,
   instanceSessionRepository,
-}: InstanceAuthServiceDeps): InstanceAuthService => {
-  const verify: InstanceAuthService["verify"] = ({ request }) => {
+}: InstanceAuthServiceDeps): IInstanceAuthServicePort => {
+  const verify: IInstanceAuthServicePort["verify"] = ({ request }) => {
     const url = new URL(request.url);
     const headers = request.headers;
     const requestDescription = logService.getRequestDescription(request);

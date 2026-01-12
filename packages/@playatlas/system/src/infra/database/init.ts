@@ -1,6 +1,6 @@
 import type {
-  FileSystemService,
-  LogService,
+  IFileSystemServicePort,
+  ILogServicePort,
 } from "@playatlas/common/application";
 import { DatabaseSync } from "node:sqlite";
 import { basename, join } from "path";
@@ -28,7 +28,7 @@ const getAppliedMigrations = (db: DatabaseSync): string[] => {
 };
 
 const getMigrationFilesAsync = async (deps: {
-  fileSystemService: FileSystemService;
+  fileSystemService: IFileSystemServicePort;
   migrationsDir: string;
 }): Promise<string[]> => {
   const { fileSystemService, migrationsDir } = deps;
@@ -44,7 +44,7 @@ const getMigrationFilesAsync = async (deps: {
 const applyMigrationAsync = async (deps: {
   db: DatabaseSync;
   sqlFilePath: string;
-  fileSystemService: FileSystemService;
+  fileSystemService: IFileSystemServicePort;
 }): Promise<void> => {
   const { db, fileSystemService, sqlFilePath } = deps;
   const fileName = basename(sqlFilePath);
@@ -57,8 +57,8 @@ const applyMigrationAsync = async (deps: {
 
 type InitDatabaseDeps = {
   db: DatabaseSync;
-  fileSystemService: FileSystemService;
-  logService: LogService;
+  fileSystemService: IFileSystemServicePort;
+  logService: ILogServicePort;
   migrationsDir: string;
 };
 

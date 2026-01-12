@@ -1,14 +1,14 @@
 import type {
-  FileSystemService,
-  LogService,
+  IFileSystemServicePort,
+  ILogServicePort,
 } from "@playatlas/common/application";
 import { type GameImageType } from "@playatlas/common/common";
 import type { SystemConfig } from "@playatlas/system/infra";
 import type { PlayniteMediaFileStreamResult } from "./playnite-media-files-handler.types";
 
 export type MakePlayniteMediaFilesContextDeps = {
-  fileSystemService: FileSystemService;
-  logService: LogService;
+  fileSystemService: IFileSystemServicePort;
+  logService: ILogServicePort;
   systemConfig: SystemConfig;
 };
 

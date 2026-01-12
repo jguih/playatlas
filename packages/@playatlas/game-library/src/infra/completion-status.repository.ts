@@ -4,7 +4,7 @@ import {
 } from "@playatlas/common/infra";
 import z from "zod";
 import { completionStatusMapper } from "../completion-status.mapper";
-import type { CompletionStatusRepository } from "./completion-status.repository.port";
+import type { ICompletionStatusRepositoryPort } from "./completion-status.repository.port";
 
 export const completionStatusSchema = z.object({
   Id: z.string(),
@@ -16,7 +16,7 @@ export type CompletionStatusModel = z.infer<typeof completionStatusSchema>;
 export const makeCompletionStatusRepository = ({
   getDb,
   logService,
-}: BaseRepositoryDeps): CompletionStatusRepository => {
+}: BaseRepositoryDeps): ICompletionStatusRepositoryPort => {
   const TABLE_NAME = `completion_status`;
   const COLUMNS: (keyof CompletionStatusModel)[] = ["Id", "Name"];
   const base = makeBaseRepository({
@@ -32,15 +32,19 @@ export const makeCompletionStatusRepository = ({
     },
   });
 
-  const add: CompletionStatusRepository["add"] = (completionStatus) => {
+  const add: ICompletionStatusRepositoryPort["add"] = (completionStatus) => {
     base._add(completionStatus);
   };
 
-  const upsert: CompletionStatusRepository["upsert"] = (completionStatus) => {
+  const upsert: ICompletionStatusRepositoryPort["upsert"] = (
+    completionStatus
+  ) => {
     base._upsert(completionStatus);
   };
 
-  const update: CompletionStatusRepository["update"] = (completionStatus) => {
+  const update: ICompletionStatusRepositoryPort["update"] = (
+    completionStatus
+  ) => {
     base._update(completionStatus);
   };
 

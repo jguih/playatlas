@@ -1,7 +1,7 @@
 import type { LogService } from "@playatlas/common/domain";
 import type { CloseGameSessionCommand } from "../commands/close-session/close-session.command";
 import type { OpenGameSessionCommand } from "../commands/open-session/open-session.command";
-import type { GameSessionRepository } from "../infra/game-session.repository.port";
+import type { IGameSessionRepositoryPort } from "../infra/game-session.repository.port";
 import type { GameSession } from "./game-session.entity";
 
 export type GameSessionService = {
@@ -12,5 +12,5 @@ export type GameSessionService = {
 
 export type GameSessionServiceDeps = {
   logService: LogService;
-  gameSessionRepository: GameSessionRepository;
+  gameSessionRepository: IGameSessionRepositoryPort;
 };

@@ -1,15 +1,15 @@
 import type {
-  FileSystemService,
-  LogService,
-  SignatureService,
+  IFileSystemServicePort,
+  ILogServicePort,
+  ISignatureServicePort,
 } from "@playatlas/common/application";
 import { createVerify, sign as cryptoSign, generateKeyPairSync } from "crypto";
 import { join } from "path";
 import { SystemConfig } from "../infra";
 
 export type SignatureServiceDeps = {
-  fileSystemService: FileSystemService;
-  logService: LogService;
+  fileSystemService: IFileSystemServicePort;
+  logService: ILogServicePort;
   getSecurityDir: SystemConfig["getSecurityDir"];
 };
 
@@ -17,12 +17,12 @@ export const makeSignatureService = ({
   fileSystemService,
   logService,
   getSecurityDir,
-}: SignatureServiceDeps): SignatureService => {
+}: SignatureServiceDeps): ISignatureServicePort => {
   const keysDir = join(getSecurityDir(), "/keys");
   const publicKeyPath = join(keysDir, "public-key.der");
   const privateKeyPath = join(keysDir, "private-key.der");
 
-  const generateAsymmetricKeyPair: SignatureService["generateAsymmetricKeyPair"] =
+  const generateAsymmetricKeyPair: ISignatureServicePort["generateAsymmetricKeyPair"] =
     async () => {
       logService.debug(`Generating asymmetric keys...`);
 
@@ -52,7 +52,7 @@ export const makeSignatureService = ({
       logService.success(`Asymmetric keys created successfully`);
     };
 
-  const sign: SignatureService["sign"] = async (data) => {
+  const sign: ISignatureServicePort["sign"] = async (data) => {
     const buffer = Buffer.from(data);
     const privKey = await fileSystemService.readfile(privateKeyPath);
     const signature = cryptoSign("sha256", buffer, {
@@ -63,7 +63,7 @@ export const makeSignatureService = ({
     return signature.toString("base64");
   };
 
-  const verify: SignatureService["verify"] = ({
+  const verify: ISignatureServicePort["verify"] = ({
     publicKey,
     payload,
     signature,

@@ -7,14 +7,14 @@ import {
   GetAllCompaniesQueryResult,
 } from "./get-all-companies.query.types";
 
-export type GetAllCompaniesQueryHandler = QueryHandler<
+export type IGetAllCompaniesQueryHandlerPort = QueryHandler<
   GetAllCompaniesQuery,
   GetAllCompaniesQueryResult
 >;
 
 export const makeGetAllCompaniesQueryHandler = ({
   companyRepository,
-}: GetAllCompaniesQueryHandlerDeps): GetAllCompaniesQueryHandler => {
+}: GetAllCompaniesQueryHandlerDeps): IGetAllCompaniesQueryHandlerPort => {
   return {
     execute: ({ ifNoneMatch } = {}) => {
       const companies = companyRepository.all();

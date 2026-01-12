@@ -1,68 +1,38 @@
 import {
-  type CryptographyService,
-  type ExtensionAuthService,
-  type InstanceAuthService,
   makeCryptographyService,
   makeExtensionAuthService,
   makeInstanceAuthService,
 } from "@playatlas/auth/application";
 import {
-  type ApproveExtensionRegistrationCommandHandler,
   makeApproveExtensionRegistrationHandler,
   makeRejectExtensionRegistrationHandler,
   makeRemoveExtensionRegistrationHandler,
   makeRevokeExtensionRegistrationHandler,
-  RejectExtensionRegistrationCommandHandler,
-  RemoveExtensionRegistrationCommandHandler,
-  RevokeExtensionRegistrationCommandHandler,
 } from "@playatlas/auth/commands";
 import {
-  type ExtensionRegistrationRepository,
-  type InstanceAuthSettingsRepository,
-  type InstanceSessionRepository,
   makeExtensionRegistrationRepository,
   makeInstanceAuthSettingsRepository,
   makeInstanceSessionRepository,
 } from "@playatlas/auth/infra";
-import {
-  GetAllExtensionRegistrationsQueryHandler,
-  makeGetAllExtensionRegistrationsQueryHandler,
-} from "@playatlas/auth/queries";
+import { makeGetAllExtensionRegistrationsQueryHandler } from "@playatlas/auth/queries";
 import type {
+  ISignatureServicePort,
   LogServiceFactory,
-  SignatureService,
 } from "@playatlas/common/application";
-import type { PlayAtlasApiInfra } from "./bootstrap.infra";
-
-export type PlayAtlasApiAuth = Readonly<{
-  getExtensionRegistrationRepository: () => ExtensionRegistrationRepository;
-  getInstanceAuthSettingsRepository: () => InstanceAuthSettingsRepository;
-  getInstanceSessionRepository: () => InstanceSessionRepository;
-  getExtensionAuthService: () => ExtensionAuthService;
-  getCryptographyService: () => CryptographyService;
-  getInstanceAuthService: () => InstanceAuthService;
-  commands: {
-    getApproveExtensionRegistrationCommandHandler: () => ApproveExtensionRegistrationCommandHandler;
-    getRejectExtensionRegistrationCommandHandler: () => RejectExtensionRegistrationCommandHandler;
-    getRevokeExtensionRegistrationCommandHandler: () => RevokeExtensionRegistrationCommandHandler;
-    getRemoveExtensionRegistrationCommandHandler: () => RemoveExtensionRegistrationCommandHandler;
-  };
-  queries: {
-    getGetAllExtensionRegistrationsQueryHandler: () => GetAllExtensionRegistrationsQueryHandler;
-  };
-}>;
+import { IAuthModulePort } from "./auth.module.port";
+import type { PlayAtlasApiInfra } from "./infra.module";
 
 export type BootstrapAuthDeps = {
   getDb: PlayAtlasApiInfra["getDb"];
   logServiceFactory: LogServiceFactory;
-  signatureService: SignatureService;
+  signatureService: ISignatureServicePort;
 };
 
-export const bootstrapAuth = ({
+export const makeAuthModule = ({
   getDb,
   logServiceFactory,
   signatureService,
-}: BootstrapAuthDeps): PlayAtlasApiAuth => {
+}: BootstrapAuthDeps): IAuthModulePort => {
   const _extension_registration_repo = makeExtensionRegistrationRepository({
     getDb,
     logService: logServiceFactory.build("ExtensionRegistrationRepository"),
@@ -120,7 +90,7 @@ export const bootstrapAuth = ({
       extensionRegistrationRepository: _extension_registration_repo,
     });
 
-  const authApi: PlayAtlasApiAuth = {
+  const authApi: IAuthModulePort = {
     getExtensionRegistrationRepository: () => _extension_registration_repo,
     getInstanceAuthSettingsRepository: () => _instance_auth_settings_repo,
     getInstanceSessionRepository: () => _instance_session_repo,

@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as fsAsync from "fs/promises";
 
-export type FileSystemService = {
+export type IFileSystemServicePort = {
   readdir: typeof fsAsync.readdir;
   readfile: typeof fsAsync.readFile;
   writeFile: typeof fsAsync.writeFile;

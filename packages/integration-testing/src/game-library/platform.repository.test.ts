@@ -1,7 +1,8 @@
-import { PlatformRepository } from "@playatlas/game-library/infra";
-import { api, factory } from "../vitest.global.setup";
+import { IPlatformRepositoryPort } from "@playatlas/game-library/infra";
+import { api, factory } from "../vitest.setup";
 
-let repository: PlatformRepository = api.gameLibrary.getPlatformRepository();
+let repository: IPlatformRepositoryPort =
+  api.gameLibrary.getPlatformRepository();
 
 describe("Platform Repository", () => {
   beforeEach(() => {

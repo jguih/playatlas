@@ -1,17 +1,17 @@
-import type { LogService } from "@playatlas/common/application";
+import type { ILogServicePort } from "@playatlas/common/application";
 import type { CommandHandler } from "@playatlas/common/common";
 import { makeGameSession } from "../../domain/game-session.entity";
-import type { GameSessionRepository } from "../../infra/game-session.repository.port";
+import type { IGameSessionRepositoryPort } from "../../infra/game-session.repository.port";
 import { type GameInfoProvider } from "../../types/game-info-provider";
 import { type OpenGameSessionCommand } from "./open-session.command";
 
 export type OpenGameSessionServiceDeps = {
-  gameSessionRepository: GameSessionRepository;
+  gameSessionRepository: IGameSessionRepositoryPort;
   gameInfoProvider: GameInfoProvider;
-  logService: LogService;
+  logService: ILogServicePort;
 };
 
-export type OpenGameSessionCommandHandler = CommandHandler<
+export type IOpenGameSessionCommandHandlerPort = CommandHandler<
   OpenGameSessionCommand,
   void
 >;
@@ -20,7 +20,7 @@ export const makeOpenGameSessionCommandHandler = ({
   gameSessionRepository: repository,
   gameInfoProvider,
   logService,
-}: OpenGameSessionServiceDeps): OpenGameSessionCommandHandler => {
+}: OpenGameSessionServiceDeps): IOpenGameSessionCommandHandlerPort => {
   return {
     execute: (command: OpenGameSessionCommand): void => {
       const now = new Date();

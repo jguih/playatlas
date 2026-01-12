@@ -7,14 +7,14 @@ import type {
   GetAllGenresQueryResult,
 } from "./get-all-genres.query.types";
 
-export type GetAllGenresQueryHandler = QueryHandler<
+export type IGetAllGenresQueryHandlerPort = QueryHandler<
   GetAllGenresQuery,
   GetAllGenresQueryResult
 >;
 
 export const makeGetAllGenresQueryHandler = ({
   genreRepository,
-}: GetAllGenresQueryHandlerDeps): GetAllGenresQueryHandler => {
+}: GetAllGenresQueryHandlerDeps): IGetAllGenresQueryHandlerPort => {
   return {
     execute: ({ ifNoneMatch } = {}) => {
       const genres = genreRepository.all();

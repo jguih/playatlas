@@ -7,14 +7,14 @@ import {
   GetAllGamesQueryResult,
 } from "./get-all-games.query.types";
 
-export type GetAllGamesQueryHandler = QueryHandler<
+export type IGetAllGamesQueryHandlerPort = QueryHandler<
   GetAllGamesQuery,
   GetAllGamesQueryResult
 >;
 
 export const makeGetAllGamesQueryHandler = ({
   gameRepository,
-}: GetAllGamesQueryHandlerDeps): GetAllGamesQueryHandler => {
+}: GetAllGamesQueryHandlerDeps): IGetAllGamesQueryHandlerPort => {
   return {
     execute: ({ ifNoneMatch } = {}) => {
       const games = gameRepository.all({ load: true });

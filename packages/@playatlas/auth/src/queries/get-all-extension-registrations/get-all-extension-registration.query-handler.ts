@@ -7,14 +7,14 @@ import type {
   GetAllExtensionRegistrationsResult,
 } from "./get-all-extension-registration.query.types";
 
-export type GetAllExtensionRegistrationsQueryHandler = QueryHandler<
+export type IGetAllExtensionRegistrationsQueryHandlerPort = QueryHandler<
   GetAllExtensionRegistrationQuery,
   GetAllExtensionRegistrationsResult
 >;
 
 export const makeGetAllExtensionRegistrationsQueryHandler = ({
   extensionRegistrationRepository,
-}: GetAllExtensionRegistrationsQueryHandlerDeps): GetAllExtensionRegistrationsQueryHandler => {
+}: GetAllExtensionRegistrationsQueryHandlerDeps): IGetAllExtensionRegistrationsQueryHandlerPort => {
   return {
     execute: ({ ifNoneMatch } = {}) => {
       const registrations = extensionRegistrationRepository.all();

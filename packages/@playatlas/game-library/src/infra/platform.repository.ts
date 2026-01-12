@@ -4,7 +4,7 @@ import {
 } from "@playatlas/common/infra";
 import z from "zod";
 import { platformMapper } from "../platform.mapper";
-import { PlatformRepository } from "./platform.repository.port";
+import { IPlatformRepositoryPort } from "./platform.repository.port";
 
 export const platformSchema = z.object({
   Id: z.string(),
@@ -20,7 +20,7 @@ export type PlatformModel = z.infer<typeof platformSchema>;
 export const makePlatformRepository = ({
   getDb,
   logService,
-}: BaseRepositoryDeps): PlatformRepository => {
+}: BaseRepositoryDeps): IPlatformRepositoryPort => {
   const TABLE_NAME = "platform";
   const COLUMNS: (keyof PlatformModel)[] = [
     "Id",
@@ -43,15 +43,15 @@ export const makePlatformRepository = ({
     },
   });
 
-  const add: PlatformRepository["add"] = (platform) => {
+  const add: IPlatformRepositoryPort["add"] = (platform) => {
     base._add(platform);
   };
 
-  const upsert: PlatformRepository["upsert"] = (platform) => {
+  const upsert: IPlatformRepositoryPort["upsert"] = (platform) => {
     base._upsert(platform);
   };
 
-  const update: PlatformRepository["update"] = (platform) => {
+  const update: IPlatformRepositoryPort["update"] = (platform) => {
     base._update(platform);
   };
 

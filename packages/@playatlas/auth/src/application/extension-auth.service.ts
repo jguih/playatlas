@@ -1,14 +1,14 @@
 import type {
-  LogService,
-  SignatureService,
+  ILogServicePort,
+  ISignatureServicePort,
 } from "@playatlas/common/application";
 import { createHash, timingSafeEqual } from "crypto";
 import type { ExtensionRegistrationRepository } from "../infra";
-import type { ExtensionAuthService } from "./extension-auth.service.port";
+import type { IExtensionAuthServicePort } from "./extension-auth.service.port";
 
 export type ExtensionAuthServiceDeps = {
-  logService: LogService;
-  signatureService: SignatureService;
+  logService: ILogServicePort;
+  signatureService: ISignatureServicePort;
   extensionRegistrationRepository: ExtensionRegistrationRepository;
 };
 
@@ -16,7 +16,7 @@ export const makeExtensionAuthService = ({
   logService,
   signatureService,
   extensionRegistrationRepository,
-}: ExtensionAuthServiceDeps): ExtensionAuthService => {
+}: ExtensionAuthServiceDeps): IExtensionAuthServicePort => {
   const _getCanonicalString = ({
     method,
     endpoint,
@@ -32,7 +32,7 @@ export const makeExtensionAuthService = ({
     return contentHash ? `${base}|${contentHash}` : `${base}`;
   };
 
-  const verify: ExtensionAuthService["verify"] = async ({
+  const verify: IExtensionAuthServicePort["verify"] = async ({
     request,
     utcNow,
   }) => {

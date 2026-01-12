@@ -3,6 +3,6 @@ export type InstanceAuthServiceVerifyResult = {
   authorized: boolean;
 };
 
-export type InstanceAuthService = {
+export type IInstanceAuthServicePort = {
   verify: (args: { request: Request }) => InstanceAuthServiceVerifyResult;
 };

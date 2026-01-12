@@ -1,13 +1,13 @@
-import type { LogService } from "@playatlas/common/application";
+import type { ILogServicePort } from "@playatlas/common/application";
 import type { AsyncCommandHandler } from "@playatlas/common/common";
 import type {
-  CompanyRepository,
-  CompletionStatusRepository,
-  GameRepository,
-  GenreRepository,
-  PlatformRepository,
+  ICompanyRepositoryPort,
+  ICompletionStatusRepositoryPort,
+  IGameRepositoryPort,
+  IGenreRepositoryPort,
+  IPlatformRepositoryPort,
 } from "@playatlas/game-library/infra";
-import type { LibraryManifestService } from "../../application";
+import type { ILibraryManifestServicePort } from "../../application";
 import type { SyncGamesCommand } from "./sync-games.command";
 
 export type SyncGamesCommandResult = {
@@ -16,17 +16,17 @@ export type SyncGamesCommandResult = {
   reason_code: "game_not_found" | "success" | "integrity_check_failed";
 };
 
-export type SyncGamesCommandHandler = AsyncCommandHandler<
+export type ISyncGamesCommandHandlerPort = AsyncCommandHandler<
   SyncGamesCommand,
   SyncGamesCommandResult
 >;
 
 export type SyncGamesServiceDeps = {
-  logService: LogService;
-  gameRepository: GameRepository;
-  genreRepository: GenreRepository;
-  platformRepository: PlatformRepository;
-  companyRepository: CompanyRepository;
-  completionStatusRepository: CompletionStatusRepository;
-  libraryManifestService: LibraryManifestService;
+  logService: ILogServicePort;
+  gameRepository: IGameRepositoryPort;
+  genreRepository: IGenreRepositoryPort;
+  platformRepository: IPlatformRepositoryPort;
+  companyRepository: ICompanyRepositoryPort;
+  completionStatusRepository: ICompletionStatusRepositoryPort;
+  libraryManifestService: ILibraryManifestServicePort;
 };

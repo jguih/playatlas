@@ -1,19 +1,19 @@
 import { faker } from "@faker-js/faker";
 import { GameRelationship, type Game } from "@playatlas/game-library/domain";
-import { GameRepository } from "@playatlas/game-library/infra";
-import { api, factory } from "../vitest.global.setup";
-
-let repository: GameRepository = api.gameLibrary.getGameRepository();
+import { api, factory, root } from "../vitest.setup";
 
 const assertRelationshipLoad = (
   game: Game,
   relationshipKey: GameRelationship
 ) => {
-  repository.upsert([game]);
+  root.seedGames(game);
 
-  const loaded = repository.getById(game.getId(), {
-    load: { [relationshipKey]: true },
-  });
+  const queryResult = api.gameLibrary.queries
+    .getGetAllGamesQueryHandler()
+    .execute();
+  if (queryResult.type !== "ok") throw new Error("Invalid query result");
+
+  const loaded = queryResult.data.find((g) => g.Id === game.getId());
   const originalIds = game.relationships[relationshipKey].isLoaded()
     ? game.relationships[relationshipKey].get()
     : [];
@@ -33,23 +33,23 @@ const assertRelationshipLoad = (
 };
 
 describe("Game Repository", () => {
-  beforeEach(() => {
-    repository = api.gameLibrary.getGameRepository();
-  });
-
   it("persists games", () => {
     // Arrange
     const games = factory.getGameFactory().buildList(100);
     const randomGame = faker.helpers.arrayElement(games);
     // Act
-    repository.upsert(games);
-    const added = repository.all();
-    const addedRandomGame = repository.getById(randomGame.getId());
+    root.seedGames(games);
+    const queryResult = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
     // Assert
+    if (queryResult.type !== "ok") throw new Error("Invalid query result");
+    const added = queryResult.data;
+    const addedRandomGame = added.find((g) => g.Id === randomGame.getId());
     expect(added).toHaveLength(games.length);
-    expect(addedRandomGame?.getId()).toBe(randomGame.getId());
-    expect(addedRandomGame?.getName()).toBe(randomGame.getName());
-    expect(addedRandomGame?.getCompletionStatusId()).toBe(
+    expect(addedRandomGame?.Id).toBe(randomGame.getId());
+    expect(addedRandomGame?.Name).toBe(randomGame.getName());
+    expect(addedRandomGame?.CompletionStatusId).toBe(
       randomGame.getCompletionStatusId()
     );
   });

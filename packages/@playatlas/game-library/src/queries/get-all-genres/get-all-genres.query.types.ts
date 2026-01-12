@@ -1,8 +1,8 @@
 import { GenreResponseDto } from "../../dtos/genre.response.dto";
-import { GenreRepository } from "../../infra/genre.repository.port";
+import { IGenreRepositoryPort } from "../../infra/genre.repository.port";
 
 export type GetAllGenresQueryHandlerDeps = {
-  genreRepository: GenreRepository;
+  genreRepository: IGenreRepositoryPort;
 };
 
 export type GetAllGenresQueryResult =

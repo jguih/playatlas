@@ -2,7 +2,7 @@ import { join } from "path";
 import { CONTENT_HASH_FILE_NAME } from "../infra/playnite-media-files-handler.constants";
 import { LibraryManifest } from "./library-manifest";
 import { libraryManifestSchema } from "./library-manifest.schema";
-import type { LibraryManifestService } from "./library-manifest.service.port";
+import type { ILibraryManifestServicePort } from "./library-manifest.service.port";
 import type { LibraryManifestServiceDeps } from "./library-manifest.service.types";
 
 export const makeLibraryManifestService = ({
@@ -10,7 +10,7 @@ export const makeLibraryManifestService = ({
   logService,
   gameRepository,
   systemConfig,
-}: LibraryManifestServiceDeps): LibraryManifestService => {
+}: LibraryManifestServiceDeps): ILibraryManifestServicePort => {
   const _getLibraryFolders = async (): Promise<string[]> => {
     const entries = await fileSystemService.readdir(
       systemConfig.getLibFilesDir(),
@@ -24,7 +24,7 @@ export const makeLibraryManifestService = ({
     return libraryFolders;
   };
 
-  const write: LibraryManifestService["write"] = async () => {
+  const write: ILibraryManifestServicePort["write"] = async () => {
     logService.debug("Writing library manifest...");
     const gamesInLibrary: LibraryManifest["gamesInLibrary"] = [];
     const gamesManifestData = gameRepository.getManifestData();

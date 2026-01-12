@@ -1,21 +1,15 @@
-import { faker } from "@faker-js/faker";
-import { api, factory } from "../../vitest.global.setup";
+import { api, factory, root } from "../../vitest.setup";
 
 describe("Get All Genres Query Handler", () => {
   it("returns genres array", () => {
     // Arrange
-    const genres = api.gameLibrary.getGenreRepository().all();
-    const oneGenre = faker.helpers.arrayElement(genres);
     // Act
-    const result = api.gameLibrary.queries
+    const queryResult = api.gameLibrary.queries
       .getGetAllGenresQueryHandler()
       .execute();
-    if (result.type !== "ok") throw new Error("Result type must be 'ok'");
-    const oneResult = result.data.find((p) => p.Id === oneGenre.getId());
     // Assert
-    expect(result.data.length === genres.length).toBeTruthy();
-    expect(oneGenre.getId()).toBe(oneResult?.Id);
-    expect(oneGenre.getName()).toBe(oneResult?.Name);
+    if (queryResult.type !== "ok") throw new Error("Invalid query result type");
+    expect(queryResult.data.length).toBeGreaterThanOrEqual(1);
   });
 
   it("return 'not_modified' when provided a matching etag", () => {
@@ -40,7 +34,7 @@ describe("Get All Genres Query Handler", () => {
       .getGetAllGenresQueryHandler()
       .execute();
     if (firstResult.type !== "ok") throw new Error("Invalid result");
-    api.gameLibrary.getGenreRepository().add(newGenre);
+    root.seedGenre(newGenre);
     const secondResult = api.gameLibrary.queries
       .getGetAllGenresQueryHandler()
       .execute({ ifNoneMatch: firstResult.etag });

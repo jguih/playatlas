@@ -1,11 +1,11 @@
-import { type LogService } from "@playatlas/common/application";
+import { type ILogServicePort } from "@playatlas/common/application";
 import { type CommandHandler } from "@playatlas/common/common";
 import { type ExtensionRegistrationRepository } from "../../infra/extension-registration.repository.port";
 import { type RemoveExtensionRegistrationCommand } from "./remove-extension-registration.command";
 
 export type RemoveExtensionRegistrationServiceDeps = {
   extensionRegistrationRepository: ExtensionRegistrationRepository;
-  logService: LogService;
+  logService: ILogServicePort;
 };
 
 export type RemoveExtensionRegistrationServiceResult =
@@ -20,7 +20,7 @@ export type RemoveExtensionRegistrationServiceResult =
       reason_code: "ok";
     };
 
-export type RemoveExtensionRegistrationCommandHandler = CommandHandler<
+export type IRemoveExtensionRegistrationCommandHandlerPort = CommandHandler<
   RemoveExtensionRegistrationCommand,
   RemoveExtensionRegistrationServiceResult
 >;
@@ -28,7 +28,7 @@ export type RemoveExtensionRegistrationCommandHandler = CommandHandler<
 export const makeRemoveExtensionRegistrationHandler = ({
   logService,
   extensionRegistrationRepository,
-}: RemoveExtensionRegistrationServiceDeps): RemoveExtensionRegistrationCommandHandler => {
+}: RemoveExtensionRegistrationServiceDeps): IRemoveExtensionRegistrationCommandHandlerPort => {
   return {
     execute: (command) => {
       const existing = extensionRegistrationRepository.getById(

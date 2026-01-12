@@ -19,8 +19,8 @@ import {
   TABLE_NAME,
 } from "./game.repository.constants";
 import type {
-  GameRepository,
   GameRepositoryEagerLoadProps,
+  IGameRepositoryPort,
 } from "./game.repository.port";
 import type {
   GetRelationshipsForFn,
@@ -62,7 +62,7 @@ type GameRepositoryDeps = BaseRepositoryDeps;
 
 export const makeGameRepository = (
   deps: GameRepositoryDeps
-): GameRepository => {
+): IGameRepositoryPort => {
   const { getDb, logService } = deps;
   const base = makeBaseRepository({
     getDb,
@@ -194,7 +194,7 @@ export const makeGameRepository = (
     else return false;
   };
 
-  const getTotal: GameRepository["getTotal"] = (filters) => {
+  const getTotal: IGameRepositoryPort["getTotal"] = (filters) => {
     return base.run(({ db }) => {
       let query = `
           SELECT 
@@ -208,7 +208,7 @@ export const makeGameRepository = (
     }, `getTotal()`);
   };
 
-  const getById: GameRepository["getById"] = (id, props = {}) => {
+  const getById: IGameRepositoryPort["getById"] = (id, props = {}) => {
     return base.run(({ db }) => {
       const query = `SELECT * FROM ${TABLE_NAME} WHERE Id = (?)`;
       const stmt = db.prepare(query);
@@ -258,7 +258,7 @@ export const makeGameRepository = (
     }, `getById(${id})`);
   };
 
-  const upsert: GameRepository["upsert"] = (games) => {
+  const upsert: IGameRepositoryPort["upsert"] = (games) => {
     const result = base._upsert(games);
 
     for (const [game, model, _] of result) {
@@ -289,7 +289,7 @@ export const makeGameRepository = (
     }
   };
 
-  const getManifestData: GameRepository["getManifestData"] = () => {
+  const getManifestData: IGameRepositoryPort["getManifestData"] = () => {
     return base.run(({ db }) => {
       const query = `SELECT Id, ContentHash FROM playnite_game`;
       const stmt = db.prepare(query);
@@ -302,23 +302,22 @@ export const makeGameRepository = (
     }, `getManifestData()`);
   };
 
-  const getTotalPlaytimeSeconds: GameRepository["getTotalPlaytimeSeconds"] = (
-    filters
-  ) => {
-    return base.run(({ db }) => {
-      let query = `SELECT SUM(Playtime) as totalPlaytimeSeconds FROM playnite_game `;
-      const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
-      query += where;
-      const stmt = db.prepare(query);
-      const result = stmt.get(...params);
-      if (!result) return 0;
-      const data = result.totalPlaytimeSeconds as number;
-      logService.debug(`Calculated total playtime: ${data} seconds`);
-      return data;
-    }, `getTotalPlaytimeSeconds()`);
-  };
+  const getTotalPlaytimeSeconds: IGameRepositoryPort["getTotalPlaytimeSeconds"] =
+    (filters) => {
+      return base.run(({ db }) => {
+        let query = `SELECT SUM(Playtime) as totalPlaytimeSeconds FROM playnite_game `;
+        const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
+        query += where;
+        const stmt = db.prepare(query);
+        const result = stmt.get(...params);
+        if (!result) return 0;
+        const data = result.totalPlaytimeSeconds as number;
+        logService.debug(`Calculated total playtime: ${data} seconds`);
+        return data;
+      }, `getTotalPlaytimeSeconds()`);
+    };
 
-  const all: GameRepository["all"] = (props = {}) => {
+  const all: IGameRepositoryPort["all"] = (props = {}) => {
     return base.run(({ db }) => {
       const query = `
           SELECT g.*

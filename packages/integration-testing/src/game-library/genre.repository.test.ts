@@ -1,7 +1,7 @@
-import { type GenreRepository } from "@playatlas/game-library/infra";
-import { api, factory } from "../vitest.global.setup";
+import { IGenreRepositoryPort } from "@playatlas/game-library/infra";
+import { api, factory } from "../vitest.setup";
 
-let repository: GenreRepository = api.gameLibrary.getGenreRepository();
+let repository: IGenreRepositoryPort = api.gameLibrary.getGenreRepository();
 
 describe("Genre Repository", () => {
   beforeEach(() => {

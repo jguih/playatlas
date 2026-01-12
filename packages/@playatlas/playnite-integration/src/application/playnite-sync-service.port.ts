@@ -4,7 +4,7 @@ export type PlayniteSynchronizationResult = {
   reason_code: "game_not_found" | "success" | "integrity_check_failed";
 };
 
-export type PlayniteSyncService = {
+export type IPlayniteSyncServicePort = {
   /**
    * Synchronizes games media files
    */

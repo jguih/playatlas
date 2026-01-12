@@ -1,16 +1,12 @@
 import { faker } from "@faker-js/faker";
-import { api, factory } from "../../vitest.global.setup";
-
-let queryHandler = api.gameLibrary.queries.getGetAllGamesQueryHandler();
+import { api, factory, root } from "../../vitest.setup";
 
 describe("Get All Games Query", () => {
-  beforeEach(() => {
-    queryHandler = api.gameLibrary.queries.getGetAllGamesQueryHandler();
-  });
-
   it("returns empty games array", () => {
     // Act
-    const result = queryHandler.execute();
+    const result = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
     // Assert
     expect(result.type === "ok" && result.data.length === 0).toBeTruthy();
   });
@@ -21,9 +17,11 @@ describe("Get All Games Query", () => {
     const games = factory.getGameFactory().buildList(listLength);
     const gameIds = games.map((g) => g.getId());
     const oneGame = faker.helpers.arrayElement(games);
-    api.gameLibrary.getGameRepository().upsert(games);
+    root.seedGames(games);
     // Act
-    const result = queryHandler.execute();
+    const result = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
     // Assert
     if (result.type !== "ok") throw new Error("Invalid result type");
     const oneResult = result.data.find((g) => g.Id === oneGame.getId());
@@ -76,9 +74,11 @@ describe("Get All Games Query", () => {
       developerIds: null,
       publisherIds: null,
     });
-    api.gameLibrary.getGameRepository().upsert([game]);
+    root.seedGames([game]);
     // Act
-    const result = queryHandler.execute();
+    const result = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
     // Assert
     if (result.type !== "ok") throw new Error("Invalid result type");
     const oneResult = result.data.find((g) => g.Id === game.getId());
@@ -104,9 +104,11 @@ describe("Get All Games Query", () => {
       icon: null,
       completionStatusId: null,
     });
-    api.gameLibrary.getGameRepository().upsert([game]);
+    root.seedGames([game]);
     // Act
-    const result = queryHandler.execute();
+    const result = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
     // Assert
     if (result.type !== "ok") throw new Error("Invalid result type");
     const oneResult = result.data.find((g) => g.Id === game.getId());
@@ -127,11 +129,15 @@ describe("Get All Games Query", () => {
   it("returns 'not_modified' when provided a valid etag", () => {
     // Arrange
     const games = factory.getGameFactory().buildList(200);
-    api.gameLibrary.getGameRepository().upsert(games);
+    root.seedGames(games);
     // Act
-    const result = queryHandler.execute();
+    const result = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute();
     if (result.type !== "ok") throw new Error("Invalid result type");
-    const afterResult = queryHandler.execute({ ifNoneMatch: result.etag });
+    const afterResult = api.gameLibrary.queries
+      .getGetAllGamesQueryHandler()
+      .execute({ ifNoneMatch: result.etag });
     // Assert
     expect(afterResult.type === "not_modified").toBeTruthy();
   });

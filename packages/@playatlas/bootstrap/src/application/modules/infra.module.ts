@@ -1,45 +1,27 @@
-import {
-  LogServiceFactory,
-  SignatureService,
-  type FileSystemService,
-} from "@playatlas/common/application";
+import { LogServiceFactory } from "@playatlas/common/application";
 import { makeSignatureService } from "@playatlas/system/application";
 import { InvalidServerConfigurationError } from "@playatlas/system/domain";
 import {
   initDatabase,
   makeDatabaseConnection,
   makeFileSystemService,
-  type EnvService,
+  type IEnvironmentServicePort,
   type SystemConfig,
 } from "@playatlas/system/infra";
 import { DatabaseSync } from "node:sqlite";
+import type { IInfraModulePort } from "./infra.module.port";
 
-export type PlayAtlasApiInfra = Readonly<{
-  getFsService: () => FileSystemService;
-  getSignatureService: () => SignatureService;
-  getDb: () => DatabaseSync;
-  setDb: (db: DatabaseSync) => void;
-  /**
-   * Initialize the database, creating the SQLite db file and running migrations
-   */
-  initDb: () => Promise<void>;
-  /**
-   * Creates required environment folders and files
-   */
-  initEnvironment: () => Promise<void>;
-}>;
-
-export type BootstrapInfraDeps = {
+export type InfraModuleDeps = {
   logServiceFactory: LogServiceFactory;
-  envService: EnvService;
+  envService: IEnvironmentServicePort;
   systemConfig: SystemConfig;
 };
 
-export const bootstrapInfra = ({
+export const makeInfraModule = ({
   logServiceFactory,
   envService,
   systemConfig,
-}: BootstrapInfraDeps) => {
+}: InfraModuleDeps): IInfraModulePort => {
   const logService = logServiceFactory.build("Infra");
   const _fs_service = makeFileSystemService();
   const _signature_service = makeSignatureService({
@@ -53,7 +35,7 @@ export const bootstrapInfra = ({
 
   let _db: DatabaseSync | null = null;
 
-  const infra: PlayAtlasApiInfra = {
+  const infra: IInfraModulePort = {
     getFsService: () => _fs_service,
     getSignatureService: () => _signature_service,
     getDb: () => {

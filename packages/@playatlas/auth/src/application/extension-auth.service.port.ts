@@ -1,4 +1,4 @@
-export type ExtensionAuthService = {
+export type IExtensionAuthServicePort = {
   verify: (args: {
     request: Request;
     utcNow: number;

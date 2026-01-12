@@ -1,8 +1,8 @@
-import { type FileSystemService } from "@playatlas/common/application";
+import { type IFileSystemServicePort } from "@playatlas/common/application";
 import * as fs from "fs";
 import * as fsAsync from "fs/promises";
 
-export const makeFileSystemService = (): FileSystemService => {
+export const makeFileSystemService = (): IFileSystemServicePort => {
   return {
     access: fsAsync.access,
     mkdir: fsAsync.mkdir,

@@ -1,5 +1,5 @@
-import { EnvService } from "./environment.service.port";
+import { IEnvironmentServicePort } from "./environment.service.port";
 
 export type MakeSystemConfigDeps = {
-  envService: EnvService;
+  envService: IEnvironmentServicePort;
 };

@@ -7,7 +7,7 @@ export type GameRepositoryEagerLoadProps = {
   load?: Partial<Record<GameRelationship, boolean>> | boolean;
 };
 
-export type GameRepository = Omit<
+export type IGameRepositoryPort = Omit<
   EntityRepository<GameId, Game>,
   "all" | "getById" | "add" | "update"
 > & {

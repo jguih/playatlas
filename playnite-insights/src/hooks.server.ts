@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/private';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { makeServerServices, type ServerServices } from '$lib/server/setup-services';
-import { bootstrap, type PlayAtlasApi } from '@playatlas/bootstrap/application';
+import { makeAppCompositionRoot, type PlayAtlasApi } from '@playatlas/bootstrap/application';
 import { type Handle, type ServerInit } from '@sveltejs/kit';
 import { randomUUID } from 'crypto';
 
@@ -9,11 +9,13 @@ let _services: ServerServices;
 let _api: PlayAtlasApi;
 
 export const init: ServerInit = async () => {
-	_api = await bootstrap({ env });
+	const root = makeAppCompositionRoot({ env });
+	_api = await root.buildAsync();
+
 	_services = makeServerServices({
-		getDb: () => _api.unsafe.infra.getDb(),
+		getDb: () => root.unsafe.infra.getDb(),
 		env: {
-			DATA_DIR: _api.config.getSystemConfig().getDataDir(),
+			DATA_DIR: _api.system.getSystemConfig().getDataDir(),
 			PLAYNITE_HOST_ADDRESS: env.PLAYATLAS_PLAYNITE_HOST_ADDRESS,
 		},
 	});

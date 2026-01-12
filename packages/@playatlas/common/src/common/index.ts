@@ -1,3 +1,4 @@
+export type * from "./app-env.types";
 export type * from "./command-handler";
 export * from "./date-utils.schemas";
 export type * from "./disposable";

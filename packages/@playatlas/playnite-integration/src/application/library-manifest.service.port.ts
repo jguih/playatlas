@@ -1,6 +1,6 @@
 import { type LibraryManifest } from "./library-manifest";
 
-export type LibraryManifestService = {
+export type ILibraryManifestServicePort = {
   write: () => Promise<void>;
   get: () => Promise<LibraryManifest | null>;
 };

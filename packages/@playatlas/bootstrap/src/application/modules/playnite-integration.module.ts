@@ -1,51 +1,35 @@
 import {
-  type FileSystemService,
+  type IFileSystemServicePort,
   type LogServiceFactory,
 } from "@playatlas/common/application";
 import type {
-  CompanyRepository,
-  CompletionStatusRepository,
-  GameRepository,
-  GenreRepository,
-  PlatformRepository,
+  ICompanyRepositoryPort,
+  ICompletionStatusRepositoryPort,
+  IGameRepositoryPort,
+  IGenreRepositoryPort,
+  IPlatformRepositoryPort,
 } from "@playatlas/game-library/infra";
 import {
-  type LibraryManifestService,
   makeLibraryManifestService,
   makePlayniteSyncService,
-  type PlayniteSyncService,
 } from "@playatlas/playnite-integration/application";
-import {
-  makeSyncGamesCommandHandler,
-  type SyncGamesCommandHandler,
-} from "@playatlas/playnite-integration/commands";
-import {
-  makePlayniteMediaFilesHandler,
-  type PlayniteMediaFilesHandler,
-} from "@playatlas/playnite-integration/infra";
+import { makeSyncGamesCommandHandler } from "@playatlas/playnite-integration/commands";
+import { makePlayniteMediaFilesHandler } from "@playatlas/playnite-integration/infra";
 import type { SystemConfig } from "@playatlas/system/infra";
+import type { IPlayniteIntegrationModulePort } from "./playnite-integration.module.port";
 
-export type PlayAtlasApiPlayniteIntegration = Readonly<{
-  getPlayniteMediaFilesHandler: () => PlayniteMediaFilesHandler;
-  getLibraryManifestService: () => LibraryManifestService;
-  getPlayniteSyncService: () => PlayniteSyncService;
-  commands: {
-    getSyncGamesCommandHandler: () => SyncGamesCommandHandler;
-  };
-}>;
-
-export type BootstrapPlayniteIntegrationDeps = {
+export type PlayniteIntegrationModuleDeps = {
   logServiceFactory: LogServiceFactory;
-  fileSystemService: FileSystemService;
+  fileSystemService: IFileSystemServicePort;
   systemConfig: SystemConfig;
-  gameRepository: GameRepository;
-  companyRepository: CompanyRepository;
-  platformRepository: PlatformRepository;
-  genreRepository: GenreRepository;
-  completionStatusRepository: CompletionStatusRepository;
+  gameRepository: IGameRepositoryPort;
+  companyRepository: ICompanyRepositoryPort;
+  platformRepository: IPlatformRepositoryPort;
+  genreRepository: IGenreRepositoryPort;
+  completionStatusRepository: ICompletionStatusRepositoryPort;
 };
 
-export const bootstrapPlayniteIntegration = ({
+export const makePlayniteIntegrationModule = ({
   logServiceFactory,
   fileSystemService,
   systemConfig,
@@ -54,7 +38,7 @@ export const bootstrapPlayniteIntegration = ({
   completionStatusRepository,
   genreRepository,
   platformRepository,
-}: BootstrapPlayniteIntegrationDeps): PlayAtlasApiPlayniteIntegration => {
+}: PlayniteIntegrationModuleDeps): IPlayniteIntegrationModulePort => {
   const _playnite_media_files_handler = makePlayniteMediaFilesHandler({
     logService: logServiceFactory.build("PlayniteMediaFilesHandler"),
     logServiceFactory,
@@ -83,7 +67,7 @@ export const bootstrapPlayniteIntegration = ({
     libraryManifestService: _library_manifest_service,
   });
 
-  const playniteIntegrationApi: PlayAtlasApiPlayniteIntegration = {
+  const playniteIntegrationApi: IPlayniteIntegrationModulePort = {
     getPlayniteMediaFilesHandler: () => _playnite_media_files_handler,
     getLibraryManifestService: () => _library_manifest_service,
     getPlayniteSyncService: () => _playnite_sync_service,

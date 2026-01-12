@@ -1,6 +1,6 @@
 import {
-  type FileSystemService,
-  type LogService,
+  type IFileSystemServicePort,
+  type ILogServicePort,
   type LogServiceFactory,
 } from "@playatlas/common/application";
 import { InvalidFileTypeError } from "@playatlas/common/domain";
@@ -18,12 +18,12 @@ import {
   isValidFileName,
   MEDIA_PRESETS,
 } from "./playnite-media-files-handler.constants";
-import type { PlayniteMediaFilesHandler } from "./playnite-media-files-handler.port";
+import type { IPlayniteMediaFilesHandlerPort } from "./playnite-media-files-handler.port";
 import type { PlayniteMediaFileStreamResult } from "./playnite-media-files-handler.types";
 
 export type PlayniteMediaFilesHandlerDeps = {
-  fileSystemService: FileSystemService;
-  logService: LogService;
+  fileSystemService: IFileSystemServicePort;
+  logService: ILogServicePort;
   logServiceFactory: LogServiceFactory;
   systemConfig: SystemConfig;
 };
@@ -33,7 +33,7 @@ export const makePlayniteMediaFilesHandler = ({
   logServiceFactory,
   fileSystemService,
   systemConfig,
-}: PlayniteMediaFilesHandlerDeps): PlayniteMediaFilesHandler => {
+}: PlayniteMediaFilesHandlerDeps): IPlayniteMediaFilesHandlerPort => {
   const _validateImages = async (filepaths: string[]) => {
     for (const filepath of filepaths) {
       try {
@@ -96,7 +96,7 @@ export const makePlayniteMediaFilesHandler = ({
     };
   };
 
-  const streamMultipartToTempFolder: PlayniteMediaFilesHandler["streamMultipartToTempFolder"] =
+  const streamMultipartToTempFolder: IPlayniteMediaFilesHandlerPort["streamMultipartToTempFolder"] =
     async (request) => {
       const bb = busboy({ headers: Object.fromEntries(request.headers) });
       const stream = Readable.fromWeb(
@@ -194,7 +194,7 @@ export const makePlayniteMediaFilesHandler = ({
       }
     };
 
-  const withMediaFilesContext: PlayniteMediaFilesHandler["withMediaFilesContext"] =
+  const withMediaFilesContext: IPlayniteMediaFilesHandlerPort["withMediaFilesContext"] =
     async (request, cb) => {
       const context = await streamMultipartToTempFolder(request);
 
@@ -205,44 +205,46 @@ export const makePlayniteMediaFilesHandler = ({
       }
     };
 
-  const verifyIntegrity: PlayniteMediaFilesHandler["verifyIntegrity"] = async (
-    context
-  ) => {
-    context.validate();
+  const verifyIntegrity: IPlayniteMediaFilesHandlerPort["verifyIntegrity"] =
+    async (context) => {
+      context.validate();
 
-    const SEP = Buffer.from([0]);
-    const canonicalHash = createHash("sha256");
+      const SEP = Buffer.from([0]);
+      const canonicalHash = createHash("sha256");
 
-    canonicalHash.update(Buffer.from(context.getGameId(), "utf-8"));
-    canonicalHash.update(SEP);
-    canonicalHash.update(Buffer.from(context.getContentHash(), "utf-8"));
-    canonicalHash.update(SEP);
-
-    const files = [...context.getStreamResults()].sort((a, b) =>
-      a.filename.localeCompare(b.filename, undefined, {
-        sensitivity: "variant",
-      })
-    );
-
-    for (const { filename, filepath } of files) {
-      canonicalHash.update(Buffer.from(filename, "utf-8"));
+      canonicalHash.update(Buffer.from(context.getGameId(), "utf-8"));
+      canonicalHash.update(SEP);
+      canonicalHash.update(Buffer.from(context.getContentHash(), "utf-8"));
       canonicalHash.update(SEP);
 
-      await _streamFileIntoHash(canonicalHash, filepath);
-      canonicalHash.update(SEP);
-    }
+      const files = [...context.getStreamResults()].sort((a, b) =>
+        a.filename.localeCompare(b.filename, undefined, {
+          sensitivity: "variant",
+        })
+      );
 
-    const canonicalDigest = canonicalHash.digest();
-    const headerDigest = Buffer.from(context.getContentHashHeader(), "base64");
+      for (const { filename, filepath } of files) {
+        canonicalHash.update(Buffer.from(filename, "utf-8"));
+        canonicalHash.update(SEP);
 
-    if (canonicalDigest.length !== headerDigest.length) {
-      return false;
-    }
+        await _streamFileIntoHash(canonicalHash, filepath);
+        canonicalHash.update(SEP);
+      }
 
-    return timingSafeEqual(canonicalDigest, headerDigest);
-  };
+      const canonicalDigest = canonicalHash.digest();
+      const headerDigest = Buffer.from(
+        context.getContentHashHeader(),
+        "base64"
+      );
 
-  const processImages: PlayniteMediaFilesHandler["processImages"] = async (
+      if (canonicalDigest.length !== headerDigest.length) {
+        return false;
+      }
+
+      return timingSafeEqual(canonicalDigest, headerDigest);
+    };
+
+  const processImages: IPlayniteMediaFilesHandlerPort["processImages"] = async (
     context
   ) => {
     context.validate();
@@ -302,7 +304,7 @@ export const makePlayniteMediaFilesHandler = ({
     return results;
   };
 
-  const moveProcessedImagesToGameFolder: PlayniteMediaFilesHandler["moveProcessedImagesToGameFolder"] =
+  const moveProcessedImagesToGameFolder: IPlayniteMediaFilesHandlerPort["moveProcessedImagesToGameFolder"] =
     async (context) => {
       context.validate();
       await context.ensureGameDir({ cleanUp: true });
@@ -315,7 +317,7 @@ export const makePlayniteMediaFilesHandler = ({
       );
     };
 
-  const writeContentHashFileToGameFolder: PlayniteMediaFilesHandler["writeContentHashFileToGameFolder"] =
+  const writeContentHashFileToGameFolder: IPlayniteMediaFilesHandlerPort["writeContentHashFileToGameFolder"] =
     async (context) => {
       context.validate();
       await context.ensureGameDir();

@@ -8,7 +8,7 @@ import { sessionStatus } from "../domain/game-session.constants";
 import type { GameSession, GameSessionId } from "../domain/game-session.entity";
 import type { GameSessionStatus } from "../domain/game-session.types";
 import { gameSessionMapper } from "../game-session.mapper";
-import type { GameSessionRepository } from "./game-session.repository.port";
+import type { IGameSessionRepositoryPort } from "./game-session.repository.port";
 
 export const gameSessionSchema = z.object({
   SessionId: z.string(),
@@ -37,7 +37,7 @@ export type GameSessionFilters = {
 export const makeGameSessionRepository = ({
   getDb,
   logService,
-}: BaseRepositoryDeps): GameSessionRepository => {
+}: BaseRepositoryDeps): IGameSessionRepositoryPort => {
   const TABLE_NAME = "game_session";
   const COLUMNS: (keyof GameSessionModel)[] = [
     "SessionId",
@@ -123,15 +123,15 @@ export const makeGameSessionRepository = ({
     };
   };
 
-  const add: GameSessionRepository["add"] = (session) => {
+  const add: IGameSessionRepositoryPort["add"] = (session) => {
     base._add(session);
   };
 
-  const update: GameSessionRepository["update"] = (session) => {
+  const update: IGameSessionRepositoryPort["update"] = (session) => {
     base._update(session);
   };
 
-  const getAllBy: GameSessionRepository["getAllBy"] = (args) => {
+  const getAllBy: IGameSessionRepositoryPort["getAllBy"] = (args) => {
     return base.run(({ db }) => {
       let query = `SELECT * FROM game_session`;
       const { where, params } = _getWhereClauseAndParamsFromFilters(

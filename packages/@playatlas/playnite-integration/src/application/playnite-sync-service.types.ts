@@ -1,11 +1,11 @@
-import type { LogService } from "@playatlas/common/application";
-import type { GameRepository } from "@playatlas/game-library/infra";
-import type { PlayniteMediaFilesHandler } from "../infra";
-import type { LibraryManifestService } from "./library-manifest.service.port";
+import type { ILogServicePort } from "@playatlas/common/application";
+import type { IGameRepositoryPort } from "@playatlas/game-library/infra";
+import type { IPlayniteMediaFilesHandlerPort } from "../infra";
+import type { ILibraryManifestServicePort } from "./library-manifest.service.port";
 
 export type PlayniteSyncServiceDeps = {
-  playniteMediaFilesHandler: PlayniteMediaFilesHandler;
-  gameRepository: GameRepository;
-  logService: LogService;
-  libraryManifestService: LibraryManifestService;
+  playniteMediaFilesHandler: IPlayniteMediaFilesHandlerPort;
+  gameRepository: IGameRepositoryPort;
+  logService: ILogServicePort;
+  libraryManifestService: ILibraryManifestServicePort;
 };

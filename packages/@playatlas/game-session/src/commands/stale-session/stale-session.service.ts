@@ -1,13 +1,13 @@
-import type { LogService } from "@playatlas/common/application";
+import type { ILogServicePort } from "@playatlas/common/application";
 import type { CommandHandler } from "@playatlas/common/common";
 import { makeStaleGameSession } from "../../domain/game-session.entity";
-import type { GameSessionRepository } from "../../infra/game-session.repository.port";
+import type { IGameSessionRepositoryPort } from "../../infra/game-session.repository.port";
 import type { GameInfoProvider } from "../../types/game-info-provider";
 import { StaleGameSessionCommand } from "./stale-session.command";
 
 export type StaleGameSessionServiceDeps = {
-  gameSessionRepository: GameSessionRepository;
-  logService: LogService;
+  gameSessionRepository: IGameSessionRepositoryPort;
+  logService: ILogServicePort;
   gameInfoProvider: GameInfoProvider;
 };
 
@@ -16,7 +16,7 @@ export type StaleGameSessionServiceResult = {
   closed: boolean;
 };
 
-export type StaleGameSessionCommandHandler = CommandHandler<
+export type IStaleGameSessionCommandHandlerPort = CommandHandler<
   StaleGameSessionCommand,
   StaleGameSessionServiceResult
 >;
@@ -25,7 +25,7 @@ export const makeStaleGameSessionCommandHandler = ({
   gameSessionRepository,
   logService,
   gameInfoProvider,
-}: StaleGameSessionServiceDeps): StaleGameSessionCommandHandler => {
+}: StaleGameSessionServiceDeps): IStaleGameSessionCommandHandlerPort => {
   return {
     execute: (
       command: StaleGameSessionCommand

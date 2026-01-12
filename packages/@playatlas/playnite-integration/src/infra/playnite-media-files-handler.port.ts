@@ -1,7 +1,7 @@
 import type { PlayniteMediaFilesContext } from "./playnite-media-files-context";
 import type { PlayniteMediaFileStreamResult } from "./playnite-media-files-handler.types";
 
-export type PlayniteMediaFilesHandler = {
+export type IPlayniteMediaFilesHandlerPort = {
   /**
    * Streams the request's multipart form data to a temporary location using busboy.
    *

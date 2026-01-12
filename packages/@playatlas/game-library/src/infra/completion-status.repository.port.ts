@@ -4,7 +4,7 @@ import {
   CompletionStatusId,
 } from "../domain/completion-status.entity";
 
-export type CompletionStatusRepository = EntityRepository<
+export type ICompletionStatusRepositoryPort = EntityRepository<
   CompletionStatusId,
   CompletionStatus
 > & {};

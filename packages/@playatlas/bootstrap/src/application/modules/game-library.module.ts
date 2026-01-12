@@ -1,51 +1,29 @@
 import { type LogServiceFactory } from "@playatlas/common/application";
+import { BaseRepositoryDeps } from "@playatlas/common/infra";
 import {
   makeCompanyRepository,
   makeCompletionStatusRepository,
   makeGameRepository,
   makeGenreRepository,
   makePlatformRepository,
-  type CompanyRepository,
-  type CompletionStatusRepository,
-  type GameRepository,
-  type GenreRepository,
-  type PlatformRepository,
 } from "@playatlas/game-library/infra";
 import {
   makeGetAllCompaniesQueryHandler,
   makeGetAllGamesQueryHandler,
   makeGetAllGenresQueryHandler,
   makeGetAllPlatformQueryHandler,
-  type GetAllCompaniesQueryHandler,
-  type GetAllGamesQueryHandler,
-  type GetAllGenresQueryHandler,
-  type GetAllPlatformsQueryHandler,
 } from "@playatlas/game-library/queries";
-import type { PlayAtlasApiInfra } from "./bootstrap.infra";
+import { IGameLibraryModulePort } from "./game-library.module.port";
 
-export type PlayAtlasApiGameLibrary = Readonly<{
-  getCompanyRepository: () => CompanyRepository;
-  getGenreRepository: () => GenreRepository;
-  getGameRepository: () => GameRepository;
-  getPlatformRepository: () => PlatformRepository;
-  getCompletionStatusRepository: () => CompletionStatusRepository;
-  queries: {
-    getGetAllGamesQueryHandler: () => GetAllGamesQueryHandler;
-    getGetAllCompaniesQueryHandler: () => GetAllCompaniesQueryHandler;
-    getGetAllPlatformsQueryHandler: () => GetAllPlatformsQueryHandler;
-    getGetAllGenresQueryHandler: () => GetAllGenresQueryHandler;
-  };
-}>;
-
-export type BootstrapGameLibraryDeps = {
-  getDb: PlayAtlasApiInfra["getDb"];
+export type GameLibraryModuleDeps = {
+  getDb: BaseRepositoryDeps["getDb"];
   logServiceFactory: LogServiceFactory;
 };
 
-export const bootstrapGameLibrary = ({
+export const makeGameLibraryModule = ({
   getDb,
   logServiceFactory,
-}: BootstrapGameLibraryDeps): PlayAtlasApiGameLibrary => {
+}: GameLibraryModuleDeps): IGameLibraryModulePort => {
   const _company_repository = makeCompanyRepository({
     getDb,
     logService: logServiceFactory.build("CompanyRepository"),
@@ -79,7 +57,7 @@ export const bootstrapGameLibrary = ({
     genreRepository: _genre_repository,
   });
 
-  const gameLibrary: PlayAtlasApiGameLibrary = {
+  const gameLibrary: IGameLibraryModulePort = {
     getCompanyRepository: () => _company_repository,
     getGameRepository: () => _game_repository,
     getGenreRepository: () => _genre_repository,

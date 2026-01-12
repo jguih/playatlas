@@ -1,11 +1,11 @@
-import { type LogService } from "@playatlas/common/application";
+import { type ILogServicePort } from "@playatlas/common/application";
 import { type CommandHandler } from "@playatlas/common/common";
 import { type ExtensionRegistrationRepository } from "../../infra/extension-registration.repository.port";
 import { type RevokeExtensionRegistrationCommand } from "./revoke-extension-registration.command";
 
 export type RevokeExtensionRegistrationServiceDeps = {
   extensionRegistrationRepository: ExtensionRegistrationRepository;
-  logService: LogService;
+  logService: ILogServicePort;
 };
 
 export type RevokeExtensionRegistrationServiceResult =
@@ -20,7 +20,7 @@ export type RevokeExtensionRegistrationServiceResult =
       reason_code: "ok";
     };
 
-export type RevokeExtensionRegistrationCommandHandler = CommandHandler<
+export type IRevokeExtensionRegistrationCommandHandlerPort = CommandHandler<
   RevokeExtensionRegistrationCommand,
   RevokeExtensionRegistrationServiceResult
 >;
@@ -28,7 +28,7 @@ export type RevokeExtensionRegistrationCommandHandler = CommandHandler<
 export const makeRevokeExtensionRegistrationHandler = ({
   logService,
   extensionRegistrationRepository,
-}: RevokeExtensionRegistrationServiceDeps): RevokeExtensionRegistrationCommandHandler => {
+}: RevokeExtensionRegistrationServiceDeps): IRevokeExtensionRegistrationCommandHandlerPort => {
   return {
     execute: (command) => {
       const existing = extensionRegistrationRepository.getById(

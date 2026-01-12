@@ -1,13 +1,13 @@
-import type { LogService } from "@playatlas/common/application";
+import type { ILogServicePort } from "@playatlas/common/application";
 import type { CommandHandler } from "@playatlas/common/common";
 import { makeClosedGameSession } from "../../domain/game-session.entity";
-import type { GameSessionRepository } from "../../infra/game-session.repository.port";
+import type { IGameSessionRepositoryPort } from "../../infra/game-session.repository.port";
 import type { GameInfoProvider } from "../../types/game-info-provider";
 import type { CloseGameSessionCommand } from "./close-session.command";
 
 export type CloseGameSessionServiceDeps = {
-  gameSessionRepository: GameSessionRepository;
-  logService: LogService;
+  gameSessionRepository: IGameSessionRepositoryPort;
+  logService: ILogServicePort;
   gameInfoProvider: GameInfoProvider;
 };
 
@@ -16,7 +16,7 @@ export type CloseGameSessionServiceResult = {
   closed: boolean;
 };
 
-export type CloseGameSessionCommandHandler = CommandHandler<
+export type ICloseGameSessionCommandHandlerPort = CommandHandler<
   CloseGameSessionCommand,
   CloseGameSessionServiceResult
 >;
@@ -25,7 +25,7 @@ export const makeCloseGameSessionCommandHandler = ({
   gameSessionRepository,
   logService,
   gameInfoProvider,
-}: CloseGameSessionServiceDeps): CloseGameSessionCommandHandler => {
+}: CloseGameSessionServiceDeps): ICloseGameSessionCommandHandlerPort => {
   return {
     execute: (
       command: CloseGameSessionCommand

@@ -1,8 +1,8 @@
 import type { PlatformResponseDto } from "../../dtos/platform.response.dto";
-import type { PlatformRepository } from "../../infra/platform.repository.port";
+import type { IPlatformRepositoryPort } from "../../infra/platform.repository.port";
 
 export type GetAllPlatformsQueryHandlerDeps = {
-  platformRepository: PlatformRepository;
+  platformRepository: IPlatformRepositoryPort;
 };
 
 export type GetAllPlatformsQueryResult =

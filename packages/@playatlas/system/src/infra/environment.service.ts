@@ -1,8 +1,10 @@
 import { InvalidEnvironmentVariableValueError } from "../domain/error";
-import { EnvService } from "./environment.service.port";
+import { IEnvironmentServicePort } from "./environment.service.port";
 import { EnvServiceDeps } from "./environment.service.types";
 
-export const makeEnvService = ({ env }: EnvServiceDeps): EnvService => {
+export const makeEnvService = ({
+  env,
+}: EnvServiceDeps): IEnvironmentServicePort => {
   const _work_dir = env.PLAYATLAS_WORK_DIR;
   if (!_work_dir || _work_dir === "")
     throw new InvalidEnvironmentVariableValueError(

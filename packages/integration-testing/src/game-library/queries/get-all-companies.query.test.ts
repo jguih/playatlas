@@ -1,21 +1,25 @@
 import { faker } from "@faker-js/faker";
-import { api, factory } from "../../vitest.global.setup";
+import { api, factory, root } from "../../vitest.setup";
 
 describe("Get All Companies Query Handler", () => {
   it("returns companies array", () => {
     // Arrange
-    const companies = api.gameLibrary.getCompanyRepository().all();
+    const queryResult = api.gameLibrary.queries
+      .getGetAllCompaniesQueryHandler()
+      .execute();
+    if (queryResult.type !== "ok") throw new Error("Invalid result");
+    const companies = queryResult.data;
     const oneCompany = faker.helpers.arrayElement(companies);
     // Act
     const result = api.gameLibrary.queries
       .getGetAllCompaniesQueryHandler()
       .execute();
     if (result.type !== "ok") throw new Error("Result type must be 'ok'");
-    const oneResult = result.data.find((p) => p.Id === oneCompany.getId());
+    const oneResult = result.data.find((p) => p.Id === oneCompany.Id);
     // Assert
     expect(result.data.length === companies.length).toBeTruthy();
-    expect(oneCompany.getId()).toBe(oneResult?.Id);
-    expect(oneCompany.getName()).toBe(oneResult?.Name);
+    expect(oneCompany.Id).toBe(oneResult?.Id);
+    expect(oneCompany.Name).toBe(oneResult?.Name);
   });
 
   it("return 'not_modified' when provided a matching etag", () => {
@@ -40,7 +44,7 @@ describe("Get All Companies Query Handler", () => {
       .getGetAllCompaniesQueryHandler()
       .execute();
     if (firstResult.type !== "ok") throw new Error("Invalid result");
-    api.gameLibrary.getCompanyRepository().add(newCompany);
+    root.seedCompany(newCompany);
     const secondResult = api.gameLibrary.queries
       .getGetAllCompaniesQueryHandler()
       .execute({ ifNoneMatch: firstResult.etag });

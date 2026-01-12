@@ -1,4 +1,4 @@
-export type LogService = {
+export type ILogServicePort = {
   error: (message: string, error?: unknown) => void;
   warning: (message: string) => void;
   info: (message: string) => void;
@@ -8,5 +8,5 @@ export type LogService = {
 };
 
 export type LogServiceFactory = {
-  build: (context?: string) => LogService;
+  build: (context?: string) => ILogServicePort;
 };

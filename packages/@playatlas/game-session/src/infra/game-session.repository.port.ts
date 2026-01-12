@@ -1,7 +1,7 @@
 import type { GameSession, GameSessionId } from "../domain/game-session.entity";
 import type { GameSessionFilters } from "./game-session.repository";
 
-export type GameSessionRepository = {
+export type IGameSessionRepositoryPort = {
   add: (newSession: GameSession) => void;
   update: (session: GameSession) => void;
   all: () => GameSession[];

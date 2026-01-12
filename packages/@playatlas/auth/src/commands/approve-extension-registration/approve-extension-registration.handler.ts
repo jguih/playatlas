@@ -1,11 +1,11 @@
-import { LogService } from "@playatlas/common/application";
+import { ILogServicePort } from "@playatlas/common/application";
 import { CommandHandler } from "@playatlas/common/common";
 import { ExtensionRegistrationRepository } from "../../infra/extension-registration.repository.port";
 import { ApproveExtensionRegistrationCommand } from "./approve-extension-registration.command";
 
 export type ApproveExtensionRegistrationServiceDeps = {
   extensionRegistrationRepository: ExtensionRegistrationRepository;
-  logService: LogService;
+  logService: ILogServicePort;
 };
 
 export type ApproveExtensionRegistrationServiceResult =
@@ -20,7 +20,7 @@ export type ApproveExtensionRegistrationServiceResult =
       reason_code: "ok";
     };
 
-export type ApproveExtensionRegistrationCommandHandler = CommandHandler<
+export type IApproveExtensionRegistrationCommandHandlerPort = CommandHandler<
   ApproveExtensionRegistrationCommand,
   ApproveExtensionRegistrationServiceResult
 >;
@@ -28,7 +28,7 @@ export type ApproveExtensionRegistrationCommandHandler = CommandHandler<
 export const makeApproveExtensionRegistrationHandler = ({
   logService,
   extensionRegistrationRepository,
-}: ApproveExtensionRegistrationServiceDeps): ApproveExtensionRegistrationCommandHandler => {
+}: ApproveExtensionRegistrationServiceDeps): IApproveExtensionRegistrationCommandHandlerPort => {
   return {
     execute: (command) => {
       const existing = extensionRegistrationRepository.getById(

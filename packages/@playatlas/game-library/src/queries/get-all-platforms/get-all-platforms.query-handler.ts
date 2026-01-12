@@ -7,14 +7,14 @@ import {
   GetAllPlatformsQueryResult,
 } from "./get-all-platforms.query.types";
 
-export type GetAllPlatformsQueryHandler = QueryHandler<
+export type IGetAllPlatformsQueryHandlerPort = QueryHandler<
   GetAllPlatformsQuery,
   GetAllPlatformsQueryResult
 >;
 
 export const makeGetAllPlatformQueryHandler = ({
   platformRepository,
-}: GetAllPlatformsQueryHandlerDeps): GetAllPlatformsQueryHandler => {
+}: GetAllPlatformsQueryHandlerDeps): IGetAllPlatformsQueryHandlerPort => {
   return {
     execute: ({ ifNoneMatch } = {}) => {
       const platforms = platformRepository.all();

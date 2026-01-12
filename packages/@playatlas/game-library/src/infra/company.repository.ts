@@ -5,7 +5,7 @@ import {
 import z from "zod";
 import { companyMapper } from "../company.mapper";
 import { Company, CompanyId } from "../domain/company.entity";
-import type { CompanyRepository } from "./company.repository.port";
+import type { ICompanyRepositoryPort } from "./company.repository.port";
 
 export const companySchema = z.object({
   Id: z.string(),
@@ -17,7 +17,7 @@ export type CompanyModel = z.infer<typeof companySchema>;
 export const makeCompanyRepository = ({
   getDb,
   logService,
-}: BaseRepositoryDeps): CompanyRepository => {
+}: BaseRepositoryDeps): ICompanyRepositoryPort => {
   const TABLE_NAME = "company";
   const COLUMNS: (keyof CompanyModel)[] = ["Id", "Name"];
   const base = makeBaseRepository<CompanyId, Company, CompanyModel>({
@@ -33,15 +33,15 @@ export const makeCompanyRepository = ({
     },
   });
 
-  const add: CompanyRepository["add"] = (company) => {
+  const add: ICompanyRepositoryPort["add"] = (company) => {
     base._add(company);
   };
 
-  const upsert: CompanyRepository["upsert"] = (company) => {
+  const upsert: ICompanyRepositoryPort["upsert"] = (company) => {
     base._upsert(company);
   };
 
-  const update: CompanyRepository["update"] = (company) => {
+  const update: ICompanyRepositoryPort["update"] = (company) => {
     base._update(company);
   };
 

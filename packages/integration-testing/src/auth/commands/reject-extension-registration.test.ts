@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { RejectExtensionRegistrationCommand } from "@playatlas/auth/commands";
-import { api, factory } from "../../vitest.global.setup";
+import { api, factory } from "../../vitest.setup";
 
 describe("Reject Extension Registration Command Handler", () => {
   it("rejects a pending extension registration", () => {

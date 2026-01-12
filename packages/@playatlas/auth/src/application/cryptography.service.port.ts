@@ -1,4 +1,4 @@
-export type CryptographyService = {
+export type ICryptographyServicePort = {
   hashPassword: (password: string) => Promise<{ salt: string; hash: string }>;
   verifyPassword: (
     password: string,

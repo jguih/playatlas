@@ -2,22 +2,18 @@ import {
   EnvServiceDeps,
   makeEnvService,
   makeSystemConfig,
-  type EnvService,
-  type SystemConfig,
 } from "@playatlas/system/infra";
+import { ISystemModulePort } from "./system.module.port";
 
-export type PlayAtlasApiConfig = Readonly<{
-  getEnvService: () => EnvService;
-  getSystemConfig: () => SystemConfig;
-}>;
+export type SystemModuleDeps = EnvServiceDeps;
 
-export type BootstrapConfigDeps = EnvServiceDeps;
-
-export const bootstrapConfig = ({ env }: BootstrapConfigDeps) => {
+export const makeSystemModule = ({
+  env,
+}: SystemModuleDeps): ISystemModulePort => {
   const _env_service = makeEnvService({ env });
   const _system_config = makeSystemConfig({ envService: _env_service });
 
-  const config: PlayAtlasApiConfig = {
+  const config: ISystemModulePort = {
     getEnvService: () => _env_service,
     getSystemConfig: () => _system_config,
   };
