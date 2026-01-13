@@ -97,7 +97,7 @@ const buildCanonicalHashBase64 = async (props: {
   return canonicalDigestBase64;
 };
 
-describe("Playnite Media Files Handler", () => {
+describe("Playnite Integration / Media Files Handler", () => {
   beforeEach(async () => {
     const dir = api.system.getSystemConfig().getLibFilesDir();
     const entries = await fsAsync.readdir(dir, { withFileTypes: true });

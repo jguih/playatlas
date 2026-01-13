@@ -2,13 +2,13 @@ import type {
 	ExtensionAuthServiceVerifyResult,
 	InstanceAuthServiceVerifyResult,
 } from '@playatlas/auth/application';
-import type { PlayAtlasApi } from '@playatlas/bootstrap/application';
+import type { PlayAtlasApiV1 } from '@playatlas/bootstrap/application';
 import { json } from '@sveltejs/kit';
 import { apiResponse } from '../responses';
 
 export type AuthMiddlewareDeps = {
 	request: Request;
-	api: PlayAtlasApi;
+	api: PlayAtlasApiV1;
 };
 
 export const extensionAuthMiddleware = async (
