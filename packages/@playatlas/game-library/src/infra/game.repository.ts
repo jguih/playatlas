@@ -1,11 +1,15 @@
 import {
+  GameIdParser,
+  gameIdSchema,
+  type GameId,
+} from "@playatlas/common/domain";
+import {
   makeBaseRepository,
   type BaseRepositoryDeps,
 } from "@playatlas/common/infra";
 import z from "zod";
 import type { CompanyId } from "../domain/company.entity";
 import type {
-  GameId,
   GameRelationship,
   GameRelationshipMap,
 } from "../domain/game.entity";
@@ -30,7 +34,7 @@ import type {
 export const GROUPADD_SEPARATOR = ",";
 
 export const gameSchema = z.object({
-  Id: z.string(),
+  Id: gameIdSchema,
   Name: z.string().nullable(),
   Description: z.string().nullable(),
   ReleaseDate: z.string().nullable(),
@@ -216,37 +220,39 @@ export const makeGameRepository = (
       const gameModel = z.optional(gameSchema).parse(result);
       if (!gameModel) return null;
 
+      const modelId = GameIdParser.fromTrusted(gameModel.Id);
+
       let developerIds: CompanyId[] | null = null;
       if (_shouldLoadRelationship(props.load, "developers"))
         developerIds =
           _getRelationshipsFor({
             relationship: "developers",
-            gameIds: [gameModel.Id],
-          }).get(gameModel.Id) ?? [];
+            gameIds: [modelId],
+          }).get(modelId) ?? [];
 
       let publisherIds: CompanyId[] | null = null;
       if (_shouldLoadRelationship(props.load, "publishers"))
         publisherIds =
           _getRelationshipsFor({
             relationship: "publishers",
-            gameIds: [gameModel.Id],
-          }).get(gameModel.Id) ?? [];
+            gameIds: [modelId],
+          }).get(modelId) ?? [];
 
       let genreIds: GenreId[] | null = null;
       if (_shouldLoadRelationship(props.load, "genres"))
         genreIds =
           _getRelationshipsFor({
             relationship: "genres",
-            gameIds: [gameModel.Id],
-          }).get(gameModel.Id) ?? [];
+            gameIds: [modelId],
+          }).get(modelId) ?? [];
 
       let platformIds: PlatformId[] | null = null;
       if (_shouldLoadRelationship(props.load, "platforms"))
         platformIds =
           _getRelationshipsFor({
             relationship: "platforms",
-            gameIds: [gameModel.Id],
-          }).get(gameModel.Id) ?? [];
+            gameIds: [modelId],
+          }).get(modelId) ?? [];
 
       logService.debug(`Found game ${gameModel?.Name}`);
       return gameMapper.toDomain(gameModel, {
@@ -262,28 +268,29 @@ export const makeGameRepository = (
     const result = base._upsert(games);
 
     for (const [game, model, _] of result) {
+      const modelId = GameIdParser.fromTrusted(model.Id);
       if (game.relationships.developers.isLoaded())
         _updateRelationshipFor({
           relationship: "developers",
-          gameId: model.Id,
+          gameId: modelId,
           newRelationshipIds: game.relationships.developers.get(),
         });
       if (game.relationships.publishers.isLoaded())
         _updateRelationshipFor({
           relationship: "publishers",
-          gameId: model.Id,
+          gameId: modelId,
           newRelationshipIds: game.relationships.publishers.get(),
         });
       if (game.relationships.genres.isLoaded())
         _updateRelationshipFor({
           relationship: "genres",
-          gameId: model.Id,
+          gameId: modelId,
           newRelationshipIds: game.relationships.genres.get(),
         });
       if (game.relationships.platforms.isLoaded())
         _updateRelationshipFor({
           relationship: "platforms",
-          gameId: model.Id,
+          gameId: modelId,
           newRelationshipIds: game.relationships.platforms.get(),
         });
     }
@@ -327,7 +334,9 @@ export const makeGameRepository = (
       const stmt = db.prepare(query);
       const rows = stmt.all();
       const gameModels = z.array(gameSchema).parse(rows);
-      const gameModelsIds = gameModels.map((m) => m.Id);
+      const gameModelsIds = gameModels
+        .map((m) => m.Id)
+        .map(GameIdParser.fromTrusted);
 
       let developerIdsMap: Map<GameId, CompanyId[]> = new Map();
       if (_shouldLoadRelationship(props.load, "developers"))
@@ -358,29 +367,30 @@ export const makeGameRepository = (
         });
 
       const games = gameModels.map((gameModel) => {
+        const modelId = GameIdParser.fromTrusted(gameModel.Id);
         const developerIds: CompanyId[] | null = _shouldLoadRelationship(
           props.load,
           "developers"
         )
-          ? developerIdsMap.get(gameModel.Id) ?? []
+          ? developerIdsMap.get(modelId) ?? []
           : null;
         const publisherIds: CompanyId[] | null = _shouldLoadRelationship(
           props.load,
           "publishers"
         )
-          ? publisherIdsMap.get(gameModel.Id) ?? []
+          ? publisherIdsMap.get(modelId) ?? []
           : null;
         const genreIds: GenreId[] | null = _shouldLoadRelationship(
           props.load,
           "genres"
         )
-          ? genreIdsMap.get(gameModel.Id) ?? []
+          ? genreIdsMap.get(modelId) ?? []
           : null;
         const platformIds: PlatformId[] | null = _shouldLoadRelationship(
           props.load,
           "platforms"
         )
-          ? platformIdsMap.get(gameModel.Id) ?? []
+          ? platformIdsMap.get(modelId) ?? []
           : null;
         return gameMapper.toDomain(gameModel, {
           developerIds,

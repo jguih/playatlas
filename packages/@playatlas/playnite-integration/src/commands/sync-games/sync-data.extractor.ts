@@ -1,3 +1,4 @@
+import { GameIdParser } from "@playatlas/common/domain";
 import {
   makeCompany,
   makeCompletionStatus,
@@ -70,7 +71,7 @@ export const extractSyncData = (
 
     games.push(
       makeGame({
-        id: dto.Id,
+        id: GameIdParser.fromExternal(dto.Id),
         name: dto.Name,
         added: dto.Added ? new Date(dto.Added) : null,
         contentHash: dto.ContentHash,

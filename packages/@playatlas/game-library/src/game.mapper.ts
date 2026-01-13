@@ -1,4 +1,5 @@
 import { type EntityMapper } from "@playatlas/common/application";
+import { GameIdParser } from "@playatlas/common/domain";
 import { MakeGameRelationshipProps } from "./domain";
 import { type Game, makeGame } from "./domain/game.entity";
 import { GameResponseDto } from "./dtos/game.response.dto";
@@ -74,7 +75,7 @@ export const gameMapper: GameMapper = {
     relationships: MakeGameRelationshipProps = {}
   ): Game => {
     const entity: Game = makeGame({
-      id: game.Id,
+      id: GameIdParser.fromTrusted(game.Id),
       name: game.Name,
       description: game.Description,
       releaseDate: game.ReleaseDate ? new Date(game.ReleaseDate) : null,

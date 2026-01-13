@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import { GameIdParser } from "@playatlas/common/domain";
 import { TestEntityFactory } from "@playatlas/common/testing";
 import { type CompanyId } from "../domain/company.entity";
 import { type CompletionStatusId } from "../domain/completion-status.entity";
@@ -58,7 +59,7 @@ export const makeGameFactory = ({
     );
 
     return makeGame({
-      id: props.id ?? faker.string.uuid(),
+      id: GameIdParser.fromExternal(props.id ?? faker.string.uuid()),
       name: propOrDefault(props.name, faker.commerce.productName()),
       description: propOrDefault(props.description, faker.lorem.sentence()),
       releaseDate: propOrDefault(props.releaseDate, faker.date.past()),

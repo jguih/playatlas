@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import { GameIdParser } from "@playatlas/common/domain";
 import { api, factory, root } from "../vitest.global.setup";
 
 describe("Game Library / Game", () => {
@@ -156,7 +157,11 @@ describe("Game Library / Game", () => {
     if (!oneResult) throw new Error("Could not find random game");
 
     expect(result.data).toHaveLength(listLength);
-    expect(result.data.every((g) => gameIds.includes(g.Id))).toBeTruthy();
+    expect(
+      result.data.every((g) =>
+        gameIds.includes(GameIdParser.fromExternal(g.Id))
+      )
+    ).toBeTruthy();
     expect(oneResult.Name).toBe(oneGame.getName());
     expect(oneResult.Description).toBe(oneGame.getDescription());
     expect(oneResult.ReleaseDate).toBe(

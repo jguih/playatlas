@@ -57,4 +57,33 @@ describe("Game Sessions", () => {
 
     unsubscribe();
   });
+
+  it("fails when game doesn't exist", () => {
+    // Arrange
+    const { events, unsubscribe } = recordDomainEvents();
+    const now = new Date().toISOString();
+    const sessionId = faker.string.uuid();
+    const gameId = faker.string.uuid();
+
+    const requestDto: OpenGameSessionRequestDto = {
+      ClientUtcNow: now,
+      GameId: gameId,
+      SessionId: sessionId,
+    };
+
+    const command = makeOpenGameSessionCommand(requestDto);
+
+    // Act
+    const result = api.gameSession.commands
+      .getOpenGameSessionCommandHandler()
+      .execute(command);
+
+    // Assert
+    expect(result.success).toBe(false);
+    expect(result.reason_code).toBe("game_not_found");
+
+    expect(events).toHaveLength(0);
+
+    unsubscribe();
+  });
 });

@@ -1,4 +1,4 @@
-import { ExtensionRegistrationId } from "../domain";
+import { ExtensionRegistrationId, GameId } from "../domain";
 import { GameSessionId } from "../domain/value-object/game-session-id";
 
 export type DomainEvent = { id: string; occurredAt: Date } & (
@@ -20,15 +20,15 @@ export type DomainEvent = { id: string; occurredAt: Date } & (
     }
   | {
       name: "opened-game-session";
-      payload: { gameId: string; sessionId: GameSessionId };
+      payload: { gameId: GameId; sessionId: GameSessionId };
     }
   | {
       name: "closed-game-session";
-      payload: { gameId: string; sessionId: GameSessionId };
+      payload: { gameId: GameId; sessionId: GameSessionId };
     }
   | {
       name: "staled-game-session";
-      payload: { gameId: string; sessionId: GameSessionId };
+      payload: { gameId: GameId; sessionId: GameSessionId };
     }
 );
 

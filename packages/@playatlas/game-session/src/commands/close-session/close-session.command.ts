@@ -1,9 +1,10 @@
+import { GameId } from "@playatlas/common/domain";
 import type { CloseGameSessionRequestDto } from "./close-session.request.dto";
 
 export type CloseGameSessionCommand = {
   clientUtcNow: Date;
   sessionId: string;
-  gameId: string;
+  gameId: GameId;
   startTime: Date;
   endTime: Date;
   duration: number;

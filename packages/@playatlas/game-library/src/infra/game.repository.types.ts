@@ -1,5 +1,5 @@
+import type { GameId } from "@playatlas/common/domain";
 import {
-  type GameId,
   type GameRelationship,
   type GameRelationshipMap,
 } from "../domain/game.entity";

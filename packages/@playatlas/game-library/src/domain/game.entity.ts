@@ -4,13 +4,15 @@ import {
   GameImageType,
   type Relationship,
 } from "@playatlas/common/common";
-import { BaseEntity, InvalidStateError } from "@playatlas/common/domain";
+import {
+  BaseEntity,
+  type GameId,
+  InvalidStateError,
+} from "@playatlas/common/domain";
 import { CompanyId } from "./company.entity";
 import { MakeGameProps } from "./game.entity.types";
 import { GenreId } from "./genre.entity";
 import { PlatformId } from "./platform.entity";
-
-export type GameId = string;
 
 export type GameRelationshipMap = {
   developers: CompanyId;
@@ -89,6 +91,11 @@ export const makeGame = (props: MakeGameProps): Game => {
       publishers: createRelationship(props.publisherIds ?? null),
     },
     setImageReference: ({ name, path }) => {
+      if (validation.isNullOrEmptyString(path.filename))
+        throw new InvalidStateError(
+          "Filename must not be an empty string or null"
+        );
+
       const filepath = `${_id}\\${path.filename}`;
       switch (name) {
         case "background": {
