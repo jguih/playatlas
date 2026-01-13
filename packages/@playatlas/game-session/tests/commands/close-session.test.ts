@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import { GameIdParser, GameSessionIdParser } from "@playatlas/common/domain";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   makeCloseGameSessionCommand,
@@ -18,7 +19,7 @@ import {
   type GameSession,
 } from "../../src/domain/game-session.entity";
 import {
-  GameSessionAlreadyClosedError,
+  GameSessionNotInProgressError,
   InvalidGameSessionDurationError,
 } from "../../src/domain/game-session.errors";
 
@@ -39,7 +40,9 @@ let deps = {
     getAllBy: vi.fn(),
   },
   gameInfoProvider: {
-    getGameInfo: (gameId) => gameId,
+    getGameInfo: (gameId) => {
+      return { name: faker.lorem.words({ min: 1, max: 3 }) };
+    },
   },
 } satisfies CloseGameSessionServiceDeps;
 
@@ -48,16 +51,16 @@ const service = makeCloseGameSessionCommandHandler({ ...deps });
 const factory = {
   makeInProgressSession: (): GameSession =>
     makeGameSession({
-      sessionId: faker.string.uuid(),
+      sessionId: GameSessionIdParser.fromExternal(faker.string.uuid()),
       startTime: faker.date.recent(),
-      gameId: faker.string.uuid(),
+      gameId: GameIdParser.fromExternal(faker.string.uuid()),
       gameName: faker.lorem.words(3),
     }),
   makeClosedSession: (now: Date): GameSession =>
     makeClosedGameSession({
-      sessionId: faker.string.uuid(),
+      sessionId: GameSessionIdParser.fromExternal(faker.string.uuid()),
       startTime: faker.date.recent(),
-      gameId: faker.string.uuid(),
+      gameId: GameIdParser.fromExternal(faker.string.uuid()),
       gameName: faker.lorem.words(3),
       duration: faker.number.int({ min: 0, max: 3200 }),
       endTime: now,
@@ -169,7 +172,7 @@ describe("Close Game Session Service", () => {
       closeGameSessionRequestDtoSchema.parse(requestDto)
     ).not.toThrow();
     expect(() => service.execute(command)).toThrowError(
-      GameSessionAlreadyClosedError
+      GameSessionNotInProgressError
     );
     expect(deps.gameSessionRepository.update).not.toHaveBeenCalled();
   });

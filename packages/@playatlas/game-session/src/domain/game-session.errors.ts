@@ -1,5 +1,6 @@
+import { GameSessionId } from "@playatlas/common/domain";
 import { sessionStatus } from "./game-session.constants";
-import type { GameSessionDuration, GameSessionId } from "./game-session.entity";
+import { GameSessionDuration } from "./game-session.entity";
 
 export class GameSessionError extends Error {
   constructor(message: string) {
@@ -11,18 +12,6 @@ export class GameSessionError extends Error {
 export class GameSessionNotInProgressError extends GameSessionError {
   constructor() {
     super("Cannot close a session that is not in progress");
-  }
-}
-
-export class GameSessionAlreadyClosedError extends GameSessionError {
-  constructor() {
-    super("Cannot close or stale an already closed session");
-  }
-}
-
-export class GameSessionAlreadyStaleError extends GameSessionError {
-  constructor() {
-    super("Cannot close or stale an already stale session");
   }
 }
 

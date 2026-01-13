@@ -6,7 +6,6 @@ import {
   InvalidStateError,
 } from "@playatlas/common/domain";
 import { extensionRegistrationStatus } from "./extension-registration.constants";
-import { buildExtensionRegistrationPropsSchema } from "./extension-registration.entity.schemas";
 import {
   BuildExtensionRegistrationProps,
   MakeExtensionRegistrationProps,
@@ -40,12 +39,6 @@ export type ExtensionRegistration = BaseEntity<ExtensionRegistrationId> &
 const buildExtensionRegistration = (
   props: BuildExtensionRegistrationProps
 ): ExtensionRegistration => {
-  const result = buildExtensionRegistrationPropsSchema.safeParse(props);
-  if (!result.success)
-    throw new InvalidStateError(
-      `Invalid props passed to entity factory: ${result.error.message}`
-    );
-
   const now = new Date();
   let _id: ExtensionRegistrationId | null = props.id ?? null;
   const _extension_id = props.extensionId;

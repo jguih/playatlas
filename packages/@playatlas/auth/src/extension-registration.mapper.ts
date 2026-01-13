@@ -1,4 +1,5 @@
 import type { EntityMapper } from "@playatlas/common/application";
+import { ExtensionRegistrationIdParser } from "@playatlas/common/domain";
 import {
   rehydrateExtensionRegistration,
   type ExtensionRegistration,
@@ -40,7 +41,7 @@ const _toDto: ExtensionRegistrationMapper["toDto"] = (entity) => {
 export const extensionRegistrationMapper: ExtensionRegistrationMapper = {
   toDomain: (model) => {
     const entity = rehydrateExtensionRegistration({
-      id: model.Id,
+      id: ExtensionRegistrationIdParser.fromTrusted(model.Id),
       extensionId: model.ExtensionId,
       extensionVersion: model.ExtensionVersion,
       hostname: model.Hostname,

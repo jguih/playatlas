@@ -1,9 +1,14 @@
-import { GameId, GameIdParser } from "@playatlas/common/domain";
+import {
+  GameId,
+  GameIdParser,
+  GameSessionId,
+  GameSessionIdParser,
+} from "@playatlas/common/domain";
 import type { OpenGameSessionRequestDto } from "./open-session.request.dto";
 
 export type OpenGameSessionCommand = {
   clientUtcNow: string;
-  sessionId: string;
+  sessionId: GameSessionId;
   gameId: GameId;
 };
 
@@ -12,7 +17,7 @@ export const makeOpenGameSessionCommand = (
 ): OpenGameSessionCommand => {
   return {
     clientUtcNow: requestDto.ClientUtcNow,
-    sessionId: requestDto.SessionId,
+    sessionId: GameSessionIdParser.fromExternal(requestDto.SessionId),
     gameId: GameIdParser.fromExternal(requestDto.GameId),
   };
 };

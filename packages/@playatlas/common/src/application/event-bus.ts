@@ -9,9 +9,11 @@ export const makeEventBus = ({ logService }: EventBusDeps) => {
   const listeners = new Set<Listener>();
 
   const emit = (event: DomainEvent) => {
+    logService.debug(
+      `Emitted event (Name: ${event.name}, Id: ${event.id}, OccurredAt: ${event.occurredAt})`
+    );
     for (const listener of listeners) {
       listener(event);
-      logService.debug(`Emitted event ${event.name}`);
     }
   };
 

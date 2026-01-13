@@ -1,3 +1,4 @@
+import { GameIdParser, GameSessionIdParser } from "@playatlas/common/domain";
 import {
   makeClosedGameSession,
   makeGameSession,
@@ -29,36 +30,42 @@ export const gameSessionMapper = {
       case "closed": {
         if (session.EndTime === null || session.Duration === null) {
           throw new InvalidClosedGameSessionError({
-            sessionId: session.SessionId,
+            sessionId: GameSessionIdParser.fromTrusted(session.SessionId),
           });
         }
         return makeClosedGameSession({
-          sessionId: session.SessionId,
+          sessionId: GameSessionIdParser.fromTrusted(session.SessionId),
           duration: session.Duration,
           endTime: new Date(session.EndTime),
           startTime: new Date(session.StartTime),
-          gameId: session.GameId,
+          gameId: session.GameId
+            ? GameIdParser.fromTrusted(session.GameId)
+            : null,
           gameName: session.GameName,
         });
       }
       case "in_progress": {
         if (session.EndTime !== null || session.Duration !== null) {
           throw new InvalidInProgressGameSessionError({
-            sessionId: session.SessionId,
+            sessionId: GameSessionIdParser.fromTrusted(session.SessionId),
           });
         }
         return makeGameSession({
-          sessionId: session.SessionId,
+          sessionId: GameSessionIdParser.fromTrusted(session.SessionId),
           startTime: new Date(session.StartTime),
-          gameId: session.GameId,
+          gameId: session.GameId
+            ? GameIdParser.fromTrusted(session.GameId)
+            : null,
           gameName: session.GameName,
         });
       }
       case "stale": {
         return makeStaleGameSession({
-          sessionId: session.SessionId,
+          sessionId: GameSessionIdParser.fromTrusted(session.SessionId),
           startTime: new Date(session.StartTime),
-          gameId: session.GameId,
+          gameId: session.GameId
+            ? GameIdParser.fromTrusted(session.GameId)
+            : null,
           gameName: session.GameName,
         });
       }

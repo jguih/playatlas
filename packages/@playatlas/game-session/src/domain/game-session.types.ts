@@ -1,3 +1,4 @@
+import type { GameId, GameSessionId } from "@playatlas/common/domain";
 import type { sessionStatus } from "./game-session.constants";
 import type { GameSession } from "./game-session.entity";
 
@@ -12,15 +13,25 @@ export type GameSessionStatus =
 export type GameActivity = {
   status: "in_progress" | "not_playing";
   gameName: string | null;
-  gameId: string | null;
+  gameId: GameId | null;
   totalPlaytime: number;
   sessions: GameSession[];
 };
 
-export type MakeGameSessionProps = {
-  sessionId: string;
+export type BuildGameSessionProps = {
+  sessionId: GameSessionId;
   startTime: Date;
-  gameId?: string | null;
+  status: GameSessionStatus;
+  gameId?: GameId | null;
+  gameName?: string | null;
+  endTime?: Date;
+  duration?: number;
+};
+
+export type MakeGameSessionProps = {
+  sessionId: GameSessionId;
+  startTime: Date;
+  gameId?: GameId | null;
   gameName?: string | null;
 };
 

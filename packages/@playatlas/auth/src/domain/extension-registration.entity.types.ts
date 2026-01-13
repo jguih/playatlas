@@ -1,18 +1,23 @@
-import z from "zod";
-import {
-  buildExtensionRegistrationPropsSchema,
-  makeExtensionRegistrationPropsSchema,
-  rehydrateExtensionRegistrationPropsSchema,
-} from "./extension-registration.entity.schemas";
+import { ExtensionRegistrationId } from "@playatlas/common/domain";
+import { ExtensionRegistrationStatus } from "./extension-registration.entity";
 
-export type BuildExtensionRegistrationProps = z.infer<
-  typeof buildExtensionRegistrationPropsSchema
->;
+type Base = {
+  id: ExtensionRegistrationId;
+  status: ExtensionRegistrationStatus;
+  createdAt: Date;
+  lastUpdatedAt: Date;
+};
 
-export type MakeExtensionRegistrationProps = z.infer<
-  typeof makeExtensionRegistrationPropsSchema
->;
+type CommonProps = {
+  extensionId: string;
+  publicKey: string;
+  hostname: string | null;
+  os: string | null;
+  extensionVersion: string | null;
+};
 
-export type RehydrateExtensionRegistrationProps = z.infer<
-  typeof rehydrateExtensionRegistrationPropsSchema
->;
+export type BuildExtensionRegistrationProps = Partial<Base> & CommonProps;
+
+export type MakeExtensionRegistrationProps = CommonProps;
+
+export type RehydrateExtensionRegistrationProps = Base & CommonProps;

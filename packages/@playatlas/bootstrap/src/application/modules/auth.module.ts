@@ -91,10 +91,12 @@ export const makeAuthModule = ({
         "RemoveExtensionRegistrationCommandHandler"
       ),
       extensionRegistrationRepository: _extension_registration_repo,
+      eventBus,
     });
   const _register_extension_command_handler = makeRegisterExtensionHandler({
     extensionRegistrationRepository: _extension_registration_repo,
     logService: logServiceFactory.build("RegisterExtensionCommandHandler"),
+    eventBus,
   });
   const _get_all_extension_registrations_query_handler =
     makeGetAllExtensionRegistrationsQueryHandler({

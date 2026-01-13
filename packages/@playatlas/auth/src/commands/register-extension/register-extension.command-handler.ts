@@ -5,6 +5,7 @@ import { RegisterExtensionCommandHandlerDeps } from "./register-extension.comman
 export const makeRegisterExtensionHandler = ({
   extensionRegistrationRepository: repository,
   logService,
+  eventBus,
 }: RegisterExtensionCommandHandlerDeps): IRegisterExtensionCommandHandlerPort => {
   return {
     execute: (command) => {
@@ -40,6 +41,13 @@ export const makeRegisterExtensionHandler = ({
         publicKey: command.publicKey,
       });
       repository.add(registration);
+
+      eventBus.emit({
+        id: crypto.randomUUID(),
+        name: "extension-registration-created",
+        occurredAt: new Date(),
+        payload: { registrationId: registration.getId() },
+      });
 
       return {
         success: true,

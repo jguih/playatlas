@@ -7,6 +7,7 @@ import {
 } from "@playatlas/auth/commands";
 import { ExtensionRegistration } from "@playatlas/auth/domain";
 import { DomainEvent } from "@playatlas/common/application";
+import { ExtensionRegistrationIdParser } from "@playatlas/common/domain";
 import { api, factory } from "../vitest.global.setup";
 
 const buildRegisterCommand = (): {
@@ -33,8 +34,6 @@ const recordDomainEvents = () => {
 describe("Auth / Extension Registration", () => {
   it("approves an extension registration", () => {
     // Arrange
-    const recordedEvents = recordDomainEvents();
-
     const { command } = buildRegisterCommand();
     const registerResult = api.auth.commands
       .getRegisterExtensionCommandHandler()
@@ -43,6 +42,8 @@ describe("Auth / Extension Registration", () => {
       ? registerResult.registrationId
       : null;
     expect(registrationId).toBeDefined();
+
+    const recordedEvents = recordDomainEvents();
 
     // Act
     const approveResult = api.auth.commands
@@ -80,7 +81,11 @@ describe("Auth / Extension Registration", () => {
     // Act
     const rejectResult = api.auth.commands
       .getRejectExtensionRegistrationCommandHandler()
-      .execute({ registrationId: faker.number.int() });
+      .execute({
+        registrationId: ExtensionRegistrationIdParser.fromExternal(
+          faker.number.int()
+        ),
+      });
     const queryResult = api.auth.queries
       .getGetAllExtensionRegistrationsQueryHandler()
       .execute();
@@ -103,7 +108,11 @@ describe("Auth / Extension Registration", () => {
     // Act
     const approveResult = api.auth.commands
       .getApproveExtensionRegistrationCommandHandler()
-      .execute({ registrationId: faker.number.int() });
+      .execute({
+        registrationId: ExtensionRegistrationIdParser.fromExternal(
+          faker.number.int()
+        ),
+      });
     const queryResult = api.auth.queries
       .getGetAllExtensionRegistrationsQueryHandler()
       .execute();
@@ -126,7 +135,11 @@ describe("Auth / Extension Registration", () => {
     // Act
     const revokeResult = api.auth.commands
       .getRevokeExtensionRegistrationCommandHandler()
-      .execute({ registrationId: faker.number.int() });
+      .execute({
+        registrationId: ExtensionRegistrationIdParser.fromExternal(
+          faker.number.int()
+        ),
+      });
     const queryResult = api.auth.queries
       .getGetAllExtensionRegistrationsQueryHandler()
       .execute();
@@ -144,8 +157,6 @@ describe("Auth / Extension Registration", () => {
 
   it("gracefully handles approving an already approved registration", () => {
     // Arrange
-    const recordedEvents = recordDomainEvents();
-
     const { command } = buildRegisterCommand();
     const registerResult = api.auth.commands
       .getRegisterExtensionCommandHandler()
@@ -154,6 +165,8 @@ describe("Auth / Extension Registration", () => {
       ? registerResult.registrationId
       : null;
     expect(registrationId).toBeDefined();
+
+    const recordedEvents = recordDomainEvents();
 
     const approveCommand: ApproveExtensionRegistrationCommand = {
       registrationId: registrationId!,
@@ -195,8 +208,6 @@ describe("Auth / Extension Registration", () => {
 
   it("does not approve rejected extension registration", () => {
     // Arrange
-    const recordedEvents = recordDomainEvents();
-
     const { command } = buildRegisterCommand();
     const registerResult = api.auth.commands
       .getRegisterExtensionCommandHandler()
@@ -205,6 +216,8 @@ describe("Auth / Extension Registration", () => {
       ? registerResult.registrationId
       : null;
     expect(registrationId).toBeDefined();
+
+    const recordedEvents = recordDomainEvents();
 
     const rejectCommand: RejectExtensionRegistrationCommand = {
       registrationId: registrationId!,
@@ -249,8 +262,6 @@ describe("Auth / Extension Registration", () => {
 
   it("revokes approved extension registration", () => {
     // Arrange
-    const recordedEvents = recordDomainEvents();
-
     const { command } = buildRegisterCommand();
     const registerResult = api.auth.commands
       .getRegisterExtensionCommandHandler()
@@ -259,6 +270,8 @@ describe("Auth / Extension Registration", () => {
       ? registerResult.registrationId
       : null;
     expect(registrationId).toBeDefined();
+
+    const recordedEvents = recordDomainEvents();
 
     const approveCommand: ApproveExtensionRegistrationCommand = {
       registrationId: registrationId!,
