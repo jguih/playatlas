@@ -39,7 +39,7 @@ let deps = {
     getAllBy: vi.fn(),
   },
   gameInfoProvider: {
-    getGameName: (gameId) => gameId,
+    getGameInfo: (gameId) => gameId,
   },
 } satisfies CloseGameSessionServiceDeps;
 

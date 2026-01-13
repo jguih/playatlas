@@ -45,5 +45,5 @@ export type BaseRepositoryPort<TEntityId, TEntity, TPersistence> = {
     context?: string,
     shouldLog?: boolean
   ) => T;
-  runTransaction: (fn: () => void) => void;
+  runTransaction: <T>(fn: (props: { db: DatabaseSync }) => T) => T;
 };

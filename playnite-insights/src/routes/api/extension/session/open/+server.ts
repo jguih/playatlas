@@ -4,7 +4,6 @@ import {
 	makeOpenGameSessionCommand,
 	openGameSessionRequestDtoSchema,
 } from '@playatlas/game-session/commands';
-import { defaultSSEManager } from '@playnite-insights/infra';
 import { emptyResponse } from '@playnite-insights/lib/client';
 import { type RequestHandler } from '@sveltejs/kit';
 
@@ -33,8 +32,6 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) =>
 		const command = makeOpenGameSessionCommand(data);
 
 		api.gameSession.commands.getOpenGameSessionCommandHandler().execute(command);
-
-		defaultSSEManager.broadcast({ type: 'sessionOpened', data: true });
 
 		return emptyResponse(200);
 	});

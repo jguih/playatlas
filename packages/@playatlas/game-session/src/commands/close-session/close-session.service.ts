@@ -32,7 +32,7 @@ export const makeCloseGameSessionCommandHandler = ({
     ): CloseGameSessionServiceResult => {
       const session = gameSessionRepository.getById(command.sessionId);
       const serverUtcNow = Date.now();
-      const gameName = gameInfoProvider.getGameName(command.gameId);
+      const gameName = gameInfoProvider.getGameInfo(command.gameId);
 
       if (!session) {
         logService.warning(

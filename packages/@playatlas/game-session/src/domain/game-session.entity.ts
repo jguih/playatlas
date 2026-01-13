@@ -1,3 +1,4 @@
+import type { GameSessionId as CommonGameSessionId } from "@playatlas/common/domain";
 import { BaseEntity } from "@playatlas/common/domain";
 import {
   EndTimeBeforeStartTimeError,
@@ -13,7 +14,7 @@ import type {
   MakeGameSessionProps,
 } from "./game-session.types";
 
-export type GameSessionId = string;
+export type GameSessionId = CommonGameSessionId;
 type GameSessionStartTime = Date;
 type GameSessionEndTime = Date | null;
 type GameSessionGameId = string | null;

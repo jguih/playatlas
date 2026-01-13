@@ -75,17 +75,21 @@ export const makeBaseRepository = <
   ) => {
     const db = getDb();
     const start = performance.now();
+
     try {
       const result = fn({ db });
+
       const duration = performance.now() - start;
       const message = `Repository call ${
         context ? context : ""
       } took ${duration.toFixed(1)}ms`;
+
       if (shouldLog) {
         if (duration >= PERFORMANCE_WARN_THRESHOLD_MS)
           logService.warning(message);
         else logService.debug(message);
       }
+
       return result;
     } catch (error) {
       const duration = performance.now() - start;
@@ -105,12 +109,15 @@ export const makeBaseRepository = <
     TPersistence
   >["runTransaction"] = (fn) => {
     const db = getDb();
-    db.exec("BEGIN TRANSACTION");
+    const savepoint = `sp_${crypto.randomUUID()}`;
+
+    db.exec(`SAVEPOINT "${savepoint}"`);
     try {
-      fn();
-      db.exec("COMMIT");
+      const result = fn({ db });
+      db.exec(`RELEASE SAVEPOINT "${savepoint}"`);
+      return result;
     } catch (error) {
-      db.exec("ROLLBACK");
+      db.exec(`ROLLBACK TO SAVEPOINT "${savepoint}"`);
       throw error;
     }
   };
@@ -121,26 +128,23 @@ export const makeBaseRepository = <
   ) => {
     const entities = Array.isArray(entity) ? entity : [entity];
 
-    return run(({ db }) => {
-      const stmt = db.prepare(insertSql);
-      const results: Array<
-        [TEntity, TPersistence, { lastInsertRowid: number | bigint }]
-      > = [];
+    return run(() => {
+      return runTransaction(({ db }) => {
+        const stmt = db.prepare(insertSql);
+        const results: Array<
+          [TEntity, TPersistence, { lastInsertRowid: number | bigint }]
+        > = [];
 
-      for (const entity of entities) {
-        try {
+        for (const entity of entities) {
           entity.validate();
           const model = (options.toPersistence ?? mapper.toPersistence)(entity);
           const params = insertColumns.map((col) => model[col]);
           const { lastInsertRowid } = stmt.run(...(params as SQLInputValue[]));
           results.push([entity, model, { lastInsertRowid }]);
           logService.debug(`Added record with id ${lastInsertRowid}`);
-        } catch (error) {
-          logService.error(`Failed to persist record`, error);
-          continue;
         }
-      }
-      return results;
+        return results;
+      });
     }, `add(${entities.length} entity(s))`);
   };
 
@@ -214,34 +218,25 @@ export const makeBaseRepository = <
   >["_upsert"] = (entity, options = {}) => {
     const entities = Array.isArray(entity) ? entity : [entity];
 
-    return run(({ db }) => {
-      const stmt = db.prepare(upsertSql);
-      const results: Array<
-        [TEntity, TPersistence, { lastInsertRowid: number | bigint }]
-      > = [];
+    return run(() => {
+      return runTransaction(({ db }) => {
+        const stmt = db.prepare(upsertSql);
+        const results: Array<
+          [TEntity, TPersistence, { lastInsertRowid: number | bigint }]
+        > = [];
 
-      for (const entity of entities) {
-        try {
-          runTransaction(() => {
-            entity.validate();
-            const model = (options.toPersistence ?? mapper.toPersistence)(
-              entity
-            );
-            const params = insertColumns.map((col) => model[col]);
-            const { lastInsertRowid } = stmt.run(
-              ...(params as SQLInputValue[])
-            );
-            results.push([entity, model, { lastInsertRowid }]);
-            const id = autoIncrementId ? lastInsertRowid : entity.getSafeId();
-            logService.debug(`Updated or added record with id ${id}`);
-          });
-        } catch (error) {
-          logService.error(`Failed to add or update record`, error);
-          continue;
+        for (const entity of entities) {
+          entity.validate();
+          const model = (options.toPersistence ?? mapper.toPersistence)(entity);
+          const params = insertColumns.map((col) => model[col]);
+          const { lastInsertRowid } = stmt.run(...(params as SQLInputValue[]));
+          results.push([entity, model, { lastInsertRowid }]);
+          const id = autoIncrementId ? lastInsertRowid : entity.getSafeId();
+          logService.debug(`Updated or added record with id ${id}`);
         }
-      }
 
-      return results;
+        return results;
+      });
     }, `upsert()`);
   };
 
