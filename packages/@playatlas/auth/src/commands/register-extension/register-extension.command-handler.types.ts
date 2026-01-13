@@ -6,7 +6,7 @@ export type RegisterExtensionCommandResult =
   | {
       success: false;
       reason: string;
-      reason_code: "not_found" | "invalid_operation";
+      reason_code: "not_found" | "extension_already_registered_and_is_rejected";
     }
   | {
       success: true;

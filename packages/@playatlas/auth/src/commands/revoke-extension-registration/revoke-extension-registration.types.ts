@@ -14,7 +14,10 @@ export type RevokeExtensionRegistrationCommandResult =
   | {
       success: false;
       reason: string;
-      reason_code: "not_found" | "invalid_operation";
+      reason_code:
+        | "not_found"
+        | "cannot_revoke_pending_registration"
+        | "cannot_revoke_non_trusted_registration";
     }
   | {
       success: true;

@@ -27,13 +27,13 @@ export const makeApproveExtensionRegistrationHandler = ({
       if (existing.isRejected())
         return {
           success: false,
-          reason_code: "invalid_operation",
+          reason_code: "cannot_approve_rejected_registration",
           reason: "Cannot approve a rejected extension registration",
         };
       if (!existing.isPending())
         return {
           success: false,
-          reason_code: "invalid_operation",
+          reason_code: "cannot_approve_non_pending_registration",
           reason: "Extension registration is not pending",
         };
 

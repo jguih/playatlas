@@ -24,13 +24,16 @@ const buildRegisterCommand = (): {
   return { registration, command };
 };
 
+const recordDomainEvents = () => {
+  const events: DomainEvent[] = [];
+  api.getEventBus().subscribe((event) => events.push(event));
+  return events;
+};
+
 describe("Auth / Extension Registration", () => {
   it("approves an extension registration", () => {
     // Arrange
-    const recordedEvents: DomainEvent[] = [];
-    api.getEventBus().subscribe((event) => {
-      recordedEvents.push(event);
-    });
+    const recordedEvents = recordDomainEvents();
 
     const { command } = buildRegisterCommand();
     const registerResult = api.auth.commands
@@ -72,10 +75,7 @@ describe("Auth / Extension Registration", () => {
 
   it("gracefully handles rejecting a registration that doesn't exist", () => {
     // Arrange
-    const recordedEvents: DomainEvent[] = [];
-    api.getEventBus().subscribe((event) => {
-      recordedEvents.push(event);
-    });
+    const recordedEvents = recordDomainEvents();
 
     // Act
     const rejectResult = api.auth.commands
@@ -98,10 +98,7 @@ describe("Auth / Extension Registration", () => {
 
   it("gracefully handles approving a registration that doesn't exist", () => {
     // Arrange
-    const recordedEvents: DomainEvent[] = [];
-    api.getEventBus().subscribe((event) => {
-      recordedEvents.push(event);
-    });
+    const recordedEvents = recordDomainEvents();
 
     // Act
     const approveResult = api.auth.commands
@@ -124,10 +121,7 @@ describe("Auth / Extension Registration", () => {
 
   it("gracefully handles revoking a registration that doesn't exist", () => {
     // Arrange
-    const recordedEvents: DomainEvent[] = [];
-    api.getEventBus().subscribe((event) => {
-      recordedEvents.push(event);
-    });
+    const recordedEvents = recordDomainEvents();
 
     // Act
     const revokeResult = api.auth.commands
@@ -150,10 +144,7 @@ describe("Auth / Extension Registration", () => {
 
   it("gracefully handles approving an already approved registration", () => {
     // Arrange
-    const recordedEvents: DomainEvent[] = [];
-    api.getEventBus().subscribe((event) => {
-      recordedEvents.push(event);
-    });
+    const recordedEvents = recordDomainEvents();
 
     const { command } = buildRegisterCommand();
     const registerResult = api.auth.commands
@@ -204,10 +195,7 @@ describe("Auth / Extension Registration", () => {
 
   it("does not approve rejected extension registration", () => {
     // Arrange
-    const recordedEvents: DomainEvent[] = [];
-    api.getEventBus().subscribe((event) => {
-      recordedEvents.push(event);
-    });
+    const recordedEvents = recordDomainEvents();
 
     const { command } = buildRegisterCommand();
     const registerResult = api.auth.commands
@@ -242,7 +230,9 @@ describe("Auth / Extension Registration", () => {
     expect(rejectResult.reason_code).toBe("extension_registration_rejected");
 
     expect(approveResult.success).toBe(false);
-    expect(approveResult.reason_code).toBe("invalid_operation");
+    expect(approveResult.reason_code).toBe(
+      "cannot_approve_rejected_registration"
+    );
 
     expect(queryResult.type).toBe("ok");
     expect(registrations).toHaveLength(1);
@@ -259,10 +249,7 @@ describe("Auth / Extension Registration", () => {
 
   it("revokes approved extension registration", () => {
     // Arrange
-    const recordedEvents: DomainEvent[] = [];
-    api.getEventBus().subscribe((event) => {
-      recordedEvents.push(event);
-    });
+    const recordedEvents = recordDomainEvents();
 
     const { command } = buildRegisterCommand();
     const registerResult = api.auth.commands

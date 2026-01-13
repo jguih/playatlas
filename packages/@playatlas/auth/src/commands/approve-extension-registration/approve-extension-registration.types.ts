@@ -14,7 +14,10 @@ export type ApproveExtensionRegistrationCommandResult =
   | {
       success: false;
       reason: string;
-      reason_code: "not_found" | "invalid_operation";
+      reason_code:
+        | "not_found"
+        | "cannot_approve_rejected_registration"
+        | "cannot_approve_non_pending_registration";
     }
   | {
       success: true;

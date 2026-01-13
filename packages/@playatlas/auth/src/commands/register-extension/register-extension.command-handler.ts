@@ -20,7 +20,7 @@ export const makeRegisterExtensionHandler = ({
           return {
             success: false,
             reason: "Extension is rejected",
-            reason_code: "invalid_operation",
+            reason_code: "extension_already_registered_and_is_rejected",
           };
         }
 
