@@ -75,6 +75,7 @@ export const makeAuthModule = ({
         "RejectExtensionRegistrationCommandHandler"
       ),
       extensionRegistrationRepository: _extension_registration_repo,
+      eventBus,
     });
   const _revoke_extension_registration_command_handler =
     makeRevokeExtensionRegistrationHandler({

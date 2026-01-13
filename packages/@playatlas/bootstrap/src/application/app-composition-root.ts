@@ -45,7 +45,11 @@ export const makeAppCompositionRoot = ({
     systemConfig: system.getSystemConfig(),
   });
 
-  const baseDeps = { getDb: infra.getDb, logServiceFactory };
+  const eventBus = makeEventBus({
+    logService: logServiceFactory.build("EventBus"),
+  });
+
+  const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus };
 
   const gameLibrary = makeGameLibraryModule({ ...baseDeps });
 
@@ -69,10 +73,6 @@ export const makeAppCompositionRoot = ({
   };
 
   const buildAsync = async (): Promise<PlayAtlasApiV1> => {
-    const eventBus = makeEventBus({
-      logService: logServiceFactory.build("EventBus"),
-    });
-
     const auth = makeAuthModule({
       ...baseDeps,
       signatureService: infra.getSignatureService(),
