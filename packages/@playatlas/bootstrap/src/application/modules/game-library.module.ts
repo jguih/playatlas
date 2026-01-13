@@ -1,5 +1,5 @@
 import { type LogServiceFactory } from "@playatlas/common/application";
-import { BaseRepositoryDeps } from "@playatlas/common/infra";
+import type { BaseRepositoryDeps } from "@playatlas/common/infra";
 import {
   makeCompanyRepository,
   makeCompletionStatusRepository,
@@ -13,7 +13,7 @@ import {
   makeGetAllGenresQueryHandler,
   makeGetAllPlatformQueryHandler,
 } from "@playatlas/game-library/queries";
-import { IGameLibraryModulePort } from "./game-library.module.port";
+import type { IGameLibraryModulePort } from "./game-library.module.port";
 
 export type GameLibraryModuleDeps = {
   getDb: BaseRepositoryDeps["getDb"];

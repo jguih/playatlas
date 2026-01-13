@@ -1,6 +1,6 @@
-import { GameSessionId } from "@playatlas/common/domain";
+import { type GameSessionId } from "@playatlas/common/domain";
 import { sessionStatus } from "./game-session.constants";
-import { GameSessionDuration } from "./game-session.entity";
+import { type GameSessionDuration } from "./game-session.entity";
 
 export class GameSessionError extends Error {
   constructor(message: string) {

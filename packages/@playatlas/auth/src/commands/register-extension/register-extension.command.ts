@@ -1,4 +1,4 @@
-import { RegisterExtensionRequestDto } from "./register-extension.request.dto";
+import type { RegisterExtensionRequestDto } from "./register-extension.request.dto";
 
 export type RegisterExtensionCommand = {
   extensionId: string;

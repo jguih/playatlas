@@ -1,5 +1,5 @@
-import { IEntityRepositoryPort } from "@playatlas/common/infra";
-import {
+import type { IEntityRepositoryPort } from "@playatlas/common/infra";
+import type {
   InstanceAuthSettings,
   InstanceAuthSettingsId,
 } from "../domain/instance-auth-settings.entity";

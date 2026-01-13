@@ -1,6 +1,6 @@
-import { ICommandHandlerPort } from "@playatlas/common/common";
-import { RejectExtensionRegistrationCommand } from "./reject-extension-registration.command";
-import { RejectExtensionRegistrationCommandResult } from "./reject-extension-registration.types";
+import type { ICommandHandlerPort } from "@playatlas/common/common";
+import type { RejectExtensionRegistrationCommand } from "./reject-extension-registration.command";
+import type { RejectExtensionRegistrationCommandResult } from "./reject-extension-registration.types";
 
 export type IRejectExtensionRegistrationCommandHandlerPort =
   ICommandHandlerPort<

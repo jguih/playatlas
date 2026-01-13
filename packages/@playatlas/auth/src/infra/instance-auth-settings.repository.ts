@@ -1,11 +1,12 @@
 import { ISODateSchema } from "@playatlas/common/common";
+import type {
+  BaseRepositoryDeps} from "@playatlas/common/infra";
 import {
-  BaseRepositoryDeps,
   makeBaseRepository,
 } from "@playatlas/common/infra";
 import z from "zod";
 import { instanceAuthSettingsMapper } from "../instance-auth-settings.mapper";
-import { InstanceAuthSettingsRepository } from "./instance-auth-settings.repository.port";
+import type { InstanceAuthSettingsRepository } from "./instance-auth-settings.repository.port";
 
 export const instanceAuthSettingsSchema = z.object({
   Id: z.literal(1),

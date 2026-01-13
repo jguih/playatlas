@@ -2,6 +2,7 @@ import type {
   ILogServicePort,
   ISignatureServicePort,
 } from "@playatlas/common/application";
+import { ExtensionRegistrationIdParser } from "@playatlas/common/domain";
 import { createHash, timingSafeEqual } from "crypto";
 import type { IExtensionRegistrationRepositoryPort } from "../infra";
 import type { IExtensionAuthServicePort } from "./extension-auth.service.port";
@@ -109,7 +110,7 @@ export const makeExtensionAuthService = ({
     }
 
     const registration = extensionRegistrationRepository.getById(
-      Number(registrationId)
+      ExtensionRegistrationIdParser.fromExternal(Number(registrationId))
     );
     if (!registration || !registration.isTrusted()) {
       logService.warning(

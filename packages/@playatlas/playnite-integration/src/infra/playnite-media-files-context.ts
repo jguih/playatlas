@@ -1,12 +1,12 @@
 import { validation } from "@playatlas/common/application";
-import { DisposableAsync } from "@playatlas/common/common";
+import { type DisposableAsync } from "@playatlas/common/common";
 import { InvalidStateError } from "@playatlas/common/domain";
 import { join } from "path";
-import {
+import type {
   MakePlayniteMediaFilesContextDeps,
   MakePlayniteMediaFilesContextProps,
 } from "./playnite-media-files-context.types";
-import { PlayniteMediaFileStreamResult } from "./playnite-media-files-handler.types";
+import { type PlayniteMediaFileStreamResult } from "./playnite-media-files-handler.types";
 
 export type PlayniteMediaFilesContextId = string;
 export type PlayniteMediaFilesContext = DisposableAsync & {

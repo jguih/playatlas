@@ -1,8 +1,8 @@
-import { QueryHandler } from "@playatlas/common/common";
+import type { QueryHandler } from "@playatlas/common/common";
 import { createHashForObject } from "@playatlas/common/infra";
 import { companyMapper } from "../../company.mapper";
-import { GetAllCompaniesQuery } from "./get-all-companies.query";
-import {
+import type { GetAllCompaniesQuery } from "./get-all-companies.query";
+import type {
   GetAllCompaniesQueryHandlerDeps,
   GetAllCompaniesQueryResult,
 } from "./get-all-companies.query.types";

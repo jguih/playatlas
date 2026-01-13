@@ -1,11 +1,12 @@
 import { validation } from "@playatlas/common/application";
+import type {
+  BaseEntity} from "@playatlas/common/domain";
 import {
-  BaseEntity,
   InvalidArgumentError,
   InvalidStateError,
 } from "@playatlas/common/domain";
 import { buildInstanceSessionPropsSchema } from "./instance-session.entity.schemas";
-import {
+import type {
   BuildInstanceSessionProps,
   MakeInstanceSessionProps,
   RehydrateInstanceSessionProps,
@@ -30,7 +31,7 @@ const buildInstanceSession = (
   const now = new Date();
   const _session_id = props.sessionId;
   const _created_at = props.createdAt ?? now;
-  let _last_used_at = props.lastUsedAt ?? now;
+  const _last_used_at = props.lastUsedAt ?? now;
 
   const _validate = () => {
     if (validation.isNullOrEmptyString(_session_id))

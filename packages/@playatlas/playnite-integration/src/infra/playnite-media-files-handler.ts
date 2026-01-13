@@ -6,7 +6,7 @@ import {
 import { InvalidFileTypeError } from "@playatlas/common/domain";
 import type { SystemConfig } from "@playatlas/system/infra";
 import busboy from "busboy";
-import { createHash, Hash, timingSafeEqual } from "crypto";
+import { createHash, timingSafeEqual, type Hash } from "crypto";
 import { once } from "events";
 import { basename, extname, join } from "path";
 import sharp from "sharp";

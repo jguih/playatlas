@@ -1,4 +1,4 @@
-import z from "zod";
-import { platformSchema } from "./schemas";
+import type z from "zod";
+import type { platformSchema } from "./schemas";
 
 export type Platform = z.infer<typeof platformSchema>;

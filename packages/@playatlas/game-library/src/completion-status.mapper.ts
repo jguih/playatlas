@@ -1,9 +1,10 @@
 import { type EntityMapper } from "@playatlas/common/application";
+import type {
+  CompletionStatus} from "./domain/completion-status.entity";
 import {
-  CompletionStatus,
   makeCompletionStatus,
 } from "./domain/completion-status.entity";
-import { CompletionStatusModel } from "./infra/completion-status.repository";
+import type { CompletionStatusModel } from "./infra/completion-status.repository";
 
 export const completionStatusMapper: EntityMapper<
   CompletionStatus,

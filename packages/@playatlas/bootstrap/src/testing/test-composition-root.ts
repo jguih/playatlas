@@ -1,6 +1,11 @@
 import { makeEventBus } from "@playatlas/common/application";
 import type { AppEnvironmentVariables } from "@playatlas/common/common";
-import { Company, Game, Genre, Platform } from "@playatlas/game-library/domain";
+import type {
+  Company,
+  Game,
+  Genre,
+  Platform,
+} from "@playatlas/game-library/domain";
 import { makeGameFactory } from "@playatlas/game-library/testing";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { type PlayAtlasApiV1, bootstrapV1 } from "../application";

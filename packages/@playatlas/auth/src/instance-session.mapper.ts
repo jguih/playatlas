@@ -1,9 +1,9 @@
-import { EntityMapper } from "@playatlas/common/application";
+import type { EntityMapper } from "@playatlas/common/application";
 import {
-  InstanceSession,
   rehydrateInstanceSession,
+  type InstanceSession,
 } from "./domain/instance-session.entity";
-import { InstanceSessionModel } from "./infra/instance-session.repository";
+import type { InstanceSessionModel } from "./infra/instance-session.repository";
 
 export const instanceSessionMapper: EntityMapper<
   InstanceSession,

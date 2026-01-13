@@ -1,11 +1,12 @@
 import { ISODateSchema } from "@playatlas/common/common";
+import type {
+  BaseRepositoryDeps} from "@playatlas/common/infra";
 import {
-  BaseRepositoryDeps,
   makeBaseRepository,
 } from "@playatlas/common/infra";
 import z from "zod";
 import { instanceSessionMapper } from "../instance-session.mapper";
-import { InstanceSessionRepository } from "./instance-session.repository.port";
+import type { InstanceSessionRepository } from "./instance-session.repository.port";
 
 export const instanceSessionSchema = z.object({
   Id: z.string(),

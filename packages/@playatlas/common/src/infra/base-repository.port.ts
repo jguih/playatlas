@@ -1,5 +1,5 @@
-import { DatabaseSync } from "node:sqlite";
-import { IEntityRepositoryPort } from "./repository.types";
+import type { DatabaseSync } from "node:sqlite";
+import type { IEntityRepositoryPort } from "./repository.types";
 
 type ToPersistenceFnOverride<TEntity, TPersistence> = {
   toPersistence?: (entity: TEntity) => TPersistence;

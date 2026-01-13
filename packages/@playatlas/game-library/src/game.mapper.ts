@@ -1,8 +1,8 @@
 import { type EntityMapper } from "@playatlas/common/application";
 import { GameIdParser } from "@playatlas/common/domain";
-import { MakeGameRelationshipProps } from "./domain";
+import type { MakeGameRelationshipProps } from "./domain";
 import { type Game, makeGame } from "./domain/game.entity";
-import { GameResponseDto } from "./dtos/game.response.dto";
+import type { GameResponseDto } from "./dtos/game.response.dto";
 import { type GameModel } from "./infra";
 
 export type GameMapper = EntityMapper<Game, GameModel, GameResponseDto> & {

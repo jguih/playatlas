@@ -1,4 +1,4 @@
-import { SyncGamesRequestDto } from "./sync-games.request.dto";
+import { type SyncGamesRequestDto } from "./sync-games.request.dto";
 
 export type SyncGamesCommandItem = {
   Id: string;

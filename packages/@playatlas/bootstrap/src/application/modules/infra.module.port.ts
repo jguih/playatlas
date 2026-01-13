@@ -1,8 +1,8 @@
-import {
+import type {
   IFileSystemServicePort,
   ISignatureServicePort,
 } from "@playatlas/common/application";
-import { DatabaseSync } from "node:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 
 export type IInfraModulePort = Readonly<{
   getFsService: () => IFileSystemServicePort;

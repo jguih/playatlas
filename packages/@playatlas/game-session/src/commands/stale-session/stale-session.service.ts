@@ -1,9 +1,9 @@
 import type { ILogServicePort } from "@playatlas/common/application";
-import type { CommandHandler } from "@playatlas/common/common";
+import { type ICommandHandlerPort } from "@playatlas/common/common";
 import { makeStaleGameSession } from "../../domain/game-session.entity";
 import type { IGameSessionRepositoryPort } from "../../infra/game-session.repository.port";
 import type { GameInfoProvider } from "../../types/game-info-provider";
-import { StaleGameSessionCommand } from "./stale-session.command";
+import type { StaleGameSessionCommand } from "./stale-session.command";
 
 export type StaleGameSessionServiceDeps = {
   gameSessionRepository: IGameSessionRepositoryPort;
@@ -16,7 +16,7 @@ export type StaleGameSessionServiceResult = {
   closed: boolean;
 };
 
-export type IStaleGameSessionCommandHandlerPort = CommandHandler<
+export type IStaleGameSessionCommandHandlerPort = ICommandHandlerPort<
   StaleGameSessionCommand,
   StaleGameSessionServiceResult
 >;

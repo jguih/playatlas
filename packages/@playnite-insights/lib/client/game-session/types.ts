@@ -1,6 +1,6 @@
-import z from "zod";
+import type z from "zod";
 import type { DateFilter } from "../types/date-filter";
-import {
+import type {
   closeGameSessionSchema,
   gameSessionSchema,
   openGameSessionSchema,

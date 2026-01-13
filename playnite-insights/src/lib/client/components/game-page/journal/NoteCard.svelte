@@ -21,7 +21,7 @@
 
 <BaseButton
 	class={[
-		'w-full flex-col! items-start! p-0!',
+		'flex-col! items-start! p-0! w-full',
 		'hover:outline-primary-hover-bg hover:outline-2',
 		'active:bg-primary-light-active-bg',
 	]}
@@ -32,7 +32,7 @@
 		<div class="bg-background-2 w-full">
 			<img
 				src={note.ImagePath}
-				alt={`note image`}
+				alt="note"
 				loading="lazy"
 				class="mx-auto max-h-[35dvh] w-auto object-contain"
 			/>

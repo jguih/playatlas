@@ -74,7 +74,7 @@ export class RecentActivityViewModel {
 
 		this.#inProgressGame = $derived.by(() => {
 			const activity = this.#inProgressActivity;
-			const games = this.#gameStore.gameList ?? [];
+			const games = this.#gameStore.dataSignal.raw ?? [];
 			if (!activity) return null;
 			return games.find((g) => g.Id === activity.gameId) ?? null;
 		});

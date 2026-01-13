@@ -1,11 +1,11 @@
-import {
+import type {
   ExtensionRegistration,
   RegisterExtensionCommand,
 } from "@playnite-insights/lib/client";
 import { makeMocks } from "@playnite-insights/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { makeExtensionRegistrationService } from "./service";
-import {
+import type {
   ExtensionRegistrationService,
   ExtensionRegistrationServiceDeps,
 } from "./service.types";

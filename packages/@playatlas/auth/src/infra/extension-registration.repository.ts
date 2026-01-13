@@ -1,12 +1,13 @@
 import { ISODateSchema } from "@playatlas/common/common";
 import type { ExtensionRegistrationId } from "@playatlas/common/domain";
+import type {
+  BaseRepositoryDeps} from "@playatlas/common/infra";
 import {
-  BaseRepositoryDeps,
   makeBaseRepository,
 } from "@playatlas/common/infra";
 import z from "zod";
 import { extensionRegistrationStatus } from "../domain/extension-registration.constants";
-import { ExtensionRegistration } from "../domain/extension-registration.entity";
+import type { ExtensionRegistration } from "../domain/extension-registration.entity";
 import { extensionRegistrationMapper } from "../extension-registration.mapper";
 import type { IExtensionRegistrationRepositoryPort } from "./extension-registration.repository.port";
 

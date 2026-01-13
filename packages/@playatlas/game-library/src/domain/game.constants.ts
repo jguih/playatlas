@@ -1,4 +1,4 @@
-import { GameResponseDto } from "../dtos/game.response.dto";
+import type { GameResponseDto } from "../dtos/game.response.dto";
 
 export const gameSortBy = [
   "LastActivity",

@@ -1,8 +1,8 @@
 import {
-  GameId,
   GameIdParser,
-  GameSessionId,
   GameSessionIdParser,
+  type GameId,
+  type GameSessionId,
 } from "@playatlas/common/domain";
 import type { OpenGameSessionRequestDto } from "./open-session.request.dto";
 

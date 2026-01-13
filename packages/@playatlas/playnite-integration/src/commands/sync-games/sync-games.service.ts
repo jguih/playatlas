@@ -1,3 +1,4 @@
+import { GameIdParser } from "@playatlas/common/domain";
 import { extractSyncData } from "./sync-data.extractor";
 import type {
   ISyncGamesCommandHandlerPort,
@@ -28,7 +29,7 @@ export const makeSyncGamesCommandHandler = ({
       companyRepository.upsert(extracted.publishers);
       completionStatusRepository.upsert(extracted.completionStatuses);
       gameRepository.upsert(extracted.games);
-      gameRepository.remove(payload.toRemove);
+      gameRepository.remove(payload.toRemove.map(GameIdParser.fromExternal));
 
       await libraryManifestService.write();
 

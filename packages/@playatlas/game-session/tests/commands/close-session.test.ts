@@ -23,7 +23,7 @@ import {
   InvalidGameSessionDurationError,
 } from "../../src/domain/game-session.errors";
 
-let deps = {
+const deps = {
   logService: {
     error: vi.fn(),
     warning: vi.fn(),
@@ -40,7 +40,7 @@ let deps = {
     getAllBy: vi.fn(),
   },
   gameInfoProvider: {
-    getGameInfo: (gameId) => {
+    getGameInfo: () => {
       return { name: faker.lorem.words({ min: 1, max: 3 }) };
     },
   },

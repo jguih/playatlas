@@ -1,11 +1,12 @@
-import { DateFilter } from "@playatlas/common/common";
+import { type DateFilter } from "@playatlas/common/common";
+import { type GameSessionId } from "@playatlas/common/domain";
 import {
   makeBaseRepository,
   type BaseRepositoryDeps,
 } from "@playatlas/common/infra";
 import z from "zod";
 import { sessionStatus } from "../domain/game-session.constants";
-import type { GameSession, GameSessionId } from "../domain/game-session.entity";
+import type { GameSession } from "../domain/game-session.entity";
 import type { GameSessionStatus } from "../domain/game-session.types";
 import { gameSessionMapper } from "../game-session.mapper";
 import type { IGameSessionRepositoryPort } from "./game-session.repository.port";

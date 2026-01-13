@@ -1,5 +1,5 @@
-import { CompanyResponseDto } from "../../dtos/company.response.dto";
-import { ICompanyRepositoryPort } from "../../infra";
+import type { CompanyResponseDto } from "../../dtos/company.response.dto";
+import type { ICompanyRepositoryPort } from "../../infra";
 
 export type GetAllCompaniesQueryHandlerDeps = {
   companyRepository: ICompanyRepositoryPort;

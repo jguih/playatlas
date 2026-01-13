@@ -1,4 +1,4 @@
-import { EntityRepository } from "@playatlas/common/infra";
-import { Genre, GenreId } from "../domain/genre.entity";
+import type { IEntityRepositoryPort } from "@playatlas/common/infra";
+import type { Genre, GenreId } from "../domain/genre.entity";
 
-export type IGenreRepositoryPort = EntityRepository<GenreId, Genre> & {};
+export type IGenreRepositoryPort = IEntityRepositoryPort<GenreId, Genre> & {};

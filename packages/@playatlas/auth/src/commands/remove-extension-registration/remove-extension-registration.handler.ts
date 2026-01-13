@@ -1,5 +1,6 @@
+import type {
+  IDomainEventBusPort} from "@playatlas/common/application";
 import {
-  IDomainEventBusPort,
   type ILogServicePort,
 } from "@playatlas/common/application";
 import { type ICommandHandlerPort } from "@playatlas/common/common";

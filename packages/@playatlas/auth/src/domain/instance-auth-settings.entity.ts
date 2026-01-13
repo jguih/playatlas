@@ -1,11 +1,12 @@
 import { validation } from "@playatlas/common/application";
+import type {
+  BaseEntity} from "@playatlas/common/domain";
 import {
-  BaseEntity,
   InvalidArgumentError,
   InvalidStateError,
 } from "@playatlas/common/domain";
 import { buildInstanceAuthSettingsPropsSchema } from "./instance-auth-settings.entity.schemas";
-import {
+import type {
   BuildInstanceAuthSettingsProps,
   MakeInstanceAuthSettingsProps,
   RehydrateInstanceAuthSettingsProps,

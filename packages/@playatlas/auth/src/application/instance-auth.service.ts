@@ -1,10 +1,10 @@
-import { ILogServicePort } from "@playatlas/common/application";
-import {
+import type { ILogServicePort } from "@playatlas/common/application";
+import type {
   InstanceAuthSettingsRepository,
   InstanceSessionRepository,
 } from "../infra";
-import { ICryptographyServicePort } from "./cryptography.service.port";
-import { IInstanceAuthServicePort } from "./instance-auth.service.port";
+import type { ICryptographyServicePort } from "./cryptography.service.port";
+import type { IInstanceAuthServicePort } from "./instance-auth.service.port";
 
 export type InstanceAuthServiceDeps = {
   logService: ILogServicePort;

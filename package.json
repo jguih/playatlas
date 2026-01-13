@@ -33,14 +33,19 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.2.5",
+    "@eslint/js": "^9.18.0",
+    "eslint-config-prettier": "^10.1.5",
     "husky": "^9.1.7",
-    "standard-version": "^9.5.0"
+    "standard-version": "^9.5.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.20.0"
   },
   "dependencies": {
-    "zod": "^3.25.74",
     "@types/busboy": "^1.5.4",
     "busboy": "^1.6.0",
-    "sharp": "^0.34.3"
+    "sharp": "^0.34.3",
+    "zod": "^3.25.74"
   },
   "files": [
     "build",

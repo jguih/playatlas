@@ -1,7 +1,7 @@
 import { type EntityMapper } from "@playatlas/common/application";
-import { makePlatform, Platform } from "./domain/platform.entity";
-import { PlatformResponseDto } from "./dtos";
-import { PlatformModel } from "./infra/platform.repository";
+import { makePlatform, type Platform } from "./domain/platform.entity";
+import type { PlatformResponseDto } from "./dtos";
+import type { PlatformModel } from "./infra/platform.repository";
 
 export type PlatformMapper = EntityMapper<
   Platform,

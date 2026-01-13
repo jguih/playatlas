@@ -1,4 +1,4 @@
-import {
+import type {
   ExtensionRegistration,
   ValidAuthenticationHeader,
 } from "@playnite-insights/lib/client";

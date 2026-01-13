@@ -1,6 +1,6 @@
 import type { DatabaseSync } from "node:sqlite";
-import { ZodSchema } from "zod";
-import { EntityMapper } from "../application";
+import type { ZodSchema } from "zod";
+import type { EntityMapper } from "../application";
 import type { ILogServicePort } from "../application/log-service.port";
 
 export type BaseRepositoryConfig<TEntity, TPersistence> = {

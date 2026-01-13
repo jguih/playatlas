@@ -1,6 +1,6 @@
-import z from "zod";
+import type z from "zod";
 import type { DateFilter } from "../types/date-filter";
-import { gameNoteSchema } from "./schemas";
+import type { gameNoteSchema } from "./schemas";
 
 export type GameNote = z.infer<typeof gameNoteSchema>;
 

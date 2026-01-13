@@ -20,7 +20,7 @@ export class ServerTimeStore extends HttpDataStore implements IServerTimeStorePo
 	loadServerTime = async () => {
 		try {
 			this.serverTimeSignal.isLoading = true;
-			const response = await this.httpClient.getAsync('/api/time/now');
+			const response = await this.httpClient.getAsync({ endpoint: '/api/time/now' });
 			const jsonBody = await response.json();
 			const { success, data } = getServerUtcNowResponseSchema.safeParse(jsonBody);
 			if (success) {

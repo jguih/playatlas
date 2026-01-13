@@ -1,6 +1,6 @@
 import { InvalidEnvironmentVariableValueError } from "../domain/error";
-import { IEnvironmentServicePort } from "./environment.service.port";
-import { EnvServiceDeps } from "./environment.service.types";
+import type { IEnvironmentServicePort } from "./environment.service.port";
+import type { EnvServiceDeps } from "./environment.service.types";
 
 export const makeEnvService = ({
   env,

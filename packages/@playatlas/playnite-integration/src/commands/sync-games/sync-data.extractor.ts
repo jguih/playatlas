@@ -11,7 +11,7 @@ import {
   type Genre,
   type Platform,
 } from "@playatlas/game-library/domain";
-import { SyncGamesCommandItem } from "./sync-games.command";
+import { type SyncGamesCommandItem } from "./sync-games.command";
 
 export type ExtractedSyncData = {
   genres: Genre[];

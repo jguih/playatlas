@@ -1,4 +1,4 @@
-import { StaleGameSessionRequestDto } from "./stale-session.request.dto";
+import type { StaleGameSessionRequestDto } from "./stale-session.request.dto";
 
 export type StaleGameSessionCommand = {
   clientUtcNow: Date;

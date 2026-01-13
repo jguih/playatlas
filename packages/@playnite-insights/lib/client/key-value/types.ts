@@ -1,4 +1,4 @@
-import z from "zod";
+import type z from "zod";
 import type { applicationSettingsSchema, keyValueSchema } from "./schemas";
 
 export type KeyValue = z.infer<typeof keyValueSchema>;

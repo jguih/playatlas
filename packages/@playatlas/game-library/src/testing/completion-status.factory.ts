@@ -1,9 +1,9 @@
 import { faker } from "@faker-js/faker";
 import {
-  CompletionStatus,
+  type CompletionStatus,
   makeCompletionStatus,
 } from "../domain/completion-status.entity";
-import { MakeCompletionStatusProps } from "../domain/completion-status.entity.types";
+import type { MakeCompletionStatusProps } from "../domain/completion-status.entity.types";
 
 const completionStatusName = {
   playing: "playing",

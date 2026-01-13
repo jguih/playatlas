@@ -9,18 +9,19 @@
     "test:watch": "vitest --watch"
   },
   "devDependencies": {
-    "@types/node": "^24.0.14"
+    "@types/node": "^24.0.14",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
-    "vitest": "^3.2.4",
-    "@playatlas/common": "workspace:*",
-    "@playatlas/system": "workspace:*",
-    "@playatlas/game-session": "workspace:*",
-    "@playatlas/game-library": "workspace:*",
-    "@playatlas/bootstrap": "workspace:*",
     "@playatlas/auth": "workspace:*",
-    "@playatlas/playnite-integration": "workspace:*"
+    "@playatlas/bootstrap": "workspace:*",
+    "@playatlas/common": "workspace:*",
+    "@playatlas/game-library": "workspace:*",
+    "@playatlas/game-session": "workspace:*",
+    "@playatlas/playnite-integration": "workspace:*",
+    "@playatlas/system": "workspace:*",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "sharp": "*",

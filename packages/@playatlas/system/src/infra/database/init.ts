@@ -2,7 +2,7 @@ import type {
   IFileSystemServicePort,
   ILogServicePort,
 } from "@playatlas/common/application";
-import { DatabaseSync } from "node:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { basename, join } from "path";
 import { exit } from "process";
 

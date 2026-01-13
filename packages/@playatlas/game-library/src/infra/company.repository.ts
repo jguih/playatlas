@@ -1,10 +1,11 @@
+import type {
+  BaseRepositoryDeps} from "@playatlas/common/infra";
 import {
-  BaseRepositoryDeps,
   makeBaseRepository,
 } from "@playatlas/common/infra";
 import z from "zod";
 import { companyMapper } from "../company.mapper";
-import { Company, CompanyId } from "../domain/company.entity";
+import type { Company, CompanyId } from "../domain/company.entity";
 import type { ICompanyRepositoryPort } from "./company.repository.port";
 
 export const companySchema = z.object({

@@ -82,7 +82,7 @@
 						<div class="bg-background-2 flex max-h-[60dvh] w-full items-center justify-center">
 							<img
 								src={props.currentNote.ImagePath}
-								alt={`note image`}
+								alt="note"
 								loading="lazy"
 								class="max-h-[60dvh] w-auto object-contain"
 							/>

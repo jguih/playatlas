@@ -1,4 +1,4 @@
-import { PlayniteLibraryManifest } from "@playnite-insights/lib/client";
+import type { PlayniteLibraryManifest } from "@playnite-insights/lib/client";
 import { makeMocks } from "@playnite-insights/testing";
 import { join } from "path";
 import { beforeEach, describe, expect, it, vi } from "vitest";

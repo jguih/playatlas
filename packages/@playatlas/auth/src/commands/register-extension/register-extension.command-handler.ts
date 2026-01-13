@@ -1,6 +1,6 @@
 import { makeExtensionRegistration } from "../../domain/extension-registration.entity";
-import { IRegisterExtensionCommandHandlerPort } from "./register-extension.command-handler.port";
-import { RegisterExtensionCommandHandlerDeps } from "./register-extension.command-handler.types";
+import type { IRegisterExtensionCommandHandlerPort } from "./register-extension.command-handler.port";
+import type { RegisterExtensionCommandHandlerDeps } from "./register-extension.command-handler.types";
 
 export const makeRegisterExtensionHandler = ({
   extensionRegistrationRepository: repository,

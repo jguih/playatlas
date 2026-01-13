@@ -1,5 +1,5 @@
-import { BaseEntity } from "@playatlas/common/domain";
-import { MakePlatformProps } from "./platform.entity.types";
+import type { BaseEntity } from "@playatlas/common/domain";
+import type { MakePlatformProps } from "./platform.entity.types";
 
 export type PlatformId = string;
 

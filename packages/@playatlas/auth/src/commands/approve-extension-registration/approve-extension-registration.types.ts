@@ -1,8 +1,8 @@
-import {
+import type {
   IDomainEventBusPort,
   ILogServicePort,
 } from "@playatlas/common/application";
-import { IExtensionRegistrationRepositoryPort } from "../../infra";
+import type { IExtensionRegistrationRepositoryPort } from "../../infra";
 
 export type ApproveExtensionRegistrationServiceDeps = {
   extensionRegistrationRepository: IExtensionRegistrationRepositoryPort;

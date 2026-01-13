@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 import { FetchClientStrategyError } from "./error";
 import type { IFetchClient } from "./fetchClient.types";
 

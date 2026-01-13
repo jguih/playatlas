@@ -21,7 +21,7 @@ import { LOG_LEVELS, type IFetchClient } from "@playnite-insights/lib/client";
 import { constants } from "fs/promises";
 import { join } from "path";
 import { vi } from "vitest";
-import { config as infraConfig } from "../../infra/config";
+import type { config as infraConfig } from "../../infra/config";
 import { monorepoRoot } from "./paths";
 
 export const makeMocks = () => {

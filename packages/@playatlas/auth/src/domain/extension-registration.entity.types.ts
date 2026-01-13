@@ -1,5 +1,5 @@
-import { ExtensionRegistrationId } from "@playatlas/common/domain";
-import { ExtensionRegistrationStatus } from "./extension-registration.entity";
+import type { ExtensionRegistrationId } from "@playatlas/common/domain";
+import type { ExtensionRegistrationStatus } from "./extension-registration.entity";
 
 type Base = {
   id: ExtensionRegistrationId;

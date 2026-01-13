@@ -1,9 +1,9 @@
-import { SyncGameListCommand } from "@playnite-insights/lib/client";
+import type { SyncGameListCommand } from "@playnite-insights/lib/client";
 import { makeMocks } from "@playnite-insights/testing";
 import { join } from "path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { makePlayniteLibraryImporterService } from "./service";
-import {
+import type {
   PlayniteLibraryImporterService,
   PlayniteLibraryImporterServiceDeps,
 } from "./service.types";

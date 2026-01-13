@@ -1,7 +1,8 @@
 import { type EntityMapper } from "@playatlas/common/application";
-import { Genre, makeGenre } from "./domain/genre.entity";
-import { GenreResponseDto } from "./dtos";
-import { GenreModel } from "./infra/genre.repository";
+import type { Genre} from "./domain/genre.entity";
+import { makeGenre } from "./domain/genre.entity";
+import type { GenreResponseDto } from "./dtos";
+import type { GenreModel } from "./infra/genre.repository";
 
 export type GenreMapper = EntityMapper<Genre, GenreModel, GenreResponseDto>;
 

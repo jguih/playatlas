@@ -1,4 +1,5 @@
-import type { GameSession, GameSessionId } from "../domain/game-session.entity";
+import type { GameSessionId } from "@playatlas/common/domain";
+import type { GameSession } from "../domain/game-session.entity";
 import type { GameSessionFilters } from "./game-session.repository";
 
 export type IGameSessionRepositoryPort = {

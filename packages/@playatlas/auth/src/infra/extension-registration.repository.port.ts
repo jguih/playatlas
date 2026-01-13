@@ -1,5 +1,5 @@
 import type { ExtensionRegistrationId } from "@playatlas/common/domain";
-import { IEntityRepositoryPort } from "@playatlas/common/infra";
+import { type IEntityRepositoryPort } from "@playatlas/common/infra";
 import type {
   ExtensionRegistration,
   ExtensionRegistrationExtensionId,

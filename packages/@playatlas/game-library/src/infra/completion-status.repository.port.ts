@@ -1,5 +1,5 @@
-import { EntityRepository } from "@playatlas/common/infra";
-import {
+import type { EntityRepository } from "@playatlas/common/infra";
+import type {
   CompletionStatus,
   CompletionStatusId,
 } from "../domain/completion-status.entity";

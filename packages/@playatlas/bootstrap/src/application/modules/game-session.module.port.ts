@@ -1,9 +1,9 @@
-import {
+import type {
   ICloseGameSessionCommandHandlerPort,
   IOpenGameSessionCommandHandlerPort,
   IStaleGameSessionCommandHandlerPort,
 } from "@playatlas/game-session/commands";
-import { IGameSessionRepositoryPort } from "@playatlas/game-session/infra";
+import type { IGameSessionRepositoryPort } from "@playatlas/game-session/infra";
 
 export type IGameSessionModulePort = {
   getGameSessionRepository: () => IGameSessionRepositoryPort;

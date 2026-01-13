@@ -1,5 +1,5 @@
 import type { GamePageSize, GameSortBy, GameSortOrder } from "../playnite-game";
-import { homePageSearchParamsKeys } from "./schemas";
+import type { homePageSearchParamsKeys } from "./schemas";
 
 export type HomePageSearchParamKeys =
   (typeof homePageSearchParamsKeys)[keyof typeof homePageSearchParamsKeys];

@@ -1,10 +1,9 @@
 import { faker } from "@faker-js/faker";
 import type { DomainEvent } from "@playatlas/common/application";
-import { Game } from "@playatlas/game-library/domain";
-import {
-  makeOpenGameSessionCommand,
-  OpenGameSessionRequestDto,
-} from "@playatlas/game-session/commands";
+import { GameSessionIdParser } from "@playatlas/common/domain";
+import type { Game } from "@playatlas/game-library/domain";
+import type { OpenGameSessionRequestDto } from "@playatlas/game-session/commands";
+import { makeOpenGameSessionCommand } from "@playatlas/game-session/commands";
 import { api, factory, root } from "../vitest.global.setup";
 
 const recordDomainEvents = () => {
@@ -51,7 +50,10 @@ describe("Game Sessions", () => {
     expect(events).toEqual([
       expect.objectContaining({
         name: "opened-game-session",
-        payload: { gameId, sessionId },
+        payload: {
+          gameId,
+          sessionId: GameSessionIdParser.fromExternal(sessionId),
+        },
       } satisfies Partial<DomainEvent>),
     ]);
 

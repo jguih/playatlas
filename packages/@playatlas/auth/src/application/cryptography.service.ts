@@ -1,5 +1,5 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
-import { ICryptographyServicePort } from "./cryptography.service.port";
+import type { ICryptographyServicePort } from "./cryptography.service.port";
 
 export const makeCryptographyService = (): ICryptographyServicePort => {
   const SESSION_ID_LENGTH = 32;

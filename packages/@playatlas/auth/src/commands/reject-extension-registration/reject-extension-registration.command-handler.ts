@@ -1,5 +1,5 @@
-import { IRejectExtensionRegistrationCommandHandlerPort } from "./reject-extension-registration.command-handler.port";
-import { RejectExtensionRegistrationCommandHandlerDeps } from "./reject-extension-registration.types";
+import type { IRejectExtensionRegistrationCommandHandlerPort } from "./reject-extension-registration.command-handler.port";
+import type { RejectExtensionRegistrationCommandHandlerDeps } from "./reject-extension-registration.types";
 
 export const makeRejectExtensionRegistrationHandler = ({
   logService,

@@ -1,5 +1,5 @@
 import type { ILogServicePort } from "@playatlas/common/application";
-import type { AsyncCommandHandler } from "@playatlas/common/common";
+import type { IAsyncCommandHandlerPort } from "@playatlas/common/common";
 import type {
   ICompanyRepositoryPort,
   ICompletionStatusRepositoryPort,
@@ -16,7 +16,7 @@ export type SyncGamesCommandResult = {
   reason_code: "game_not_found" | "success" | "integrity_check_failed";
 };
 
-export type ISyncGamesCommandHandlerPort = AsyncCommandHandler<
+export type ISyncGamesCommandHandlerPort = IAsyncCommandHandlerPort<
   SyncGamesCommand,
   SyncGamesCommandResult
 >;

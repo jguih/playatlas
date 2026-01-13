@@ -1,5 +1,5 @@
-import { GameRelationship } from "../domain/game.entity";
-import { GameModel } from "./game.repository";
+import type { GameRelationship } from "../domain/game.entity";
+import type { GameModel } from "./game.repository";
 
 export const TABLE_NAME = "playnite_game" as const;
 

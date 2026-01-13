@@ -1,11 +1,7 @@
 import type { CryptographyService } from "@playnite-insights/core";
 import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
 
-export type CryptographyServiceDeps = {};
-
-export const makeCryptographyService = (
-  deps: CryptographyServiceDeps = {}
-): CryptographyService => {
+export const makeCryptographyService = (): CryptographyService => {
   const hashPasswordAsync: CryptographyService["hashPasswordAsync"] = async (
     password
   ) => {

@@ -1,5 +1,5 @@
 import type { ILogServicePort } from "@playatlas/common/application";
-import type { CommandHandler } from "@playatlas/common/common";
+import type { ICommandHandlerPort } from "@playatlas/common/common";
 import { makeClosedGameSession } from "../../domain/game-session.entity";
 import type { IGameSessionRepositoryPort } from "../../infra/game-session.repository.port";
 import type { GameInfoProvider } from "../../types/game-info-provider";
@@ -16,7 +16,7 @@ export type CloseGameSessionServiceResult = {
   closed: boolean;
 };
 
-export type ICloseGameSessionCommandHandlerPort = CommandHandler<
+export type ICloseGameSessionCommandHandlerPort = ICommandHandlerPort<
   CloseGameSessionCommand,
   CloseGameSessionServiceResult
 >;

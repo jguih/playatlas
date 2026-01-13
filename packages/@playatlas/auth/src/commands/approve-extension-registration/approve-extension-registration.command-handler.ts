@@ -1,5 +1,5 @@
-import { IApproveExtensionRegistrationCommandHandlerPort } from "./approve-extension-registration.command-handler.port";
-import { ApproveExtensionRegistrationServiceDeps } from "./approve-extension-registration.types";
+import type { IApproveExtensionRegistrationCommandHandlerPort } from "./approve-extension-registration.command-handler.port";
+import type { ApproveExtensionRegistrationServiceDeps } from "./approve-extension-registration.types";
 
 export const makeApproveExtensionRegistrationHandler = ({
   logService,

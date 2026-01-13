@@ -1,18 +1,18 @@
 import { validation } from "@playatlas/common/application";
 import {
   createRelationship,
-  GameImageType,
+  type GameImageType,
   type Relationship,
 } from "@playatlas/common/common";
 import {
-  BaseEntity,
+  type BaseEntity,
   type GameId,
   InvalidStateError,
 } from "@playatlas/common/domain";
-import { CompanyId } from "./company.entity";
-import { MakeGameProps } from "./game.entity.types";
-import { GenreId } from "./genre.entity";
-import { PlatformId } from "./platform.entity";
+import type { CompanyId } from "./company.entity";
+import type { MakeGameProps } from "./game.entity.types";
+import type { GenreId } from "./genre.entity";
+import type { PlatformId } from "./platform.entity";
 
 export type GameRelationshipMap = {
   developers: CompanyId;
@@ -52,19 +52,19 @@ export type Game = BaseEntity<GameId> &
 
 export const makeGame = (props: MakeGameProps): Game => {
   const _id = props.id;
-  let _name = props.name ?? null;
-  let _description = props.description ?? null;
-  let _releaseDate = props.releaseDate ?? null;
-  let _playtime = props.playtime ?? 0;
-  let _lastActivity = props.lastActivity ?? null;
-  let _added = props.added ?? null;
-  let _installDirectory = props.installDirectory ?? null;
-  let _isInstalled = Boolean(props.isInstalled);
+  const _name = props.name ?? null;
+  const _description = props.description ?? null;
+  const _releaseDate = props.releaseDate ?? null;
+  const _playtime = props.playtime ?? 0;
+  const _lastActivity = props.lastActivity ?? null;
+  const _added = props.added ?? null;
+  const _installDirectory = props.installDirectory ?? null;
+  const _isInstalled = Boolean(props.isInstalled);
   let _backgroundImage = props.backgroundImage ?? null;
   let _coverImage = props.coverImage ?? null;
   let _icon = props.icon ?? null;
-  let _hidden = Boolean(props.hidden);
-  let _completionStatusId = props.completionStatusId ?? null;
+  const _hidden = Boolean(props.hidden);
+  const _completionStatusId = props.completionStatusId ?? null;
   const _contentHash = props.contentHash;
 
   const game: Game = {

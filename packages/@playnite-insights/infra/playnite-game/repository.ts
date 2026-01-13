@@ -5,7 +5,6 @@ import {
   type FullGame,
   type GameFilters,
   type GameManifestData,
-  type GameSorting,
 } from "@playnite-insights/lib/client";
 import z from "zod";
 import {
@@ -52,27 +51,6 @@ export const makePlayniteGameRepository = (
       where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
       params,
     };
-  };
-
-  const _getOrderByClause = (sorting?: GameSorting): string => {
-    if (!sorting) return ` ORDER BY Id ASC`;
-    const order = sorting.order.toUpperCase();
-    switch (sorting.by) {
-      case "IsInstalled": {
-        return ` ORDER BY IsInstalled ${order}, Id ASC`;
-      }
-      case "Added": {
-        return ` ORDER BY Added ${order}, Id ASC`;
-      }
-      case "LastActivity": {
-        return ` ORDER BY LastActivity ${order}, Id ASC`;
-      }
-      case "Playtime": {
-        return ` ORDER BY Playtime ${order}, Id ASC`;
-      }
-      default:
-        return ` ORDER BY Id ASC`;
-    }
   };
 
   const getTotal: PlayniteGameRepository["getTotal"] = (filters) => {

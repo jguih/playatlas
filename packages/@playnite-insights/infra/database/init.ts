@@ -1,5 +1,5 @@
 import type { FileSystemService, LogService } from "@playnite-insights/core";
-import { DatabaseSync } from "node:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { join } from "path";
 import { exit } from "process";
 
@@ -9,11 +9,6 @@ type InitDatabaseDeps = {
   MIGRATIONS_DIR: string;
   logService: LogService;
 };
-
-const shouldSeedDb = () =>
-  process.env.TEST_DATA === "true" &&
-  (process.env.NODE_ENV === "development" ||
-    process.env.NODE_ENV === "testing");
 
 export const initDatabase = async ({
   db,

@@ -1,5 +1,5 @@
-import { BaseEntity } from "@playatlas/common/domain";
-import { MakeCompanyProps } from "./company.entity.types";
+import type { BaseEntity } from "@playatlas/common/domain";
+import type { MakeCompanyProps } from "./company.entity.types";
 
 export type CompanyId = string;
 type CompanyName = string;

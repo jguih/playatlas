@@ -1,8 +1,8 @@
-import { QueryHandler } from "@playatlas/common/common";
+import type { QueryHandler } from "@playatlas/common/common";
 import { createHashForObject } from "@playatlas/common/infra";
 import { platformMapper } from "../../platform.mapper";
-import { GetAllPlatformsQuery } from "./get-all-platforms.query";
-import {
+import type { GetAllPlatformsQuery } from "./get-all-platforms.query";
+import type {
   GetAllPlatformsQueryHandlerDeps,
   GetAllPlatformsQueryResult,
 } from "./get-all-platforms.query.types";

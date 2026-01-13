@@ -1,8 +1,8 @@
-import { ClientSyncReconciliationCommand } from "@playnite-insights/lib/client";
+import type { ClientSyncReconciliationCommand } from "@playnite-insights/lib/client";
 import { GameNoteFactory, makeMocks } from "@playnite-insights/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { makeSynchronizationService } from "./service";
-import { SynchronizationService } from "./service.types";
+import type { SynchronizationService } from "./service.types";
 
 const mocks = makeMocks();
 const gameNoteFactory = new GameNoteFactory();

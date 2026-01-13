@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { TestEntityFactory } from "@playatlas/common/testing";
+import type { TestEntityFactory } from "@playatlas/common/testing";
 import { type Genre, makeGenre } from "../domain/genre.entity";
-import { MakeGenreProps } from "../domain/genre.entity.types";
+import type { MakeGenreProps } from "../domain/genre.entity.types";
 
 export type GenreFactory = TestEntityFactory<MakeGenreProps, Genre>;
 

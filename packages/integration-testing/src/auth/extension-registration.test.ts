@@ -1,13 +1,14 @@
 import { faker } from "@faker-js/faker";
-import {
+import type {
   ApproveExtensionRegistrationCommand,
   RegisterExtensionCommand,
   RejectExtensionRegistrationCommand,
   RevokeExtensionRegistrationCommand,
 } from "@playatlas/auth/commands";
-import { ExtensionRegistration } from "@playatlas/auth/domain";
-import { DomainEvent } from "@playatlas/common/application";
+import type { ExtensionRegistration } from "@playatlas/auth/domain";
+import type { DomainEvent } from "@playatlas/common/application";
 import { ExtensionRegistrationIdParser } from "@playatlas/common/domain";
+import type { ExtensionRegistrationResponseDto } from "../../../@playatlas/auth/src/dtos/extension-registration.response";
 import { api, factory } from "../vitest.global.setup";
 
 const buildRegisterCommand = (): {
@@ -32,6 +33,43 @@ const recordDomainEvents = () => {
 };
 
 describe("Auth / Extension Registration", () => {
+  it("register an extension", () => {
+    // Arrange
+    const recordedEvents = recordDomainEvents();
+
+    const { command } = buildRegisterCommand();
+    const registerResult = api.auth.commands
+      .getRegisterExtensionCommandHandler()
+      .execute(command);
+    const registrationId = registerResult.success
+      ? registerResult.registrationId
+      : null;
+    expect(registrationId).toBeDefined();
+
+    // Act
+    const queryResult = api.auth.queries
+      .getGetAllExtensionRegistrationsQueryHandler()
+      .execute();
+    const registrations = queryResult.type === "ok" ? queryResult.data : [];
+
+    // Assert
+    expect(registrations).toHaveLength(1);
+    expect(registrations).toEqual([
+      expect.objectContaining({
+        Id: registrationId!,
+        Status: "pending",
+      } satisfies Partial<ExtensionRegistrationResponseDto>),
+    ]);
+
+    expect(recordedEvents).toHaveLength(1);
+    expect(recordedEvents).toEqual([
+      expect.objectContaining({
+        name: "extension-registration-created",
+        payload: { registrationId: registrationId! },
+      } satisfies Partial<DomainEvent>),
+    ]);
+  });
+
   it("approves an extension registration", () => {
     // Arrange
     const { command } = buildRegisterCommand();

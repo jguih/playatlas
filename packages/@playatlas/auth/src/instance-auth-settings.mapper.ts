@@ -1,9 +1,10 @@
-import { EntityMapper } from "@playatlas/common/application";
+import type { EntityMapper } from "@playatlas/common/application";
+import type {
+  InstanceAuthSettings} from "./domain/instance-auth-settings.entity";
 import {
-  InstanceAuthSettings,
   rehydrateInstanceAuthSettings,
 } from "./domain/instance-auth-settings.entity";
-import { InstanceAuthSettingsModel } from "./infra/instance-auth-settings.repository";
+import type { InstanceAuthSettingsModel } from "./infra/instance-auth-settings.repository";
 
 export const instanceAuthSettingsMapper: EntityMapper<
   InstanceAuthSettings,

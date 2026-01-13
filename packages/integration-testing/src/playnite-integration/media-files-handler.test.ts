@@ -4,7 +4,7 @@ import {
   MEDIA_PRESETS,
   type ValidMediaFileFieldName,
 } from "@playatlas/playnite-integration/infra";
-import { createHash, Hash } from "crypto";
+import { type Hash, createHash } from "crypto";
 import { once } from "events";
 import { createReadStream, openAsBlob } from "fs";
 import * as fsAsync from "fs/promises";

@@ -1,4 +1,4 @@
-import { GameId } from "@playatlas/common/domain";
+import { type GameId, GameIdParser } from "@playatlas/common/domain";
 import type { CloseGameSessionRequestDto } from "./close-session.request.dto";
 
 export type CloseGameSessionCommand = {
@@ -16,7 +16,7 @@ export const makeCloseGameSessionCommand = (
   return {
     clientUtcNow: new Date(requestDto.ClientUtcNow),
     sessionId: requestDto.SessionId,
-    gameId: requestDto.GameId,
+    gameId: GameIdParser.fromExternal(requestDto.GameId),
     startTime: new Date(requestDto.StartTime),
     endTime: new Date(requestDto.EndTime),
     duration: requestDto.Duration,

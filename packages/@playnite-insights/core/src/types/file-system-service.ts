@@ -1,4 +1,4 @@
-import * as fsAsync from "fs/promises";
+import type * as fsAsync from "fs/promises";
 
 export type FileSystemService = {
   readdir: typeof fsAsync.readdir;

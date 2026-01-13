@@ -1,4 +1,4 @@
-import { DatabaseSync } from "node:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { faker } from "@faker-js/faker";
 import type { LogService } from "@playnite-insights/core";
 

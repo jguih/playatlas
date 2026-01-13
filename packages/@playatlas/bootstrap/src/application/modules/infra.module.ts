@@ -1,4 +1,4 @@
-import { LogServiceFactory } from "@playatlas/common/application";
+import type { LogServiceFactory } from "@playatlas/common/application";
 import { makeSignatureService } from "@playatlas/system/application";
 import { InvalidServerConfigurationError } from "@playatlas/system/domain";
 import {
@@ -8,7 +8,7 @@ import {
   type IEnvironmentServicePort,
   type SystemConfig,
 } from "@playatlas/system/infra";
-import { DatabaseSync } from "node:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import type { IInfraModulePort } from "./infra.module.port";
 
 export type InfraModuleDeps = {

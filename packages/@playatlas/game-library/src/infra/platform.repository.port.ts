@@ -1,7 +1,7 @@
-import { EntityRepository } from "@playatlas/common/infra";
-import { Platform, PlatformId } from "../domain/platform.entity";
+import type { IEntityRepositoryPort } from "@playatlas/common/infra";
+import type { Platform, PlatformId } from "../domain/platform.entity";
 
-export type IPlatformRepositoryPort = EntityRepository<
+export type IPlatformRepositoryPort = IEntityRepositoryPort<
   PlatformId,
   Platform
 > & {};

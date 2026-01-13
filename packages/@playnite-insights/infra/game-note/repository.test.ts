@@ -1,4 +1,4 @@
-import { GameNoteRepository } from "@playnite-insights/core";
+import type { GameNoteRepository } from "@playnite-insights/core";
 import {
   GameNoteFactory,
   makeMocks,

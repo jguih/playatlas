@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { TestEntityFactory } from "@playatlas/common/testing";
+import type { TestEntityFactory } from "@playatlas/common/testing";
 import { type Company, makeCompany } from "../domain/company.entity";
 import type { MakeCompanyProps } from "../domain/company.entity.types";
 

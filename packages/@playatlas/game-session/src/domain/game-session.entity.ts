@@ -1,5 +1,8 @@
-import type { GameId, GameSessionId } from "@playatlas/common/domain";
-import { BaseEntity } from "@playatlas/common/domain";
+import type {
+  BaseEntity,
+  GameId,
+  GameSessionId,
+} from "@playatlas/common/domain";
 import {
   EndTimeBeforeStartTimeError,
   GameSessionNotInProgressError,

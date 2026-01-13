@@ -1,8 +1,8 @@
-import { QueryHandler } from "@playatlas/common/common";
+import type { QueryHandler } from "@playatlas/common/common";
 import { createHashForObject } from "@playatlas/common/infra";
 import { gameMapper } from "../../game.mapper";
-import { GetAllGamesQuery } from "./get-all-games.query";
-import {
+import type { GetAllGamesQuery } from "./get-all-games.query";
+import type {
   GetAllGamesQueryHandlerDeps,
   GetAllGamesQueryResult,
 } from "./get-all-games.query.types";

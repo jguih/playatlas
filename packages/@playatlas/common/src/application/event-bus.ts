@@ -1,5 +1,5 @@
 import type { DomainEvent, Listener } from "./event-bus.types";
-import { ILogServicePort } from "./log-service.port";
+import type { ILogServicePort } from "./log-service.port";
 
 export type EventBusDeps = {
   logService: ILogServicePort;

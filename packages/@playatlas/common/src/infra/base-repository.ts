@@ -1,8 +1,8 @@
-import { SQLInputValue } from "node:sqlite";
+import type { SQLInputValue } from "node:sqlite";
 import z from "zod";
-import { BaseEntity, BaseEntityId } from "../domain/base-entity";
-import { BaseRepositoryPort } from "./base-repository.port";
-import { MakeBaseRepositoryDeps } from "./base-repository.types";
+import type { BaseEntity, BaseEntityId } from "../domain/base-entity";
+import type { BaseRepositoryPort } from "./base-repository.port";
+import type { MakeBaseRepositoryDeps } from "./base-repository.types";
 
 const PERFORMANCE_WARN_THRESHOLD_MS = 50;
 

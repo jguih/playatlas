@@ -1,4 +1,4 @@
-import {
+import type {
   LogLevelNumber,
   LogServiceFactory,
 } from "@playatlas/common/application";

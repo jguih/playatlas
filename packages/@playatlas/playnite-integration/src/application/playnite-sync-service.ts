@@ -7,7 +7,6 @@ import type { PlayniteSyncServiceDeps } from "./playnite-sync-service.types";
 export const makePlayniteSyncService = ({
   playniteMediaFilesHandler: handler,
   gameRepository,
-  logService,
   libraryManifestService,
 }: PlayniteSyncServiceDeps): IPlayniteSyncServicePort => {
   const handleMediaFilesSynchronizationRequest: IPlayniteSyncServicePort["handleMediaFilesSynchronizationRequest"] =

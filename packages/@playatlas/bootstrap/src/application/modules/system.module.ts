@@ -1,9 +1,9 @@
 import {
-  EnvServiceDeps,
+  type EnvServiceDeps,
   makeEnvService,
   makeSystemConfig,
 } from "@playatlas/system/infra";
-import { ISystemModulePort } from "./system.module.port";
+import { type ISystemModulePort } from "./system.module.port";
 
 export type SystemModuleDeps = EnvServiceDeps;
 

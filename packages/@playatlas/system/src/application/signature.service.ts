@@ -5,7 +5,7 @@ import type {
 } from "@playatlas/common/application";
 import { createVerify, sign as cryptoSign, generateKeyPairSync } from "crypto";
 import { join } from "path";
-import { SystemConfig } from "../infra";
+import type { SystemConfig } from "../infra";
 
 export type SignatureServiceDeps = {
   fileSystemService: IFileSystemServicePort;

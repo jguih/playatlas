@@ -1,12 +1,12 @@
 import { validation } from "@playatlas/common/application";
 import {
-  BaseEntity,
-  ExtensionRegistrationId,
+  type BaseEntity,
+  type ExtensionRegistrationId,
   InvalidOperationError,
   InvalidStateError,
 } from "@playatlas/common/domain";
 import { extensionRegistrationStatus } from "./extension-registration.constants";
-import {
+import type {
   BuildExtensionRegistrationProps,
   MakeExtensionRegistrationProps,
   RehydrateExtensionRegistrationProps,

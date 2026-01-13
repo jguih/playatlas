@@ -1,10 +1,10 @@
 import { faker } from "@faker-js/faker";
 import { type TestEntityFactory } from "@playatlas/common/testing";
 import {
-  ExtensionRegistration,
+  type ExtensionRegistration,
   makeExtensionRegistration,
 } from "../domain/extension-registration.entity";
-import { MakeExtensionRegistrationProps } from "../domain/extension-registration.entity.types";
+import type { MakeExtensionRegistrationProps } from "../domain/extension-registration.entity.types";
 
 export type ExtensionRegistrationFactory = TestEntityFactory<
   MakeExtensionRegistrationProps,

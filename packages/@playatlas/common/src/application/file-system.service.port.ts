@@ -1,5 +1,5 @@
-import * as fs from "fs";
-import * as fsAsync from "fs/promises";
+import type * as fs from "fs";
+import type * as fsAsync from "fs/promises";
 
 export type IFileSystemServicePort = {
   readdir: typeof fsAsync.readdir;

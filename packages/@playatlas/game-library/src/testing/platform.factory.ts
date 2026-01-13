@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { TestEntityFactory } from "@playatlas/common/testing";
-import { makePlatform, Platform } from "../domain/platform.entity";
-import { MakePlatformProps } from "../domain/platform.entity.types";
+import type { TestEntityFactory } from "@playatlas/common/testing";
+import { makePlatform, type Platform } from "../domain/platform.entity";
+import type { MakePlatformProps } from "../domain/platform.entity.types";
 
 export type PlatformFactory = TestEntityFactory<MakePlatformProps, Platform>;
 

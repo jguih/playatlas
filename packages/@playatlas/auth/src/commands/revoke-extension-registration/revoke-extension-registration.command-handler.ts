@@ -1,5 +1,5 @@
-import { IRevokeExtensionRegistrationCommandHandlerPort } from "./revoke-extension-registration.command-handler.port";
-import { RevokeExtensionRegistrationCommandHandlerDeps } from "./revoke-extension-registration.types";
+import type { IRevokeExtensionRegistrationCommandHandlerPort } from "./revoke-extension-registration.command-handler.port";
+import type { RevokeExtensionRegistrationCommandHandlerDeps } from "./revoke-extension-registration.types";
 
 export const makeRevokeExtensionRegistrationHandler = ({
   logService,

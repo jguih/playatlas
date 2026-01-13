@@ -13,7 +13,7 @@ import type {
   GameRelationship,
   GameRelationshipMap,
 } from "../domain/game.entity";
-import type { GameFilters, GameSorting } from "../domain/game.types";
+import type { GameFilters } from "../domain/game.types";
 import type { GenreId } from "../domain/genre.entity";
 import type { PlatformId } from "../domain/platform.entity";
 import { gameMapper } from "../game.mapper";
@@ -108,27 +108,6 @@ export const makeGameRepository = (
       where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
       params,
     };
-  };
-
-  const _getOrderByClause = (sorting?: GameSorting): string => {
-    if (!sorting) return ` ORDER BY Id ASC`;
-    const order = sorting.order.toUpperCase();
-    switch (sorting.by) {
-      case "IsInstalled": {
-        return ` ORDER BY IsInstalled ${order}, Id ASC`;
-      }
-      case "Added": {
-        return ` ORDER BY Added ${order}, Id ASC`;
-      }
-      case "LastActivity": {
-        return ` ORDER BY LastActivity ${order}, Id ASC`;
-      }
-      case "Playtime": {
-        return ` ORDER BY Playtime ${order}, Id ASC`;
-      }
-      default:
-        return ` ORDER BY Id ASC`;
-    }
   };
 
   const _updateRelationshipFor: UpdateRelationshipsForFn = ({
