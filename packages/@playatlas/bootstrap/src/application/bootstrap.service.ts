@@ -63,7 +63,7 @@ export const bootstrapV1 = ({
         getRejectExtensionRegistrationCommandHandler:
           auth.commands.getRejectExtensionRegistrationCommandHandler,
         getRevokeExtensionRegistrationCommandHandler:
-          auth.commands.getRejectExtensionRegistrationCommandHandler,
+          auth.commands.getRevokeExtensionRegistrationCommandHandler,
         getRemoveExtensionRegistrationCommandHandler:
           auth.commands.getRemoveExtensionRegistrationCommandHandler,
         getRegisterExtensionCommandHandler:

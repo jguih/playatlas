@@ -21,7 +21,7 @@ export const makeApproveExtensionRegistrationHandler = ({
       if (existing.isTrusted())
         return {
           success: true,
-          reason_code: "registration_already_approved",
+          reason_code: "extension_registration_already_approved",
           reason: "Registration is already approved",
         };
       if (existing.isRejected())
@@ -53,7 +53,7 @@ export const makeApproveExtensionRegistrationHandler = ({
 
       return {
         success: true,
-        reason_code: "registration_approved",
+        reason_code: "extension_registration_approved",
         reason: "Approved",
       };
     },

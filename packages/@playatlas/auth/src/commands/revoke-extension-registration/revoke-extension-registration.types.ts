@@ -4,13 +4,13 @@ import {
 } from "@playatlas/common/application";
 import { IExtensionRegistrationRepositoryPort } from "../../infra";
 
-export type ApproveExtensionRegistrationServiceDeps = {
+export type RevokeExtensionRegistrationCommandHandlerDeps = {
   extensionRegistrationRepository: IExtensionRegistrationRepositoryPort;
   logService: ILogServicePort;
   eventBus: IDomainEventBusPort;
 };
 
-export type ApproveExtensionRegistrationCommandResult =
+export type RevokeExtensionRegistrationCommandResult =
   | {
       success: false;
       reason: string;
@@ -20,6 +20,6 @@ export type ApproveExtensionRegistrationCommandResult =
       success: true;
       reason: string;
       reason_code:
-        | "extension_registration_approved"
-        | "extension_registration_already_approved";
+        | "extension_registration_revoked"
+        | "extension_registration_already_rejected";
     };

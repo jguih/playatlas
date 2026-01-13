@@ -3,6 +3,7 @@ import {
   ApproveExtensionRegistrationCommand,
   RegisterExtensionCommand,
   RejectExtensionRegistrationCommand,
+  RevokeExtensionRegistrationCommand,
 } from "@playatlas/auth/commands";
 import { ExtensionRegistration } from "@playatlas/auth/domain";
 import { DomainEvent } from "@playatlas/common/application";
@@ -58,7 +59,7 @@ describe("Auth / Extension Registration", () => {
     expect(registerResult.reason_code).toBe("extension_registered");
 
     expect(approveResult.success).toBe(true);
-    expect(approveResult.reason_code).toBe("registration_approved");
+    expect(approveResult.reason_code).toBe("extension_registration_approved");
 
     expect(recordedEvents).toHaveLength(1);
     expect(recordedEvents).toEqual([
@@ -181,10 +182,12 @@ describe("Auth / Extension Registration", () => {
 
     // Assert
     expect(approveResult1.success).toBe(true);
-    expect(approveResult1.reason_code).toBe("registration_approved");
+    expect(approveResult1.reason_code).toBe("extension_registration_approved");
 
     expect(approveResult2.success).toBe(true);
-    expect(approveResult2.reason_code).toBe("registration_already_approved");
+    expect(approveResult2.reason_code).toBe(
+      "extension_registration_already_approved"
+    );
 
     expect(queryResult.type).toBe("ok");
     expect(registrations).toHaveLength(1);
@@ -249,6 +252,65 @@ describe("Auth / Extension Registration", () => {
     expect(recordedEvents).toEqual([
       expect.objectContaining({
         name: "extension-registration-rejected",
+        payload: { registrationId: registrationId! },
+      } satisfies Partial<DomainEvent>),
+    ]);
+  });
+
+  it("revokes approved extension registration", () => {
+    // Arrange
+    const recordedEvents: DomainEvent[] = [];
+    api.getEventBus().subscribe((event) => {
+      recordedEvents.push(event);
+    });
+
+    const { command } = buildRegisterCommand();
+    const registerResult = api.auth.commands
+      .getRegisterExtensionCommandHandler()
+      .execute(command);
+    const registrationId = registerResult.success
+      ? registerResult.registrationId
+      : null;
+    expect(registrationId).toBeDefined();
+
+    const approveCommand: ApproveExtensionRegistrationCommand = {
+      registrationId: registrationId!,
+    };
+    const revokeCommand: RevokeExtensionRegistrationCommand = {
+      registrationId: registrationId!,
+    };
+
+    // Act
+    const approveResult = api.auth.commands
+      .getApproveExtensionRegistrationCommandHandler()
+      .execute(approveCommand);
+    const revokeResult = api.auth.commands
+      .getRevokeExtensionRegistrationCommandHandler()
+      .execute(revokeCommand);
+    const queryResult = api.auth.queries
+      .getGetAllExtensionRegistrationsQueryHandler()
+      .execute();
+    const registrations = queryResult.type === "ok" ? queryResult.data : [];
+
+    // Assert
+    expect(approveResult.success).toBe(true);
+    expect(approveResult.reason_code).toBe("extension_registration_approved");
+
+    expect(revokeResult.success).toBe(true);
+    expect(revokeResult.reason_code).toBe("extension_registration_revoked");
+
+    expect(queryResult.type).toBe("ok");
+    expect(registrations).toHaveLength(1);
+    expect(registrations[0].Status).toBe("rejected");
+
+    expect(recordedEvents).toHaveLength(2);
+    expect(recordedEvents).toEqual([
+      expect.objectContaining({
+        name: "extension-registration-approved",
+        payload: { registrationId: registrationId! },
+      } satisfies Partial<DomainEvent>),
+      expect.objectContaining({
+        name: "extension-registration-revoked",
         payload: { registrationId: registrationId! },
       } satisfies Partial<DomainEvent>),
     ]);
