@@ -20,6 +20,7 @@ export const GET: RequestHandler = async ({ request, locals: { api } }) =>
 				const unsubscribe = api.getEventBus().subscribe((event) => {
 					if (closed) return;
 
+					api.getLogService().info(`Broadcasting event (Name: ${event.name}, Id: ${event.id})`);
 					controller.enqueue(
 						encoder.encode(
 							`id: ${event.id}\n` +

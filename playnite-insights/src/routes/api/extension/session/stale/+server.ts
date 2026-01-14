@@ -4,7 +4,6 @@ import {
 	makeStaleGameSessionCommand,
 	staleGameSessionRequestDtoSchema,
 } from "@playatlas/game-session/commands";
-import { defaultSSEManager } from "@playnite-insights/infra";
 import { type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request, locals: { api } }) =>
@@ -31,11 +30,17 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) =>
 
 		const command = makeStaleGameSessionCommand(data);
 
-		const { created } = api.gameSession.commands
+		const commandResult = api.gameSession.commands
 			.getStaleGameSessionCommandHandler()
 			.execute(command);
 
-		defaultSSEManager.broadcast({ type: "sessionClosed", data: true });
+		if (!commandResult.success) {
+			return apiResponse.error({
+				error: { message: commandResult.reason, details: { code: commandResult.reason_code } },
+			});
+		}
 
-		return created ? apiResponse.created() : apiResponse.ok();
+		return commandResult.reason_code === "stale_game_session_created"
+			? apiResponse.created()
+			: apiResponse.ok();
 	});
