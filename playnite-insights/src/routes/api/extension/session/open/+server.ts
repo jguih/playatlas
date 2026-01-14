@@ -31,7 +31,15 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) =>
 
 		const command = makeOpenGameSessionCommand(data);
 
-		api.gameSession.commands.getOpenGameSessionCommandHandler().execute(command);
+		const commandResult = api.gameSession.commands
+			.getOpenGameSessionCommandHandler()
+			.execute(command);
+
+		if (!commandResult.success) {
+			return apiResponse.error({
+				error: { message: commandResult.reason, details: { code: commandResult.reason_code } },
+			});
+		}
 
 		return emptyResponse(200);
 	});

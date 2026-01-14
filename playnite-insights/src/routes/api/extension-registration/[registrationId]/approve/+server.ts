@@ -1,6 +1,9 @@
 import { instanceAuthMiddleware } from "$lib/server/api/middleware/auth.middleware";
 import { apiResponse, type ApiErrorResponse } from "$lib/server/api/responses";
-import { approveExtensionRegistrationRequestDtoSchema } from "@playatlas/auth/commands";
+import {
+	approveExtensionRegistrationRequestDtoSchema,
+	makeApproveExtensionRegistrationCommand,
+} from "@playatlas/auth/commands";
 import { type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ params, request, locals: { api } }) =>
@@ -9,14 +12,24 @@ export const POST: RequestHandler = async ({ params, request, locals: { api } })
 		const { success, data, error } = approveExtensionRegistrationRequestDtoSchema.safeParse({
 			registrationId: Number(registrationId),
 		});
-		if (!success)
+
+		if (!success) {
+			api
+				.getLogService()
+				.error(
+					`${api.getLogService().getRequestDescription(request)}: Validation error while handling request`,
+					error.issues.slice(0, 10),
+				);
 			return apiResponse.error({
 				error: { message: "Validation error", details: error.issues },
 			});
+		}
+
+		const command = makeApproveExtensionRegistrationCommand(data);
 
 		const result = api.auth.commands
 			.getApproveExtensionRegistrationCommandHandler()
-			.execute({ registrationId: data.registrationId });
+			.execute(command);
 
 		if (result.success) return apiResponse.success();
 
