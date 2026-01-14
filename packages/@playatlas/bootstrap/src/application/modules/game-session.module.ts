@@ -46,6 +46,7 @@ export const makeGameSessionModule = ({
 		gameSessionRepository: _game_session_repo,
 		gameInfoProvider,
 		logService: logServiceFactory.build("CloseGameSessionCommandHandler"),
+		eventBus,
 	});
 
 	const _stale_game_session_command_handler = makeStaleGameSessionCommandHandler({

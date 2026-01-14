@@ -6,13 +6,13 @@ import {
 	type CloseGameSessionCommand,
 } from "../../src/commands/close-session/close-session.command";
 import {
+	makeCloseGameSessionCommandHandler,
+	type CloseGameSessionServiceDeps,
+} from "../../src/commands/close-session/close-session.command-handler";
+import {
 	closeGameSessionRequestDtoSchema,
 	type CloseGameSessionRequestDto,
 } from "../../src/commands/close-session/close-session.request.dto";
-import {
-	makeCloseGameSessionCommandHandler,
-	type CloseGameSessionServiceDeps,
-} from "../../src/commands/close-session/close-session.service";
 import {
 	makeClosedGameSession,
 	makeGameSession,
