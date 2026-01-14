@@ -1,11 +1,15 @@
-import { GameIdParser, gameIdSchema, type GameId } from "@playatlas/common/domain";
+import {
+	GameIdParser,
+	gameIdSchema,
+	type CompanyId,
+	type GameId,
+	type GenreId,
+	type PlatformId,
+} from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
-import type { CompanyId } from "../domain/company.entity";
 import type { GameRelationship, GameRelationshipMap } from "../domain/game.entity";
 import type { GameFilters } from "../domain/game.types";
-import type { GenreId } from "../domain/genre.entity";
-import type { PlatformId } from "../domain/platform.entity";
 import { gameMapper } from "../game.mapper";
 import { COLUMNS, GAME_RELATIONSHIP_META, TABLE_NAME } from "./game.repository.constants";
 import type { GameRepositoryEagerLoadProps, IGameRepositoryPort } from "./game.repository.port";

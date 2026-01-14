@@ -1,7 +1,6 @@
-import type { BaseEntity } from "@playatlas/common/domain";
+import type { BaseEntity, CompletionStatusId } from "@playatlas/common/domain";
 import type { MakeCompletionStatusProps } from "./completion-status.entity.types";
 
-export type CompletionStatusId = string;
 type CompletionStatusName = string;
 
 export type CompletionStatus = BaseEntity<CompletionStatusId> &

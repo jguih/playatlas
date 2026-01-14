@@ -1,7 +1,8 @@
-import type { EntityRepository } from "@playatlas/common/infra";
-import type { CompletionStatus, CompletionStatusId } from "../domain/completion-status.entity";
+import type { CompletionStatusId } from "@playatlas/common/domain";
+import type { IEntityRepositoryPort } from "@playatlas/common/infra";
+import type { CompletionStatus } from "../domain/completion-status.entity";
 
-export type ICompletionStatusRepositoryPort = EntityRepository<
+export type ICompletionStatusRepositoryPort = IEntityRepositoryPort<
 	CompletionStatusId,
 	CompletionStatus
 > & {};

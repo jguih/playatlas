@@ -1,7 +1,4 @@
-import type { GameId } from "@playatlas/common/domain";
-import type { CompanyId } from "./company.entity";
-import type { GenreId } from "./genre.entity";
-import type { PlatformId } from "./platform.entity";
+import type { CompanyId, GameId, GenreId, PlatformId } from "@playatlas/common/domain";
 
 export type MakeGameRelationshipProps = {
 	developerIds?: CompanyId[] | null;

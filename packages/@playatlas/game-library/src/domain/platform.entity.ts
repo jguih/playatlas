@@ -1,7 +1,5 @@
-import type { BaseEntity } from "@playatlas/common/domain";
+import type { BaseEntity, PlatformId } from "@playatlas/common/domain";
 import type { MakePlatformProps } from "./platform.entity.types";
-
-export type PlatformId = string;
 
 export type Platform = BaseEntity<PlatformId> &
 	Readonly<{

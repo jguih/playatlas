@@ -1,12 +1,14 @@
 import { faker } from "@faker-js/faker";
-import { GameIdParser } from "@playatlas/common/domain";
+import {
+	GameIdParser,
+	type CompanyId,
+	type CompletionStatusId,
+	type GenreId,
+	type PlatformId,
+} from "@playatlas/common/domain";
 import type { TestEntityFactory } from "@playatlas/common/testing";
-import { type CompanyId } from "../domain/company.entity";
-import { type CompletionStatusId } from "../domain/completion-status.entity";
 import { makeGame, type Game } from "../domain/game.entity";
 import { type MakeGameProps } from "../domain/game.entity.types";
-import { type GenreId } from "../domain/genre.entity";
-import { type PlatformId } from "../domain/platform.entity";
 import type { GameResponseDto } from "../dtos";
 import { gameMapper } from "../game.mapper";
 

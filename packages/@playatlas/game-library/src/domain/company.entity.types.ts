@@ -1,4 +1,6 @@
+import type { CompanyId } from "@playatlas/common/domain";
+
 export type MakeCompanyProps = {
-	id: string;
+	id: CompanyId;
 	name: string;
 };

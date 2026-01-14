@@ -1,4 +1,5 @@
 import { type EntityMapper } from "@playatlas/common/application";
+import { PlatformIdParser } from "@playatlas/common/domain";
 import { makePlatform, type Platform } from "./domain/platform.entity";
 import type { PlatformResponseDto } from "./dtos";
 import type { PlatformModel } from "./infra/platform.repository";
@@ -31,7 +32,7 @@ export const platformMapper: PlatformMapper = {
 	},
 	toDomain: (model) => {
 		const entity: Platform = makePlatform({
-			id: model.Id,
+			id: PlatformIdParser.fromTrusted(model.Id),
 			name: model.Name,
 			specificationId: model.SpecificationId,
 			background: model.Background,

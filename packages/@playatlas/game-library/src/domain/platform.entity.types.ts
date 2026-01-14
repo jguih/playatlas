@@ -1,5 +1,7 @@
+import type { PlatformId } from "@playatlas/common/domain";
+
 export type MakePlatformProps = {
-	id: string;
+	id: PlatformId;
 	name: string;
 	specificationId: string;
 	icon?: string | null;

@@ -4,11 +4,15 @@ import {
 	type GameImageType,
 	type Relationship,
 } from "@playatlas/common/common";
-import { type BaseEntity, type GameId, InvalidStateError } from "@playatlas/common/domain";
-import type { CompanyId } from "./company.entity";
+import {
+	type BaseEntity,
+	type CompanyId,
+	type GameId,
+	type GenreId,
+	InvalidStateError,
+	type PlatformId,
+} from "@playatlas/common/domain";
 import type { MakeGameProps } from "./game.entity.types";
-import type { GenreId } from "./genre.entity";
-import type { PlatformId } from "./platform.entity";
 
 export type GameRelationshipMap = {
 	developers: CompanyId;

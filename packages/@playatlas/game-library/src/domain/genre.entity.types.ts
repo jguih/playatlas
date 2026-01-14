@@ -1,4 +1,6 @@
+import type { GenreId } from "@playatlas/common/domain";
+
 export type MakeGenreProps = {
-	id: string;
+	id: GenreId;
 	name: string;
 };

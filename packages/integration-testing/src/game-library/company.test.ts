@@ -1,22 +1,24 @@
-import { faker } from "@faker-js/faker";
+import type { CompanyResponseDto } from "@playatlas/game-library/dtos";
 import { describe, expect, it } from "vitest";
 import { api, factory, root } from "../vitest.global.setup";
 
-describe("Get All Companies Query Handler", () => {
-	it("returns companies array", () => {
+describe("Game Library / Company", () => {
+	it("persists a company", () => {
 		// Arrange
-		const queryResult = api.gameLibrary.queries.getGetAllCompaniesQueryHandler().execute();
-		if (queryResult.type !== "ok") throw new Error("Invalid result");
-		const companies = queryResult.data;
-		const oneCompany = faker.helpers.arrayElement(companies);
+		const company = factory.getCompanyFactory().build();
+		root.seedCompany(company);
+
 		// Act
 		const result = api.gameLibrary.queries.getGetAllCompaniesQueryHandler().execute();
-		if (result.type !== "ok") throw new Error("Result type must be 'ok'");
-		const oneResult = result.data.find((p) => p.Id === oneCompany.Id);
+		const companies = result.type === "ok" ? result.data : [];
+		const addedCompany = companies.find((c) => c.Id === company.getId());
+
 		// Assert
-		expect(result.data.length === companies.length).toBeTruthy();
-		expect(oneCompany.Id).toBe(oneResult?.Id);
-		expect(oneCompany.Name).toBe(oneResult?.Name);
+		expect(addedCompany).toBeDefined();
+		expect(addedCompany).toMatchObject({
+			Id: company.getId(),
+			Name: company.getName(),
+		} satisfies CompanyResponseDto);
 	});
 
 	it("return 'not_modified' when provided a matching etag", () => {

@@ -1,4 +1,5 @@
 import { type EntityMapper } from "@playatlas/common/application";
+import { GenreIdParser } from "@playatlas/common/domain";
 import { type Genre, makeGenre } from "./domain";
 import type { GenreResponseDto } from "./dtos";
 import type { GenreModel } from "./infra/genre.repository";
@@ -22,7 +23,7 @@ export const genreMapper: GenreMapper = {
 		return model;
 	},
 	toDomain: (model) => {
-		const entity: Genre = makeGenre({ id: model.Id, name: model.Name });
+		const entity: Genre = makeGenre({ id: GenreIdParser.fromTrusted(model.Id), name: model.Name });
 		return entity;
 	},
 	toDto: _toDto,

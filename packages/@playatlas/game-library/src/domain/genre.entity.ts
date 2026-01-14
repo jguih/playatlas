@@ -1,7 +1,6 @@
-import type { BaseEntity } from "@playatlas/common/domain";
+import type { BaseEntity, GenreId } from "@playatlas/common/domain";
 import type { MakeGenreProps } from "./genre.entity.types";
 
-export type GenreId = string;
 export type GenreName = string;
 
 export type Genre = BaseEntity<GenreId> &

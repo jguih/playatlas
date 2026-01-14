@@ -1,4 +1,5 @@
 import { type EntityMapper } from "@playatlas/common/application";
+import { CompanyIdParser } from "@playatlas/common/domain";
 import { type Company, makeCompany } from "./domain/company.entity";
 import type { CompanyResponseDto } from "./dtos";
 import type { CompanyModel } from "./infra/company.repository";
@@ -21,7 +22,7 @@ export const companyMapper: EntityMapper<Company, CompanyModel, CompanyResponseD
 	},
 	toDomain: (company: CompanyModel): Company => {
 		const entity: Company = makeCompany({
-			id: company.Id,
+			id: CompanyIdParser.fromTrusted(company.Id),
 			name: company.Name,
 		});
 		return entity;

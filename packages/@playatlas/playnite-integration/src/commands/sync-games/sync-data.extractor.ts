@@ -1,4 +1,14 @@
-import { GameIdParser } from "@playatlas/common/domain";
+import {
+	CompanyIdParser,
+	CompletionStatusIdParser,
+	GameIdParser,
+	GenreIdParser,
+	PlatformIdParser,
+	type CompanyId,
+	type CompletionStatusId,
+	type GenreId,
+	type PlatformId,
+} from "@playatlas/common/domain";
 import {
 	makeCompany,
 	makeCompletionStatus,
@@ -23,39 +33,50 @@ export type ExtractedSyncData = {
 };
 
 export const extractSyncData = (items: SyncGamesCommandItem[]): ExtractedSyncData => {
-	const genres = new Map<string, Genre>();
-	const platforms = new Map<string, Platform>();
-	const developers = new Map<string, Company>();
-	const publishers = new Map<string, Company>();
-	const completionStatuses = new Map<string, CompletionStatus>();
+	const genres = new Map<GenreId, Genre>();
+	const platforms = new Map<PlatformId, Platform>();
+	const developers = new Map<CompanyId, Company>();
+	const publishers = new Map<CompanyId, Company>();
+	const completionStatuses = new Map<CompletionStatusId, CompletionStatus>();
 	const games: Game[] = [];
 
 	for (const dto of items) {
-		dto.Genres?.forEach((g) => genres.set(g.Id, makeGenre({ id: g.Id, name: g.Name })));
+		dto.Genres?.forEach((g) => {
+			const genreId = GenreIdParser.fromExternal(g.Id);
+			genres.set(genreId, makeGenre({ id: genreId, name: g.Name }));
+		});
 
-		dto.Platforms?.forEach((p) =>
+		dto.Platforms?.forEach((p) => {
+			const platformId = PlatformIdParser.fromExternal(p.Id);
 			platforms.set(
-				p.Id,
+				platformId,
 				makePlatform({
-					id: p.Id,
+					id: platformId,
 					specificationId: p.SpecificationId,
 					name: p.Name,
 					icon: p.Icon,
 					cover: p.Cover,
 					background: p.Background,
 				}),
-			),
-		);
+			);
+		});
 
-		dto.Developers?.forEach((d) => developers.set(d.Id, makeCompany({ id: d.Id, name: d.Name })));
+		dto.Developers?.forEach((d) => {
+			const companyId = CompanyIdParser.fromExternal(d.Id);
+			developers.set(companyId, makeCompany({ id: companyId, name: d.Name }));
+		});
 
-		dto.Publishers?.forEach((p) => publishers.set(p.Id, makeCompany({ id: p.Id, name: p.Name })));
+		dto.Publishers?.forEach((p) => {
+			const companyId = CompanyIdParser.fromExternal(p.Id);
+			publishers.set(companyId, makeCompany({ id: companyId, name: p.Name }));
+		});
 
 		if (dto.CompletionStatus) {
+			const completionStatusId = CompletionStatusIdParser.fromExternal(dto.CompletionStatus.Id);
 			completionStatuses.set(
-				dto.CompletionStatus.Id,
+				completionStatusId,
 				makeCompletionStatus({
-					id: dto.CompletionStatus.Id,
+					id: completionStatusId,
 					name: dto.CompletionStatus.Name,
 				}),
 			);
@@ -72,10 +93,10 @@ export const extractSyncData = (items: SyncGamesCommandItem[]): ExtractedSyncDat
 				icon: dto.Icon,
 				completionStatusId: dto.CompletionStatus?.Id,
 				description: dto.Description,
-				developerIds: dto.Developers?.map((d) => d.Id) ?? [],
-				genreIds: dto.Genres?.map((g) => g.Id) ?? [],
-				publisherIds: dto.Publishers?.map((p) => p.Id) ?? [],
-				platformIds: dto.Platforms?.map((p) => p.Id) ?? [],
+				developerIds: dto.Developers?.map((d) => CompanyIdParser.fromExternal(d.Id)) ?? [],
+				genreIds: dto.Genres?.map((g) => GenreIdParser.fromExternal(g.Id)) ?? [],
+				publisherIds: dto.Publishers?.map((p) => CompanyIdParser.fromExternal(p.Id)) ?? [],
+				platformIds: dto.Platforms?.map((p) => PlatformIdParser.fromExternal(p.Id)) ?? [],
 				hidden: dto.Hidden,
 				installDirectory: dto.InstallDirectory,
 				isInstalled: dto.IsInstalled,

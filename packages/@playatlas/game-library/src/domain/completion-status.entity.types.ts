@@ -1,4 +1,6 @@
+import type { CompletionStatusId } from "@playatlas/common/domain";
+
 export type MakeCompletionStatusProps = {
-	id: string;
+	id: CompletionStatusId;
 	name: string;
 };
