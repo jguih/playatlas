@@ -10,15 +10,21 @@ const platformSchema = z.object({
 	Name: z.string(),
 });
 
+export type SyncGamesRequestDtoItemPlatform = z.infer<typeof platformSchema>;
+
 const genreSchema = z.object({
 	Id: z.string(),
 	Name: z.string(),
 });
 
+export type SyncGamesRequestDtoItemGenre = z.infer<typeof genreSchema>;
+
 const companySchema = z.object({
 	Id: z.string(),
 	Name: z.string(),
 });
+
+export type SyncGamesRequestDtoItemCompany = z.infer<typeof companySchema>;
 
 const developerSchema = companySchema;
 
@@ -28,6 +34,8 @@ const completionStatusSchema = z.object({
 	Id: z.string(),
 	Name: z.string(),
 });
+
+export type SyncGamesRequestDtoItemCompletionStatus = z.infer<typeof completionStatusSchema>;
 
 export const syncGamesItemDtoSchema = z.object({
 	Id: z.string(),
@@ -57,5 +65,5 @@ export const syncGamesRequestDtoSchema = z.object({
 	UpdatedItems: z.array(syncGamesItemDtoSchema),
 });
 
-export type SyncGamesItemDto = z.infer<typeof syncGamesItemDtoSchema>;
+export type SyncGamesRequestDtoItem = z.infer<typeof syncGamesItemDtoSchema>;
 export type SyncGamesRequestDto = z.infer<typeof syncGamesRequestDtoSchema>;

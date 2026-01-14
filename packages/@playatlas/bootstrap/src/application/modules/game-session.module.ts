@@ -53,6 +53,7 @@ export const makeGameSessionModule = ({
 		gameSessionRepository: _game_session_repo,
 		gameInfoProvider,
 		logService: logServiceFactory.build("StaleGameSessionCommandHandler"),
+		eventBus,
 	});
 
 	const gameSession: IGameSessionModulePort = {

@@ -6,6 +6,7 @@ import {
 	PlatformIdParser,
 	type CompanyId,
 	type CompletionStatusId,
+	type GameId,
 	type GenreId,
 	type PlatformId,
 } from "@playatlas/common/domain";
@@ -21,7 +22,7 @@ import {
 	type Genre,
 	type Platform,
 } from "@playatlas/game-library/domain";
-import { type SyncGamesCommandItem } from "./sync-games.command";
+import type { SyncGamesCommand, SyncGamesCommandItem } from "./sync-games.command";
 
 export type ExtractedSyncData = {
 	genres: Genre[];
@@ -30,23 +31,29 @@ export type ExtractedSyncData = {
 	publishers: Company[];
 	completionStatuses: CompletionStatus[];
 	games: Game[];
+	added: GameId[];
+	updated: GameId[];
+	deleted: GameId[];
 };
 
-export const extractSyncData = (items: SyncGamesCommandItem[]): ExtractedSyncData => {
+export const extractSyncData = ({ payload }: SyncGamesCommand): ExtractedSyncData => {
 	const genres = new Map<GenreId, Genre>();
 	const platforms = new Map<PlatformId, Platform>();
 	const developers = new Map<CompanyId, Company>();
 	const publishers = new Map<CompanyId, Company>();
 	const completionStatuses = new Map<CompletionStatusId, CompletionStatus>();
 	const games: Game[] = [];
+	const added: GameId[] = [];
+	const updated: GameId[] = [];
+	const deleted: GameId[] = [];
 
-	for (const dto of items) {
-		dto.Genres?.forEach((g) => {
+	const processCommandItem = (item: SyncGamesCommandItem) => {
+		item.Genres?.forEach((g) => {
 			const genreId = GenreIdParser.fromExternal(g.Id);
 			genres.set(genreId, makeGenre({ id: genreId, name: g.Name }));
 		});
 
-		dto.Platforms?.forEach((p) => {
+		item.Platforms?.forEach((p) => {
 			const platformId = PlatformIdParser.fromExternal(p.Id);
 			platforms.set(
 				platformId,
@@ -61,50 +68,64 @@ export const extractSyncData = (items: SyncGamesCommandItem[]): ExtractedSyncDat
 			);
 		});
 
-		dto.Developers?.forEach((d) => {
+		item.Developers?.forEach((d) => {
 			const companyId = CompanyIdParser.fromExternal(d.Id);
 			developers.set(companyId, makeCompany({ id: companyId, name: d.Name }));
 		});
 
-		dto.Publishers?.forEach((p) => {
+		item.Publishers?.forEach((p) => {
 			const companyId = CompanyIdParser.fromExternal(p.Id);
 			publishers.set(companyId, makeCompany({ id: companyId, name: p.Name }));
 		});
 
-		if (dto.CompletionStatus) {
-			const completionStatusId = CompletionStatusIdParser.fromExternal(dto.CompletionStatus.Id);
+		if (item.CompletionStatus) {
+			const completionStatusId = CompletionStatusIdParser.fromExternal(item.CompletionStatus.Id);
 			completionStatuses.set(
 				completionStatusId,
 				makeCompletionStatus({
 					id: completionStatusId,
-					name: dto.CompletionStatus.Name,
+					name: item.CompletionStatus.Name,
 				}),
 			);
 		}
 
 		games.push(
 			makeGame({
-				id: GameIdParser.fromExternal(dto.Id),
-				name: dto.Name,
-				added: dto.Added ? new Date(dto.Added) : null,
-				contentHash: dto.ContentHash,
-				backgroundImage: dto.BackgroundImage,
-				coverImage: dto.CoverImage,
-				icon: dto.Icon,
-				completionStatusId: dto.CompletionStatus?.Id,
-				description: dto.Description,
-				developerIds: dto.Developers?.map((d) => CompanyIdParser.fromExternal(d.Id)) ?? [],
-				genreIds: dto.Genres?.map((g) => GenreIdParser.fromExternal(g.Id)) ?? [],
-				publisherIds: dto.Publishers?.map((p) => CompanyIdParser.fromExternal(p.Id)) ?? [],
-				platformIds: dto.Platforms?.map((p) => PlatformIdParser.fromExternal(p.Id)) ?? [],
-				hidden: dto.Hidden,
-				installDirectory: dto.InstallDirectory,
-				isInstalled: dto.IsInstalled,
-				lastActivity: dto.LastActivity ? new Date(dto.LastActivity) : null,
-				playtime: dto.Playtime,
-				releaseDate: dto.ReleaseDate ? new Date(dto.ReleaseDate) : null,
+				id: GameIdParser.fromExternal(item.Id),
+				name: item.Name,
+				added: item.Added ? new Date(item.Added) : null,
+				contentHash: item.ContentHash,
+				backgroundImage: item.BackgroundImage,
+				coverImage: item.CoverImage,
+				icon: item.Icon,
+				completionStatusId: item.CompletionStatus?.Id,
+				description: item.Description,
+				developerIds: item.Developers?.map((d) => CompanyIdParser.fromExternal(d.Id)) ?? [],
+				genreIds: item.Genres?.map((g) => GenreIdParser.fromExternal(g.Id)) ?? [],
+				publisherIds: item.Publishers?.map((p) => CompanyIdParser.fromExternal(p.Id)) ?? [],
+				platformIds: item.Platforms?.map((p) => PlatformIdParser.fromExternal(p.Id)) ?? [],
+				hidden: item.Hidden,
+				installDirectory: item.InstallDirectory,
+				isInstalled: item.IsInstalled,
+				lastActivity: item.LastActivity ? new Date(item.LastActivity) : null,
+				playtime: item.Playtime,
+				releaseDate: item.ReleaseDate ? new Date(item.ReleaseDate) : null,
 			}),
 		);
+	};
+
+	for (const item of payload.toAdd) {
+		processCommandItem(item);
+		added.push(GameIdParser.fromExternal(item.Id));
+	}
+
+	for (const item of payload.toUpdate) {
+		processCommandItem(item);
+		updated.push(GameIdParser.fromExternal(item.Id));
+	}
+
+	for (const item of payload.toRemove) {
+		deleted.push(GameIdParser.fromExternal(item));
 	}
 
 	return {
@@ -114,5 +135,8 @@ export const extractSyncData = (items: SyncGamesCommandItem[]): ExtractedSyncDat
 		publishers: [...publishers.values()],
 		completionStatuses: [...completionStatuses.values()],
 		games,
+		added,
+		updated,
+		deleted,
 	};
 };

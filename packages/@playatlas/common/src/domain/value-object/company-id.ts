@@ -8,7 +8,7 @@ export type CompanyId = string & {
 };
 export const CompanyIdParser = {
 	fromExternal(value: string): CompanyId {
-		if (!value || value.trim() === "") throw new InvalidStateError(`CompanyId must not be string`);
+		if (!value || value.trim() === "") throw new InvalidStateError(`CompanyId must not be empty`);
 		return value as CompanyId;
 	},
 

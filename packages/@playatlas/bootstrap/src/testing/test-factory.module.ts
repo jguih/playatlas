@@ -13,6 +13,10 @@ import {
 	type GenreFactory,
 	type PlatformFactory,
 } from "@playatlas/game-library/testing";
+import {
+	makeSyncGamesRequestDtoFactory,
+	type SyncGamesRequestDtoFactory,
+} from "@playatlas/playnite-integration/testing";
 
 export type ITestFactoryModulePort = {
 	getCompletionStatusFactory: () => CompletionStatusFactory;
@@ -22,6 +26,7 @@ export type ITestFactoryModulePort = {
 	setGameFactory: (factory: GameFactory) => void;
 	getPlatformFactory: () => PlatformFactory;
 	getExtensionRegistrationFactory: () => ExtensionRegistrationFactory;
+	getSyncGameRequestDtoFactory: () => SyncGamesRequestDtoFactory;
 };
 
 export const makeTestFactoryModule = (): ITestFactoryModulePort => {
@@ -31,6 +36,7 @@ export const makeTestFactoryModule = (): ITestFactoryModulePort => {
 	let _game_factory: GameFactory | null = null;
 	const _platform = makePlatformFactory();
 	const _extension_registration_factory = makeExtensionRegistrationFactory();
+	const _sync_game_dto_factory = makeSyncGamesRequestDtoFactory();
 
 	return {
 		getCompletionStatusFactory: () => _completion_status,
@@ -43,5 +49,6 @@ export const makeTestFactoryModule = (): ITestFactoryModulePort => {
 		setGameFactory: (factory) => (_game_factory = factory),
 		getPlatformFactory: () => _platform,
 		getExtensionRegistrationFactory: () => _extension_registration_factory,
+		getSyncGameRequestDtoFactory: () => _sync_game_dto_factory,
 	};
 };

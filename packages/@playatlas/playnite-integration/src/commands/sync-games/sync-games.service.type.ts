@@ -1,4 +1,4 @@
-import type { ILogServicePort } from "@playatlas/common/application";
+import type { IDomainEventBusPort, ILogServicePort } from "@playatlas/common/application";
 import type { IAsyncCommandHandlerPort } from "@playatlas/common/common";
 import type {
 	ICompanyRepositoryPort,
@@ -10,11 +10,17 @@ import type {
 import type { ILibraryManifestServicePort } from "../../application";
 import type { SyncGamesCommand } from "./sync-games.command";
 
-export type SyncGamesCommandResult = {
-	success: boolean;
-	reason: string;
-	reason_code: "game_not_found" | "success" | "integrity_check_failed";
-};
+export type SyncGamesCommandResult =
+	| {
+			success: true;
+			reason: string;
+			reason_code: "game_library_synchronized";
+	  }
+	| {
+			success: false;
+			reason: string;
+			reason_code: "failed_to_parse_payload";
+	  };
 
 export type ISyncGamesCommandHandlerPort = IAsyncCommandHandlerPort<
 	SyncGamesCommand,
@@ -29,4 +35,5 @@ export type SyncGamesServiceDeps = {
 	companyRepository: ICompanyRepositoryPort;
 	completionStatusRepository: ICompletionStatusRepositoryPort;
 	libraryManifestService: ILibraryManifestServicePort;
+	eventBus: IDomainEventBusPort;
 };

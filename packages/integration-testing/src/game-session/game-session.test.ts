@@ -9,13 +9,8 @@ import {
 	type OpenGameSessionRequestDto,
 } from "@playatlas/game-session/commands";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { recordDomainEvents } from "../test.lib";
 import { api, factory, root } from "../vitest.global.setup";
-
-const recordDomainEvents = () => {
-	const events: DomainEvent[] = [];
-	const unsubscribe = api.getEventBus().subscribe((event) => events.push(event));
-	return { events, unsubscribe };
-};
 
 describe("Game Sessions", () => {
 	let game: Game;

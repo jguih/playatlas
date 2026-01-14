@@ -1,4 +1,8 @@
-import { type IFileSystemServicePort, type LogServiceFactory } from "@playatlas/common/application";
+import {
+	type IDomainEventBusPort,
+	type IFileSystemServicePort,
+	type LogServiceFactory,
+} from "@playatlas/common/application";
 import type {
 	ICompanyRepositoryPort,
 	ICompletionStatusRepositoryPort,
@@ -24,6 +28,7 @@ export type PlayniteIntegrationModuleDeps = {
 	platformRepository: IPlatformRepositoryPort;
 	genreRepository: IGenreRepositoryPort;
 	completionStatusRepository: ICompletionStatusRepositoryPort;
+	eventBus: IDomainEventBusPort;
 };
 
 export const makePlayniteIntegrationModule = ({
@@ -35,6 +40,7 @@ export const makePlayniteIntegrationModule = ({
 	completionStatusRepository,
 	genreRepository,
 	platformRepository,
+	eventBus,
 }: PlayniteIntegrationModuleDeps): IPlayniteIntegrationModulePort => {
 	const _playnite_media_files_handler = makePlayniteMediaFilesHandler({
 		logService: logServiceFactory.build("PlayniteMediaFilesHandler"),
@@ -62,6 +68,7 @@ export const makePlayniteIntegrationModule = ({
 		platformRepository: platformRepository,
 		logService: logServiceFactory.build("SyncGamesCommandHandler"),
 		libraryManifestService: _library_manifest_service,
+		eventBus,
 	});
 
 	const playniteIntegrationApi: IPlayniteIntegrationModulePort = {
