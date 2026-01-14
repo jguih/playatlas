@@ -8,9 +8,8 @@ export type GenreId = string & {
 };
 export const GenreIdParser = {
 	fromExternal(value: string): GenreId {
-		const { success, data, error } = genreIdSchema.safeParse(value);
-		if (success) return data as GenreId;
-		throw new InvalidStateError(`Invalid Genre Id: \n${error.issues}`);
+		if (!value || value.trim() === "") throw new InvalidStateError(`GenreId must not be empty`);
+		return value as GenreId;
 	},
 
 	fromTrusted(value: string): GenreId {

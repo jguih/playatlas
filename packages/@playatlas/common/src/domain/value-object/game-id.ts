@@ -9,9 +9,8 @@ export type GameId = z.infer<typeof gameIdSchema> & {
 
 export const GameIdParser = {
 	fromExternal(value: string): GameId {
-		const { success, data, error } = gameIdSchema.safeParse(value);
-		if (success) return data as GameId;
-		throw new InvalidStateError(`Invalid Game Id: \n${error.issues}`);
+		if (!value || value.trim() === "") throw new InvalidStateError(`GameId must not be empty`);
+		return value as GameId;
 	},
 
 	fromTrusted(value: string): GameId {

@@ -1,10 +1,11 @@
+import { genreIdSchema } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
 import { genreMapper } from "../genre.mapper";
 import type { IGenreRepositoryPort } from "./genre.repository.port";
 
 export const genreSchema = z.object({
-	Id: z.string(),
+	Id: genreIdSchema,
 	Name: z.string(),
 });
 

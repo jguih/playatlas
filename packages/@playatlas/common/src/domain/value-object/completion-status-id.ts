@@ -9,9 +9,9 @@ export type CompletionStatusId = string & {
 
 export const CompletionStatusIdParser = {
 	fromExternal(value: string): CompletionStatusId {
-		const { success, data, error } = completionStatusIdSchema.safeParse(value);
-		if (success) return data as CompletionStatusId;
-		throw new InvalidStateError(`Invalid Completion Status Id: \n${error.issues}`);
+		if (!value || value.trim() === "")
+			throw new InvalidStateError(`CompletionStatusId must not be empty`);
+		return value as CompletionStatusId;
 	},
 
 	fromTrusted(value: string): CompletionStatusId {

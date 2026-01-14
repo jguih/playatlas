@@ -8,9 +8,8 @@ export type CompanyId = string & {
 };
 export const CompanyIdParser = {
 	fromExternal(value: string): CompanyId {
-		const { success, data, error } = companyIdSchema.safeParse(value);
-		if (success) return data as CompanyId;
-		throw new InvalidStateError(`Invalid Company Id: \n${error.issues}`);
+		if (!value || value.trim() === "") throw new InvalidStateError(`CompanyId must not be string`);
+		return value as CompanyId;
 	},
 
 	fromTrusted(value: string): CompanyId {

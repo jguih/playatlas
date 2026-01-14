@@ -1,10 +1,11 @@
+import { platformIdSchema } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
 import { platformMapper } from "../platform.mapper";
 import type { IPlatformRepositoryPort } from "./platform.repository.port";
 
 export const platformSchema = z.object({
-	Id: z.string(),
+	Id: platformIdSchema,
 	Name: z.string(),
 	SpecificationId: z.string(),
 	Icon: z.string().nullable(),

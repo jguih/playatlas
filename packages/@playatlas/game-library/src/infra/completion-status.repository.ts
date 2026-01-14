@@ -1,10 +1,11 @@
+import { completionStatusIdSchema } from "@playatlas/common/domain";
 import { type BaseRepositoryDeps, makeBaseRepository } from "@playatlas/common/infra";
 import z from "zod";
 import { completionStatusMapper } from "../completion-status.mapper";
 import type { ICompletionStatusRepositoryPort } from "./completion-status.repository.port";
 
 export const completionStatusSchema = z.object({
-	Id: z.string(),
+	Id: completionStatusIdSchema,
 	Name: z.string(),
 });
 

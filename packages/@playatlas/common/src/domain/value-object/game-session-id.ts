@@ -9,9 +9,9 @@ export type GameSessionId = string & {
 
 export const GameSessionIdParser = {
 	fromExternal(value: string): GameSessionId {
-		const { success, data, error } = gameSessionIdSchema.safeParse(value);
-		if (success) return data as GameSessionId;
-		throw new InvalidStateError(`Invalid Game Session Id: \n${error.issues}`);
+		if (!value || value.trim() === "")
+			throw new InvalidStateError(`GameSessionId must not be empty`);
+		return value as GameSessionId;
 	},
 
 	fromTrusted(value: string): GameSessionId {

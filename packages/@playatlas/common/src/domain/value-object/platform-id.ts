@@ -9,9 +9,8 @@ export type PlatformId = string & {
 
 export const PlatformIdParser = {
 	fromExternal(value: string): PlatformId {
-		const { success, data, error } = platformIdSchema.safeParse(value);
-		if (success) return data as PlatformId;
-		throw new InvalidStateError(`Invalid Platform Id: \n${error.issues}`);
+		if (!value || value.trim() === "") throw new InvalidStateError(`PlatformId must not be empty`);
+		return value as PlatformId;
 	},
 
 	fromTrusted(value: string): PlatformId {
