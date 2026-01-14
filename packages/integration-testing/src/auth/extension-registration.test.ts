@@ -8,6 +8,7 @@ import type {
 import type { ExtensionRegistration } from "@playatlas/auth/domain";
 import type { DomainEvent } from "@playatlas/common/application";
 import { ExtensionRegistrationIdParser } from "@playatlas/common/domain";
+import { describe, expect, it } from "vitest";
 import type { ExtensionRegistrationResponseDto } from "../../../@playatlas/auth/src/dtos/extension-registration.response";
 import { api, factory } from "../vitest.global.setup";
 

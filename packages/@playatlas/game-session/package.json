@@ -3,21 +3,18 @@
 	"private": true,
 	"version": "1.0.0",
 	"type": "module",
+	"scripts": {
+		"test": "vitest run",
+		"test:unit": "vitest run",
+		"test:watch": "vitest --watch"
+	},
 	"exports": {
 		"./commands": "./src/commands/index.ts",
 		"./domain": "./src/domain/index.ts",
 		"./infra": "./src/infra/index.ts",
 		"./types": "./src/types/index.ts"
 	},
-	"devDependencies": {
-		"@types/node": "^24.0.14"
-	},
 	"dependencies": {
-		"@faker-js/faker": "^9.9.0",
-		"vitest": "^3.2.4",
 		"@playatlas/common": "workspace:*"
-	},
-	"peerDependencies": {
-		"zod": "*"
 	}
 }

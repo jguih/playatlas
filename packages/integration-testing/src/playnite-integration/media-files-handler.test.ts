@@ -10,6 +10,7 @@ import { createReadStream, openAsBlob } from "fs";
 import * as fsAsync from "fs/promises";
 import { extname, join } from "path";
 import sharp from "sharp";
+import { beforeEach, describe, expect, it } from "vitest";
 import { api, factory, fixturesDirPath, root } from "../vitest.global.setup";
 
 const placeholdersDirPath = join(fixturesDirPath, "/images", "/placeholder");

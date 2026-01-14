@@ -1,4 +1,5 @@
 import type { PlatformResponseDto } from "@playatlas/game-library/dtos";
+import { describe, expect, it } from "vitest";
 import { api, factory, root } from "../vitest.global.setup";
 
 describe("Game Library / Platform", () => {

@@ -8,6 +8,7 @@ import {
 	type CloseGameSessionRequestDto,
 	type OpenGameSessionRequestDto,
 } from "@playatlas/game-session/commands";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { api, factory, root } from "../vitest.global.setup";
 
 const recordDomainEvents = () => {

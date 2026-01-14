@@ -75,7 +75,9 @@
 				locator.serverTimeStore.loadServerTime(),
 				locator.syncQueue.processQueueAsync(),
 			]);
-		} catch {}
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	const handleFocus = () => {

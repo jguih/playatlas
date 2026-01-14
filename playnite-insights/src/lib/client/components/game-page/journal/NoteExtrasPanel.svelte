@@ -51,7 +51,7 @@
 						justify="start"
 						size="md"
 						class={["gap-3! w-full"]}
-						onclick={(e) => imageInput?.click()}
+						onclick={() => imageInput?.click()}
 						disabled={props.isOptionDisabled?.uploadImage ?? false}
 					>
 						<ImagePlus class={["size-md"]} />

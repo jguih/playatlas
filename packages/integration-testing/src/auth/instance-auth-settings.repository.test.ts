@@ -1,3 +1,5 @@
+import { describe, expect, it } from "vitest";
+
 describe("Instance Auth Settings Repository", () => {
 	it("placeholder", () => {
 		expect(true).toBeTruthy();

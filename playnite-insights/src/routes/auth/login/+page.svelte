@@ -1,4 +1,6 @@
 <script lang="ts">
+	/* eslint-disable svelte/no-at-html-tags */
+
 	import { goto } from "$app/navigation";
 	import { getLocatorContext } from "$lib/client/app-state/serviceLocator.svelte";
 	import { toast } from "$lib/client/app-state/toast.svelte";

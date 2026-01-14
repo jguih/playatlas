@@ -25,7 +25,6 @@
 	import { ChevronLeft, ChevronRight } from "@lucide/svelte";
 	import { gameSortBy, gameSortOrder } from "@playatlas/game-library/domain";
 	import { type GameResponseDto } from "@playatlas/game-library/dtos";
-	import type { HTMLSelectAttributes } from "svelte/elements";
 
 	const locator = getLocatorContext();
 	const { gameStore, applicationSettingsStore } = locator;
@@ -42,18 +41,6 @@
 	});
 
 	let main: HTMLElement | undefined = $state();
-
-	const handleOnPageSizeChange: HTMLSelectAttributes["onchange"] = (event) => {
-		const value = event.currentTarget.value;
-		const params = new URLSearchParams(page.url.searchParams);
-		params.set(homePageSearchParamsKeys.pageSize, value);
-		params.set(homePageSearchParamsKeys.page, "1");
-		const newUrl = `${page.url.pathname}?${params.toString()}`;
-		if (main) {
-			main.scrollTop = 0;
-		}
-		goto(newUrl, { replaceState: true });
-	};
 
 	const handleOnPageChange = (value: number) => {
 		const newParams = new URLSearchParams(page.url.searchParams);
@@ -261,7 +248,7 @@
            lg:grid-cols-6
            xl:grid-cols-8"
 			>
-				{#each new Array(Number(homePageSearchParams.pagination.pageSize)).fill(null) as _}
+				{#each new Array(Number(homePageSearchParams.pagination.pageSize)).fill(crypto.randomUUID()) as id (id)}
 					{@render gameCardSkeleton()}
 				{/each}
 			</ul>

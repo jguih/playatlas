@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { GameIdParser } from "@playatlas/common/domain";
+import { describe, expect, it } from "vitest";
 import { api, factory, root } from "../vitest.global.setup";
 
 describe("Game Library / Game", () => {

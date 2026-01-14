@@ -1,4 +1,6 @@
 <script lang="ts">
+	/* eslint-disable svelte/no-at-html-tags */
+
 	import { beforeNavigate } from "$app/navigation";
 	import { getLocatorContext } from "$lib/client/app-state/serviceLocator.svelte";
 	import Dashboard from "$lib/client/components/bottom-nav/Dashboard.svelte";
@@ -120,6 +122,8 @@
 		if (areRegistrationsDirty) extensionRegistrationStore.loadExtensionRegistrations();
 	});
 </script>
+
+/* eslint-disable svelte/no-at-html-tags */
 
 {#snippet registrationInfo(label: string, value: string | number)}
 	<div class="flex flex-row justify-between gap-4">

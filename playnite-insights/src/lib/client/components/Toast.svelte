@@ -20,7 +20,8 @@
 			onclick={() => {
 				try {
 					toast.action?.();
-				} catch {
+				} catch (error) {
+					console.error(error);
 				} finally {
 					dismissToast(i);
 				}

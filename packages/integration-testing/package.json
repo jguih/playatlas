@@ -13,18 +13,12 @@
 		"typescript": "^5.8.3"
 	},
 	"dependencies": {
-		"@faker-js/faker": "^9.9.0",
 		"@playatlas/auth": "workspace:*",
 		"@playatlas/bootstrap": "workspace:*",
 		"@playatlas/common": "workspace:*",
 		"@playatlas/game-library": "workspace:*",
 		"@playatlas/game-session": "workspace:*",
 		"@playatlas/playnite-integration": "workspace:*",
-		"@playatlas/system": "workspace:*",
-		"vitest": "^3.2.4"
-	},
-	"peerDependencies": {
-		"sharp": "*",
-		"zod": "*"
+		"@playatlas/system": "workspace:*"
 	}
 }
