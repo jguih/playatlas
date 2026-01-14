@@ -1,4 +1,4 @@
-import type { HttpDeleteProps, HttpGetProps, HttpPostProps, HttpPutProps } from './types';
+import type { HttpDeleteProps, HttpGetProps, HttpPostProps, HttpPutProps } from "./types";
 
 export interface IFetchClient {
 	/**

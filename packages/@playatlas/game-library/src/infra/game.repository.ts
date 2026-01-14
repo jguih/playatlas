@@ -1,396 +1,347 @@
-import {
-  GameIdParser,
-  gameIdSchema,
-  type GameId,
-} from "@playatlas/common/domain";
-import {
-  makeBaseRepository,
-  type BaseRepositoryDeps,
-} from "@playatlas/common/infra";
+import { GameIdParser, gameIdSchema, type GameId } from "@playatlas/common/domain";
+import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
 import type { CompanyId } from "../domain/company.entity";
-import type {
-  GameRelationship,
-  GameRelationshipMap,
-} from "../domain/game.entity";
+import type { GameRelationship, GameRelationshipMap } from "../domain/game.entity";
 import type { GameFilters } from "../domain/game.types";
 import type { GenreId } from "../domain/genre.entity";
 import type { PlatformId } from "../domain/platform.entity";
 import { gameMapper } from "../game.mapper";
-import {
-  COLUMNS,
-  GAME_RELATIONSHIP_META,
-  TABLE_NAME,
-} from "./game.repository.constants";
-import type {
-  GameRepositoryEagerLoadProps,
-  IGameRepositoryPort,
-} from "./game.repository.port";
-import type {
-  GetRelationshipsForFn,
-  UpdateRelationshipsForFn,
-} from "./game.repository.types";
+import { COLUMNS, GAME_RELATIONSHIP_META, TABLE_NAME } from "./game.repository.constants";
+import type { GameRepositoryEagerLoadProps, IGameRepositoryPort } from "./game.repository.port";
+import type { GetRelationshipsForFn, UpdateRelationshipsForFn } from "./game.repository.types";
 
 export const GROUPADD_SEPARATOR = ",";
 
 export const gameSchema = z.object({
-  Id: gameIdSchema,
-  Name: z.string().nullable(),
-  Description: z.string().nullable(),
-  ReleaseDate: z.string().nullable(),
-  Playtime: z.number(),
-  LastActivity: z.string().nullable(),
-  Added: z.string().nullable(),
-  InstallDirectory: z.string().nullable(),
-  IsInstalled: z.number(),
-  BackgroundImage: z.string().nullable(),
-  CoverImage: z.string().nullable(),
-  Icon: z.string().nullable(),
-  Hidden: z.number(),
-  CompletionStatusId: z.string().nullable(),
-  ContentHash: z.string(),
+	Id: gameIdSchema,
+	Name: z.string().nullable(),
+	Description: z.string().nullable(),
+	ReleaseDate: z.string().nullable(),
+	Playtime: z.number(),
+	LastActivity: z.string().nullable(),
+	Added: z.string().nullable(),
+	InstallDirectory: z.string().nullable(),
+	IsInstalled: z.number(),
+	BackgroundImage: z.string().nullable(),
+	CoverImage: z.string().nullable(),
+	Icon: z.string().nullable(),
+	Hidden: z.number(),
+	CompletionStatusId: z.string().nullable(),
+	ContentHash: z.string(),
 });
 
 export type GameModel = z.infer<typeof gameSchema>;
 
 export const gameManifestDataSchema = z.array(
-  z.object({
-    Id: z.string(),
-    ContentHash: z.string(),
-  })
+	z.object({
+		Id: z.string(),
+		ContentHash: z.string(),
+	}),
 );
 
 export type GameManifestData = z.infer<typeof gameManifestDataSchema>;
 
 type GameRepositoryDeps = BaseRepositoryDeps;
 
-export const makeGameRepository = (
-  deps: GameRepositoryDeps
-): IGameRepositoryPort => {
-  const { getDb, logService } = deps;
-  const base = makeBaseRepository({
-    getDb,
-    logService,
-    config: {
-      tableName: TABLE_NAME,
-      idColumn: "Id",
-      insertColumns: COLUMNS,
-      updateColumns: COLUMNS, // TODO
-      mapper: gameMapper,
-      modelSchema: gameSchema,
-    },
-  });
+export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPort => {
+	const { getDb, logService } = deps;
+	const base = makeBaseRepository({
+		getDb,
+		logService,
+		config: {
+			tableName: TABLE_NAME,
+			idColumn: "Id",
+			insertColumns: COLUMNS,
+			updateColumns: COLUMNS, // TODO
+			mapper: gameMapper,
+			modelSchema: gameSchema,
+		},
+	});
 
-  const _getWhereClauseAndParamsFromFilters = (filters?: GameFilters) => {
-    const where: string[] = [];
-    const params: (string | number)[] = [];
+	const _getWhereClauseAndParamsFromFilters = (filters?: GameFilters) => {
+		const where: string[] = [];
+		const params: (string | number)[] = [];
 
-    if (!filters) {
-      return { where: "", params };
-    }
+		if (!filters) {
+			return { where: "", params };
+		}
 
-    if (filters.query !== undefined) {
-      where.push(`LOWER(Name) LIKE ?`);
-      params.push(`%${filters.query.toLowerCase()}%`);
-    }
+		if (filters.query !== undefined) {
+			where.push(`LOWER(Name) LIKE ?`);
+			params.push(`%${filters.query.toLowerCase()}%`);
+		}
 
-    if (filters.installed !== undefined) {
-      where.push(`IsInstalled = ?`);
-      params.push(+filters.installed);
-    }
+		if (filters.installed !== undefined) {
+			where.push(`IsInstalled = ?`);
+			params.push(+filters.installed);
+		}
 
-    if (filters.hidden != undefined) {
-      where.push(`Hidden = ?`);
-      params.push(+filters.hidden);
-    }
+		if (filters.hidden != undefined) {
+			where.push(`Hidden = ?`);
+			params.push(+filters.hidden);
+		}
 
-    return {
-      where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
-      params,
-    };
-  };
+		return {
+			where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
+			params,
+		};
+	};
 
-  const _updateRelationshipFor: UpdateRelationshipsForFn = ({
-    gameId,
-    relationship,
-    newRelationshipIds,
-  }) => {
-    const { table, column } = GAME_RELATIONSHIP_META[relationship];
-    return base.run(
-      ({ db }) => {
-        base.runTransaction(() => {
-          db.prepare(`DELETE FROM ${table} WHERE GameId = ?`).run(gameId);
-          if (newRelationshipIds.length > 0) {
-            const stmt = db.prepare(
-              `INSERT INTO ${table} (GameId, ${column}) VALUES (?, ?)`
-            );
-            for (const id of newRelationshipIds) {
-              stmt.run(gameId, id);
-            }
-          }
-        });
-      },
-      `_updateRelationshipFor(${gameId}, ${relationship}, ${newRelationshipIds.length} relationship(s))`,
-      false
-    );
-  };
+	const _updateRelationshipFor: UpdateRelationshipsForFn = ({
+		gameId,
+		relationship,
+		newRelationshipIds,
+	}) => {
+		const { table, column } = GAME_RELATIONSHIP_META[relationship];
+		return base.run(
+			({ db }) => {
+				base.runTransaction(() => {
+					db.prepare(`DELETE FROM ${table} WHERE GameId = ?`).run(gameId);
+					if (newRelationshipIds.length > 0) {
+						const stmt = db.prepare(`INSERT INTO ${table} (GameId, ${column}) VALUES (?, ?)`);
+						for (const id of newRelationshipIds) {
+							stmt.run(gameId, id);
+						}
+					}
+				});
+			},
+			`_updateRelationshipFor(${gameId}, ${relationship}, ${newRelationshipIds.length} relationship(s))`,
+			false,
+		);
+	};
 
-  const _getRelationshipsFor: GetRelationshipsForFn = ({
-    relationship,
-    gameIds,
-  }) => {
-    const { table, column } = GAME_RELATIONSHIP_META[relationship];
-    const placeholders = gameIds.map(() => "?").join(",");
-    return base.run(
-      ({ db }) => {
-        const stmt = db.prepare(`
+	const _getRelationshipsFor: GetRelationshipsForFn = ({ relationship, gameIds }) => {
+		const { table, column } = GAME_RELATIONSHIP_META[relationship];
+		const placeholders = gameIds.map(() => "?").join(",");
+		return base.run(
+			({ db }) => {
+				const stmt = db.prepare(`
             SELECT GameId, ${column}
             FROM ${table}
             WHERE GameId IN (${placeholders})
           `);
-        const rows = stmt.all(...gameIds);
-        const map = new Map<
-          GameId,
-          GameRelationshipMap[typeof relationship][]
-        >();
-        for (const props of rows) {
-          const gameId = props.GameId as GameId;
-          const entityId = props[
-            column
-          ] as GameRelationshipMap[typeof relationship];
-          if (!map.get(gameId)) map.set(gameId, []);
-          map.get(gameId)!.push(entityId);
-        }
-        return map;
-      },
-      `_getRelationshipsFor(${relationship}, ${gameIds.length} game(s))`,
-      false
-    );
-  };
+				const rows = stmt.all(...gameIds);
+				const map = new Map<GameId, GameRelationshipMap[typeof relationship][]>();
+				for (const props of rows) {
+					const gameId = props.GameId as GameId;
+					const entityId = props[column] as GameRelationshipMap[typeof relationship];
+					if (!map.get(gameId)) map.set(gameId, []);
+					map.get(gameId)!.push(entityId);
+				}
+				return map;
+			},
+			`_getRelationshipsFor(${relationship}, ${gameIds.length} game(s))`,
+			false,
+		);
+	};
 
-  const _shouldLoadRelationship = (
-    load: GameRepositoryEagerLoadProps["load"],
-    relationship: GameRelationship
-  ): boolean => {
-    if (typeof load === "boolean") return load;
-    else if (load?.[relationship] === true) return true;
-    else return false;
-  };
+	const _shouldLoadRelationship = (
+		load: GameRepositoryEagerLoadProps["load"],
+		relationship: GameRelationship,
+	): boolean => {
+		if (typeof load === "boolean") return load;
+		else if (load?.[relationship] === true) return true;
+		else return false;
+	};
 
-  const getTotal: IGameRepositoryPort["getTotal"] = (filters) => {
-    return base.run(({ db }) => {
-      let query = `
+	const getTotal: IGameRepositoryPort["getTotal"] = (filters) => {
+		return base.run(({ db }) => {
+			let query = `
           SELECT 
             COUNT(*) AS Total
           FROM ${TABLE_NAME} pg
         `;
-      const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
-      query += where;
-      const total = (db.prepare(query).get(...params)?.Total as number) ?? 0;
-      return total;
-    }, `getTotal()`);
-  };
+			const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
+			query += where;
+			const total = (db.prepare(query).get(...params)?.Total as number) ?? 0;
+			return total;
+		}, `getTotal()`);
+	};
 
-  const getById: IGameRepositoryPort["getById"] = (id, props = {}) => {
-    return base.run(({ db }) => {
-      const query = `SELECT * FROM ${TABLE_NAME} WHERE Id = (?)`;
-      const stmt = db.prepare(query);
-      const result = stmt.get(id);
-      const gameModel = z.optional(gameSchema).parse(result);
-      if (!gameModel) return null;
+	const getById: IGameRepositoryPort["getById"] = (id, props = {}) => {
+		return base.run(({ db }) => {
+			const query = `SELECT * FROM ${TABLE_NAME} WHERE Id = (?)`;
+			const stmt = db.prepare(query);
+			const result = stmt.get(id);
+			const gameModel = z.optional(gameSchema).parse(result);
+			if (!gameModel) return null;
 
-      const modelId = GameIdParser.fromTrusted(gameModel.Id);
+			const modelId = GameIdParser.fromTrusted(gameModel.Id);
 
-      let developerIds: CompanyId[] | null = null;
-      if (_shouldLoadRelationship(props.load, "developers"))
-        developerIds =
-          _getRelationshipsFor({
-            relationship: "developers",
-            gameIds: [modelId],
-          }).get(modelId) ?? [];
+			let developerIds: CompanyId[] | null = null;
+			if (_shouldLoadRelationship(props.load, "developers"))
+				developerIds =
+					_getRelationshipsFor({
+						relationship: "developers",
+						gameIds: [modelId],
+					}).get(modelId) ?? [];
 
-      let publisherIds: CompanyId[] | null = null;
-      if (_shouldLoadRelationship(props.load, "publishers"))
-        publisherIds =
-          _getRelationshipsFor({
-            relationship: "publishers",
-            gameIds: [modelId],
-          }).get(modelId) ?? [];
+			let publisherIds: CompanyId[] | null = null;
+			if (_shouldLoadRelationship(props.load, "publishers"))
+				publisherIds =
+					_getRelationshipsFor({
+						relationship: "publishers",
+						gameIds: [modelId],
+					}).get(modelId) ?? [];
 
-      let genreIds: GenreId[] | null = null;
-      if (_shouldLoadRelationship(props.load, "genres"))
-        genreIds =
-          _getRelationshipsFor({
-            relationship: "genres",
-            gameIds: [modelId],
-          }).get(modelId) ?? [];
+			let genreIds: GenreId[] | null = null;
+			if (_shouldLoadRelationship(props.load, "genres"))
+				genreIds =
+					_getRelationshipsFor({
+						relationship: "genres",
+						gameIds: [modelId],
+					}).get(modelId) ?? [];
 
-      let platformIds: PlatformId[] | null = null;
-      if (_shouldLoadRelationship(props.load, "platforms"))
-        platformIds =
-          _getRelationshipsFor({
-            relationship: "platforms",
-            gameIds: [modelId],
-          }).get(modelId) ?? [];
+			let platformIds: PlatformId[] | null = null;
+			if (_shouldLoadRelationship(props.load, "platforms"))
+				platformIds =
+					_getRelationshipsFor({
+						relationship: "platforms",
+						gameIds: [modelId],
+					}).get(modelId) ?? [];
 
-      logService.debug(`Found game ${gameModel?.Name}`);
-      return gameMapper.toDomain(gameModel, {
-        developerIds,
-        publisherIds,
-        genreIds,
-        platformIds,
-      });
-    }, `getById(${id})`);
-  };
+			logService.debug(`Found game ${gameModel?.Name}`);
+			return gameMapper.toDomain(gameModel, {
+				developerIds,
+				publisherIds,
+				genreIds,
+				platformIds,
+			});
+		}, `getById(${id})`);
+	};
 
-  const upsert: IGameRepositoryPort["upsert"] = (games) => {
-    const result = base._upsert(games);
+	const upsert: IGameRepositoryPort["upsert"] = (games) => {
+		const result = base._upsert(games);
 
-    for (const [game, model, _] of result) {
-      const modelId = GameIdParser.fromTrusted(model.Id);
-      if (game.relationships.developers.isLoaded())
-        _updateRelationshipFor({
-          relationship: "developers",
-          gameId: modelId,
-          newRelationshipIds: game.relationships.developers.get(),
-        });
-      if (game.relationships.publishers.isLoaded())
-        _updateRelationshipFor({
-          relationship: "publishers",
-          gameId: modelId,
-          newRelationshipIds: game.relationships.publishers.get(),
-        });
-      if (game.relationships.genres.isLoaded())
-        _updateRelationshipFor({
-          relationship: "genres",
-          gameId: modelId,
-          newRelationshipIds: game.relationships.genres.get(),
-        });
-      if (game.relationships.platforms.isLoaded())
-        _updateRelationshipFor({
-          relationship: "platforms",
-          gameId: modelId,
-          newRelationshipIds: game.relationships.platforms.get(),
-        });
-    }
-  };
+		for (const [game, model] of result) {
+			const modelId = GameIdParser.fromTrusted(model.Id);
+			if (game.relationships.developers.isLoaded())
+				_updateRelationshipFor({
+					relationship: "developers",
+					gameId: modelId,
+					newRelationshipIds: game.relationships.developers.get(),
+				});
+			if (game.relationships.publishers.isLoaded())
+				_updateRelationshipFor({
+					relationship: "publishers",
+					gameId: modelId,
+					newRelationshipIds: game.relationships.publishers.get(),
+				});
+			if (game.relationships.genres.isLoaded())
+				_updateRelationshipFor({
+					relationship: "genres",
+					gameId: modelId,
+					newRelationshipIds: game.relationships.genres.get(),
+				});
+			if (game.relationships.platforms.isLoaded())
+				_updateRelationshipFor({
+					relationship: "platforms",
+					gameId: modelId,
+					newRelationshipIds: game.relationships.platforms.get(),
+				});
+		}
+	};
 
-  const getManifestData: IGameRepositoryPort["getManifestData"] = () => {
-    return base.run(({ db }) => {
-      const query = `SELECT Id, ContentHash FROM playnite_game`;
-      const stmt = db.prepare(query);
-      const result = stmt.all();
-      const data: GameManifestData = gameManifestDataSchema.parse(result);
-      logService.debug(
-        `Fetched manifest game data, total games in library: ${data.length}`
-      );
-      return data;
-    }, `getManifestData()`);
-  };
+	const getManifestData: IGameRepositoryPort["getManifestData"] = () => {
+		return base.run(({ db }) => {
+			const query = `SELECT Id, ContentHash FROM playnite_game`;
+			const stmt = db.prepare(query);
+			const result = stmt.all();
+			const data: GameManifestData = gameManifestDataSchema.parse(result);
+			logService.debug(`Fetched manifest game data, total games in library: ${data.length}`);
+			return data;
+		}, `getManifestData()`);
+	};
 
-  const getTotalPlaytimeSeconds: IGameRepositoryPort["getTotalPlaytimeSeconds"] =
-    (filters) => {
-      return base.run(({ db }) => {
-        let query = `SELECT SUM(Playtime) as totalPlaytimeSeconds FROM playnite_game `;
-        const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
-        query += where;
-        const stmt = db.prepare(query);
-        const result = stmt.get(...params);
-        if (!result) return 0;
-        const data = result.totalPlaytimeSeconds as number;
-        logService.debug(`Calculated total playtime: ${data} seconds`);
-        return data;
-      }, `getTotalPlaytimeSeconds()`);
-    };
+	const getTotalPlaytimeSeconds: IGameRepositoryPort["getTotalPlaytimeSeconds"] = (filters) => {
+		return base.run(({ db }) => {
+			let query = `SELECT SUM(Playtime) as totalPlaytimeSeconds FROM playnite_game `;
+			const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
+			query += where;
+			const stmt = db.prepare(query);
+			const result = stmt.get(...params);
+			if (!result) return 0;
+			const data = result.totalPlaytimeSeconds as number;
+			logService.debug(`Calculated total playtime: ${data} seconds`);
+			return data;
+		}, `getTotalPlaytimeSeconds()`);
+	};
 
-  const all: IGameRepositoryPort["all"] = (props = {}) => {
-    return base.run(({ db }) => {
-      const query = `
+	const all: IGameRepositoryPort["all"] = (props = {}) => {
+		return base.run(({ db }) => {
+			const query = `
           SELECT g.*
           FROM ${TABLE_NAME} g
           ORDER BY g.Id ASC;
         `;
-      const stmt = db.prepare(query);
-      const rows = stmt.all();
-      const gameModels = z.array(gameSchema).parse(rows);
-      const gameModelsIds = gameModels
-        .map((m) => m.Id)
-        .map(GameIdParser.fromTrusted);
+			const stmt = db.prepare(query);
+			const rows = stmt.all();
+			const gameModels = z.array(gameSchema).parse(rows);
+			const gameModelsIds = gameModels.map((m) => m.Id).map(GameIdParser.fromTrusted);
 
-      let developerIdsMap: Map<GameId, CompanyId[]> = new Map();
-      if (_shouldLoadRelationship(props.load, "developers"))
-        developerIdsMap = _getRelationshipsFor({
-          relationship: "developers",
-          gameIds: gameModelsIds,
-        });
+			let developerIdsMap: Map<GameId, CompanyId[]> = new Map();
+			if (_shouldLoadRelationship(props.load, "developers"))
+				developerIdsMap = _getRelationshipsFor({
+					relationship: "developers",
+					gameIds: gameModelsIds,
+				});
 
-      let publisherIdsMap: Map<GameId, CompanyId[]> = new Map();
-      if (_shouldLoadRelationship(props.load, "publishers"))
-        publisherIdsMap = _getRelationshipsFor({
-          relationship: "publishers",
-          gameIds: gameModelsIds,
-        });
+			let publisherIdsMap: Map<GameId, CompanyId[]> = new Map();
+			if (_shouldLoadRelationship(props.load, "publishers"))
+				publisherIdsMap = _getRelationshipsFor({
+					relationship: "publishers",
+					gameIds: gameModelsIds,
+				});
 
-      let genreIdsMap: Map<GameId, GenreId[]> = new Map();
-      if (_shouldLoadRelationship(props.load, "genres"))
-        genreIdsMap = _getRelationshipsFor({
-          relationship: "genres",
-          gameIds: gameModelsIds,
-        });
+			let genreIdsMap: Map<GameId, GenreId[]> = new Map();
+			if (_shouldLoadRelationship(props.load, "genres"))
+				genreIdsMap = _getRelationshipsFor({
+					relationship: "genres",
+					gameIds: gameModelsIds,
+				});
 
-      let platformIdsMap: Map<GameId, PlatformId[]> = new Map();
-      if (_shouldLoadRelationship(props.load, "platforms"))
-        platformIdsMap = _getRelationshipsFor({
-          relationship: "platforms",
-          gameIds: gameModelsIds,
-        });
+			let platformIdsMap: Map<GameId, PlatformId[]> = new Map();
+			if (_shouldLoadRelationship(props.load, "platforms"))
+				platformIdsMap = _getRelationshipsFor({
+					relationship: "platforms",
+					gameIds: gameModelsIds,
+				});
 
-      const games = gameModels.map((gameModel) => {
-        const modelId = GameIdParser.fromTrusted(gameModel.Id);
-        const developerIds: CompanyId[] | null = _shouldLoadRelationship(
-          props.load,
-          "developers"
-        )
-          ? developerIdsMap.get(modelId) ?? []
-          : null;
-        const publisherIds: CompanyId[] | null = _shouldLoadRelationship(
-          props.load,
-          "publishers"
-        )
-          ? publisherIdsMap.get(modelId) ?? []
-          : null;
-        const genreIds: GenreId[] | null = _shouldLoadRelationship(
-          props.load,
-          "genres"
-        )
-          ? genreIdsMap.get(modelId) ?? []
-          : null;
-        const platformIds: PlatformId[] | null = _shouldLoadRelationship(
-          props.load,
-          "platforms"
-        )
-          ? platformIdsMap.get(modelId) ?? []
-          : null;
-        return gameMapper.toDomain(gameModel, {
-          developerIds,
-          publisherIds,
-          genreIds,
-          platformIds,
-        });
-      });
+			const games = gameModels.map((gameModel) => {
+				const modelId = GameIdParser.fromTrusted(gameModel.Id);
+				const developerIds: CompanyId[] | null = _shouldLoadRelationship(props.load, "developers")
+					? (developerIdsMap.get(modelId) ?? [])
+					: null;
+				const publisherIds: CompanyId[] | null = _shouldLoadRelationship(props.load, "publishers")
+					? (publisherIdsMap.get(modelId) ?? [])
+					: null;
+				const genreIds: GenreId[] | null = _shouldLoadRelationship(props.load, "genres")
+					? (genreIdsMap.get(modelId) ?? [])
+					: null;
+				const platformIds: PlatformId[] | null = _shouldLoadRelationship(props.load, "platforms")
+					? (platformIdsMap.get(modelId) ?? [])
+					: null;
+				return gameMapper.toDomain(gameModel, {
+					developerIds,
+					publisherIds,
+					genreIds,
+					platformIds,
+				});
+			});
 
-      logService.debug(`Found ${games?.length ?? 0} games`);
-      return games;
-    }, `all()`);
-  };
+			logService.debug(`Found ${games?.length ?? 0} games`);
+			return games;
+		}, `all()`);
+	};
 
-  return {
-    ...base.public,
-    upsert,
-    getById,
-    getTotalPlaytimeSeconds,
-    getManifestData,
-    getTotal,
-    all,
-  };
+	return {
+		...base.public,
+		upsert,
+		getById,
+		getTotalPlaytimeSeconds,
+		getManifestData,
+		getTotal,
+		all,
+	};
 };

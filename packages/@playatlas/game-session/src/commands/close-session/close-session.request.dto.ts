@@ -2,14 +2,12 @@ import { ISODateSchema } from "@playatlas/common/common";
 import z from "zod";
 
 export const closeGameSessionRequestDtoSchema = z.object({
-  ClientUtcNow: ISODateSchema,
-  SessionId: z.string(),
-  GameId: z.string(),
-  StartTime: ISODateSchema,
-  EndTime: ISODateSchema,
-  Duration: z.number(),
+	ClientUtcNow: ISODateSchema,
+	SessionId: z.string(),
+	GameId: z.string(),
+	StartTime: ISODateSchema,
+	EndTime: ISODateSchema,
+	Duration: z.number(),
 });
 
-export type CloseGameSessionRequestDto = z.infer<
-  typeof closeGameSessionRequestDtoSchema
->;
+export type CloseGameSessionRequestDto = z.infer<typeof closeGameSessionRequestDtoSchema>;

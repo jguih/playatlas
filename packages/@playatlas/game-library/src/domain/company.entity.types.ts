@@ -1,4 +1,4 @@
 export type MakeCompanyProps = {
-  id: string;
-  name: string;
+	id: string;
+	name: string;
 };

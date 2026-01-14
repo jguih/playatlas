@@ -5,19 +5,19 @@ export type GenreId = string;
 export type GenreName = string;
 
 export type Genre = BaseEntity<GenreId> &
-  Readonly<{
-    getName: () => GenreName;
-  }>;
+	Readonly<{
+		getName: () => GenreName;
+	}>;
 
 export const makeGenre = (props: MakeGenreProps): Genre => {
-  const _id: GenreId = props.id;
-  const _name: GenreName = props.name;
+	const _id: GenreId = props.id;
+	const _name: GenreName = props.name;
 
-  const genre: Genre = {
-    getId: () => _id,
-    getSafeId: () => _id,
-    getName: () => _name,
-    validate: () => {},
-  };
-  return Object.freeze(genre);
+	const genre: Genre = {
+		getId: () => _id,
+		getSafeId: () => _id,
+		getName: () => _name,
+		validate: () => {},
+	};
+	return Object.freeze(genre);
 };

@@ -1,7 +1,7 @@
 import { goto } from '$app/navigation';
 import { m } from '$lib/paraglide/messages';
 import { apiSSEventDataSchema, type APISSEventType } from '@playnite-insights/lib/client';
-import z from 'zod';
+import type z from 'zod';
 import type { CompanyStore } from '../app-state/stores/companyStore.svelte';
 import type { GameSessionStore } from '../app-state/stores/gameSessionStore.svelte';
 import type { GameStore } from '../app-state/stores/gameStore.svelte';

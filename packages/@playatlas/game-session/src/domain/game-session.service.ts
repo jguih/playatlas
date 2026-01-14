@@ -5,12 +5,12 @@ import type { IGameSessionRepositoryPort } from "../infra/game-session.repositor
 import type { GameSession } from "./game-session.entity";
 
 export type GameSessionService = {
-  open: (args: OpenGameSessionCommand) => boolean;
-  close: (args: CloseGameSessionCommand) => boolean;
-  getRecent: () => GameSession[] | null;
+	open: (args: OpenGameSessionCommand) => boolean;
+	close: (args: CloseGameSessionCommand) => boolean;
+	getRecent: () => GameSession[] | null;
 };
 
 export type GameSessionServiceDeps = {
-  logService: LogService;
-  gameSessionRepository: IGameSessionRepositoryPort;
+	logService: LogService;
+	gameSessionRepository: IGameSessionRepositoryPort;
 };

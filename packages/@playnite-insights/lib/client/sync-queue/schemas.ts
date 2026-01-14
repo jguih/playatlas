@@ -3,23 +3,23 @@ import { gameNoteSchema } from "../game-notes/schemas";
 import { ISODateSchema } from "../schemas";
 
 const baseQueueItem = {
-  Id: z.number().optional(),
-  Type: z.enum(["create", "update", "delete"]),
-  CreatedAt: ISODateSchema,
-  Status: z.enum(["pending", "synced", "failed"]),
-  Retries: z.number().optional(),
+	Id: z.number().optional(),
+	Type: z.enum(["create", "update", "delete"]),
+	CreatedAt: ISODateSchema,
+	Status: z.enum(["pending", "synced", "failed"]),
+	Retries: z.number().optional(),
 };
 
 export const syncQueueItemSchema = z.discriminatedUnion("Entity", [
-  z.object({
-    ...baseQueueItem,
-    Entity: z.literal("gameNote"),
-    Payload: gameNoteSchema,
-  }),
-  // later, you can add more entities
-  // z.object({
-  //   ...baseQueueItem,
-  //   Entity: z.literal("otherEntity"),
-  //   Payload: otherSchema,
-  // }),
+	z.object({
+		...baseQueueItem,
+		Entity: z.literal("gameNote"),
+		Payload: gameNoteSchema,
+	}),
+	// later, you can add more entities
+	// z.object({
+	//   ...baseQueueItem,
+	//   Entity: z.literal("otherEntity"),
+	//   Payload: otherSchema,
+	// }),
 ]);

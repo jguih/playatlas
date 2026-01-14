@@ -4,223 +4,215 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.0.0-beta.2](///compare/v1.0.0-beta.1...v1.0.0-beta.2) (2025-12-01)
 
-
 ### Features
 
-* playatlas package and data sync improvements e1981b7
+- playatlas package and data sync improvements e1981b7
 
 ## 1.0.0-beta.1 (2025-10-02)
 
-
 ### ⚠ BREAKING CHANGES
 
-* env variable APP_NAME renamed to PLAYATLAS_INSTANCE_NAME
-* env variable WORK_DIR renamed to PLAYATLAS_DATA_DIR
+- env variable APP_NAME renamed to PLAYATLAS_INSTANCE_NAME
+- env variable WORK_DIR renamed to PLAYATLAS_DATA_DIR
 
-* chore: move locator to a svelte file
+- chore: move locator to a svelte file
 
-* chore: filtered game list caching
+- chore: filtered game list caching
 
-* chore: functional register page
+- chore: functional register page
 
-* chore: functional login page
+- chore: functional login page
 
-* chore: remove ORIGIN env variable from compose files
+- chore: remove ORIGIN env variable from compose files
 
-* chore: code cleanup
+- chore: code cleanup
 
-* chore: require auth for games endpoint
+- chore: require auth for games endpoint
 
 fix: sw causing request loop when request failed
 
-* chore: add authentication for SSE route
+- chore: add authentication for SSE route
 
-* chore: extract dictionary entries for register and login related errors
+- chore: extract dictionary entries for register and login related errors
 
-* chore: protect all api endpoints
+- chore: protect all api endpoints
 
-* chore: typo
+- chore: typo
 
-* chore(ui): change note editor bottom nav style and height
+- chore(ui): change note editor bottom nav style and height
 
-* chore: add screenshot store
+- chore: add screenshot store
 
-* chore: reduce log message size on note update
+- chore: reduce log message size on note update
 
-* fix: reactivity problems in settings page
+- fix: reactivity problems in settings page
 
-* chore: declare locator inside a context to fix reactivity issues
+- chore: declare locator inside a context to fix reactivity issues
 
 fix: extension resgistrations not updating correctly on mutation
 
-* chore: extract dictionary entry
+- chore: extract dictionary entry
 
-* chore: update translations
+- chore: update translations
 
-* fix: registration list showing loading spinner when request failed
+- fix: registration list showing loading spinner when request failed
 
-* feat: application settings with local persistance
+- feat: application settings with local persistance
 
-* feat: desconsider hidden games
+- feat: desconsider hidden games
 
-* chore: ui changes and dictionary entries extraction
+- chore: ui changes and dictionary entries extraction
 
-* feat: metrics snapshot for non-hidden only games
+- feat: metrics snapshot for non-hidden only games
 
-* feat: disconsider hidden games will affect dashboard graphics
+- feat: disconsider hidden games will affect dashboard graphics
 
-* chore: handle errors in root layout
+- chore: handle errors in root layout
 
-* chote: update backlog
+- chote: update backlog
 
-* chore: add PR github workflow
+- chore: add PR github workflow
 
-* fix: workflow pnpm version
+- fix: workflow pnpm version
 
-* chote: update github workflows
-* this version contains multiple changes that are incompatible with previous versions
-* publisher and developer tables were removed and their data will be merged in the new company table
+- chote: update github workflows
+- this version contains multiple changes that are incompatible with previous versions
+- publisher and developer tables were removed and their data will be merged in the new company table
 
-* feat: filter by publisher
+- feat: filter by publisher
 
-* feat: genre and platform client data loading
+- feat: genre and platform client data loading
 
-* feat: fitler by platforms
+- feat: fitler by platforms
 
-* feat: filter by genres
+- feat: filter by genres
 
-* ui: active filters counter
+- ui: active filters counter
 
-* ui: clear all filters button
+- ui: clear all filters button
 
 ### Features
 
-* add standard-version 3a11f26
-* filter by developers and offline support ([#22](undefined/undefined/undefined/issues/22)) b726ba2
-* game session ([#25](undefined/undefined/undefined/issues/25)) c26c0a8
-* real time in progress session playtime 4c04e90
-* recent activity section ([#26](undefined/undefined/undefined/issues/26)) d4c36db
-
+- add standard-version 3a11f26
+- filter by developers and offline support ([#22](undefined/undefined/undefined/issues/22)) b726ba2
+- game session ([#25](undefined/undefined/undefined/issues/25)) c26c0a8
+- real time in progress session playtime 4c04e90
+- recent activity section ([#26](undefined/undefined/undefined/issues/26)) d4c36db
 
 ### Bug Fixes
 
-* bottom nav hidden after page refresh in chrome PWA 55bac81
-* filter sidebar not opening 0796cc5
-* game session repo not persisting game name 08e2859
-* workflows for beta releases a508508
+- bottom nav hidden after page refresh in chrome PWA 55bac81
+- filter sidebar not opening 0796cc5
+- game session repo not persisting game name 08e2859
+- workflows for beta releases a508508
 
-
-* Feat/filters (#23) 30f3a42, closes #23
-* pre-release 4.x ([#27](undefined/undefined/undefined/issues/27)) dce152f
+- Feat/filters (#23) 30f3a42, closes #23
+- pre-release 4.x ([#27](undefined/undefined/undefined/issues/27)) dce152f
 
 ## [1.0.0-beta.3](///compare/v1.0.0-beta.2...v1.0.0-beta.3) (2025-10-02)
 
-
 ### Bug Fixes
 
-* workflow failure on beta tags 7e82f24
+- workflow failure on beta tags 7e82f24
 
 ## [1.0.0-beta.2](///compare/v1.0.0-beta.1...v1.0.0-beta.2) (2025-10-02)
 
 ## 1.0.0-beta.1 (2025-10-02)
 
-
 ### ⚠ BREAKING CHANGES
 
-* env variable APP_NAME renamed to PLAYATLAS_INSTANCE_NAME
-* env variable WORK_DIR renamed to PLAYATLAS_DATA_DIR
+- env variable APP_NAME renamed to PLAYATLAS_INSTANCE_NAME
+- env variable WORK_DIR renamed to PLAYATLAS_DATA_DIR
 
-* chore: move locator to a svelte file
+- chore: move locator to a svelte file
 
-* chore: filtered game list caching
+- chore: filtered game list caching
 
-* chore: functional register page
+- chore: functional register page
 
-* chore: functional login page
+- chore: functional login page
 
-* chore: remove ORIGIN env variable from compose files
+- chore: remove ORIGIN env variable from compose files
 
-* chore: code cleanup
+- chore: code cleanup
 
-* chore: require auth for games endpoint
+- chore: require auth for games endpoint
 
 fix: sw causing request loop when request failed
 
-* chore: add authentication for SSE route
+- chore: add authentication for SSE route
 
-* chore: extract dictionary entries for register and login related errors
+- chore: extract dictionary entries for register and login related errors
 
-* chore: protect all api endpoints
+- chore: protect all api endpoints
 
-* chore: typo
+- chore: typo
 
-* chore(ui): change note editor bottom nav style and height
+- chore(ui): change note editor bottom nav style and height
 
-* chore: add screenshot store
+- chore: add screenshot store
 
-* chore: reduce log message size on note update
+- chore: reduce log message size on note update
 
-* fix: reactivity problems in settings page
+- fix: reactivity problems in settings page
 
-* chore: declare locator inside a context to fix reactivity issues
+- chore: declare locator inside a context to fix reactivity issues
 
 fix: extension resgistrations not updating correctly on mutation
 
-* chore: extract dictionary entry
+- chore: extract dictionary entry
 
-* chore: update translations
+- chore: update translations
 
-* fix: registration list showing loading spinner when request failed
+- fix: registration list showing loading spinner when request failed
 
-* feat: application settings with local persistance
+- feat: application settings with local persistance
 
-* feat: desconsider hidden games
+- feat: desconsider hidden games
 
-* chore: ui changes and dictionary entries extraction
+- chore: ui changes and dictionary entries extraction
 
-* feat: metrics snapshot for non-hidden only games
+- feat: metrics snapshot for non-hidden only games
 
-* feat: disconsider hidden games will affect dashboard graphics
+- feat: disconsider hidden games will affect dashboard graphics
 
-* chore: handle errors in root layout
+- chore: handle errors in root layout
 
-* chote: update backlog
+- chote: update backlog
 
-* chore: add PR github workflow
+- chore: add PR github workflow
 
-* fix: workflow pnpm version
+- fix: workflow pnpm version
 
-* chote: update github workflows
-* this version contains multiple changes that are incompatible with previous versions
-* publisher and developer tables were removed and their data will be merged in the new company table
+- chote: update github workflows
+- this version contains multiple changes that are incompatible with previous versions
+- publisher and developer tables were removed and their data will be merged in the new company table
 
-* feat: filter by publisher
+- feat: filter by publisher
 
-* feat: genre and platform client data loading
+- feat: genre and platform client data loading
 
-* feat: fitler by platforms
+- feat: fitler by platforms
 
-* feat: filter by genres
+- feat: filter by genres
 
-* ui: active filters counter
+- ui: active filters counter
 
-* ui: clear all filters button
+- ui: clear all filters button
 
 ### Features
 
-* add standard-version 3a11f26
-* filter by developers and offline support ([#22](undefined/undefined/undefined/issues/22)) b726ba2
-* game session ([#25](undefined/undefined/undefined/issues/25)) c26c0a8
-* real time in progress session playtime 4c04e90
-* recent activity section ([#26](undefined/undefined/undefined/issues/26)) d4c36db
-
+- add standard-version 3a11f26
+- filter by developers and offline support ([#22](undefined/undefined/undefined/issues/22)) b726ba2
+- game session ([#25](undefined/undefined/undefined/issues/25)) c26c0a8
+- real time in progress session playtime 4c04e90
+- recent activity section ([#26](undefined/undefined/undefined/issues/26)) d4c36db
 
 ### Bug Fixes
 
-* bottom nav hidden after page refresh in chrome PWA 55bac81
-* filter sidebar not opening 0796cc5
-* game session repo not persisting game name 08e2859
+- bottom nav hidden after page refresh in chrome PWA 55bac81
+- filter sidebar not opening 0796cc5
+- game session repo not persisting game name 08e2859
 
-
-* Feat/filters (#23) 30f3a42, closes #23
-* pre-release 4.x ([#27](undefined/undefined/undefined/issues/27)) dce152f
+- Feat/filters (#23) 30f3a42, closes #23
+- pre-release 4.x ([#27](undefined/undefined/undefined/issues/27)) dce152f

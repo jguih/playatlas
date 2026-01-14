@@ -1,29 +1,20 @@
 import { type EntityMapper } from "@playatlas/common/application";
-import type {
-  CompletionStatus} from "./domain/completion-status.entity";
-import {
-  makeCompletionStatus,
-} from "./domain/completion-status.entity";
+import { makeCompletionStatus, type CompletionStatus } from "./domain/completion-status.entity";
 import type { CompletionStatusModel } from "./infra/completion-status.repository";
 
-export const completionStatusMapper: EntityMapper<
-  CompletionStatus,
-  CompletionStatusModel
-> = {
-  toPersistence: (
-    completionStatus: CompletionStatus
-  ): CompletionStatusModel => {
-    const record: CompletionStatusModel = {
-      Id: completionStatus.getId(),
-      Name: completionStatus.getName(),
-    };
-    return record;
-  },
-  toDomain: (completionStatus: CompletionStatusModel): CompletionStatus => {
-    const entity: CompletionStatus = makeCompletionStatus({
-      id: completionStatus.Id,
-      name: completionStatus.Name,
-    });
-    return entity;
-  },
+export const completionStatusMapper: EntityMapper<CompletionStatus, CompletionStatusModel> = {
+	toPersistence: (completionStatus: CompletionStatus): CompletionStatusModel => {
+		const record: CompletionStatusModel = {
+			Id: completionStatus.getId(),
+			Name: completionStatus.getName(),
+		};
+		return record;
+	},
+	toDomain: (completionStatus: CompletionStatusModel): CompletionStatus => {
+		const entity: CompletionStatus = makeCompletionStatus({
+			id: completionStatus.Id,
+			name: completionStatus.Name,
+		});
+		return entity;
+	},
 };

@@ -1,32 +1,31 @@
 import type { EntityMapper } from "@playatlas/common/application";
-import type {
-  InstanceAuthSettings} from "./domain/instance-auth-settings.entity";
 import {
-  rehydrateInstanceAuthSettings,
+	rehydrateInstanceAuthSettings,
+	type InstanceAuthSettings,
 } from "./domain/instance-auth-settings.entity";
 import type { InstanceAuthSettingsModel } from "./infra/instance-auth-settings.repository";
 
 export const instanceAuthSettingsMapper: EntityMapper<
-  InstanceAuthSettings,
-  InstanceAuthSettingsModel
+	InstanceAuthSettings,
+	InstanceAuthSettingsModel
 > = {
-  toPersistence: (entity) => {
-    const model: InstanceAuthSettingsModel = {
-      Id: entity.getId(),
-      PasswordHash: entity.getPasswordHash(),
-      Salt: entity.getSalt(),
-      CreatedAt: entity.getCreatedAt().toISOString(),
-      LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
-    };
-    return model;
-  },
-  toDomain: (model) => {
-    const entity = rehydrateInstanceAuthSettings({
-      passwordHash: model.PasswordHash,
-      salt: model.Salt,
-      createdAt: new Date(model.CreatedAt),
-      lastUpdatedAt: new Date(model.LastUpdatedAt),
-    });
-    return entity;
-  },
+	toPersistence: (entity) => {
+		const model: InstanceAuthSettingsModel = {
+			Id: entity.getId(),
+			PasswordHash: entity.getPasswordHash(),
+			Salt: entity.getSalt(),
+			CreatedAt: entity.getCreatedAt().toISOString(),
+			LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
+		};
+		return model;
+	},
+	toDomain: (model) => {
+		const entity = rehydrateInstanceAuthSettings({
+			passwordHash: model.PasswordHash,
+			salt: model.Salt,
+			createdAt: new Date(model.CreatedAt),
+			lastUpdatedAt: new Date(model.LastUpdatedAt),
+		});
+		return entity;
+	},
 };

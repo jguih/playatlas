@@ -1,3 +1,3 @@
 export type GetAllPlatformsQuery = {
-  ifNoneMatch?: string | null;
+	ifNoneMatch?: string | null;
 };

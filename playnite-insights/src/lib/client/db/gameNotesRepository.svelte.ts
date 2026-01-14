@@ -1,7 +1,7 @@
 import {
 	gameNoteSchema,
-	SyncQueueFactory,
 	type GameNote,
+	type SyncQueueFactory,
 	type SyncQueueItem,
 } from '@playnite-insights/lib/client';
 import type { IDateTimeHandler } from '../utils/dateTimeHandler.svelte';

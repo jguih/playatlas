@@ -1,72 +1,65 @@
-import type {
-  IDomainEventBusPort} from "@playatlas/common/application";
-import {
-  type ILogServicePort,
-} from "@playatlas/common/application";
+import { type IDomainEventBusPort, type ILogServicePort } from "@playatlas/common/application";
 import { type ICommandHandlerPort } from "@playatlas/common/common";
 import { type IExtensionRegistrationRepositoryPort } from "../../infra/extension-registration.repository.port";
 import { type RemoveExtensionRegistrationCommand } from "./remove-extension-registration.command";
 
 export type RemoveExtensionRegistrationServiceDeps = {
-  extensionRegistrationRepository: IExtensionRegistrationRepositoryPort;
-  logService: ILogServicePort;
-  eventBus: IDomainEventBusPort;
+	extensionRegistrationRepository: IExtensionRegistrationRepositoryPort;
+	logService: ILogServicePort;
+	eventBus: IDomainEventBusPort;
 };
 
 export type RemoveExtensionRegistrationServiceResult =
-  | {
-      success: false;
-      reason: string;
-      reason_code: "not_found" | "invalid_operation";
-    }
-  | {
-      success: true;
-      reason: string;
-      reason_code: "ok";
-    };
+	| {
+			success: false;
+			reason: string;
+			reason_code: "not_found" | "invalid_operation";
+	  }
+	| {
+			success: true;
+			reason: string;
+			reason_code: "ok";
+	  };
 
-export type IRemoveExtensionRegistrationCommandHandlerPort =
-  ICommandHandlerPort<
-    RemoveExtensionRegistrationCommand,
-    RemoveExtensionRegistrationServiceResult
-  >;
+export type IRemoveExtensionRegistrationCommandHandlerPort = ICommandHandlerPort<
+	RemoveExtensionRegistrationCommand,
+	RemoveExtensionRegistrationServiceResult
+>;
 
 export const makeRemoveExtensionRegistrationHandler = ({
-  logService,
-  extensionRegistrationRepository,
-  eventBus,
+	logService,
+	extensionRegistrationRepository,
+	eventBus,
 }: RemoveExtensionRegistrationServiceDeps): IRemoveExtensionRegistrationCommandHandlerPort => {
-  return {
-    execute: (command) => {
-      const existing = extensionRegistrationRepository.getById(
-        command.registrationId
-      );
+	return {
+		execute: (command) => {
+			const existing = extensionRegistrationRepository.getById(command.registrationId);
 
-      if (!existing)
-        return {
-          success: false,
-          reason_code: "not_found",
-          reason: `Extension registration with id ${command.registrationId} not found`,
-        };
+			if (!existing)
+				return {
+					success: false,
+					reason_code: "not_found",
+					reason: `Extension registration with id ${command.registrationId} not found`,
+				};
 
-      extensionRegistrationRepository.remove(existing.getId());
+			extensionRegistrationRepository.remove(existing.getId());
 
-      logService.info(
-        `Deleted extension registration (Id: ${existing.getId()}, ExtensionId: ${existing.getExtensionId()})`
-      );
+			logService.info(
+				`Deleted extension registration (Id: ${existing.getId()}, ExtensionId: ${existing.getExtensionId()})`,
+			);
 
-      eventBus.emit({
-        id: crypto.randomUUID(),
-        name: "extension-registration-removed",
-        occurredAt: new Date(),
-        payload: { registrationId: existing.getId() },
-      });
+			eventBus.emit({
+				id: crypto.randomUUID(),
+				name: "extension-registration-removed",
+				occurredAt: new Date(),
+				payload: { registrationId: existing.getId() },
+			});
 
-      return {
-        success: true,
-        reason_code: "ok",
-        reason: "Removed",
-      };
-    },
-  };
+			return {
+				success: true,
+				reason_code: "ok",
+				reason: "Removed",
+			};
+		},
+	};
 };

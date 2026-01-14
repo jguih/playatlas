@@ -1,4 +1,4 @@
 export type MakeGenreProps = {
-  id: string;
-  name: string;
+	id: string;
+	name: string;
 };

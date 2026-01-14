@@ -6,68 +6,60 @@ import type { GameInfoProvider } from "../../types/game-info-provider";
 import type { StaleGameSessionCommand } from "./stale-session.command";
 
 export type StaleGameSessionServiceDeps = {
-  gameSessionRepository: IGameSessionRepositoryPort;
-  logService: ILogServicePort;
-  gameInfoProvider: GameInfoProvider;
+	gameSessionRepository: IGameSessionRepositoryPort;
+	logService: ILogServicePort;
+	gameInfoProvider: GameInfoProvider;
 };
 
 export type StaleGameSessionServiceResult = {
-  created: boolean;
-  closed: boolean;
+	created: boolean;
+	closed: boolean;
 };
 
 export type IStaleGameSessionCommandHandlerPort = ICommandHandlerPort<
-  StaleGameSessionCommand,
-  StaleGameSessionServiceResult
+	StaleGameSessionCommand,
+	StaleGameSessionServiceResult
 >;
 
 export const makeStaleGameSessionCommandHandler = ({
-  gameSessionRepository,
-  logService,
-  gameInfoProvider,
+	gameSessionRepository,
+	logService,
+	gameInfoProvider,
 }: StaleGameSessionServiceDeps): IStaleGameSessionCommandHandlerPort => {
-  return {
-    execute: (
-      command: StaleGameSessionCommand
-    ): StaleGameSessionServiceResult => {
-      const session = gameSessionRepository.getById(command.sessionId);
-      const serverUtcNow = Date.now();
-      const gameName = gameInfoProvider.getGameInfo(command.gameId);
+	return {
+		execute: (command: StaleGameSessionCommand): StaleGameSessionServiceResult => {
+			const session = gameSessionRepository.getById(command.sessionId);
+			const serverUtcNow = Date.now();
+			const gameName = gameInfoProvider.getGameInfo(command.gameId);
 
-      if (!session) {
-        logService.warning(
-          `Session not found: ${command.sessionId}. Creating stale session...`
-        );
+			if (!session) {
+				logService.warning(`Session not found: ${command.sessionId}. Creating stale session...`);
 
-        const clientUtcNow = command.clientUtcNow.getTime();
-        const driftMs = clientUtcNow - serverUtcNow;
-        const startTime = new Date(
-          new Date(command.startTime).getTime() - driftMs
-        );
+				const clientUtcNow = command.clientUtcNow.getTime();
+				const driftMs = clientUtcNow - serverUtcNow;
+				const startTime = new Date(new Date(command.startTime).getTime() - driftMs);
 
-        logService.info(
-          `Calculated time drift between client (PlayAtlas Exporter) and server: ${driftMs}ms`
-        );
+				logService.info(
+					`Calculated time drift between client (PlayAtlas Exporter) and server: ${driftMs}ms`,
+				);
 
-        const stale = makeStaleGameSession({
-          sessionId: command.sessionId,
-          gameId: command.gameId,
-          gameName: gameName,
-          startTime: startTime,
-        });
-        gameSessionRepository.add(stale);
+				const stale = makeStaleGameSession({
+					sessionId: command.sessionId,
+					gameId: command.gameId,
+					gameName: gameName,
+					startTime: startTime,
+				});
+				gameSessionRepository.add(stale);
 
-        logService.info(
-          `Created closed session ${command.sessionId} for ${gameName}`
-        );
-        return { created: true, closed: false };
-      }
+				logService.info(`Created closed session ${command.sessionId} for ${gameName}`);
+				return { created: true, closed: false };
+			}
 
-      session.stale();
+			session.stale();
 
-      gameSessionRepository.update(session);
-      logService.info(`Closed session ${session.getSessionId()}`);
-      return { created: false, closed: true };
-    },
-  };
+			gameSessionRepository.update(session);
+			logService.info(`Closed session ${session.getSessionId()}`);
+			return { created: false, closed: true };
+		},
+	};
 };

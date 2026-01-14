@@ -6,41 +6,41 @@ export type GameSessionStatusInProgress = (typeof sessionStatus)["inProgress"];
 export type GameSessionStatusClosed = (typeof sessionStatus)["closed"];
 export type GameSessionStatusStale = (typeof sessionStatus)["stale"];
 export type GameSessionStatus =
-  | GameSessionStatusClosed
-  | GameSessionStatusInProgress
-  | GameSessionStatusStale;
+	| GameSessionStatusClosed
+	| GameSessionStatusInProgress
+	| GameSessionStatusStale;
 
 export type GameActivity = {
-  status: "in_progress" | "not_playing";
-  gameName: string | null;
-  gameId: GameId | null;
-  totalPlaytime: number;
-  sessions: GameSession[];
+	status: "in_progress" | "not_playing";
+	gameName: string | null;
+	gameId: GameId | null;
+	totalPlaytime: number;
+	sessions: GameSession[];
 };
 
 export type BuildGameSessionProps = {
-  sessionId: GameSessionId;
-  startTime: Date;
-  status: GameSessionStatus;
-  gameId?: GameId | null;
-  gameName?: string | null;
-  endTime?: Date;
-  duration?: number;
+	sessionId: GameSessionId;
+	startTime: Date;
+	status: GameSessionStatus;
+	gameId?: GameId | null;
+	gameName?: string | null;
+	endTime?: Date;
+	duration?: number;
 };
 
 export type MakeGameSessionProps = {
-  sessionId: GameSessionId;
-  startTime: Date;
-  gameId?: GameId | null;
-  gameName?: string | null;
+	sessionId: GameSessionId;
+	startTime: Date;
+	gameId?: GameId | null;
+	gameName?: string | null;
 };
 
 export type MakeClosedGameSessionProps = MakeGameSessionProps & {
-  endTime: Date;
-  duration: number;
+	endTime: Date;
+	duration: number;
 };
 
 export type CloseGameSessionProps = {
-  endTime: Date;
-  duration: number;
+	endTime: Date;
+	duration: number;
 };

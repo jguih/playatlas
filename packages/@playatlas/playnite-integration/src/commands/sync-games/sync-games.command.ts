@@ -1,88 +1,86 @@
 import { type SyncGamesRequestDto } from "./sync-games.request.dto";
 
 export type SyncGamesCommandItem = {
-  Id: string;
+	Id: string;
 
-  Name?: string | null;
-  Description?: string | null;
+	Name?: string | null;
+	Description?: string | null;
 
-  Platforms?:
-    | {
-        SpecificationId: string;
-        Icon?: string | null;
-        Cover?: string | null;
-        Background?: string | null;
-        Id: string;
-        Name: string;
-      }[]
-    | null;
+	Platforms?:
+		| {
+				SpecificationId: string;
+				Icon?: string | null;
+				Cover?: string | null;
+				Background?: string | null;
+				Id: string;
+				Name: string;
+		  }[]
+		| null;
 
-  Genres?:
-    | {
-        Id: string;
-        Name: string;
-      }[]
-    | null;
+	Genres?:
+		| {
+				Id: string;
+				Name: string;
+		  }[]
+		| null;
 
-  Developers?:
-    | {
-        Id: string;
-        Name: string;
-      }[]
-    | null;
+	Developers?:
+		| {
+				Id: string;
+				Name: string;
+		  }[]
+		| null;
 
-  Publishers?:
-    | {
-        Id: string;
-        Name: string;
-      }[]
-    | null;
+	Publishers?:
+		| {
+				Id: string;
+				Name: string;
+		  }[]
+		| null;
 
-  ReleaseDate?: string | null;
+	ReleaseDate?: string | null;
 
-  Playtime: number;
+	Playtime: number;
 
-  LastActivity?: string | null;
-  Added?: string | null;
-  InstallDirectory?: string | null;
+	LastActivity?: string | null;
+	Added?: string | null;
+	InstallDirectory?: string | null;
 
-  IsInstalled: boolean;
+	IsInstalled: boolean;
 
-  BackgroundImage?: string | null;
-  CoverImage?: string | null;
-  Icon?: string | null;
+	BackgroundImage?: string | null;
+	CoverImage?: string | null;
+	Icon?: string | null;
 
-  Hidden: boolean;
+	Hidden: boolean;
 
-  CompletionStatus?: {
-    Id: string;
-    Name: string;
-  } | null;
+	CompletionStatus?: {
+		Id: string;
+		Name: string;
+	} | null;
 
-  ContentHash: string;
+	ContentHash: string;
 };
 
 export type SyncGamesCommand = {
-  payload: {
-    toAdd: SyncGamesCommandItem[];
-    toRemove: string[];
-    toUpdate: SyncGamesCommandItem[];
-    total: number;
-  };
+	payload: {
+		toAdd: SyncGamesCommandItem[];
+		toRemove: string[];
+		toUpdate: SyncGamesCommandItem[];
+		total: number;
+	};
 };
 
-export const makeSyncGamesCommand = (
-  requestDto: SyncGamesRequestDto
-): SyncGamesCommand => {
-  return {
-    payload: {
-      toAdd: requestDto.AddedItems,
-      toRemove: requestDto.RemovedItems,
-      toUpdate: requestDto.UpdatedItems,
-      total:
-        requestDto.AddedItems.length +
-        requestDto.RemovedItems.length +
-        requestDto.UpdatedItems.length,
-    },
-  };
+export const makeSyncGamesCommand = (requestDto: SyncGamesRequestDto): SyncGamesCommand => {
+	return {
+		payload: {
+			toAdd: requestDto.AddedItems,
+			toRemove: requestDto.RemovedItems,
+			toUpdate: requestDto.UpdatedItems,
+			total:
+				requestDto.AddedItems.length +
+				requestDto.RemovedItems.length +
+				requestDto.UpdatedItems.length,
+		},
+	};
 };

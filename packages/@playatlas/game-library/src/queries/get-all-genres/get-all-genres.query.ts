@@ -1,3 +1,3 @@
 export type GetAllGenresQuery = {
-  ifNoneMatch?: string | null;
+	ifNoneMatch?: string | null;
 };

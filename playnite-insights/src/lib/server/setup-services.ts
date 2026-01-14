@@ -31,7 +31,7 @@ import {
 	makeSynchronizationIdRepository,
 	makeUploadService,
 } from '@playnite-insights/infra';
-import { DatabaseSync } from 'node:sqlite';
+import type { DatabaseSync } from 'node:sqlite';
 import { join } from 'path';
 
 export type ServerServicesDeps = {

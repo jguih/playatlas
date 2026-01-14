@@ -1,9 +1,6 @@
-import type {
-  IEnvironmentServicePort,
-  SystemConfig,
-} from "@playatlas/system/infra";
+import type { IEnvironmentServicePort, SystemConfig } from "@playatlas/system/infra";
 
 export type ISystemModulePort = Readonly<{
-  getEnvService: () => IEnvironmentServicePort;
-  getSystemConfig: () => SystemConfig;
+	getEnvService: () => IEnvironmentServicePort;
+	getSystemConfig: () => SystemConfig;
 }>;

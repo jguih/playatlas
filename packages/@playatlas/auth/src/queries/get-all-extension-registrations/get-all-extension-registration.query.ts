@@ -1,3 +1,3 @@
 export type GetAllExtensionRegistrationQuery = {
-  ifNoneMatch?: string | null;
+	ifNoneMatch?: string | null;
 };

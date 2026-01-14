@@ -1,4 +1,4 @@
-import { ZodSchema } from 'zod';
+import type { ZodSchema } from 'zod';
 import type { HttpResponseParser } from './http-response.parser';
 
 export const zodJsonParser =

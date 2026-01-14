@@ -1,5 +1,5 @@
 import type { AppEnvironmentVariables } from "@playatlas/common/common";
 
 export type EnvServiceDeps = {
-  env: AppEnvironmentVariables;
+	env: AppEnvironmentVariables;
 };

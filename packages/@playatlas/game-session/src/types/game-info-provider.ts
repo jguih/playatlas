@@ -1,3 +1,3 @@
 export interface GameInfoProvider {
-  getGameInfo(gameId: string): { name: string | null } | null;
+	getGameInfo(gameId: string): { name: string | null } | null;
 }

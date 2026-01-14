@@ -1,3 +1,2 @@
-pnpm --filter playnite-insights format
-# pnpm --filter playnite-insights lint
+pnpm format
 pnpm run test

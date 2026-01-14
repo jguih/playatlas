@@ -1,12 +1,12 @@
 import type { IEntityRepositoryPort } from "@playatlas/common/infra";
 import type {
-  InstanceAuthSettings,
-  InstanceAuthSettingsId,
+	InstanceAuthSettings,
+	InstanceAuthSettingsId,
 } from "../domain/instance-auth-settings.entity";
 
 export type InstanceAuthSettingsRepository = Omit<
-  IEntityRepositoryPort<InstanceAuthSettingsId, InstanceAuthSettings>,
-  "add" | "update" | "exists"
+	IEntityRepositoryPort<InstanceAuthSettingsId, InstanceAuthSettings>,
+	"add" | "update" | "exists"
 > & {
-  get: () => InstanceAuthSettings | null;
+	get: () => InstanceAuthSettings | null;
 };

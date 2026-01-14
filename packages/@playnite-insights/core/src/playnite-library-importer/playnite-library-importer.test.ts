@@ -4,48 +4,48 @@ import { join } from "path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { makePlayniteLibraryImporterService } from "./service";
 import type {
-  PlayniteLibraryImporterService,
-  PlayniteLibraryImporterServiceDeps,
+	PlayniteLibraryImporterService,
+	PlayniteLibraryImporterServiceDeps,
 } from "./service.types";
 
 vi.mock("$lib/infrastructure/database", () => ({}));
 
 const createDeps = () => {
-  const mocks = makeMocks();
-  return {
-    ...mocks,
-    FILES_DIR: "/files_dir",
-    TMP_DIR: "/tmp",
-  } satisfies PlayniteLibraryImporterServiceDeps;
+	const mocks = makeMocks();
+	return {
+		...mocks,
+		FILES_DIR: "/files_dir",
+		TMP_DIR: "/tmp",
+	} satisfies PlayniteLibraryImporterServiceDeps;
 };
 let deps: ReturnType<typeof createDeps>;
 let service: PlayniteLibraryImporterService;
 
 describe("Game Importer", () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-    deps = createDeps();
-    service = makePlayniteLibraryImporterService(deps);
-  });
+	beforeEach(() => {
+		vi.resetAllMocks();
+		deps = createDeps();
+		service = makePlayniteLibraryImporterService(deps);
+	});
 
-  it("should delete a game and its media folder", async () => {
-    // Arrange
-    const data: SyncGameListCommand = {
-      AddedItems: [],
-      RemovedItems: ["id1"],
-      UpdatedItems: [],
-    };
-    deps.playniteGameRepository.getById.mockReturnValueOnce({
-      Id: "id1",
-      Name: "test-game",
-    });
-    deps.playniteGameRepository.remove.mockReturnValueOnce(true);
-    // Act
-    await service.sync(data);
-    // Assert
-    expect(deps.fileSystemService.rm).toHaveBeenCalledWith(
-      join(deps.FILES_DIR, "id1"),
-      expect.anything()
-    );
-  });
+	it("should delete a game and its media folder", async () => {
+		// Arrange
+		const data: SyncGameListCommand = {
+			AddedItems: [],
+			RemovedItems: ["id1"],
+			UpdatedItems: [],
+		};
+		deps.playniteGameRepository.getById.mockReturnValueOnce({
+			Id: "id1",
+			Name: "test-game",
+		});
+		deps.playniteGameRepository.remove.mockReturnValueOnce(true);
+		// Act
+		await service.sync(data);
+		// Assert
+		expect(deps.fileSystemService.rm).toHaveBeenCalledWith(
+			join(deps.FILES_DIR, "id1"),
+			expect.anything(),
+		);
+	});
 });

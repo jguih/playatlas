@@ -1,177 +1,161 @@
 import { makeEventBus } from "@playatlas/common/application";
 import type { AppEnvironmentVariables } from "@playatlas/common/common";
-import type {
-  Company,
-  Game,
-  Genre,
-  Platform,
-} from "@playatlas/game-library/domain";
+import type { Company, Game, Genre, Platform } from "@playatlas/game-library/domain";
 import { makeGameFactory } from "@playatlas/game-library/testing";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { type PlayAtlasApiV1, bootstrapV1 } from "../application";
-import {
-  makeAuthModule,
-  makeGameLibraryModule,
-  makeSystemModule,
-} from "../application/modules";
+import { makeAuthModule, makeGameLibraryModule, makeSystemModule } from "../application/modules";
 import { makeGameSessionModule } from "../application/modules/game-session.module";
 import { makeInfraModule } from "../application/modules/infra.module";
 import { makePlayniteIntegrationModule } from "../application/modules/playnite-integration.module";
-import {
-  type ITestFactoryModulePort,
-  makeTestFactoryModule,
-} from "./test-factory.module";
+import { type ITestFactoryModulePort, makeTestFactoryModule } from "./test-factory.module";
 
 export type TestCompositionRootDeps = {
-  env: AppEnvironmentVariables;
+	env: AppEnvironmentVariables;
 };
 
 export type TestRoot = {
-  buildAsync: () => Promise<PlayAtlasApiV1>;
-  cleanup: () => Promise<void>;
-  factory: ITestFactoryModulePort;
-  seedCompany: (company: Company | Company[]) => void;
-  seedGame: (game: Game | Game[]) => void;
-  seedGenre: (genre: Genre | Genre[]) => void;
-  seedPlatform: (platform: Platform | Platform[]) => void;
-  resetDbAsync: () => Promise<void>;
+	buildAsync: () => Promise<PlayAtlasApiV1>;
+	cleanup: () => Promise<void>;
+	factory: ITestFactoryModulePort;
+	seedCompany: (company: Company | Company[]) => void;
+	seedGame: (game: Game | Game[]) => void;
+	seedGenre: (genre: Genre | Genre[]) => void;
+	seedPlatform: (platform: Platform | Platform[]) => void;
+	resetDbAsync: () => Promise<void>;
 };
 
-export const makeTestCompositionRoot = ({
-  env,
-}: TestCompositionRootDeps): TestRoot => {
-  const system = makeSystemModule({ env });
+export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestRoot => {
+	const system = makeSystemModule({ env });
 
-  const logServiceFactory = makeLogServiceFactory({
-    getCurrentLogLevel: () => system.getSystemConfig().getLogLevel(),
-  });
-  const backendLogService = logServiceFactory.build("SvelteBackend");
+	const logServiceFactory = makeLogServiceFactory({
+		getCurrentLogLevel: () => system.getSystemConfig().getLogLevel(),
+	});
+	const backendLogService = logServiceFactory.build("SvelteBackend");
 
-  const eventBus = makeEventBus({
-    logService: logServiceFactory.build("EventBus"),
-  });
+	const eventBus = makeEventBus({
+		logService: logServiceFactory.build("EventBus"),
+	});
 
-  const infra = makeInfraModule({
-    logServiceFactory,
-    envService: system.getEnvService(),
-    systemConfig: system.getSystemConfig(),
-  });
+	const infra = makeInfraModule({
+		logServiceFactory,
+		envService: system.getEnvService(),
+		systemConfig: system.getSystemConfig(),
+	});
 
-  const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus };
+	const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus };
 
-  const gameLibrary = makeGameLibraryModule({ ...baseDeps });
+	const gameLibrary = makeGameLibraryModule({ ...baseDeps });
 
-  const factory = makeTestFactoryModule();
+	const factory = makeTestFactoryModule();
 
-  const setupGameFactoryAsync = async () => {
-    const completionStatusList = factory
-      .getCompletionStatusFactory()
-      .buildDefaultCompletionStatusList();
-    const companyList = factory.getCompanyFactory().buildList(200);
-    const genreList = factory.getGenreFactory().buildList(200);
-    const platformList = factory.getPlatformFactory().buildList(30);
+	const setupGameFactoryAsync = async () => {
+		const completionStatusList = factory
+			.getCompletionStatusFactory()
+			.buildDefaultCompletionStatusList();
+		const companyList = factory.getCompanyFactory().buildList(200);
+		const genreList = factory.getGenreFactory().buildList(200);
+		const platformList = factory.getPlatformFactory().buildList(30);
 
-    gameLibrary.getCompletionStatusRepository().upsert(completionStatusList);
-    gameLibrary.getCompanyRepository().upsert(companyList);
-    gameLibrary.getGenreRepository().upsert(genreList);
-    gameLibrary.getPlatformRepository().upsert(platformList);
+		gameLibrary.getCompletionStatusRepository().upsert(completionStatusList);
+		gameLibrary.getCompanyRepository().upsert(companyList);
+		gameLibrary.getGenreRepository().upsert(genreList);
+		gameLibrary.getPlatformRepository().upsert(platformList);
 
-    const completionStatusOptions = completionStatusList.map((c) => c.getId());
-    const companyOptions = companyList.map((c) => c.getId());
-    const genreOptions = genreList.map((g) => g.getId());
-    const platformOptions = platformList.map((p) => p.getId());
+		const completionStatusOptions = completionStatusList.map((c) => c.getId());
+		const companyOptions = companyList.map((c) => c.getId());
+		const genreOptions = genreList.map((g) => g.getId());
+		const platformOptions = platformList.map((p) => p.getId());
 
-    factory.setGameFactory(
-      makeGameFactory({
-        companyOptions,
-        completionStatusOptions,
-        genreOptions,
-        platformOptions,
-      })
-    );
-  };
+		factory.setGameFactory(
+			makeGameFactory({
+				companyOptions,
+				completionStatusOptions,
+				genreOptions,
+				platformOptions,
+			}),
+		);
+	};
 
-  const buildAsync = async (): Promise<PlayAtlasApiV1> => {
-    backendLogService.info("Initializing environment");
-    await infra.initEnvironment();
-    backendLogService.info("Initializing database");
-    await infra.initDb();
+	const buildAsync = async (): Promise<PlayAtlasApiV1> => {
+		backendLogService.info("Initializing environment");
+		await infra.initEnvironment();
+		backendLogService.info("Initializing database");
+		await infra.initDb();
 
-    const auth = makeAuthModule({
-      ...baseDeps,
-      signatureService: infra.getSignatureService(),
-    });
+		const auth = makeAuthModule({
+			...baseDeps,
+			signatureService: infra.getSignatureService(),
+		});
 
-    const playniteIntegration = makePlayniteIntegrationModule({
-      ...baseDeps,
-      fileSystemService: infra.getFsService(),
-      systemConfig: system.getSystemConfig(),
-      gameRepository: gameLibrary.getGameRepository(),
-      companyRepository: gameLibrary.getCompanyRepository(),
-      completionStatusRepository: gameLibrary.getCompletionStatusRepository(),
-      genreRepository: gameLibrary.getGenreRepository(),
-      platformRepository: gameLibrary.getPlatformRepository(),
-    });
+		const playniteIntegration = makePlayniteIntegrationModule({
+			...baseDeps,
+			fileSystemService: infra.getFsService(),
+			systemConfig: system.getSystemConfig(),
+			gameRepository: gameLibrary.getGameRepository(),
+			companyRepository: gameLibrary.getCompanyRepository(),
+			completionStatusRepository: gameLibrary.getCompletionStatusRepository(),
+			genreRepository: gameLibrary.getGenreRepository(),
+			platformRepository: gameLibrary.getPlatformRepository(),
+		});
 
-    const gameSession = makeGameSessionModule({
-      ...baseDeps,
-      gameRepository: gameLibrary.getGameRepository(),
-    });
+		const gameSession = makeGameSessionModule({
+			...baseDeps,
+			gameRepository: gameLibrary.getGameRepository(),
+		});
 
-    await setupGameFactoryAsync();
+		await setupGameFactoryAsync();
 
-    return bootstrapV1({
-      backendLogService,
-      eventBus,
-      modules: {
-        auth,
-        gameLibrary,
-        gameSession,
-        infra,
-        playniteIntegration,
-        system,
-      },
-    });
-  };
+		return bootstrapV1({
+			backendLogService,
+			eventBus,
+			modules: {
+				auth,
+				gameLibrary,
+				gameSession,
+				infra,
+				playniteIntegration,
+				system,
+			},
+		});
+	};
 
-  const cleanup = async () => {
-    const workDir = system.getEnvService().getWorkDir();
-    backendLogService.warning(
-      `Deleting integration test work dir at ${workDir}`
-    );
-    await infra.getFsService().rm(workDir, { force: true, recursive: true });
-  };
+	const cleanup = async () => {
+		const workDir = system.getEnvService().getWorkDir();
+		backendLogService.warning(`Deleting integration test work dir at ${workDir}`);
+		await infra.getFsService().rm(workDir, { force: true, recursive: true });
+	};
 
-  const seedCompany = (company: Company | Company[]) => {
-    gameLibrary.getCompanyRepository().upsert(company);
-  };
+	const seedCompany = (company: Company | Company[]) => {
+		gameLibrary.getCompanyRepository().upsert(company);
+	};
 
-  const seedGame = (game: Game | Game[]) => {
-    gameLibrary.getGameRepository().upsert(game);
-  };
+	const seedGame = (game: Game | Game[]) => {
+		gameLibrary.getGameRepository().upsert(game);
+	};
 
-  const seedGenre = (genre: Genre | Genre[]) => {
-    gameLibrary.getGenreRepository().upsert(genre);
-  };
+	const seedGenre = (genre: Genre | Genre[]) => {
+		gameLibrary.getGenreRepository().upsert(genre);
+	};
 
-  const seedPlatform = (platform: Platform | Platform[]) => {
-    gameLibrary.getPlatformRepository().upsert(platform);
-  };
+	const seedPlatform = (platform: Platform | Platform[]) => {
+		gameLibrary.getPlatformRepository().upsert(platform);
+	};
 
-  const resetDbAsync = async () => {
-    infra.getDb().close();
-    await infra.initDb();
-    await setupGameFactoryAsync();
-  };
+	const resetDbAsync = async () => {
+		infra.getDb().close();
+		await infra.initDb();
+		await setupGameFactoryAsync();
+	};
 
-  return {
-    buildAsync,
-    factory,
-    cleanup,
-    seedCompany,
-    seedGame,
-    seedGenre,
-    seedPlatform,
-    resetDbAsync,
-  };
+	return {
+		buildAsync,
+		factory,
+		cleanup,
+		seedCompany,
+		seedGame,
+		seedGenre,
+		seedPlatform,
+		resetDbAsync,
+	};
 };

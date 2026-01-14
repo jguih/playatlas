@@ -1,9 +1,5 @@
 export type ISignatureServicePort = {
-  generateAsymmetricKeyPair: () => Promise<void>;
-  sign: (data: string) => Promise<string>;
-  verify: (props: {
-    publicKey: string;
-    signature: string;
-    payload: string;
-  }) => boolean;
+	generateAsymmetricKeyPair: () => Promise<void>;
+	sign: (data: string) => Promise<string>;
+	verify: (props: { publicKey: string; signature: string; payload: string }) => boolean;
 };

@@ -3,36 +3,35 @@ import { createHashForObject } from "@playatlas/common/infra";
 import { extensionRegistrationMapper } from "../../extension-registration.mapper";
 import type { GetAllExtensionRegistrationQuery } from "./get-all-extension-registration.query";
 import type {
-  GetAllExtensionRegistrationsQueryHandlerDeps,
-  GetAllExtensionRegistrationsResult,
+	GetAllExtensionRegistrationsQueryHandlerDeps,
+	GetAllExtensionRegistrationsResult,
 } from "./get-all-extension-registration.query.types";
 
 export type IGetAllExtensionRegistrationsQueryHandlerPort = QueryHandler<
-  GetAllExtensionRegistrationQuery,
-  GetAllExtensionRegistrationsResult
+	GetAllExtensionRegistrationQuery,
+	GetAllExtensionRegistrationsResult
 >;
 
 export const makeGetAllExtensionRegistrationsQueryHandler = ({
-  extensionRegistrationRepository,
+	extensionRegistrationRepository,
 }: GetAllExtensionRegistrationsQueryHandlerDeps): IGetAllExtensionRegistrationsQueryHandlerPort => {
-  return {
-    execute: ({ ifNoneMatch } = {}) => {
-      const registrations = extensionRegistrationRepository.all();
+	return {
+		execute: ({ ifNoneMatch } = {}) => {
+			const registrations = extensionRegistrationRepository.all();
 
-      if (!registrations || registrations.length === 0) {
-        return { type: "ok", data: [], etag: '"empty"' };
-      }
+			if (!registrations || registrations.length === 0) {
+				return { type: "ok", data: [], etag: '"empty"' };
+			}
 
-      const registrationDtos =
-        extensionRegistrationMapper.toDtoList(registrations);
-      const hash = createHashForObject(registrationDtos);
-      const etag = `"${hash}"`;
+			const registrationDtos = extensionRegistrationMapper.toDtoList(registrations);
+			const hash = createHashForObject(registrationDtos);
+			const etag = `"${hash}"`;
 
-      if (ifNoneMatch === etag) {
-        return { type: "not_modified" };
-      }
+			if (ifNoneMatch === etag) {
+				return { type: "not_modified" };
+			}
 
-      return { type: "ok", data: registrationDtos, etag };
-    },
-  };
+			return { type: "ok", data: registrationDtos, etag };
+		},
+	};
 };

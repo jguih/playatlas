@@ -5,21 +5,19 @@ export type CompletionStatusId = string;
 type CompletionStatusName = string;
 
 export type CompletionStatus = BaseEntity<CompletionStatusId> &
-  Readonly<{
-    getName: () => CompletionStatusName;
-  }>;
+	Readonly<{
+		getName: () => CompletionStatusName;
+	}>;
 
-export const makeCompletionStatus = (
-  props: MakeCompletionStatusProps
-): CompletionStatus => {
-  const _id: CompletionStatusId = props.id;
-  const _name: CompletionStatusName = props.name;
+export const makeCompletionStatus = (props: MakeCompletionStatusProps): CompletionStatus => {
+	const _id: CompletionStatusId = props.id;
+	const _name: CompletionStatusName = props.name;
 
-  const completionStatus: CompletionStatus = {
-    getId: () => _id,
-    getSafeId: () => _id,
-    getName: () => _name,
-    validate: () => {},
-  };
-  return Object.freeze(completionStatus);
+	const completionStatus: CompletionStatus = {
+		getId: () => _id,
+		getSafeId: () => _id,
+		getName: () => _name,
+		validate: () => {},
+	};
+	return Object.freeze(completionStatus);
 };

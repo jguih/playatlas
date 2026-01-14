@@ -9,22 +9,20 @@ const gameNoteFactory = new GameNoteFactory();
 let service: SynchronizationService;
 
 describe("Synchronization Service", () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-    service = makeSynchronizationService({ ...mocks });
-  });
+	beforeEach(() => {
+		vi.resetAllMocks();
+		service = makeSynchronizationService({ ...mocks });
+	});
 
-  it("on reconcile, reconcile game notes", () => {
-    // Arrange
-    const notes = gameNoteFactory.getNotes(200);
-    const command: ClientSyncReconciliationCommand = {
-      notes: notes,
-    };
-    // Act
-    service.reconcile(command);
-    // Assert
-    expect(mocks.gameNoteRepository.reconcileFromSource).toHaveBeenCalledWith(
-      notes
-    );
-  });
+	it("on reconcile, reconcile game notes", () => {
+		// Arrange
+		const notes = gameNoteFactory.getNotes(200);
+		const command: ClientSyncReconciliationCommand = {
+			notes: notes,
+		};
+		// Act
+		service.reconcile(command);
+		// Assert
+		expect(mocks.gameNoteRepository.reconcileFromSource).toHaveBeenCalledWith(notes);
+	});
 });

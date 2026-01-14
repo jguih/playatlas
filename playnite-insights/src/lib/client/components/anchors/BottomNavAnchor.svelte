@@ -7,7 +7,7 @@
 
 <LightAnchor
 	{...props}
-	class={['flex w-22 grow-0 flex-col items-center', props.class]}
+	class={['w-22 flex grow-0 flex-col items-center', props.class]}
 >
 	{#if props.children}
 		{@render props.children()}

@@ -5,5 +5,5 @@ import type { gameNoteSchema } from "./schemas";
 export type GameNote = z.infer<typeof gameNoteSchema>;
 
 export type GameNoteFilters = {
-  lastUpdatedAt?: DateFilter[];
+	lastUpdatedAt?: DateFilter[];
 };

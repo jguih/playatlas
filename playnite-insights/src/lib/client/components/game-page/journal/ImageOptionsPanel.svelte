@@ -28,7 +28,7 @@
 					<LightButton
 						justify="start"
 						size="md"
-						class={['w-full gap-3!']}
+						class={['gap-3! w-full']}
 						onclick={props.onRemoveImage}
 					>
 						<Trash class={['size-md']} />

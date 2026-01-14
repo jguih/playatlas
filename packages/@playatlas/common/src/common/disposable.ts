@@ -1,7 +1,7 @@
 export type DisposableAsync = {
-  dispose: () => Promise<void>;
+	dispose: () => Promise<void>;
 };
 
 export type Disposable = {
-  dispose: () => void;
+	dispose: () => void;
 };

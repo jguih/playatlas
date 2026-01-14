@@ -1,17 +1,14 @@
-import type {
-  LogLevelNumber,
-  LogServiceFactory,
-} from "@playatlas/common/application";
+import type { LogLevelNumber, LogServiceFactory } from "@playatlas/common/application";
 import { makeLogService } from "./log.service";
 
 export type LogServiceFactoryDeps = {
-  getCurrentLogLevel: () => LogLevelNumber;
+	getCurrentLogLevel: () => LogLevelNumber;
 };
 
 export const makeLogServiceFactory = ({
-  getCurrentLogLevel,
+	getCurrentLogLevel,
 }: LogServiceFactoryDeps): LogServiceFactory => {
-  return {
-    build: (context) => makeLogService(context, getCurrentLogLevel),
-  };
+	return {
+		build: (context) => makeLogService(context, getCurrentLogLevel),
+	};
 };
