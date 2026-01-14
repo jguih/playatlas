@@ -9,11 +9,6 @@
 		"./infra": "./src/infra/index.ts",
 		"./types": "./src/types/index.ts"
 	},
-	"scripts": {
-		"test": "vitest run",
-		"test:unit": "vitest run",
-		"test:watch": "vitest --watch"
-	},
 	"devDependencies": {
 		"@types/node": "^24.0.14"
 	},
