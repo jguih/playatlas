@@ -24,14 +24,14 @@ export type BuildGameSessionProps = {
 	status: GameSessionStatus;
 	gameId?: GameId | null;
 	gameName?: string | null;
-	endTime?: Date;
-	duration?: number;
+	endTime?: Date | null;
+	duration?: number | null;
 };
 
 export type MakeGameSessionProps = {
 	sessionId: GameSessionId;
 	startTime: Date;
-	gameId?: GameId | null;
+	gameId: GameId;
 	gameName?: string | null;
 };
 

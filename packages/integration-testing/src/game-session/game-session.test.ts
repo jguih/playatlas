@@ -19,7 +19,6 @@ const recordDomainEvents = () => {
 
 describe("Game Sessions", () => {
 	let game: Game;
-	const sessionId = "session-1" as const;
 	let unsubscribe: () => void;
 	let events: DomainEvent[];
 
@@ -37,6 +36,7 @@ describe("Game Sessions", () => {
 		// Arrange
 		const now = new Date().toISOString();
 		const gameId = game.getId();
+		const sessionId = faker.string.uuid();
 
 		const requestDto: OpenGameSessionRequestDto = {
 			ClientUtcNow: now,
@@ -69,6 +69,7 @@ describe("Game Sessions", () => {
 		// Arrange
 		const now = new Date().toISOString();
 		const gameId = faker.string.uuid();
+		const sessionId = faker.string.uuid();
 
 		const requestDto: OpenGameSessionRequestDto = {
 			ClientUtcNow: now,
@@ -92,6 +93,7 @@ describe("Game Sessions", () => {
 		// Arrange
 		const now = new Date().toISOString();
 		const gameId = game.getId();
+		const sessionId = faker.string.uuid();
 
 		const openRequestDto: OpenGameSessionRequestDto = {
 			ClientUtcNow: now,
@@ -148,6 +150,7 @@ describe("Game Sessions", () => {
 		// Arrange
 		const now = new Date().toISOString();
 		const gameId = game.getId();
+		const sessionId = faker.string.uuid();
 
 		const closeRequestDto: CloseGameSessionRequestDto = {
 			ClientUtcNow: now,
@@ -184,6 +187,7 @@ describe("Game Sessions", () => {
 		// Arrange
 		const now = new Date().toISOString();
 		const gameId = game.getId();
+		const sessionId = faker.string.uuid();
 
 		const closeRequestDto: CloseGameSessionRequestDto = {
 			ClientUtcNow: now,

@@ -1,9 +1,10 @@
-import type { BaseEntity, GameId, GameSessionId } from "@playatlas/common/domain";
 import {
-	EndTimeBeforeStartTimeError,
-	GameSessionNotInProgressError,
-	InvalidGameSessionDurationError,
-} from "./game-session.errors";
+	InvalidStateError,
+	type BaseEntity,
+	type GameId,
+	type GameSessionId,
+} from "@playatlas/common/domain";
+import { GameSessionNotInProgressError } from "./game-session.errors";
 import type {
 	BuildGameSessionProps,
 	CloseGameSessionProps,
@@ -29,6 +30,9 @@ export type GameSession = BaseEntity<GameSessionId> &
 		getDuration: () => GameSessionDuration;
 		close(props: CloseGameSessionProps): void;
 		stale: () => void;
+		isInProgress: () => boolean;
+		isClosed: () => boolean;
+		isStale: () => boolean;
 	}>;
 
 const buildGameSession = (props: BuildGameSessionProps): GameSession => {
@@ -40,7 +44,20 @@ const buildGameSession = (props: BuildGameSessionProps): GameSession => {
 	let _endTime: GameSessionEndTime = props.endTime ?? null;
 	let _duration: GameSessionDuration = props.duration ?? null;
 
-	const newSession: GameSession = Object.freeze({
+	const _validate = () => {
+		if (_endTime && _startTime && _endTime <= _startTime)
+			throw new InvalidStateError(
+				"Game session end time must not be equal or earlier than start time",
+			);
+		if (_duration !== null && _duration !== undefined && _duration <= 0)
+			throw new InvalidStateError(
+				"Game session duration must be a positive integer greater than 0",
+			);
+	};
+
+	_validate();
+
+	const newSession: GameSession = {
 		getId: () => _sessionId,
 		getSafeId: () => _sessionId,
 		getSessionId: () => _sessionId,
@@ -52,11 +69,14 @@ const buildGameSession = (props: BuildGameSessionProps): GameSession => {
 		getDuration: () => _duration,
 		close: (props) => {
 			if (_status !== "in_progress") throw new GameSessionNotInProgressError();
-			if (props.endTime <= _startTime) throw new EndTimeBeforeStartTimeError();
-			if (props.duration < 0)
-				throw new InvalidGameSessionDurationError({
-					sessionDuration: props.duration,
-				});
+			if (props.endTime <= _startTime)
+				throw new InvalidStateError(
+					"Game session end time must not be equal or earlier than start time",
+				);
+			if (props.duration <= 0)
+				throw new InvalidStateError(
+					"Game session duration must be a positive integer greater than 0",
+				);
 			_endTime = props.endTime;
 			_duration = props.duration;
 			_status = "closed";
@@ -65,8 +85,11 @@ const buildGameSession = (props: BuildGameSessionProps): GameSession => {
 			if (_status !== "in_progress") throw new GameSessionNotInProgressError();
 			_status = "stale";
 		},
-		validate: () => {},
-	});
+		validate: _validate,
+		isClosed: () => _status === "closed",
+		isInProgress: () => _status === "in_progress",
+		isStale: () => _status === "stale",
+	};
 	return Object.freeze(newSession);
 };
 
@@ -98,3 +121,6 @@ export const makeStaleGameSession = (props: MakeGameSessionProps): GameSession =
 		status: "stale",
 		gameName: props.gameName,
 	});
+
+export const rehydrateGameSession = (props: BuildGameSessionProps): GameSession =>
+	buildGameSession(props);
