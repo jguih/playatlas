@@ -1,9 +1,9 @@
-import { env } from '$env/dynamic/private';
-import { paraglideMiddleware } from '$lib/paraglide/server';
-import { makeServerServices, type ServerServices } from '$lib/server/setup-services';
-import { makeAppCompositionRoot, type PlayAtlasApiV1 } from '@playatlas/bootstrap/application';
-import { type Handle, type ServerInit } from '@sveltejs/kit';
-import { randomUUID } from 'crypto';
+import { env } from "$env/dynamic/private";
+import { paraglideMiddleware } from "$lib/paraglide/server";
+import { makeServerServices, type ServerServices } from "$lib/server/setup-services";
+import { makeAppCompositionRoot, type PlayAtlasApiV1 } from "@playatlas/bootstrap/application";
+import { type Handle, type ServerInit } from "@sveltejs/kit";
+import { randomUUID } from "crypto";
 
 let _services: ServerServices;
 let _api: PlayAtlasApiV1;
@@ -43,7 +43,7 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 		event.request = request;
 
 		return resolve(event, {
-			transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale),
+			transformPageChunk: ({ html }) => html.replace("%paraglide.lang%", locale),
 		});
 	});
 
@@ -52,14 +52,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.api = _api;
 
 	// Apply CORS header for API routes
-	if (event.url.pathname.startsWith('/api')) {
+	if (event.url.pathname.startsWith("/api")) {
 		// Required for CORS to work
-		if (event.request.method === 'OPTIONS') {
+		if (event.request.method === "OPTIONS") {
 			return new Response(null, {
 				headers: {
-					'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-					'Access-Control-Allow-Origin': '*',
-					'Access-Control-Allow-Headers': '*',
+					"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+					"Access-Control-Allow-Origin": "*",
+					"Access-Control-Allow-Headers": "*",
 				},
 			});
 		}
@@ -67,8 +67,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const response = await handleParaglide({ event, resolve });
 
-	if (event.url.pathname.startsWith('/api')) {
-		response.headers.append('Access-Control-Allow-Origin', `*`);
+	if (event.url.pathname.startsWith("/api")) {
+		response.headers.append("Access-Control-Allow-Origin", `*`);
 	}
 
 	return response;

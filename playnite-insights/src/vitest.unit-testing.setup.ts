@@ -1,5 +1,5 @@
-import { bootstrapTestFactories } from '@playatlas/bootstrap/testing';
-import { makeGameFactory } from '@playatlas/game-library/testing';
+import { bootstrapTestFactories } from "@playatlas/bootstrap/testing";
+import { makeGameFactory } from "@playatlas/game-library/testing";
 
 export const factory = bootstrapTestFactories();
 

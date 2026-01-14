@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { GameNote } from '@playnite-insights/lib/client';
-	import { onMount } from 'svelte';
-	import BaseButton from '../../buttons/BaseButton.svelte';
+	import type { GameNote } from "@playnite-insights/lib/client";
+	import { onMount } from "svelte";
+	import BaseButton from "../../buttons/BaseButton.svelte";
 
 	type NoteCardProps = {
 		note: GameNote;
@@ -21,9 +21,9 @@
 
 <BaseButton
 	class={[
-		'flex-col! items-start! p-0! w-full',
-		'hover:outline-primary-hover-bg hover:outline-2',
-		'active:bg-primary-light-active-bg',
+		"flex-col! items-start! p-0! w-full",
+		"hover:outline-primary-hover-bg hover:outline-2",
+		"active:bg-primary-light-active-bg",
 	]}
 	onclick={() => onClick(note)}
 	type="button"

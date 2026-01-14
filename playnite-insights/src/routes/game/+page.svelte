@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { getLocatorContext } from '$lib/client/app-state/serviceLocator.svelte.js';
-	import SolidAnchor from '$lib/client/components/anchors/SolidAnchor.svelte';
-	import LightButton from '$lib/client/components/buttons/LightButton.svelte';
-	import Divider from '$lib/client/components/Divider.svelte';
-	import Header from '$lib/client/components/header/Header.svelte';
-	import BaseAppLayout from '$lib/client/components/layout/BaseAppLayout.svelte';
-	import Main from '$lib/client/components/Main.svelte';
-	import { GamePageViewModel } from '$lib/client/viewmodel/gamePageViewModel.svelte.js';
-	import { m } from '$lib/paraglide/messages.js';
-	import { ArrowLeft } from '@lucide/svelte';
+	import { getLocatorContext } from "$lib/client/app-state/serviceLocator.svelte.js";
+	import SolidAnchor from "$lib/client/components/anchors/SolidAnchor.svelte";
+	import LightButton from "$lib/client/components/buttons/LightButton.svelte";
+	import Divider from "$lib/client/components/Divider.svelte";
+	import Header from "$lib/client/components/header/Header.svelte";
+	import BaseAppLayout from "$lib/client/components/layout/BaseAppLayout.svelte";
+	import Main from "$lib/client/components/Main.svelte";
+	import { GamePageViewModel } from "$lib/client/viewmodel/gamePageViewModel.svelte.js";
+	import { m } from "$lib/paraglide/messages.js";
+	import { ArrowLeft } from "@lucide/svelte";
 
 	const { data } = $props();
 	const locator = getLocatorContext();
@@ -28,20 +28,20 @@
 {/snippet}
 
 <BaseAppLayout>
-	<Header class={['flex items-center justify-center']}>
+	<Header class={["flex items-center justify-center"]}>
 		<h1 class="block h-fit w-fit max-w-52 truncate text-xl underline">
-			{vm?.game?.Name ?? ''}
+			{vm?.game?.Name ?? ""}
 		</h1>
 		<LightButton
 			onclick={() => history.back()}
-			class={['absolute top-2 bottom-2 left-4']}
+			class={["absolute bottom-2 left-4 top-2"]}
 		>
-			<ArrowLeft class={['size-md']} />
+			<ArrowLeft class={["size-md"]} />
 		</LightButton>
 	</Header>
 	<Main
 		bottomNav={false}
-		class={['p-0!']}
+		class={["p-0!"]}
 	>
 		{#if vm.game}
 			<img
@@ -54,19 +54,19 @@
 					<SolidAnchor
 						type="button"
 						href={`/game/journal?id=${data.gameId}`}
-						class={['block w-full text-center']}
+						class={["block w-full text-center"]}
 					>
 						{m.game_label_journal()}
 					</SolidAnchor>
 				</div>
-				<div class="mt-4 mb-4 flex flex-col">
+				<div class="mb-4 mt-4 flex flex-col">
 					{@render infoSection(m.game_info_release_date(), vm.getReleaseDate())}
 					{@render infoSection(m.game_info_added(), vm.getAdded())}
 					{@render infoSection(m.game_info_playtime(), vm.getPlaytime())}
 					{@render infoSection(m.game_info_developers(), vm.getDevelopers())}
 					{@render infoSection(m.game_info_installed(), vm.getInstalled())}
 					{#if Boolean(vm.game.IsInstalled)}
-						{@render infoSection(m.game_info_install_directory(), vm.game.InstallDirectory ?? '')}
+						{@render infoSection(m.game_info_install_directory(), vm.game.InstallDirectory ?? "")}
 					{/if}
 				</div>
 				<div>

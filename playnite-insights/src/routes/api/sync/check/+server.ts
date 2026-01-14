@@ -1,7 +1,7 @@
-import { instanceAuthMiddleware } from '$lib/server/api/middleware/auth.middleware';
-import { ensureSyncId } from '$lib/server/api/synchronization';
-import { emptyResponse } from '@playnite-insights/lib/client';
-import type { RequestHandler } from '@sveltejs/kit';
+import { instanceAuthMiddleware } from "$lib/server/api/middleware/auth.middleware";
+import { ensureSyncId } from "$lib/server/api/synchronization";
+import { emptyResponse } from "@playnite-insights/lib/client";
+import type { RequestHandler } from "@sveltejs/kit";
 
 /**
  * GET /api/sync/check

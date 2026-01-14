@@ -1,7 +1,7 @@
-import { ClientEntityRepository, type ClientEntityRepositoryDeps } from '$lib/modules/common/infra';
-import type { Platform, PlatformId } from '../domain/platform.entity';
-import type { IPlatformRepositoryPort } from './platform.repository.port';
-import { platformRepositoryMeta } from './platform.repository.schema';
+import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
+import type { Platform, PlatformId } from "../domain/platform.entity";
+import type { IPlatformRepositoryPort } from "./platform.repository.port";
+import { platformRepositoryMeta } from "./platform.repository.schema";
 
 export type PlatformRepositoryDeps = ClientEntityRepositoryDeps;
 

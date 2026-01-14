@@ -2,16 +2,16 @@ export type AppToast = {
 	key: string;
 	title?: string;
 	message: string;
-	type: 'info' | 'error' | 'warning' | 'success';
-	category: 'network' | 'local-database' | 'app';
+	type: "info" | "error" | "warning" | "success";
+	category: "network" | "local-database" | "app";
 	durationMs?: number;
 	action?: () => void | Promise<void>;
 };
 
 let toastSignal = $state<AppToast[]>([]);
 
-const pushToast = (toast: Omit<AppToast, 'key'>) => {
-	if (toast.category === 'network' && !navigator.onLine) return;
+const pushToast = (toast: Omit<AppToast, "key">) => {
+	if (toast.category === "network" && !navigator.onLine) return;
 
 	const newToast: AppToast = { ...toast, key: crypto.randomUUID() };
 	const currentToasts: AppToast[] = [...toastSignal];
@@ -26,10 +26,10 @@ const pushToast = (toast: Omit<AppToast, 'key'>) => {
 };
 
 export const toast = {
-	info: (props: Omit<AppToast, 'type' | 'key'>) => pushToast({ type: 'info', ...props }),
-	error: (props: Omit<AppToast, 'type' | 'key'>) => pushToast({ type: 'error', ...props }),
-	warning: (props: Omit<AppToast, 'type' | 'key'>) => pushToast({ type: 'warning', ...props }),
-	success: (props: Omit<AppToast, 'type' | 'key'>) => pushToast({ type: 'success', ...props }),
+	info: (props: Omit<AppToast, "type" | "key">) => pushToast({ type: "info", ...props }),
+	error: (props: Omit<AppToast, "type" | "key">) => pushToast({ type: "error", ...props }),
+	warning: (props: Omit<AppToast, "type" | "key">) => pushToast({ type: "warning", ...props }),
+	success: (props: Omit<AppToast, "type" | "key">) => pushToast({ type: "success", ...props }),
 };
 
 export const getToasts = () => toastSignal;

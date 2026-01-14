@@ -4,10 +4,10 @@ import {
 	EmptyStrategy,
 	FetchClientStrategyError,
 	type IFetchClient,
-} from '@playnite-insights/lib/client';
-import { IndexedDBNotInitializedError } from './db/errors/indexeddbNotInitialized';
-import type { KeyValueRepository } from './db/keyValueRepository.svelte';
-import type { ILogService } from './logService.svelte';
+} from "@playnite-insights/lib/client";
+import { IndexedDBNotInitializedError } from "./db/errors/indexeddbNotInitialized";
+import type { KeyValueRepository } from "./db/keyValueRepository.svelte";
+import type { ILogService } from "./logService.svelte";
 
 export type InstanceManagerDeps = {
 	keyValueRepository: KeyValueRepository;
@@ -16,9 +16,9 @@ export type InstanceManagerDeps = {
 };
 
 export class InstanceManager {
-	#keyValueRepository: InstanceManagerDeps['keyValueRepository'];
-	#httpClient: InstanceManagerDeps['httpClient'];
-	#logService: InstanceManagerDeps['logService'];
+	#keyValueRepository: InstanceManagerDeps["keyValueRepository"];
+	#httpClient: InstanceManagerDeps["httpClient"];
+	#logService: InstanceManagerDeps["logService"];
 	#isRegistered: boolean | null = null;
 
 	constructor({ keyValueRepository, httpClient, logService }: InstanceManagerDeps) {
@@ -30,7 +30,7 @@ export class InstanceManager {
 	#performHealthcheck = async (): Promise<boolean> => {
 		try {
 			await this.#httpClient.httpGetAsync({
-				endpoint: '/api/health',
+				endpoint: "/api/health",
 				strategy: new EmptyStrategy(),
 			});
 			this.#isRegistered = true;
@@ -40,11 +40,11 @@ export class InstanceManager {
 				if (error.data) {
 					const apiError = apiErrorSchema.parse(error.data);
 					switch (apiError.error.code) {
-						case 'instance_not_registered':
+						case "instance_not_registered":
 							this.#isRegistered = false;
 							break;
-						case 'not_authorized':
-						case 'invalid_request':
+						case "not_authorized":
+						case "invalid_request":
 						default:
 							this.#isRegistered = true;
 							break;
@@ -56,7 +56,7 @@ export class InstanceManager {
 		} finally {
 			if (this.#isRegistered !== null) {
 				await this.#keyValueRepository.putAsync({
-					keyvalue: { Key: 'instance-registered', Value: this.#isRegistered },
+					keyvalue: { Key: "instance-registered", Value: this.#isRegistered },
 				});
 			}
 		}
@@ -69,7 +69,7 @@ export class InstanceManager {
 			// Init healthcheck
 			const healthCheckPromise = this.#performHealthcheck();
 			// Return from indexedDb if possible
-			const isRegistered = await this.#keyValueRepository.getAsync({ key: 'instance-registered' });
+			const isRegistered = await this.#keyValueRepository.getAsync({ key: "instance-registered" });
 			if (isRegistered !== null) {
 				return (this.#isRegistered = isRegistered);
 			}
@@ -82,8 +82,8 @@ export class InstanceManager {
 				);
 				throw new AppClientError(
 					{
-						code: 'indexeddb_not_initialized',
-						message: 'IndexedDb not initialized while checking instance registration',
+						code: "indexeddb_not_initialized",
+						message: "IndexedDb not initialized while checking instance registration",
 					},
 					error,
 				);
@@ -93,7 +93,7 @@ export class InstanceManager {
 				);
 				throw new AppClientError(
 					{
-						code: 'dom_exception',
+						code: "dom_exception",
 						message: `DOMException (${error.name}) while checking instance registration`,
 					},
 					error,
@@ -106,7 +106,7 @@ export class InstanceManager {
 					);
 					throw new AppClientError(
 						{
-							code: 'server_error',
+							code: "server_error",
 							message: `HTTP request error while checking instance registration`,
 						},
 						error,
@@ -115,7 +115,7 @@ export class InstanceManager {
 					this.#logService.debug(`HTTP request error while checking instance registration`);
 					throw new AppClientError(
 						{
-							code: 'instance_registration_check_failed',
+							code: "instance_registration_check_failed",
 							message: `HTTP request error while checking instance registration`,
 						},
 						error,
@@ -125,7 +125,7 @@ export class InstanceManager {
 			this.#logService.error(`Unknown error while checking instance registration`, error);
 			throw new AppClientError(
 				{
-					code: 'instance_registration_check_failed',
+					code: "instance_registration_check_failed",
 					message: `Unknown error while checking instance registration`,
 				},
 				error,

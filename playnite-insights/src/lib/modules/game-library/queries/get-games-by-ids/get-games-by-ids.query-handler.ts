@@ -1,6 +1,6 @@
-import type { IGameRepositoryPort } from '../../infra/game.repository.port';
-import type { GetGamesByIdsQuery, GetGamesByIdsQueryResult } from './get-games-by-ids.query';
-import type { IGetGamesByIdsQueryHandlerPort } from './get-games-by-ids.query-handler.port';
+import type { IGameRepositoryPort } from "../../infra/game.repository.port";
+import type { GetGamesByIdsQuery, GetGamesByIdsQueryResult } from "./get-games-by-ids.query";
+import type { IGetGamesByIdsQueryHandlerPort } from "./get-games-by-ids.query-handler.port";
 
 export type GetGamesByIdsQueryHandlerDeps = {
 	gameRepository: IGameRepositoryPort;

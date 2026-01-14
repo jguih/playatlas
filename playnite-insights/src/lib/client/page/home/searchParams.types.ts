@@ -1,6 +1,6 @@
-import type { GamePageSize, GameSortBy, GameSortOrder } from '@playatlas/game-library/domain';
-import type { GameResponseDto } from '@playatlas/game-library/dtos';
-import type { homePageSearchParamsKeys } from './searchParams.constants';
+import type { GamePageSize, GameSortBy, GameSortOrder } from "@playatlas/game-library/domain";
+import type { GameResponseDto } from "@playatlas/game-library/dtos";
+import type { homePageSearchParamsKeys } from "./searchParams.constants";
 
 export type HomePageSearchParamKeys =
 	(typeof homePageSearchParamsKeys)[keyof typeof homePageSearchParamsKeys];

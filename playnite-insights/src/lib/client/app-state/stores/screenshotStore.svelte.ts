@@ -1,22 +1,22 @@
-import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
+import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte";
 import {
 	getAllScreenshotsResponseSchema,
 	JsonStrategy,
 	type GetAllScreenshotsResponse,
-} from '@playnite-insights/lib/client';
-import { ApiDataStore, type ApiDataStoreDeps } from './apiDataStore.svelte';
+} from "@playnite-insights/lib/client";
+import { ApiDataStore, type ApiDataStoreDeps } from "./apiDataStore.svelte";
 
 export type ScreenshotStoreDeps = ApiDataStoreDeps;
 
 export type ScreenshotListSignal = {
-	list: GetAllScreenshotsResponse['screenshots'] | null;
+	list: GetAllScreenshotsResponse["screenshots"] | null;
 	isLoading: boolean;
 	hasLoaded: boolean;
 };
 
 export class ScreenshotStore extends ApiDataStore {
 	#dataSignal: ScreenshotListSignal;
-	#cache: Map<string, GetAllScreenshotsResponse['screenshots']>;
+	#cache: Map<string, GetAllScreenshotsResponse["screenshots"]>;
 
 	constructor({ httpClient }: ScreenshotStoreDeps) {
 		super({ httpClient });
@@ -28,7 +28,7 @@ export class ScreenshotStore extends ApiDataStore {
 		try {
 			this.#dataSignal.isLoading = true;
 			const response = await this.httpClient.httpGetAsync({
-				endpoint: '/api/assets/image/screenshot/all',
+				endpoint: "/api/assets/image/screenshot/all",
 				strategy: new JsonStrategy(getAllScreenshotsResponseSchema),
 			});
 			return (this.#dataSignal.list = response.screenshots);
@@ -44,13 +44,13 @@ export class ScreenshotStore extends ApiDataStore {
 		}
 	};
 
-	get screenshotList(): GetAllScreenshotsResponse['screenshots'] | null {
-		if (this.#cache.has('sorted')) return this.#cache.get('sorted')!;
+	get screenshotList(): GetAllScreenshotsResponse["screenshots"] | null {
+		if (this.#cache.has("sorted")) return this.#cache.get("sorted")!;
 		if (!this.#dataSignal.list) return null;
 		const sorted = [...this.#dataSignal.list].sort((a, b) =>
 			b.CreatedAt.localeCompare(a.CreatedAt),
 		);
-		this.#cache.set('sorted', sorted);
+		this.#cache.set("sorted", sorted);
 		return sorted;
 	}
 

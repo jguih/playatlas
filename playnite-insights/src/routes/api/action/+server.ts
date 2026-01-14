@@ -1,10 +1,10 @@
-import { instanceAuthMiddleware } from '$lib/server/api/middleware/auth.middleware';
+import { instanceAuthMiddleware } from "$lib/server/api/middleware/auth.middleware";
 import {
 	EmptyStrategy,
 	FetchClientStrategyError,
 	remoteActionSchema,
-} from '@playnite-insights/lib/client';
-import { json, type RequestHandler } from '@sveltejs/kit';
+} from "@playnite-insights/lib/client";
+import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request, locals: { services, api } }) =>
 	instanceAuthMiddleware({ request, api }, async () => {
@@ -12,12 +12,12 @@ export const POST: RequestHandler = async ({ request, locals: { services, api } 
 			const jsonBody = await request.json();
 			const result = remoteActionSchema.safeParse(jsonBody);
 			if (!result.success) {
-				return json({ error: { message: 'Invalid command' } }, { status: 400 });
+				return json({ error: { message: "Invalid command" } }, { status: 400 });
 			}
 			const command = result.data;
 			services.logService.info(`Running remote action on Playnite host: '${command.action}'`);
 			await services.playniteHostHttpClient.httpPostAsync({
-				endpoint: '/',
+				endpoint: "/",
 				strategy: new EmptyStrategy(),
 				body: command,
 			});

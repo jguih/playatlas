@@ -6,11 +6,11 @@ import {
 	serverSyncReconciliationResponseSchema,
 	type ClientSyncReconciliationCommand,
 	type IFetchClient,
-} from '@playnite-insights/lib/client';
-import { IndexedDBNotInitializedError } from '../db/errors/indexeddbNotInitialized';
-import type { GameNoteRepository } from '../db/gameNotesRepository.svelte';
-import type { KeyValueRepository } from '../db/keyValueRepository.svelte';
-import type { ILogService } from '../logService.svelte';
+} from "@playnite-insights/lib/client";
+import { IndexedDBNotInitializedError } from "../db/errors/indexeddbNotInitialized";
+import type { GameNoteRepository } from "../db/gameNotesRepository.svelte";
+import type { KeyValueRepository } from "../db/keyValueRepository.svelte";
+import type { ILogService } from "../logService.svelte";
 
 export type SynchronizationServiceDeps = {
 	keyValueRepository: KeyValueRepository;
@@ -28,10 +28,10 @@ export interface ISynchronizationService {
 }
 
 export class SynchronizationService {
-	#keyValueRepository: SynchronizationServiceDeps['keyValueRepository'];
-	#httpClient: SynchronizationServiceDeps['httpClient'];
-	#gameNoteRepository: SynchronizationServiceDeps['gameNoteRepository'];
-	#logService: SynchronizationServiceDeps['logService'];
+	#keyValueRepository: SynchronizationServiceDeps["keyValueRepository"];
+	#httpClient: SynchronizationServiceDeps["httpClient"];
+	#gameNoteRepository: SynchronizationServiceDeps["gameNoteRepository"];
+	#logService: SynchronizationServiceDeps["logService"];
 	#syncIdSignal: string | null;
 
 	constructor({
@@ -55,12 +55,12 @@ export class SynchronizationService {
 				notes,
 			};
 			const response = await this.#httpClient.httpPostAsync({
-				endpoint: '/api/sync',
+				endpoint: "/api/sync",
 				strategy: new JsonStrategy(serverSyncReconciliationResponseSchema),
 				body: command,
 			});
 			await this.#keyValueRepository.putAsync({
-				keyvalue: { Key: 'sync-id', Value: response.syncId },
+				keyvalue: { Key: "sync-id", Value: response.syncId },
 			});
 			this.#syncIdSignal = response.syncId;
 			await this.#gameNoteRepository.upsertOrDeleteManyAsync(response.notes);
@@ -74,8 +74,8 @@ export class SynchronizationService {
 				);
 				throw new AppClientError(
 					{
-						code: 'indexeddb_not_initialized',
-						message: 'IndexedDb not initialized while reconciling server dataset',
+						code: "indexeddb_not_initialized",
+						message: "IndexedDb not initialized while reconciling server dataset",
 					},
 					error,
 				);
@@ -86,7 +86,7 @@ export class SynchronizationService {
 				);
 				throw new AppClientError(
 					{
-						code: 'dom_exception',
+						code: "dom_exception",
 						message: `DOMException while reconciling server dataset`,
 					},
 					error,
@@ -99,7 +99,7 @@ export class SynchronizationService {
 					);
 					throw new AppClientError(
 						{
-							code: 'server_error',
+							code: "server_error",
 							message: `HTTP request error while reconciling server dataset`,
 						},
 						error,
@@ -108,7 +108,7 @@ export class SynchronizationService {
 					this.#logService.debug(`HTTP request error while reconciling server dataset`);
 					throw new AppClientError(
 						{
-							code: 'reconciliation_failed',
+							code: "reconciliation_failed",
 							message: `HTTP request error while reconciling server dataset`,
 						},
 						error,
@@ -118,8 +118,8 @@ export class SynchronizationService {
 			this.#logService.error(`Unknown error while reconciling with server`, error);
 			throw new AppClientError(
 				{
-					code: 'reconciliation_failed',
-					message: 'Unknown error while reconciling with server',
+					code: "reconciliation_failed",
+					message: "Unknown error while reconciling with server",
 				},
 				error,
 			);
@@ -128,7 +128,7 @@ export class SynchronizationService {
 
 	getSyncId = async (): Promise<string | null> => {
 		if (this.#syncIdSignal) return this.#syncIdSignal;
-		const syncId = await this.#keyValueRepository.getAsync({ key: 'sync-id' });
+		const syncId = await this.#keyValueRepository.getAsync({ key: "sync-id" });
 		if (syncId) this.#syncIdSignal = syncId;
 		return this.#syncIdSignal;
 	};
@@ -142,7 +142,7 @@ export class SynchronizationService {
 	): Promise<void> => {
 		try {
 			await this.#httpClient.httpGetAsync({
-				endpoint: '/api/sync/check',
+				endpoint: "/api/sync/check",
 				strategy: new EmptyStrategy(),
 			});
 		} catch (error) {
@@ -153,8 +153,8 @@ export class SynchronizationService {
 					else this.#reconcileWithServer().then(deps.onFinishReconcile);
 					throw new AppClientError(
 						{
-							code: 'invalid_syncid',
-							message: 'Local SyncId was invalid and reconciliation was triggered.',
+							code: "invalid_syncid",
+							message: "Local SyncId was invalid and reconciliation was triggered.",
 						},
 						error,
 					);
@@ -166,8 +166,8 @@ export class SynchronizationService {
 					);
 					throw new AppClientError(
 						{
-							code: 'server_error',
-							message: 'HTTP request error while validating local SyncId',
+							code: "server_error",
+							message: "HTTP request error while validating local SyncId",
 						},
 						error,
 					);
@@ -177,8 +177,8 @@ export class SynchronizationService {
 					);
 					throw new AppClientError(
 						{
-							code: 'sync_check_failed',
-							message: 'HTTP request error while validating local SyncId',
+							code: "sync_check_failed",
+							message: "HTTP request error while validating local SyncId",
 						},
 						error,
 					);
@@ -186,7 +186,7 @@ export class SynchronizationService {
 			}
 			this.#logService.error(`Unknown error while validating local SyncId`, error);
 			throw new AppClientError(
-				{ code: 'sync_check_failed', message: 'Unknown error while validating local SyncId' },
+				{ code: "sync_check_failed", message: "Unknown error while validating local SyncId" },
 				error,
 			);
 		}

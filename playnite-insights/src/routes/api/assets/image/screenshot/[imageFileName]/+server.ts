@@ -1,10 +1,10 @@
-import { type RequestHandler } from '@sveltejs/kit';
+import { type RequestHandler } from "@sveltejs/kit";
 
 export const GET: RequestHandler = async ({ params, request, locals: { services } }) => {
 	const { imageFileName } = params;
 	if (!imageFileName) return new Response(null, { status: 400 });
-	const ifNoneMatch = request.headers.get('if-none-match');
-	const ifModifiedSince = request.headers.get('if-modified-since');
+	const ifNoneMatch = request.headers.get("if-none-match");
+	const ifModifiedSince = request.headers.get("if-modified-since");
 	try {
 		return await services.mediaFilesService.getScreenshotAsync(
 			imageFileName,

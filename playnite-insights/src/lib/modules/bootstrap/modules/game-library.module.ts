@@ -1,21 +1,21 @@
-import type { IHttpClientPort } from '$lib/modules/common/application';
-import { PlayAtlasClient, type IPlayAtlasClientPort } from '$lib/modules/game-library/application';
+import type { IHttpClientPort } from "$lib/modules/common/application";
+import { PlayAtlasClient, type IPlayAtlasClientPort } from "$lib/modules/game-library/application";
 import {
 	SyncCompaniesCommandHandler,
 	type ISyncCompaniesCommandHandlerPort,
-} from '$lib/modules/game-library/commands/sync-companies';
+} from "$lib/modules/game-library/commands/sync-companies";
 import {
 	SyncGamesCommandHandler,
 	type ISyncGamesCommandHandlerPort,
-} from '$lib/modules/game-library/commands/sync-games';
+} from "$lib/modules/game-library/commands/sync-games";
 import {
 	SyncGenresCommandHandler,
 	type ISyncGenresCommandHandlerPort,
-} from '$lib/modules/game-library/commands/sync-genres';
+} from "$lib/modules/game-library/commands/sync-genres";
 import {
 	SyncPlatformsCommandHandler,
 	type ISyncPlatformsCommandHandlerPort,
-} from '$lib/modules/game-library/commands/sync-platforms';
+} from "$lib/modules/game-library/commands/sync-platforms";
 import {
 	CompanyRepository,
 	GameRepository,
@@ -25,33 +25,33 @@ import {
 	type IGameRepositoryPort,
 	type IGenreRepositoryPort,
 	type IPlatformRepositoryPort,
-} from '$lib/modules/game-library/infra';
+} from "$lib/modules/game-library/infra";
 import {
 	GetCompaniesByIdsQueryHandler,
 	type IGetCompaniesByIdsQueryHandlerPort,
-} from '$lib/modules/game-library/queries/get-companies-by-ids';
+} from "$lib/modules/game-library/queries/get-companies-by-ids";
 import {
 	GetGamesQueryHandler,
 	type IGetGamesQueryHandlerPort,
-} from '$lib/modules/game-library/queries/get-games';
+} from "$lib/modules/game-library/queries/get-games";
 import {
 	GetGamesByIdsQueryHandler,
 	type IGetGamesByIdsQueryHandlerPort,
-} from '$lib/modules/game-library/queries/get-games-by-ids';
+} from "$lib/modules/game-library/queries/get-games-by-ids";
 import {
 	GetGenresByIdQueryHandler,
 	type IGetGenreByIdQueryHandlerPort,
-} from '$lib/modules/game-library/queries/get-genre-by-id';
+} from "$lib/modules/game-library/queries/get-genre-by-id";
 import {
 	GetGenresByIdsQueryHandler,
 	type IGetGenresByIdsQueryHandlerPort,
-} from '$lib/modules/game-library/queries/get-genres-by-ids';
+} from "$lib/modules/game-library/queries/get-genres-by-ids";
 import {
 	GetPlatformsByIdsQueryHandler,
 	type IGetPlatformsByIdsQueryHandlerPort,
-} from '$lib/modules/game-library/queries/get-platforms-by-ids';
-import type { IClientGameLibraryModulePort } from './game-library.module.port';
-import type { IndexedDbSignal } from './infra.module.port';
+} from "$lib/modules/game-library/queries/get-platforms-by-ids";
+import type { IClientGameLibraryModulePort } from "./game-library.module.port";
+import type { IndexedDbSignal } from "./infra.module.port";
 
 export type ClientGameLibraryModuleDeps = {
 	indexedDbSignal: IndexedDbSignal;

@@ -1,11 +1,11 @@
-import { pushState } from '$app/navigation';
-import { page } from '$app/state';
+import { pushState } from "$app/navigation";
+import { page } from "$app/state";
 import {
 	HttpClientNotSetError,
 	JsonStrategy,
 	uploadScreenshotResponseSchema,
 	type IFetchClient,
-} from '@playnite-insights/lib/client';
+} from "@playnite-insights/lib/client";
 
 export type NoteExtrasDeps = {
 	httpClient: IFetchClient | null;
@@ -13,10 +13,10 @@ export type NoteExtrasDeps = {
 
 export class NoteExtras {
 	#isOpen: boolean;
-	#httpClient: NoteExtrasDeps['httpClient'];
+	#httpClient: NoteExtrasDeps["httpClient"];
 
 	constructor({ httpClient }: NoteExtrasDeps) {
-		this.#isOpen = $derived(Object.hasOwn(page.state, 'imagePicker'));
+		this.#isOpen = $derived(Object.hasOwn(page.state, "imagePicker"));
 		this.#httpClient = httpClient;
 	}
 
@@ -25,7 +25,7 @@ export class NoteExtras {
 	}
 
 	open = () => {
-		pushState('', { ...page.state, imagePicker: true });
+		pushState("", { ...page.state, imagePicker: true });
 	};
 
 	close = () => {
@@ -40,13 +40,13 @@ export class NoteExtras {
 	uploadImageAsync = async (file: File): Promise<string> => {
 		if (!this.#httpClient) throw new HttpClientNotSetError();
 		const formData = new FormData();
-		formData.append('file', file);
+		formData.append("file", file);
 		const uploadedFiles = await this.#httpClient.httpPostAsync({
-			endpoint: '/api/assets/upload/screenshot',
+			endpoint: "/api/assets/upload/screenshot",
 			body: formData,
 			strategy: new JsonStrategy(uploadScreenshotResponseSchema),
 			headers: {
-				'X-Upload-Source': 'web-ui',
+				"X-Upload-Source": "web-ui",
 			},
 		});
 		const uploadedImage = uploadedFiles.uploaded[0];

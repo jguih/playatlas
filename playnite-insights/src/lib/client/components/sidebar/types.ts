@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from 'svelte/elements';
+import type { HTMLAttributes } from "svelte/elements";
 
 export type SidebarProps = HTMLAttributes<HTMLElement> & {
 	width?: number;

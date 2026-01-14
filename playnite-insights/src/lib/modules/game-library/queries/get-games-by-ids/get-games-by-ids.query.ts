@@ -1,4 +1,4 @@
-import type { Game, GameId } from '../../domain/game.entity';
+import type { Game, GameId } from "../../domain/game.entity";
 
 export type GetGamesByIdsQuery = {
 	gameIds: GameId[];

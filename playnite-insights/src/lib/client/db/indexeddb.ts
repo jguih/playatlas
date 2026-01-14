@@ -1,9 +1,9 @@
-import { toast } from '../app-state/toast.svelte';
-import { GameNoteRepository } from './gameNotesRepository.svelte';
-import { KeyValueRepository } from './keyValueRepository.svelte';
-import { SyncQueueRepository } from './syncQueueRepository.svelte';
+import { toast } from "../app-state/toast.svelte";
+import { GameNoteRepository } from "./gameNotesRepository.svelte";
+import { KeyValueRepository } from "./keyValueRepository.svelte";
+import { SyncQueueRepository } from "./syncQueueRepository.svelte";
 
-export const INDEXEDDB_NAME = 'PlayAtlasDb';
+export const INDEXEDDB_NAME = "PlayAtlasDb";
 export const INDEXEDDB_CURRENT_VERSION = 6;
 
 export const openIndexedDbAsync: (props: {
@@ -19,10 +19,10 @@ export const openIndexedDbAsync: (props: {
 
 			db.onversionchange = () => {
 				db.close();
-				console.warn('Database is outdated, please reload the app');
+				console.warn("Database is outdated, please reload the app");
 				toast.warning({
-					category: 'local-database',
-					message: 'Database is outdated, please reload the app',
+					category: "local-database",
+					message: "Database is outdated, please reload the app",
 				});
 			};
 

@@ -1,10 +1,10 @@
-import type { ClientApi } from '$lib/modules/bootstrap/application';
-import { TestCompositionRoot } from '$lib/modules/bootstrap/testing';
-import { faker } from '@faker-js/faker';
-import 'fake-indexeddb/auto';
-import type { Game } from '../game-library/domain';
+import type { ClientApi } from "$lib/modules/bootstrap/application";
+import { TestCompositionRoot } from "$lib/modules/bootstrap/testing";
+import { faker } from "@faker-js/faker";
+import "fake-indexeddb/auto";
+import type { Game } from "../game-library/domain";
 
-describe('GameLibrary / Games', () => {
+describe("GameLibrary / Games", () => {
 	let root: TestCompositionRoot;
 	let api: ClientApi;
 
@@ -18,7 +18,7 @@ describe('GameLibrary / Games', () => {
 		await root.cleanup();
 	});
 
-	it('persists and retrieves games', async () => {
+	it("persists and retrieves games", async () => {
 		// Arrange
 		const games = root.factories.game.buildList(200);
 
@@ -27,7 +27,7 @@ describe('GameLibrary / Games', () => {
 		// Act
 		const { items } = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 200,
-			sort: 'recent',
+			sort: "recent",
 		});
 
 		// Assert
@@ -37,7 +37,7 @@ describe('GameLibrary / Games', () => {
 		}
 	});
 
-	it('sync is idempotent', async () => {
+	it("sync is idempotent", async () => {
 		// Arrange
 		const games = root.factories.game.buildList(50);
 
@@ -47,14 +47,14 @@ describe('GameLibrary / Games', () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 100,
-			sort: 'recent',
+			sort: "recent",
 		});
 
 		// Assert
 		expect(result.items).toHaveLength(50);
 	});
 
-	it('sync updates existing games', async () => {
+	it("sync updates existing games", async () => {
 		// Arrange
 		const now = new Date();
 		const games = root.factories.game.buildList(10);
@@ -72,24 +72,24 @@ describe('GameLibrary / Games', () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: 'recent',
+			sort: "recent",
 		});
 
 		// Assert
-		expect(result.items[0].Name).toContain('(updated)');
+		expect(result.items[0].Name).toContain("(updated)");
 	});
 
-	it('returns empty result when no games exist', async () => {
+	it("returns empty result when no games exist", async () => {
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: 'recent',
+			sort: "recent",
 		});
 
 		expect(result.items).toHaveLength(0);
 		expect(result.nextKey).toBeNull();
 	});
 
-	it('handles large datasets', async () => {
+	it("handles large datasets", async () => {
 		// Arrange
 		const games = root.factories.game.buildList(1000);
 
@@ -98,33 +98,33 @@ describe('GameLibrary / Games', () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 1000,
-			sort: 'recent',
+			sort: "recent",
 		});
 
 		// Assert
 		expect(result.items).toHaveLength(1000);
 	});
 
-	it('does not overwrite newer local data with older server data', async () => {
+	it("does not overwrite newer local data with older server data", async () => {
 		// Arrange
-		const game: Game = { ...root.factories.game.build(), SourceUpdatedAt: new Date('2026-01-02') };
+		const game: Game = { ...root.factories.game.build(), SourceUpdatedAt: new Date("2026-01-02") };
 		await api.GameLibrary.Command.SyncGames.executeAsync({ games: game });
 
 		// Act
 		await api.GameLibrary.Command.SyncGames.executeAsync({
 			games: {
 				...game,
-				Name: 'Old name',
-				SourceUpdatedAt: new Date('2026-01-01'),
+				Name: "Old name",
+				SourceUpdatedAt: new Date("2026-01-01"),
 			},
 		});
-		const stored = await api.GameLibrary.Query.GetGames.executeAsync({ limit: 1, sort: 'recent' });
+		const stored = await api.GameLibrary.Query.GetGames.executeAsync({ limit: 1, sort: "recent" });
 
 		// Assert
 		expect(stored.items[0].Name).toBe(game.Name);
 	});
 
-	it('revives a deleted game when server clears DeletedAt', async () => {
+	it("revives a deleted game when server clears DeletedAt", async () => {
 		// Arrange
 		const game: Game = { ...root.factories.game.build(), DeletedAt: faker.date.recent() };
 
@@ -141,14 +141,14 @@ describe('GameLibrary / Games', () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 100,
-			sort: 'recent',
+			sort: "recent",
 		});
 
 		// Assert
 		expect(result.items).toHaveLength(1);
 	});
 
-	it('does not return games marked as deleted', async () => {
+	it("does not return games marked as deleted", async () => {
 		// Arrange
 		const games: Game[] = root.factories.game.buildList(150).map((g) => {
 			return {
@@ -166,7 +166,7 @@ describe('GameLibrary / Games', () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 200,
-			sort: 'recent',
+			sort: "recent",
 		});
 
 		// Assert
@@ -174,7 +174,7 @@ describe('GameLibrary / Games', () => {
 		expect(result.items.every((g) => g.DeletedAt === null)).toBe(true);
 	});
 
-	it('does not revive deleted game with older SourceUpdatedAt', async () => {
+	it("does not revive deleted game with older SourceUpdatedAt", async () => {
 		// Arrange
 		const game: Game = {
 			...root.factories.game.build(),
@@ -195,14 +195,14 @@ describe('GameLibrary / Games', () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: 'recent',
+			sort: "recent",
 		});
 
 		// Assert
 		expect(result.items).toHaveLength(0);
 	});
 
-	it('does not delete games missing from sync payload', async () => {
+	it("does not delete games missing from sync payload", async () => {
 		// Arrange
 		const games = root.factories.game.buildList(10);
 		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
@@ -214,7 +214,7 @@ describe('GameLibrary / Games', () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 20,
-			sort: 'recent',
+			sort: "recent",
 		});
 
 		// Assert

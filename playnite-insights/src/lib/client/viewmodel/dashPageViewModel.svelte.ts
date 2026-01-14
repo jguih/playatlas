@@ -1,9 +1,9 @@
-import { monthNames } from '$lib/utils/date';
-import type { FullGame } from '@playnite-insights/lib/client';
-import type { ApplicationSettingsStore } from '../app-state/stores/applicationSettingsStore.svelte';
-import type { GameStore } from '../app-state/stores/gameStore.svelte';
-import type { LibraryMetricsStore } from '../app-state/stores/libraryMetricsStore.svelte';
-import { getPlaytimeInHoursAndMinutes } from '../utils/playnite-game';
+import { monthNames } from "$lib/utils/date";
+import type { FullGame } from "@playnite-insights/lib/client";
+import type { ApplicationSettingsStore } from "../app-state/stores/applicationSettingsStore.svelte";
+import type { GameStore } from "../app-state/stores/gameStore.svelte";
+import type { LibraryMetricsStore } from "../app-state/stores/libraryMetricsStore.svelte";
+import { getPlaytimeInHoursAndMinutes } from "../utils/playnite-game";
 
 export type DashPageViewModelDeps = {
 	gameStore: GameStore;
@@ -76,19 +76,19 @@ export class DashPageViewModel {
 		const libraryMetrics = this.#libraryMetricsStore.data;
 		const settings = this.#applicationSettingsStore.settingsSignal;
 		const data = libraryMetrics?.gamesOwnedLast6Months ?? null;
-		const gamesOwnedLast6Months: DashPageChartsData['gamesOwnedLast6Months'] = {
+		const gamesOwnedLast6Months: DashPageChartsData["gamesOwnedLast6Months"] = {
 			count: [],
 			months: [],
 		};
 		if (settings.desconsiderHiddenGames) {
 			data?.visibleOnly.forEach((d) => {
 				gamesOwnedLast6Months.count.push(d.count);
-				gamesOwnedLast6Months.months.push(monthNames[d.monthIndex].substring(0, 3) + '.');
+				gamesOwnedLast6Months.months.push(monthNames[d.monthIndex].substring(0, 3) + ".");
 			});
 		} else {
 			data?.all.forEach((d) => {
 				gamesOwnedLast6Months.count.push(d.count);
-				gamesOwnedLast6Months.months.push(monthNames[d.monthIndex].substring(0, 3) + '.');
+				gamesOwnedLast6Months.months.push(monthNames[d.monthIndex].substring(0, 3) + ".");
 			});
 		}
 

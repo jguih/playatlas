@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { getLocatorContext } from '$lib/client/app-state/serviceLocator.svelte';
-	import Dashboard from '$lib/client/components/bottom-nav/Dashboard.svelte';
-	import Home from '$lib/client/components/bottom-nav/Home.svelte';
-	import Settings from '$lib/client/components/bottom-nav/Settings.svelte';
-	import BottomNav from '$lib/client/components/BottomNav.svelte';
-	import GamesOwnedOverTime from '$lib/client/components/charts/GamesOwnedOverTime.svelte';
-	import DailyActivityTable from '$lib/client/components/dash-page/DailyActivityTable.svelte';
-	import Divider from '$lib/client/components/Divider.svelte';
-	import Header from '$lib/client/components/header/Header.svelte';
-	import BaseAppLayout from '$lib/client/components/layout/BaseAppLayout.svelte';
-	import Main from '$lib/client/components/Main.svelte';
-	import { getPlayniteGameImageUrl } from '$lib/client/utils/playnite-game.js';
-	import { DashPageViewModel } from '$lib/client/viewmodel/dashPageViewModel.svelte';
-	import { m } from '$lib/paraglide/messages.js';
+	import { getLocatorContext } from "$lib/client/app-state/serviceLocator.svelte";
+	import Dashboard from "$lib/client/components/bottom-nav/Dashboard.svelte";
+	import Home from "$lib/client/components/bottom-nav/Home.svelte";
+	import Settings from "$lib/client/components/bottom-nav/Settings.svelte";
+	import BottomNav from "$lib/client/components/BottomNav.svelte";
+	import GamesOwnedOverTime from "$lib/client/components/charts/GamesOwnedOverTime.svelte";
+	import DailyActivityTable from "$lib/client/components/dash-page/DailyActivityTable.svelte";
+	import Divider from "$lib/client/components/Divider.svelte";
+	import Header from "$lib/client/components/header/Header.svelte";
+	import BaseAppLayout from "$lib/client/components/layout/BaseAppLayout.svelte";
+	import Main from "$lib/client/components/Main.svelte";
+	import { getPlayniteGameImageUrl } from "$lib/client/utils/playnite-game.js";
+	import { DashPageViewModel } from "$lib/client/viewmodel/dashPageViewModel.svelte";
+	import { m } from "$lib/paraglide/messages.js";
 
 	const locator = getLocatorContext();
 	const vm = new DashPageViewModel({
@@ -31,7 +31,7 @@
 {/snippet}
 
 <BaseAppLayout>
-	<Header class={['flex items-center justify-center']}>
+	<Header class={["flex items-center justify-center"]}>
 		<h1 class="block h-fit w-fit text-lg">
 			{m.bottom_nav_label_dash()}
 		</h1>
@@ -39,12 +39,12 @@
 	<Main class="flex flex-col gap-6">
 		<div>
 			<h1 class="text-2xl">{m.dash_recent_activity()}</h1>
-			<Divider class="mb-4 border-1" />
+			<Divider class="border-1 mb-4" />
 			<DailyActivityTable />
 		</div>
 		<div>
 			<h1 class="text-2xl">Overview</h1>
-			<Divider class="mb-4 border-1" />
+			<Divider class="border-1 mb-4" />
 			{@render infoSection(m.dash_games_in_library(), vm.libraryMetrics.totalGamesInLibrary)}
 			{@render infoSection(m.dash_intalled(), vm.libraryMetrics.isInstalled)}
 			{@render infoSection(m.dash_not_installed(), vm.libraryMetrics.notInstalled)}
@@ -87,17 +87,17 @@
 		</div>
 		<div>
 			<h1 class="text-2xl">Top 10</h1>
-			<Divider class="mb-4 border-1" />
+			<Divider class="border-1 mb-4" />
 			{#if vm.libraryMetrics.topMostPlayedGames.length > 0}
 				<ul class="mb-6 grid list-none grid-cols-1 gap-4 p-0">
 					{#each vm.libraryMetrics.topMostPlayedGames as game (game.Id)}
 						<li
 							class={[
-								'border-background-1 border-4 border-solid',
-								'hover:border-primary-hover-bg',
-								'atotalGamesInLibrary:border-primary-active-bg',
-								'focus:border-primary-active-bg',
-								'm-0 p-0 shadow outline-0',
+								"border-background-1 border-4 border-solid",
+								"hover:border-primary-hover-bg",
+								"atotalGamesInLibrary:border-primary-active-bg",
+								"focus:border-primary-active-bg",
+								"m-0 p-0 shadow outline-0",
 							]}
 						>
 							<a href={`/game?id=${game.Id}`}>
@@ -121,7 +121,7 @@
 											{m.dash_last_time_played({
 												value: game.LastActivity
 													? new Date(game.LastActivity).toLocaleDateString()
-													: '-',
+													: "-",
 											})}
 										</p>
 									</div>

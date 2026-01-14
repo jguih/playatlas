@@ -1,6 +1,6 @@
-import type { IGenreRepositoryPort } from '../../infra/genre.repository.port';
-import type { GetGenresByIdsQuery, GetGenresByIdsQueryResult } from './get-genres-by-ids.query';
-import type { IGetGenresByIdsQueryHandlerPort } from './get-genres-by-ids.query-handler.port';
+import type { IGenreRepositoryPort } from "../../infra/genre.repository.port";
+import type { GetGenresByIdsQuery, GetGenresByIdsQueryResult } from "./get-genres-by-ids.query";
+import type { IGetGenresByIdsQueryHandlerPort } from "./get-genres-by-ids.query-handler.port";
 
 export type GetGenresByIdsQueryHandlerDeps = {
 	genreRepository: IGenreRepositoryPort;

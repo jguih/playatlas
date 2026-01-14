@@ -1,5 +1,5 @@
-import { extensionAuthMiddleware } from '$lib/server/api/middleware/auth.middleware';
-import { type RequestHandler } from '@sveltejs/kit';
+import { extensionAuthMiddleware } from "$lib/server/api/middleware/auth.middleware";
+import { type RequestHandler } from "@sveltejs/kit";
 
 export const GET: RequestHandler = async ({ request, locals: { api } }) =>
 	extensionAuthMiddleware({ request, api }, async () => {
@@ -10,12 +10,12 @@ export const GET: RequestHandler = async ({ request, locals: { api } }) =>
 		const closeStream = () => {
 			closed = true;
 			clearInterval(interval);
-			api.getLogService().info('Closed exporter event stream');
+			api.getLogService().info("Closed exporter event stream");
 		};
 
 		const stream = new ReadableStream({
 			start(controller) {
-				api.getLogService().info('Created exporter event stream');
+				api.getLogService().info("Created exporter event stream");
 
 				const unsubscribe = api.getEventBus().subscribe((event) => {
 					if (closed) return;
@@ -39,7 +39,7 @@ export const GET: RequestHandler = async ({ request, locals: { api } }) =>
 					}
 				}, 15_000);
 
-				request.signal.addEventListener('abort', () => {
+				request.signal.addEventListener("abort", () => {
 					unsubscribe();
 					closeStream();
 				});
@@ -52,9 +52,9 @@ export const GET: RequestHandler = async ({ request, locals: { api } }) =>
 
 		return new Response(stream, {
 			headers: {
-				'Content-Type': 'text/event-stream',
-				'Cache-Control': 'no-cache',
-				Connection: 'keep-alive',
+				"Content-Type": "text/event-stream",
+				"Cache-Control": "no-cache",
+				Connection: "keep-alive",
 			},
 		});
 	});

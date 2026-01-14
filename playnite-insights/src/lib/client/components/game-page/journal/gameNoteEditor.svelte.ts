@@ -1,10 +1,10 @@
-import { pushState } from '$app/navigation';
-import { page } from '$app/state';
-import { toast } from '$lib/client/app-state/toast.svelte';
-import { IndexedDBNotInitializedError } from '$lib/client/db/errors/indexeddbNotInitialized';
-import type { GameNoteRepository } from '$lib/client/db/gameNotesRepository.svelte';
-import { m } from '$lib/paraglide/messages';
-import type { GameNote, GameNoteFactory } from '@playnite-insights/lib/client';
+import { pushState } from "$app/navigation";
+import { page } from "$app/state";
+import { toast } from "$lib/client/app-state/toast.svelte";
+import { IndexedDBNotInitializedError } from "$lib/client/db/errors/indexeddbNotInitialized";
+import type { GameNoteRepository } from "$lib/client/db/gameNotesRepository.svelte";
+import { m } from "$lib/paraglide/messages";
+import type { GameNote, GameNoteFactory } from "@playnite-insights/lib/client";
 
 export type GameNoteEditorDeps = {
 	gameNoteFactory: GameNoteFactory;
@@ -13,8 +13,8 @@ export type GameNoteEditorDeps = {
 
 export class GameNoteEditor {
 	#currentNote: GameNote;
-	#noteRepository: GameNoteEditorDeps['gameNoteRepository'];
-	#gameNoteFactory: GameNoteEditorDeps['gameNoteFactory'];
+	#noteRepository: GameNoteEditorDeps["gameNoteRepository"];
+	#gameNoteFactory: GameNoteEditorDeps["gameNoteFactory"];
 	#isOpen: boolean;
 	#isDirty: boolean;
 
@@ -22,7 +22,7 @@ export class GameNoteEditor {
 		this.#noteRepository = gameNoteRepository;
 		this.#gameNoteFactory = factory;
 
-		this.#isOpen = $derived(Object.hasOwn(page.state, 'noteEditor'));
+		this.#isOpen = $derived(Object.hasOwn(page.state, "noteEditor"));
 		this.#isDirty = false;
 		this.#currentNote = $state(
 			factory.create({
@@ -43,12 +43,12 @@ export class GameNoteEditor {
 			this.#isDirty = false;
 		} catch (err) {
 			if (err instanceof IndexedDBNotInitializedError) {
-				toast.error({ message: m.error_db_not_ready(), category: 'local-database' });
+				toast.error({ message: m.error_db_not_ready(), category: "local-database" });
 			} else if (err instanceof Error) {
 				toast.error({
 					title: m.error_save_game_note(),
 					message: err.message,
-					category: 'local-database',
+					category: "local-database",
 				});
 			}
 		}
@@ -68,19 +68,19 @@ export class GameNoteEditor {
 			this.close();
 		} catch (err) {
 			if (err instanceof IndexedDBNotInitializedError) {
-				toast.error({ message: m.error_db_not_ready(), category: 'local-database' });
+				toast.error({ message: m.error_db_not_ready(), category: "local-database" });
 			} else if (err instanceof Error) {
 				toast.error({
 					title: m.error_save_game_note(),
 					message: err.message,
-					category: 'local-database',
+					category: "local-database",
 				});
 			}
 		}
 	};
 
 	open = () => {
-		pushState('', { ...page.state, noteEditor: true });
+		pushState("", { ...page.state, noteEditor: true });
 	};
 
 	close = () => {

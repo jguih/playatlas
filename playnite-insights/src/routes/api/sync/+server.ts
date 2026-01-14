@@ -1,10 +1,10 @@
-import { instanceAuthMiddleware } from '$lib/server/api/middleware/auth.middleware';
+import { instanceAuthMiddleware } from "$lib/server/api/middleware/auth.middleware";
 import {
 	clientSyncReconciliationCommandSchema,
 	type ApiErrorResponse,
 	type ServerSyncReconciliationResponse,
-} from '@playnite-insights/lib/client';
-import { json, type RequestHandler } from '@sveltejs/kit';
+} from "@playnite-insights/lib/client";
+import { json, type RequestHandler } from "@sveltejs/kit";
 
 /**
  * POST /api/sync
@@ -25,7 +25,7 @@ export const POST: RequestHandler = async ({
 		const syncId = services.synchronizationIdRepository.get();
 		if (!syncId) {
 			const response: ApiErrorResponse = {
-				error: { code: 'internal_error', message: 'Sync id not found, please restart the server' },
+				error: { code: "internal_error", message: "Sync id not found, please restart the server" },
 			};
 			return json(response, { status: 500 });
 		}

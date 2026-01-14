@@ -1,8 +1,8 @@
-import 'fake-indexeddb/auto';
-import type { ClientApi } from '../bootstrap/application';
-import { TestCompositionRoot } from '../bootstrap/testing';
+import "fake-indexeddb/auto";
+import type { ClientApi } from "../bootstrap/application";
+import { TestCompositionRoot } from "../bootstrap/testing";
 
-describe('GameLibrary / Platforms', () => {
+describe("GameLibrary / Platforms", () => {
 	let root: TestCompositionRoot;
 	let api: ClientApi;
 
@@ -16,7 +16,7 @@ describe('GameLibrary / Platforms', () => {
 		await root.cleanup();
 	});
 
-	it('persists and retrieves big list of platforms', async () => {
+	it("persists and retrieves big list of platforms", async () => {
 		// Arrange
 		const platforms = root.factories.platform.buildList(2000);
 		const platformIds = platforms.map((g) => g.Id);

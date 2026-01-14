@@ -1,8 +1,8 @@
-import { m } from '$lib/paraglide/messages';
-import type { FullGame } from '@playnite-insights/lib/client';
-import type { CompanyStore } from '../app-state/stores/companyStore.svelte';
-import type { GameStore } from '../app-state/stores/gameStore.svelte';
-import { getPlayniteGameImageUrl, getPlaytimeInHoursAndMinutes } from '../utils/playnite-game';
+import { m } from "$lib/paraglide/messages";
+import type { FullGame } from "@playnite-insights/lib/client";
+import type { CompanyStore } from "../app-state/stores/companyStore.svelte";
+import type { GameStore } from "../app-state/stores/gameStore.svelte";
+import { getPlayniteGameImageUrl, getPlaytimeInHoursAndMinutes } from "../utils/playnite-game";
 
 type GamePageViewModelProps = {
 	getGameId: () => string | null;
@@ -11,9 +11,9 @@ type GamePageViewModelProps = {
 };
 
 export class GamePageViewModel {
-	#getGameId: GamePageViewModelProps['getGameId'];
-	#gameStore: GamePageViewModelProps['gameStore'];
-	#companyStore: GamePageViewModelProps['companyStore'];
+	#getGameId: GamePageViewModelProps["getGameId"];
+	#gameStore: GamePageViewModelProps["gameStore"];
+	#companyStore: GamePageViewModelProps["companyStore"];
 	#game: FullGame | null;
 
 	constructor({ getGameId, gameStore, companyStore }: GamePageViewModelProps) {
@@ -45,7 +45,7 @@ export class GamePageViewModel {
 		if (this.#game?.ReleaseDate) {
 			return new Date(this.#game.ReleaseDate).toLocaleDateString();
 		}
-		return '';
+		return "";
 	};
 
 	getInstalled = (): string => {
@@ -59,7 +59,7 @@ export class GamePageViewModel {
 		if (this.#game?.Added) {
 			return new Date(this.#game.Added).toLocaleDateString();
 		}
-		return '';
+		return "";
 	};
 
 	getPlaytime = (): string => {
@@ -68,8 +68,8 @@ export class GamePageViewModel {
 
 	getDevelopers = (): string => {
 		const companies = this.#companyStore.companyList;
-		if (!this.#game || !companies) return '';
+		if (!this.#game || !companies) return "";
 		const fullDevs = companies.filter((dev) => this.#game?.Developers.includes(dev.Id));
-		return fullDevs.map((d) => d.Name).join(', ');
+		return fullDevs.map((d) => d.Name).join(", ");
 	};
 }

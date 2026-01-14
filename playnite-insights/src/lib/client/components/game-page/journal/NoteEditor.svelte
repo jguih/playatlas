@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import { ArrowLeft, PlusSquare, TrashIcon } from '@lucide/svelte';
-	import { type GameNote } from '@playnite-insights/lib/client';
-	import type { KeyboardEventHandler } from 'svelte/elements';
-	import LightButton from '../../buttons/LightButton.svelte';
-	import SolidButton from '../../buttons/SolidButton.svelte';
-	import BaseInput from '../../forms/BaseInput.svelte';
-	import BaseTextarea from '../../forms/BaseTextarea.svelte';
-	import Loading from '../../Loading.svelte';
-	import AsideBody from '../../sidebar/AsideBody.svelte';
-	import AsideBottomNav from '../../sidebar/AsideBottomNav.svelte';
-	import AsideHeader from '../../sidebar/AsideHeader.svelte';
-	import Backdrop from '../../sidebar/Backdrop.svelte';
-	import BottomSheet from '../../sidebar/BottomSheet.svelte';
+	import { m } from "$lib/paraglide/messages";
+	import { ArrowLeft, PlusSquare, TrashIcon } from "@lucide/svelte";
+	import { type GameNote } from "@playnite-insights/lib/client";
+	import type { KeyboardEventHandler } from "svelte/elements";
+	import LightButton from "../../buttons/LightButton.svelte";
+	import SolidButton from "../../buttons/SolidButton.svelte";
+	import BaseInput from "../../forms/BaseInput.svelte";
+	import BaseTextarea from "../../forms/BaseTextarea.svelte";
+	import Loading from "../../Loading.svelte";
+	import AsideBody from "../../sidebar/AsideBody.svelte";
+	import AsideBottomNav from "../../sidebar/AsideBottomNav.svelte";
+	import AsideHeader from "../../sidebar/AsideHeader.svelte";
+	import Backdrop from "../../sidebar/Backdrop.svelte";
+	import BottomSheet from "../../sidebar/BottomSheet.svelte";
 
 	let props: {
 		isOpen: boolean;
@@ -34,7 +34,7 @@
 	};
 
 	const handleTitleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
-		if (e.key === 'Enter' && contentTextArea) {
+		if (e.key === "Enter" && contentTextArea) {
 			e.preventDefault();
 			contentTextArea.focus();
 		}
@@ -42,8 +42,8 @@
 
 	const resizeContentTextArea = () => {
 		if (!contentTextArea) return;
-		contentTextArea.style.height = '40dvh';
-		contentTextArea.style.height = contentTextArea?.scrollHeight + 'px';
+		contentTextArea.style.height = "40dvh";
+		contentTextArea.style.height = contentTextArea?.scrollHeight + "px";
 	};
 </script>
 
@@ -52,31 +52,31 @@
 	<BottomSheet height={100}>
 		<AsideHeader>
 			<LightButton onclick={() => props.onClose()}>
-				<ArrowLeft class={['size-md']} />
+				<ArrowLeft class={["size-md"]} />
 			</LightButton>
 			<LightButton
 				type="button"
 				color="neutral"
 				onclick={props.onDelete}
 			>
-				<TrashIcon class={['size-md']} />
+				<TrashIcon class={["size-md"]} />
 			</LightButton>
 		</AsideHeader>
 		<AsideBody
 			bottomNav
-			class={['p-0!']}
+			class={["p-0!"]}
 			onDestroy={props.onDestroy}
 		>
 			<div class="flex flex-col">
 				{#if props.isImageLoading}
-					<LightButton class={['p-0!']}>
+					<LightButton class={["p-0!"]}>
 						<div class="bg-background-2 flex max-h-[60dvh] w-full items-center justify-center">
-							<Loading class={['h-[60dvh]']} />
+							<Loading class={["h-[60dvh]"]} />
 						</div>
 					</LightButton>
 				{:else if props.currentNote.ImagePath}
 					<LightButton
-						class={['p-0!']}
+						class={["p-0!"]}
 						onclick={props.onClickImage}
 					>
 						<div class="bg-background-2 flex max-h-[60dvh] w-full items-center justify-center">
@@ -93,7 +93,7 @@
 					<BaseInput
 						type="text"
 						placeholder={m.placeholder_note_editor_title()}
-						class={['text-2xl font-semibold']}
+						class={["text-2xl font-semibold"]}
 						bind:value={props.currentNote.Title}
 						oninput={handleOnChange}
 						enterkeyhint="next"
@@ -102,7 +102,7 @@
 					/>
 					<BaseTextarea
 						placeholder={m.placeholder_note_editor_content()}
-						class={['mt-2 w-full grow resize-none overflow-hidden']}
+						class={["mt-2 w-full grow resize-none overflow-hidden"]}
 						bind:value={props.currentNote.Content}
 						bind:textArea={contentTextArea}
 						oninput={handleOnChange}
@@ -117,11 +117,11 @@
 				color="neutral"
 				rounded
 				aria-label="Add extras"
-				class={['h-fit grow-0']}
+				class={["h-fit grow-0"]}
 				onclick={props.onOpenExtrasPanel}
 				disabled={props.isOpenExtrasDisabled === true}
 			>
-				<PlusSquare class={['size-md']} />
+				<PlusSquare class={["size-md"]} />
 			</SolidButton>
 		</AsideBottomNav>
 	</BottomSheet>

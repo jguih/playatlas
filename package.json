@@ -33,7 +33,14 @@
 		"release": "standard-version",
 		"prepare": "husky",
 		"format": "prettier . --write",
-		"format:check": "prettier . --check"
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix"
+	},
+	"lint-staged": {
+		"*.{ts,tsx,js,jsx,svelte}": [
+			"prettier --write",
+			"eslint --fix"
+		]
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
@@ -41,6 +48,7 @@
 		"eslint-config-prettier": "^10.1.5",
 		"globals": "^16.3.0",
 		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
 		"prettier": "^3.2.5",
 		"prettier-plugin-svelte": "^3.2.0",
 		"prettier-plugin-tailwindcss": "^0.6.0",

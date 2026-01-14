@@ -1,12 +1,12 @@
-import { m } from '$lib/paraglide/messages';
-import type { CompanyStore } from './app-state/stores/companyStore.svelte';
-import type { GameSessionStore } from './app-state/stores/gameSessionStore.svelte';
-import type { GameStore } from './app-state/stores/gameStore.svelte';
-import type { GenreStore } from './app-state/stores/genreStore.svelte';
-import type { LibraryMetricsStore } from './app-state/stores/libraryMetricsStore.svelte';
-import type { PlatformStore } from './app-state/stores/platformStore.svelte';
-import type { ScreenshotStore } from './app-state/stores/screenshotStore.svelte';
-import { toast } from './app-state/toast.svelte';
+import { m } from "$lib/paraglide/messages";
+import type { CompanyStore } from "./app-state/stores/companyStore.svelte";
+import type { GameSessionStore } from "./app-state/stores/gameSessionStore.svelte";
+import type { GameStore } from "./app-state/stores/gameStore.svelte";
+import type { GenreStore } from "./app-state/stores/genreStore.svelte";
+import type { LibraryMetricsStore } from "./app-state/stores/libraryMetricsStore.svelte";
+import type { PlatformStore } from "./app-state/stores/platformStore.svelte";
+import type { ScreenshotStore } from "./app-state/stores/screenshotStore.svelte";
+import { toast } from "./app-state/toast.svelte";
 
 export type ServiceWorkerManagerDeps = {
 	gameStore: GameStore;
@@ -50,34 +50,34 @@ export class ServiceWorkerManager {
 	}
 
 	private handleMessage = (event: MessageEvent) => {
-		if (!event.data || !Object.hasOwn(event.data, 'type')) return;
+		if (!event.data || !Object.hasOwn(event.data, "type")) return;
 		const type = event.data.type;
 		switch (type) {
-			case 'GAMES_UPDATE': {
+			case "GAMES_UPDATE": {
 				this.#gameStore.loadGames();
 				break;
 			}
-			case 'COMPANY_UPDATE': {
+			case "COMPANY_UPDATE": {
 				this.#companyStore.loadCompanies();
 				break;
 			}
-			case 'RECENT_SESSION_UPDATE': {
+			case "RECENT_SESSION_UPDATE": {
 				this.#gameSessionStore.loadRecentSessions();
 				break;
 			}
-			case 'GENRE_UPDATE': {
+			case "GENRE_UPDATE": {
 				this.#genreStore.loadGenres();
 				break;
 			}
-			case 'PLATFORM_UPDATE': {
+			case "PLATFORM_UPDATE": {
 				this.#platformStore.loadPlatforms();
 				break;
 			}
-			case 'LIBRARY_METRICS_UPDATE': {
+			case "LIBRARY_METRICS_UPDATE": {
 				this.#libraryMetricsStore.loadLibraryMetrics();
 				break;
 			}
-			case 'ALL_SCREENSHOT_UPDATE': {
+			case "ALL_SCREENSHOT_UPDATE": {
 				this.#screenshotStore.loadScreenshots();
 				break;
 			}
@@ -85,31 +85,31 @@ export class ServiceWorkerManager {
 	};
 
 	watchServiceWorkerUpdates = () => {
-		if ('serviceWorker' in navigator) {
+		if ("serviceWorker" in navigator) {
 			navigator.serviceWorker.ready.then((registration) => {
-				registration.addEventListener('updatefound', () => {
+				registration.addEventListener("updatefound", () => {
 					const newWorker = registration.installing;
 					if (!newWorker) return;
 
-					newWorker.addEventListener('statechange', () => {
-						if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+					newWorker.addEventListener("statechange", () => {
+						if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
 							const waitingWorker = registration.waiting || newWorker;
 							toast.success({
 								title: m.toast_new_update_available_title(),
 								message: m.toast_new_update_available_message(),
 								durationMs: 999_999,
 								action: () => {
-									waitingWorker.postMessage({ action: 'skipWaiting' });
+									waitingWorker.postMessage({ action: "skipWaiting" });
 									this.newVersionAvailable = false;
 								},
-								category: 'app',
+								category: "app",
 							});
 						}
 					});
 				});
 			});
 
-			navigator.serviceWorker.addEventListener('controllerchange', () => {
+			navigator.serviceWorker.addEventListener("controllerchange", () => {
 				window.location.reload();
 			});
 		}
@@ -117,11 +117,11 @@ export class ServiceWorkerManager {
 
 	setupGlobalListeners = () => {
 		this.clearGlobalListeners();
-		navigator.serviceWorker?.addEventListener('message', this.handleMessage);
+		navigator.serviceWorker?.addEventListener("message", this.handleMessage);
 	};
 
 	clearGlobalListeners = () => {
-		navigator.serviceWorker?.removeEventListener('message', this.handleMessage);
+		navigator.serviceWorker?.removeEventListener("message", this.handleMessage);
 	};
 
 	get newVersionAvailable() {

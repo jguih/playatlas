@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
-	import { dismissToast, getToasts } from '../app-state/toast.svelte.js';
+	import { fly } from "svelte/transition";
+	import { dismissToast, getToasts } from "../app-state/toast.svelte.js";
 </script>
 
 <div
@@ -11,11 +11,11 @@
 			in:fly={{ y: -20, duration: 200 }}
 			out:fly={{ y: -20, duration: 200 }}
 			class={[
-				'p-2 text-left',
-				toast.type === 'info' && 'bg-info-bg text-info-fg',
-				toast.type === 'success' && 'text-success-fg bg-success-bg',
-				toast.type === 'error' && 'text-error-fg bg-error-bg',
-				toast.type === 'warning' && 'text-warning-fg bg-warning-bg',
+				"p-2 text-left",
+				toast.type === "info" && "bg-info-bg text-info-fg",
+				toast.type === "success" && "text-success-fg bg-success-bg",
+				toast.type === "error" && "text-error-fg bg-error-bg",
+				toast.type === "warning" && "text-warning-fg bg-warning-bg",
 			]}
 			onclick={() => {
 				try {

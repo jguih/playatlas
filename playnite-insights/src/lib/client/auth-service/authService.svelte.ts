@@ -1,11 +1,11 @@
-import type { KeyValueRepository } from '../db/keyValueRepository.svelte';
+import type { KeyValueRepository } from "../db/keyValueRepository.svelte";
 
 export type AuthServiceDeps = {
 	keyValueRepository: KeyValueRepository;
 };
 
 export class AuthService {
-	#keyValueRepository: AuthServiceDeps['keyValueRepository'];
+	#keyValueRepository: AuthServiceDeps["keyValueRepository"];
 	#sessionId: string | null = null;
 
 	constructor({ keyValueRepository }: AuthServiceDeps) {
@@ -14,7 +14,7 @@ export class AuthService {
 
 	getSessionId = async (): Promise<string | null> => {
 		if (this.#sessionId) return this.#sessionId;
-		const sessionId = await this.#keyValueRepository.getAsync({ key: 'session-id' });
+		const sessionId = await this.#keyValueRepository.getAsync({ key: "session-id" });
 		if (sessionId) this.#sessionId = sessionId;
 		return this.#sessionId;
 	};

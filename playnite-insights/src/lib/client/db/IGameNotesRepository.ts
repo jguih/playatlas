@@ -1,7 +1,7 @@
-import type { GameNote } from '@playnite-insights/lib/client';
-import type { GameNoteRepository } from './gameNotesRepository.svelte';
+import type { GameNote } from "@playnite-insights/lib/client";
+import type { GameNoteRepository } from "./gameNotesRepository.svelte";
 
-type GetAsyncArgs = { filterBy: typeof GameNoteRepository.FILTER_BY.Id } & Pick<GameNote, 'Id'>;
+type GetAsyncArgs = { filterBy: typeof GameNoteRepository.FILTER_BY.Id } & Pick<GameNote, "Id">;
 type GetAllAsyncArgs =
 	| { filterBy: typeof GameNoteRepository.FILTER_BY.byGameId; GameId: string }
 	| { filterBy?: undefined };
@@ -27,7 +27,7 @@ export interface IGameNotesRepository {
 	 * @throws {IndexedDBNotInitializedError} If the DB is not ready
 	 * @throws {DOMException} If a transaction fails
 	 */
-	deleteAsync: (props: { noteId: GameNote['Id'] }) => Promise<boolean>;
+	deleteAsync: (props: { noteId: GameNote["Id"] }) => Promise<boolean>;
 	/**
 	 * Finds and returns a game note using the given filters
 	 * @returns The game note or `null` when not found

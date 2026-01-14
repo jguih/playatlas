@@ -1,26 +1,26 @@
 <script lang="ts">
-	import { getLocatorContext } from '$lib/client/app-state/serviceLocator.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { XIcon } from '@lucide/svelte';
+	import { getLocatorContext } from "$lib/client/app-state/serviceLocator.svelte";
+	import { m } from "$lib/paraglide/messages";
+	import { XIcon } from "@lucide/svelte";
 	import type {
 		GameSortBy,
 		GameSortOrder,
 		HomePageSearchParamKeys,
-	} from '@playnite-insights/lib/client';
-	import type { Snippet } from 'svelte';
-	import LightButton from '../buttons/LightButton.svelte';
-	import Divider from '../Divider.svelte';
-	import Checkbox from '../forms/Checkbox.svelte';
-	import Select from '../forms/Select.svelte';
-	import SearchBar from '../SearchBar.svelte';
-	import SidebarBody from '../sidebar/AsideBody.svelte';
-	import SidebarHeader from '../sidebar/AsideHeader.svelte';
-	import Backdrop from '../sidebar/Backdrop.svelte';
-	import Sidebar from '../sidebar/Sidebar.svelte';
-	import FilterCheckboxFieldset from './FilterCheckboxFieldset.svelte';
-	import FilterCheckboxLabel from './FilterCheckboxLabel.svelte';
-	import FilterDropdown from './FilterDropdown.svelte';
-	import { filtersState } from './store.svelte';
+	} from "@playnite-insights/lib/client";
+	import type { Snippet } from "svelte";
+	import LightButton from "../buttons/LightButton.svelte";
+	import Divider from "../Divider.svelte";
+	import Checkbox from "../forms/Checkbox.svelte";
+	import Select from "../forms/Select.svelte";
+	import SearchBar from "../SearchBar.svelte";
+	import SidebarBody from "../sidebar/AsideBody.svelte";
+	import SidebarHeader from "../sidebar/AsideHeader.svelte";
+	import Backdrop from "../sidebar/Backdrop.svelte";
+	import Sidebar from "../sidebar/Sidebar.svelte";
+	import FilterCheckboxFieldset from "./FilterCheckboxFieldset.svelte";
+	import FilterCheckboxLabel from "./FilterCheckboxLabel.svelte";
+	import FilterDropdown from "./FilterDropdown.svelte";
+	import { filtersState } from "./store.svelte";
 
 	const {
 		setSearchParam,
@@ -131,7 +131,7 @@
 		<SidebarHeader>
 			<h1 class="text-xl">{m.filters_title()}</h1>
 			<LightButton
-				class={['opacity-80']}
+				class={["opacity-80"]}
 				color="neutral"
 				onclick={() => (filtersState.show = !filtersState.show)}
 			>
@@ -147,9 +147,9 @@
 					{m.label_sort_order()}
 					<Select
 						id="sort-order"
-						class={['bg-background-2! mt-1 w-full']}
+						class={["bg-background-2! mt-1 w-full"]}
 						value={sortOrderParam}
-						onchange={(e) => setSearchParam('sortOrder', e.currentTarget.value)}
+						onchange={(e) => setSearchParam("sortOrder", e.currentTarget.value)}
 					>
 						{@render renderSortOrderOptions()}
 					</Select>
@@ -161,15 +161,15 @@
 					{m.label_sort_by()}
 					<Select
 						id="sort-by"
-						class={['bg-background-2! mt-1 w-full']}
+						class={["bg-background-2! mt-1 w-full"]}
 						value={sortByParam}
-						onchange={(e) => setSearchParam('sortBy', e.currentTarget.value)}
+						onchange={(e) => setSearchParam("sortBy", e.currentTarget.value)}
 					>
 						{@render renderSortByOptions()}
 					</Select>
 				</label>
 			</div>
-			<Divider class={['border-1 my-2']} />
+			<Divider class={["border-1 my-2"]} />
 			<LightButton
 				color="primary"
 				selected
@@ -185,7 +185,7 @@
 						name="installed"
 						id="installed"
 						onchange={(e) => {
-							setSearchParam('installed', e.currentTarget.checked);
+							setSearchParam("installed", e.currentTarget.checked);
 						}}
 					/>
 					{m.label_filter_installed()}
@@ -200,17 +200,17 @@
 						name="not_installed"
 						id="not_installed"
 						onchange={(e) => {
-							setSearchParam('notInstalled', e.currentTarget.checked);
+							setSearchParam("notInstalled", e.currentTarget.checked);
 						}}
 					/>
 					{m.label_filter_not_installed()}
 				</label>
 			</fieldset>
-			<Divider class={['border-1 my-2']} />
+			<Divider class={["border-1 my-2"]} />
 			<FilterDropdown
 				label={m.label_filter_genres()}
 				counter={genresParam.length}
-				onClear={() => removeSearchParam('genre')}
+				onClear={() => removeSearchParam("genre")}
 			>
 				<SearchBar
 					value={genreSearchFilter}
@@ -226,7 +226,7 @@
 										checked={genresParam.includes(genre.Id)}
 										name="genres"
 										id={`genre-${genre.Id}`}
-										onchange={(e) => handleOnChange(e, 'genre', genre.Id)}
+										onchange={(e) => handleOnChange(e, "genre", genre.Id)}
 									/>
 									{genre.Name}
 								</FilterCheckboxLabel>
@@ -241,7 +241,7 @@
 			<FilterDropdown
 				label={m.label_filter_platforms()}
 				counter={platformsParam.length}
-				onClear={() => removeSearchParam('platform')}
+				onClear={() => removeSearchParam("platform")}
 			>
 				<SearchBar
 					value={platformSearchFilter}
@@ -257,7 +257,7 @@
 										checked={platformsParam.includes(platform.Id)}
 										name="platforms"
 										id={`platform-${platform.Id}`}
-										onchange={(e) => handleOnChange(e, 'platform', platform.Id)}
+										onchange={(e) => handleOnChange(e, "platform", platform.Id)}
 									/>
 									{platform.Name}
 								</FilterCheckboxLabel>
@@ -272,7 +272,7 @@
 			<FilterDropdown
 				label={m.label_filter_publishers()}
 				counter={publishersParam.length}
-				onClear={() => removeSearchParam('publisher')}
+				onClear={() => removeSearchParam("publisher")}
 			>
 				<SearchBar
 					value={publisherSearchFilter}
@@ -288,7 +288,7 @@
 										checked={publishersParam.includes(publisher.Id)}
 										name="publishers"
 										id={`publisher-${publisher.Id}`}
-										onchange={(e) => handleOnChange(e, 'publisher', publisher.Id)}
+										onchange={(e) => handleOnChange(e, "publisher", publisher.Id)}
 									/>
 									{publisher.Name}
 								</FilterCheckboxLabel>
@@ -303,7 +303,7 @@
 			<FilterDropdown
 				label={m.label_filter_developers()}
 				counter={developersParam.length}
-				onClear={() => removeSearchParam('developer')}
+				onClear={() => removeSearchParam("developer")}
 			>
 				<SearchBar
 					value={developerSearchFilter}
@@ -319,7 +319,7 @@
 										checked={developersParam.includes(dev.Id)}
 										name="developers"
 										id={`dev-${dev.Id}`}
-										onchange={(e) => handleOnChange(e, 'developer', dev.Id)}
+										onchange={(e) => handleOnChange(e, "developer", dev.Id)}
 									/>
 									{dev.Name}
 								</FilterCheckboxLabel>

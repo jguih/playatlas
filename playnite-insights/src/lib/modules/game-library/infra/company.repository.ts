@@ -1,7 +1,7 @@
-import { ClientEntityRepository, type ClientEntityRepositoryDeps } from '$lib/modules/common/infra';
-import type { Company, CompanyId } from '../domain/company.entity';
-import type { ICompanyRepositoryPort } from './company.repository.port';
-import { companyRepositoryMeta } from './company.repository.schema';
+import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
+import type { Company, CompanyId } from "../domain/company.entity";
+import type { ICompanyRepositoryPort } from "./company.repository.port";
+import { companyRepositoryMeta } from "./company.repository.schema";
 
 export type CompanyRepositoryDeps = ClientEntityRepositoryDeps;
 

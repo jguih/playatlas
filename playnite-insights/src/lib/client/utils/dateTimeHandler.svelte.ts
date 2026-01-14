@@ -1,4 +1,4 @@
-import type { ServerTimeStore } from '../app-state/stores/serverTimeStore.svelte';
+import type { ServerTimeStore } from "../app-state/stores/serverTimeStore.svelte";
 
 export type DateTimeHandlerProps = {
 	serverTimeStore: ServerTimeStore;
@@ -9,7 +9,7 @@ export interface IDateTimeHandler {
 }
 
 export class DateTimeHandler implements IDateTimeHandler {
-	#serverTimeStore: DateTimeHandlerProps['serverTimeStore'];
+	#serverTimeStore: DateTimeHandlerProps["serverTimeStore"];
 
 	constructor({ serverTimeStore }: DateTimeHandlerProps) {
 		this.#serverTimeStore = serverTimeStore;

@@ -1,4 +1,4 @@
-import { m } from '$lib/paraglide/messages';
+import { m } from "$lib/paraglide/messages";
 import {
 	apiErrorSchema,
 	createGameNoteCommandSchema,
@@ -11,12 +11,12 @@ import {
 	type GameNote,
 	type IFetchClient,
 	type SyncQueueItem,
-} from '@playnite-insights/lib/client';
-import type { IndexedDbSignal } from '../app-state/indexeddbManager.svelte';
-import { IndexedDBNotInitializedError } from '../db/errors/indexeddbNotInitialized';
-import { GameNoteRepository } from '../db/gameNotesRepository.svelte';
-import { runRequest, runTransaction } from '../db/indexeddb';
-import { SyncQueueRepository } from '../db/syncQueueRepository.svelte';
+} from "@playnite-insights/lib/client";
+import type { IndexedDbSignal } from "../app-state/indexeddbManager.svelte";
+import { IndexedDBNotInitializedError } from "../db/errors/indexeddbNotInitialized";
+import { GameNoteRepository } from "../db/gameNotesRepository.svelte";
+import { runRequest, runTransaction } from "../db/indexeddb";
+import { SyncQueueRepository } from "../db/syncQueueRepository.svelte";
 
 export type SyncQueueDeps = {
 	syncQueueRepository: SyncQueueRepository;
@@ -25,19 +25,19 @@ export type SyncQueueDeps = {
 };
 
 export class SyncQueue {
-	#syncQueueRepository: SyncQueueDeps['syncQueueRepository'];
-	#httpClient: SyncQueueDeps['httpClient'];
-	#indexedDbSignal: SyncQueueDeps['indexedDbSignal'];
+	#syncQueueRepository: SyncQueueDeps["syncQueueRepository"];
+	#httpClient: SyncQueueDeps["httpClient"];
+	#indexedDbSignal: SyncQueueDeps["indexedDbSignal"];
 	#permanentFailureCodes = [400, 401, 403, 404, 409, 422, 501];
 	#queueStatusText: string;
-	#queueStatus: 'OK' | 'NOT_OK' | 'PENDING';
+	#queueStatus: "OK" | "NOT_OK" | "PENDING";
 
 	constructor(deps: SyncQueueDeps) {
 		this.#syncQueueRepository = deps.syncQueueRepository;
 		this.#httpClient = deps.httpClient;
 		this.#indexedDbSignal = deps.indexedDbSignal;
-		this.#queueStatusText = $state('');
-		this.#queueStatus = $state('PENDING');
+		this.#queueStatusText = $state("");
+		this.#queueStatus = $state("PENDING");
 	}
 
 	/**
@@ -57,7 +57,7 @@ export class SyncQueue {
 		queueItem: SyncQueueItem,
 	) => {
 		await this.withDb(async (db) => {
-			await runTransaction(db, ['syncQueue', 'gameNotes'], 'readwrite', async ({ tx }) => {
+			await runTransaction(db, ["syncQueue", "gameNotes"], "readwrite", async ({ tx }) => {
 				await runRequest(tx.objectStore(GameNoteRepository.STORE_NAME).put(note));
 				await runRequest(tx.objectStore(SyncQueueRepository.STORE_NAME).delete(queueItem.Id!));
 			});
@@ -66,7 +66,7 @@ export class SyncQueue {
 
 	private deleteGameNoteAndQueueItemAsync = async (note: GameNote, queueItem: SyncQueueItem) => {
 		await this.withDb(async (db) => {
-			await runTransaction(db, ['syncQueue', 'gameNotes'], 'readwrite', async ({ tx }) => {
+			await runTransaction(db, ["syncQueue", "gameNotes"], "readwrite", async ({ tx }) => {
 				await runRequest(tx.objectStore(GameNoteRepository.STORE_NAME).delete(note.Id));
 				await runRequest(tx.objectStore(SyncQueueRepository.STORE_NAME).delete(queueItem.Id!));
 			});
@@ -78,7 +78,7 @@ export class SyncQueue {
 		const command = createGameNoteCommandSchema.parse(note);
 		try {
 			const createdNote = await this.#httpClient.httpPostAsync({
-				endpoint: '/api/sync/note',
+				endpoint: "/api/sync/note",
 				strategy: new JsonStrategy(createGameNoteResponseSchema),
 				body: command,
 			});
@@ -87,7 +87,7 @@ export class SyncQueue {
 			if (error instanceof FetchClientStrategyError && error.statusCode === 409) {
 				// When note already exists (conflict)
 				const apiError = apiErrorSchema.parse(error.data);
-				if (!(apiError.error.code === 'note_already_exists')) throw error;
+				if (!(apiError.error.code === "note_already_exists")) throw error;
 				await this.updateGameNoteAndDeleteQueueItemAsync(apiError.error.note, queueItem);
 			} else {
 				throw error;
@@ -100,7 +100,7 @@ export class SyncQueue {
 		const command = updateGameNoteCommandSchema.parse(note);
 		try {
 			const updatedNote = await this.#httpClient.httpPutAsync({
-				endpoint: '/api/sync/note',
+				endpoint: "/api/sync/note",
 				strategy: new JsonStrategy(updateGameNoteResponseSchema),
 				body: command,
 			});
@@ -108,19 +108,19 @@ export class SyncQueue {
 		} catch (error) {
 			if (error instanceof FetchClientStrategyError && error.statusCode === 404) {
 				await this.withDb(async (db) => {
-					await runTransaction(db, ['syncQueue', 'gameNotes'], 'readwrite', async ({ tx }) => {
+					await runTransaction(db, ["syncQueue", "gameNotes"], "readwrite", async ({ tx }) => {
 						const syncQueueStore = tx.objectStore(SyncQueueRepository.STORE_NAME);
 						const index = syncQueueStore.index(SyncQueueRepository.INDEX.Entity_PayloadId_Type);
 						// Delete all create queue items for this payload
 						const createQueueItems = await runRequest(
-							index.getAllKeys(['gameNote', note.Id, 'create']),
+							index.getAllKeys(["gameNote", note.Id, "create"]),
 						);
 						for (const createQueueItem of createQueueItems)
 							await runRequest(syncQueueStore.delete(createQueueItem));
 						// Update 'type' of current queue item to 'create'
 						const newItem = { ...queueItem };
-						newItem.Type = 'create';
-						newItem.Status = 'pending';
+						newItem.Type = "create";
+						newItem.Status = "pending";
 						await runRequest(syncQueueStore.put(newItem));
 					});
 				});
@@ -150,15 +150,15 @@ export class SyncQueue {
 	protected processGameNoteAsync = async (queueItem: SyncQueueItem) => {
 		try {
 			switch (queueItem.Type) {
-				case 'create': {
+				case "create": {
 					await this.createGameNoteAsync(queueItem);
 					break;
 				}
-				case 'update': {
+				case "update": {
 					await this.updateGameNoteAsync(queueItem);
 					break;
 				}
-				case 'delete': {
+				case "delete": {
 					await this.deleteGameNoteAsync(queueItem);
 					break;
 				}
@@ -171,10 +171,10 @@ export class SyncQueue {
 			)
 				return;
 			const item = { ...queueItem };
-			item.Status = 'failed';
+			item.Status = "failed";
 			item.Retries = (item.Retries ?? 0) + 1;
 			await this.withDb(async (db) => {
-				await runTransaction(db, 'syncQueue', 'readwrite', async ({ tx }) => {
+				await runTransaction(db, "syncQueue", "readwrite", async ({ tx }) => {
 					await runRequest(tx.objectStore(SyncQueueRepository.STORE_NAME).put(item));
 				});
 			});
@@ -186,30 +186,30 @@ export class SyncQueue {
 			const queueItems = await this.#syncQueueRepository.getAllAsync();
 
 			if (queueItems.length === 0) {
-				this.#queueStatus = 'OK';
+				this.#queueStatus = "OK";
 				this.#queueStatusText = m.settings_sync_section_sync_queue_ok();
 				return;
 			}
 
 			let failed = 0;
 			for (const queueItem of queueItems) {
-				if (queueItem.Status === 'failed') failed++;
+				if (queueItem.Status === "failed") failed++;
 				if (queueItem.Retries && queueItem.Retries >= 100) {
 					continue;
 				}
 				switch (queueItem.Entity) {
-					case 'gameNote':
+					case "gameNote":
 						await this.processGameNoteAsync(queueItem);
 				}
 			}
 
 			if (failed > 0) {
-				this.#queueStatus = 'NOT_OK';
+				this.#queueStatus = "NOT_OK";
 				this.#queueStatusText = m.settings_sync_section_failed_items_in_sync_queue({
 					count: failed,
 				});
 			} else {
-				this.#queueStatus = 'OK';
+				this.#queueStatus = "OK";
 				this.#queueStatusText = m.settings_sync_section_sync_queue_ok();
 			}
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
+	import { onDestroy, onMount } from "svelte";
+	import type { HTMLAttributes } from "svelte/elements";
 
 	let {
 		bottomNav = false,
@@ -27,9 +27,9 @@
 <div
 	{...props}
 	class={[
-		'z-21 absolute bottom-0 left-0 right-0 w-full overflow-y-auto p-4',
-		bottomNav ? 'bottom-[3.4rem]' : 'bottom-0',
-		header ? 'top-[var(--header-height)]' : 'top-0',
+		"z-21 absolute bottom-0 left-0 right-0 w-full overflow-y-auto p-4",
+		bottomNav ? "bottom-[3.4rem]" : "bottom-0",
+		header ? "top-[var(--header-height)]" : "top-0",
 		props.class,
 	]}
 >

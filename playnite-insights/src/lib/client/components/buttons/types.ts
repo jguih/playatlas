@@ -1,9 +1,9 @@
-import type { HTMLButtonAttributes } from 'svelte/elements';
-import type { ComponentSize, SemanticColors } from '../types';
+import type { HTMLButtonAttributes } from "svelte/elements";
+import type { ComponentSize, SemanticColors } from "../types";
 
 export type BaseButtonProps = HTMLButtonAttributes & {
 	button?: HTMLButtonElement;
-	justify?: 'center' | 'between' | 'start';
+	justify?: "center" | "between" | "start";
 	color?: SemanticColors;
 	rounded?: boolean;
 	size?: ComponentSize;

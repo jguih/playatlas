@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import { Image, ImagePlus, ScreenShare } from '@lucide/svelte';
-	import LightButton from '../../buttons/LightButton.svelte';
-	import AsideBody from '../../sidebar/AsideBody.svelte';
-	import Backdrop from '../../sidebar/Backdrop.svelte';
-	import BottomSheet from '../../sidebar/BottomSheet.svelte';
+	import { m } from "$lib/paraglide/messages";
+	import { Image, ImagePlus, ScreenShare } from "@lucide/svelte";
+	import LightButton from "../../buttons/LightButton.svelte";
+	import AsideBody from "../../sidebar/AsideBody.svelte";
+	import Backdrop from "../../sidebar/Backdrop.svelte";
+	import BottomSheet from "../../sidebar/BottomSheet.svelte";
 
 	let props: {
 		isOpen: boolean;
@@ -29,11 +29,11 @@
 {#if props.isOpen}
 	<Backdrop
 		onclick={() => props.onClose()}
-		class={['z-22!']}
+		class={["z-22!"]}
 	/>
 	<BottomSheet
 		height={30}
-		class={['z-23!']}
+		class={["z-23!"]}
 	>
 		<AsideBody header={false}>
 			<input
@@ -45,16 +45,16 @@
 				onchange={handleOnImageChange}
 				class="absolute -top-10 opacity-0"
 			/>
-			<ul class={['flex flex-col justify-start gap-2']}>
+			<ul class={["flex flex-col justify-start gap-2"]}>
 				<li>
 					<LightButton
 						justify="start"
 						size="md"
-						class={['gap-3! w-full']}
+						class={["gap-3! w-full"]}
 						onclick={(e) => imageInput?.click()}
 						disabled={props.isOptionDisabled?.uploadImage ?? false}
 					>
-						<ImagePlus class={['size-md']} />
+						<ImagePlus class={["size-md"]} />
 						{m.label_note_editor_extras_add_image()}
 					</LightButton>
 				</li>
@@ -62,11 +62,11 @@
 					<LightButton
 						justify="start"
 						size="md"
-						class={['gap-3! w-full']}
+						class={["gap-3! w-full"]}
 						onclick={props.onTakeScreenshotFromPlaynite}
 						disabled={props.isOptionDisabled?.takeScreenshotFromPlayniteHost ?? false}
 					>
-						<ScreenShare class={['size-md']} />
+						<ScreenShare class={["size-md"]} />
 						{m.label_note_editor_extras_take_screenshot_from_playnite_host()}
 					</LightButton>
 				</li>
@@ -74,11 +74,11 @@
 					<LightButton
 						justify="start"
 						size="md"
-						class={['gap-3! w-full']}
+						class={["gap-3! w-full"]}
 						onclick={props.onAddAvailableScreenshot}
 						disabled={props.isOptionDisabled?.addAvailableScreenshot ?? false}
 					>
-						<Image class={['size-md']} />
+						<Image class={["size-md"]} />
 						{m.label_note_editor_extras_add_available_screenshot()}
 					</LightButton>
 				</li>

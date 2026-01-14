@@ -1,6 +1,6 @@
-import type { IAsyncCommandHandlerPort } from '$lib/modules/common/common';
-import type { ICompanyRepositoryPort } from '../../infra/company.repository.port';
-import type { SyncCompaniesCommand } from './sync-companies.command';
+import type { IAsyncCommandHandlerPort } from "$lib/modules/common/common";
+import type { ICompanyRepositoryPort } from "../../infra/company.repository.port";
+import type { SyncCompaniesCommand } from "./sync-companies.command";
 
 export type ISyncCompaniesCommandHandlerPort = IAsyncCommandHandlerPort<SyncCompaniesCommand, void>;
 

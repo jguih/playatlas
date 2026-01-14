@@ -1,10 +1,10 @@
 import type {
 	ExtensionAuthServiceVerifyResult,
 	InstanceAuthServiceVerifyResult,
-} from '@playatlas/auth/application';
-import type { PlayAtlasApiV1 } from '@playatlas/bootstrap/application';
-import { json } from '@sveltejs/kit';
-import { apiResponse } from '../responses';
+} from "@playatlas/auth/application";
+import type { PlayAtlasApiV1 } from "@playatlas/bootstrap/application";
+import { json } from "@sveltejs/kit";
+import { apiResponse } from "../responses";
 
 export type AuthMiddlewareDeps = {
 	request: Request;
@@ -25,7 +25,7 @@ export const extensionAuthMiddleware = async (
 		return await cb(result);
 	} catch (error) {
 		api.getLogService().error(`${requestDescription}: Error thrown while handling request`, error);
-		return apiResponse.error({ error: { message: 'Internal server error' } }, { status: 500 });
+		return apiResponse.error({ error: { message: "Internal server error" } }, { status: 500 });
 	}
 };
 
@@ -42,6 +42,6 @@ export const instanceAuthMiddleware = async (
 		return await cb(result);
 	} catch (error) {
 		api.getLogService().error(`${requestDescription}: Error thrown while handling request`, error);
-		return apiResponse.error({ error: { message: 'Internal server error' } }, { status: 500 });
+		return apiResponse.error({ error: { message: "Internal server error" } }, { status: 500 });
 	}
 };

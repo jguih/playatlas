@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { page } from '$app/state';
+	import { page } from "$app/state";
 	import {
 		ClientServiceLocator,
 		setLocatorContext,
-	} from '$lib/client/app-state/serviceLocator.svelte';
-	import { toast } from '$lib/client/app-state/toast.svelte';
-	import Loading from '$lib/client/components/Loading.svelte';
-	import Toast from '$lib/client/components/Toast.svelte';
-	import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
-	import { AppClientError } from '@playnite-insights/lib/client';
-	import { onMount } from 'svelte';
-	import '../app.css';
-	import type { LayoutProps } from './$types';
+	} from "$lib/client/app-state/serviceLocator.svelte";
+	import { toast } from "$lib/client/app-state/toast.svelte";
+	import Loading from "$lib/client/components/Loading.svelte";
+	import Toast from "$lib/client/components/Toast.svelte";
+	import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte";
+	import { AppClientError } from "@playnite-insights/lib/client";
+	import { onMount } from "svelte";
+	import "../app.css";
+	import type { LayoutProps } from "./$types";
 
 	let { children }: LayoutProps = $props();
 	let appProcessingInterval: ReturnType<typeof setInterval> | null = $state(null);
-	let loading = $state<Set<string>>(new Set('all'));
+	let loading = $state<Set<string>>(new Set("all"));
 	const locator = new ClientServiceLocator();
 
 	setLocatorContext(locator);
@@ -34,35 +34,35 @@
 
 	const initInstance = async () => {
 		try {
-			addLoading('applicationSettings');
+			addLoading("applicationSettings");
 			await locator.applicationSettingsStore.loadSettings();
 		} catch {
 			// Logs only
 		} finally {
-			removeLoading('applicationSettings');
+			removeLoading("applicationSettings");
 		}
 		try {
-			addLoading('ensureSyncId');
+			addLoading("ensureSyncId");
 			await locator.syncService.ensureValidLocalSyncId({
 				onFinishReconcile: () => {
-					toast.info({ category: 'app', message: `Reconciled data with server.` });
+					toast.info({ category: "app", message: `Reconciled data with server.` });
 				},
 			});
 		} catch (error) {
 			if (error instanceof AppClientError) {
-				if (error.code === 'invalid_syncid')
+				if (error.code === "invalid_syncid")
 					toast.warning({
-						category: 'app',
+						category: "app",
 						message: `Invalid SyncId detected, reconciling local dataset with server...`,
 					});
-				if (error.code === 'reconciliation_failed')
+				if (error.code === "reconciliation_failed")
 					toast.error({
-						category: 'app',
+						category: "app",
 						message: `Failed to reconcile data with server, please check application logs.`,
 					});
 			}
 		} finally {
-			removeLoading('ensureSyncId');
+			removeLoading("ensureSyncId");
 		}
 		loading = new Set();
 	};
@@ -79,7 +79,7 @@
 	};
 
 	const handleFocus = () => {
-		if (!page.url.pathname.startsWith('/auth')) {
+		if (!page.url.pathname.startsWith("/auth")) {
 			try {
 				locator.gameSessionStore.loadRecentSessions();
 				locator.gameStore.loadGames();
@@ -96,16 +96,16 @@
 		locator.serviceWorkerManager.watchServiceWorkerUpdates();
 		locator.gameNoteStore.loadNotesFromServerAsync();
 
-		if (!page.url.pathname.startsWith('/auth')) {
+		if (!page.url.pathname.startsWith("/auth")) {
 			locator.eventSourceManager.connect().then(() => {
 				locator.loadStoresData();
 				locator.syncQueue.processQueueAsync();
 			});
 		}
 
-		window.addEventListener('focus', handleFocus);
+		window.addEventListener("focus", handleFocus);
 		return () => {
-			window.removeEventListener('focus', handleFocus);
+			window.removeEventListener("focus", handleFocus);
 			if (appProcessingInterval) clearInterval(appProcessingInterval);
 			locator.serviceWorkerManager.clearGlobalListeners();
 			locator.eventSourceManager.clearGlobalListeners();

@@ -1,4 +1,4 @@
-import type { KeyValue, KeyValueMap } from '@playnite-insights/lib/client';
+import type { KeyValue, KeyValueMap } from "@playnite-insights/lib/client";
 
 export interface IKeyValueRepository {
 	/**

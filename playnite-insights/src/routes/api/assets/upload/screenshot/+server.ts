@@ -1,7 +1,7 @@
-import { handleApiError } from '$lib/server/api/handle-error';
-import { defaultSSEManager } from '@playnite-insights/infra';
-import type { UploadScreenshotResponse } from '@playnite-insights/lib/client';
-import { json, type RequestHandler } from '@sveltejs/kit';
+import { handleApiError } from "$lib/server/api/handle-error";
+import { defaultSSEManager } from "@playnite-insights/infra";
+import type { UploadScreenshotResponse } from "@playnite-insights/lib/client";
+import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request, locals: { services } }) => {
 	try {
@@ -10,7 +10,7 @@ export const POST: RequestHandler = async ({ request, locals: { services } }) =>
 		const response: UploadScreenshotResponse = {
 			uploaded: imagePaths,
 		};
-		defaultSSEManager.broadcast({ type: 'screenshotTaken', data: { paths: imagePaths } });
+		defaultSSEManager.broadcast({ type: "screenshotTaken", data: { paths: imagePaths } });
 		return json(response);
 	} catch (error) {
 		return handleApiError(error, services.logService, `POST /api/assets/upload/screenshot`);

@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import { Search, XIcon } from '@lucide/svelte';
+	import { m } from "$lib/paraglide/messages";
+	import { Search, XIcon } from "@lucide/svelte";
 	import type {
 		ChangeEventHandler,
 		EventHandler,
 		FocusEventHandler,
 		HTMLInputAttributes,
-	} from 'svelte/elements';
-	import LightButton from './buttons/LightButton.svelte';
+	} from "svelte/elements";
+	import LightButton from "./buttons/LightButton.svelte";
 
 	let {
 		value = $bindable(),
@@ -18,7 +18,7 @@
 		value: string | null;
 		onChange: (value: string | null) => void;
 		delay?: number;
-	} & Omit<HTMLInputAttributes, 'value'> = $props();
+	} & Omit<HTMLInputAttributes, "value"> = $props();
 	let input: HTMLInputElement;
 	let clearBtn: HTMLButtonElement | undefined = $state();
 	let timeout: ReturnType<typeof setTimeout> | null = $state(null);
@@ -57,11 +57,11 @@
 
 <form
 	class={[
-		'hover:border-primary-hover-bg',
-		'focus-within:border-primary-active-bg',
-		'active-within:border-primary-active-bg',
-		'border-2 border-solid border-transparent',
-		'bg-background-2 flex w-full grow flex-row items-center justify-center gap-2 p-1',
+		"hover:border-primary-hover-bg",
+		"focus-within:border-primary-active-bg",
+		"active-within:border-primary-active-bg",
+		"border-2 border-solid border-transparent",
+		"bg-background-2 flex w-full grow flex-row items-center justify-center gap-2 p-1",
 	]}
 	onsubmit={handleSubmit}
 >
@@ -70,7 +70,7 @@
 	</LightButton>
 	<input
 		{...props}
-		class={`bg-background-2 m-0 w-full p-0 outline-0 ${props.class ?? ''}`}
+		class={`bg-background-2 m-0 w-full p-0 outline-0 ${props.class ?? ""}`}
 		bind:this={input}
 		bind:value
 		oninput={handleOnChange}

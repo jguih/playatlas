@@ -1,12 +1,12 @@
-import type { IServerTimeStorePort } from '../stores/server-time.store.port';
-import type { IDateTimeHandlerPort } from './date-time-handler.port';
+import type { IServerTimeStorePort } from "../stores/server-time.store.port";
+import type { IDateTimeHandlerPort } from "./date-time-handler.port";
 
 export type DateTimeHandlerProps = {
 	serverTimeStore: IServerTimeStorePort;
 };
 
 export class DateTimeHandler implements IDateTimeHandlerPort {
-	#serverTimeStore: DateTimeHandlerProps['serverTimeStore'];
+	#serverTimeStore: DateTimeHandlerProps["serverTimeStore"];
 
 	constructor({ serverTimeStore }: DateTimeHandlerProps) {
 		this.#serverTimeStore = serverTimeStore;

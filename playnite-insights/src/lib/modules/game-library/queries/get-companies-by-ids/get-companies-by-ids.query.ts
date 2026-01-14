@@ -1,4 +1,4 @@
-import type { Company, CompanyId } from '../../domain/company.entity';
+import type { Company, CompanyId } from "../../domain/company.entity";
 
 export type GetCompaniesByIdsQuery = {
 	companyIds: CompanyId[];

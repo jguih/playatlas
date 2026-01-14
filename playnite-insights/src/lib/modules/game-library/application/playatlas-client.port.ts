@@ -1,7 +1,7 @@
-import type { Company } from '../domain/company.entity';
-import type { Game } from '../domain/game.entity';
-import type { Genre } from '../domain/genre.entity';
-import type { Platform } from '../domain/platform.entity';
+import type { Company } from "../domain/company.entity";
+import type { Game } from "../domain/game.entity";
+import type { Genre } from "../domain/genre.entity";
+import type { Platform } from "../domain/platform.entity";
 
 export type CommonProps = {
 	sinceLastSync: Date;

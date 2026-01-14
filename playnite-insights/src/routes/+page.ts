@@ -1,13 +1,13 @@
-import { homePageSearchParamsKeys as paramKeys } from '$lib/client/page/home/searchParams.constants';
-import { gamePageSizes, gameSortBy, gameSortOrder } from '@playatlas/game-library/domain';
-import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import { homePageSearchParamsKeys as paramKeys } from "$lib/client/page/home/searchParams.constants";
+import { gamePageSizes, gameSortBy, gameSortOrder } from "@playatlas/game-library/domain";
+import { redirect } from "@sveltejs/kit";
+import type { PageLoad } from "./$types";
 
 export const load: PageLoad = ({ url }) => {
 	const params = new URLSearchParams(url.searchParams);
 	let changed = false;
 	if (!params.has(paramKeys.page)) {
-		params.set(paramKeys.page, '1');
+		params.set(paramKeys.page, "1");
 		changed = true;
 	}
 	if (!params.has(paramKeys.pageSize)) {

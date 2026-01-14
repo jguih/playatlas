@@ -1,2 +1,2 @@
-export * from './sync-companies.command';
-export * from './sync-companies.command-handler';
+export * from "./sync-companies.command";
+export * from "./sync-companies.command-handler";

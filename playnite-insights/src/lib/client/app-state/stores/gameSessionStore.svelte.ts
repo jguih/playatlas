@@ -1,11 +1,11 @@
-import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
+import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte";
 import {
 	FetchClientStrategyError,
 	getRecentSessionsResponseSchema,
 	JsonStrategy,
 	type GetRecentSessionsResponse,
-} from '@playnite-insights/lib/client';
-import { ApiDataStore, type ApiDataStoreDeps } from './apiDataStore.svelte';
+} from "@playnite-insights/lib/client";
+import { ApiDataStore, type ApiDataStoreDeps } from "./apiDataStore.svelte";
 
 export type GameSessionStoreDeps = ApiDataStoreDeps;
 
@@ -26,7 +26,7 @@ export class GameSessionStore extends ApiDataStore {
 		try {
 			this.#recentSessionsSignal.isLoading = true;
 			const result = await this.httpClient.httpGetAsync({
-				endpoint: '/api/session/recent',
+				endpoint: "/api/session/recent",
 				strategy: new JsonStrategy(getRecentSessionsResponseSchema),
 			});
 			this.#recentSessionsSignal.list = result;

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { BaseInputProps } from './types';
+	import { onMount } from "svelte";
+	import type { BaseInputProps } from "./types";
 
 	let {
-		value = $bindable<BaseInputProps['value']>(),
+		value = $bindable<BaseInputProps["value"]>(),
 		input = $bindable(),
 		onMount: fnOnMount,
 		...props
@@ -16,7 +16,7 @@
 
 <input
 	{...props}
-	class={['m-0 w-full p-0 outline-0', props.class]}
+	class={["m-0 w-full p-0 outline-0", props.class]}
 	bind:value
 	bind:this={input}
 />

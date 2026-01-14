@@ -1,17 +1,17 @@
-import type { ApplicationSettingsStore } from '$lib/client/app-state/stores/applicationSettingsStore.svelte';
-import type { GameStore } from '$lib/client/app-state/stores/gameStore.svelte';
+import type { ApplicationSettingsStore } from "$lib/client/app-state/stores/applicationSettingsStore.svelte";
+import type { GameStore } from "$lib/client/app-state/stores/gameStore.svelte";
 import type {
 	GameStoreFiltersParams,
 	GameStorePaginationParams,
 	GameStoreSortingParams,
-} from '$lib/client/app-state/stores/gameStore.types';
-import { getPlayniteGameImageUrl } from '$lib/client/utils/playnite-game';
-import { m } from '$lib/paraglide/messages';
-import { gamePageSizes, type GameSortBy, type GameSortOrder } from '@playatlas/game-library/domain';
-import type { GameResponseDto } from '@playatlas/game-library/dtos';
-import type { ApplicationSettings } from '@playnite-insights/lib/client';
-import type { HomePageFilterParams, HomePageGameCacheItem } from './searchParams.types';
-import type { HomePageSearchParams } from './searchParams.utils';
+} from "$lib/client/app-state/stores/gameStore.types";
+import { getPlayniteGameImageUrl } from "$lib/client/utils/playnite-game";
+import { m } from "$lib/paraglide/messages";
+import { gamePageSizes, type GameSortBy, type GameSortOrder } from "@playatlas/game-library/domain";
+import type { GameResponseDto } from "@playatlas/game-library/dtos";
+import type { ApplicationSettings } from "@playnite-insights/lib/client";
+import type { HomePageFilterParams, HomePageGameCacheItem } from "./searchParams.types";
+import type { HomePageSearchParams } from "./searchParams.utils";
 
 export type HomePageViewModelDeps = {
 	gameStore: GameStore;
@@ -20,7 +20,7 @@ export type HomePageViewModelDeps = {
 };
 
 export class HomePageViewModel {
-	#gameStore: HomePageViewModelDeps['gameStore'];
+	#gameStore: HomePageViewModelDeps["gameStore"];
 	#filtersCount: number;
 	#paginationSequenceSignal: (number | null)[];
 	#filteredCache: Map<string, GameResponseDto[]>;
@@ -45,11 +45,11 @@ export class HomePageViewModel {
 			let counter = 0;
 			for (const filter of Object.values(getPageParams().filter)) {
 				if (filter === null) continue;
-				if (typeof filter === 'string' || typeof filter === 'number') {
+				if (typeof filter === "string" || typeof filter === "number") {
 					counter++;
 					continue;
 				}
-				if (typeof filter === 'boolean') {
+				if (typeof filter === "boolean") {
 					if (filter === true) counter++;
 					continue;
 				}
@@ -173,22 +173,22 @@ export class HomePageViewModel {
 
 	getSortOrderLabel = (sortOrder: GameSortOrder): string => {
 		switch (sortOrder) {
-			case 'asc':
+			case "asc":
 				return m.option_sort_ascending();
-			case 'desc':
+			case "desc":
 				return m.option_sort_descending();
 		}
 	};
 
 	getSortByLabel = (sortBy: GameSortBy): string => {
 		switch (sortBy) {
-			case 'IsInstalled':
+			case "IsInstalled":
 				return m.option_sortby_is_installed();
-			case 'Added':
+			case "Added":
 				return m.option_sortby_added();
-			case 'LastActivity':
+			case "LastActivity":
 				return m.option_sortby_last_activity();
-			case 'Playtime':
+			case "Playtime":
 				return m.option_sortby_playtime();
 			default:
 				return sortBy;

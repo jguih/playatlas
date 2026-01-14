@@ -1,7 +1,7 @@
-import type { ClientEntity } from '../common/client-entity';
-import { IndexedDBNotInitializedError } from '../errors';
-import type { IClientEntityRepository } from './client-entity.repository.port';
-import type { ClientRepositoryStoreName, IndexedDbSignal } from './client-entity.repository.types';
+import type { ClientEntity } from "../common/client-entity";
+import { IndexedDBNotInitializedError } from "../errors";
+import type { IClientEntityRepository } from "./client-entity.repository.port";
+import type { ClientRepositoryStoreName, IndexedDbSignal } from "./client-entity.repository.types";
 
 export type ClientEntityRepositoryDeps = {
 	indexedDbSignal: IndexedDbSignal;
@@ -12,7 +12,7 @@ export class ClientEntityRepository<
 	TEntityKey extends IDBValidKey,
 > implements IClientEntityRepository<TEntity, TEntityKey>
 {
-	#indexedDbSignal: ClientEntityRepositoryDeps['indexedDbSignal'];
+	#indexedDbSignal: ClientEntityRepositoryDeps["indexedDbSignal"];
 	storeName: ClientRepositoryStoreName;
 
 	constructor({
@@ -66,41 +66,41 @@ export class ClientEntityRepository<
 		});
 	};
 
-	addAsync: IClientEntityRepository<TEntity, TEntityKey>['addAsync'] = async (entity) => {
-		await this.runTransaction([this.storeName], 'readwrite', async ({ tx }) => {
+	addAsync: IClientEntityRepository<TEntity, TEntityKey>["addAsync"] = async (entity) => {
+		await this.runTransaction([this.storeName], "readwrite", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
 			await this.runRequest(store.add(entity));
 		});
 	};
 
-	putAsync: IClientEntityRepository<TEntity, TEntityKey>['putAsync'] = async (game) => {
-		await this.runTransaction([this.storeName], 'readwrite', async ({ tx }) => {
+	putAsync: IClientEntityRepository<TEntity, TEntityKey>["putAsync"] = async (game) => {
+		await this.runTransaction([this.storeName], "readwrite", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
 			await this.runRequest(store.put(game));
 		});
 	};
 
-	deleteAsync: IClientEntityRepository<TEntity, TEntityKey>['deleteAsync'] = async (entityId) => {
-		await this.runTransaction([this.storeName], 'readwrite', async ({ tx }) => {
+	deleteAsync: IClientEntityRepository<TEntity, TEntityKey>["deleteAsync"] = async (entityId) => {
+		await this.runTransaction([this.storeName], "readwrite", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
 			await this.runRequest(store.delete(entityId));
 		});
 	};
 
-	getByIdAsync: IClientEntityRepository<TEntity, TEntityKey>['getByIdAsync'] = async (entityId) => {
-		return await this.runTransaction([this.storeName], 'readonly', async ({ tx }) => {
+	getByIdAsync: IClientEntityRepository<TEntity, TEntityKey>["getByIdAsync"] = async (entityId) => {
+		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
 			const entity = await this.runRequest<TEntity | undefined>(store.get(entityId));
 			return entity ?? null;
 		});
 	};
 
-	getByIdsAsync: IClientEntityRepository<TEntity, TEntityKey>['getByIdsAsync'] = async (
+	getByIdsAsync: IClientEntityRepository<TEntity, TEntityKey>["getByIdsAsync"] = async (
 		entityId,
 	) => {
 		const ids = Array.isArray(entityId) ? entityId : [entityId];
 
-		return await this.runTransaction([this.storeName], 'readonly', async ({ tx }) => {
+		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
 
 			const requests = ids.map((key) => this.runRequest<TEntity | undefined>(store.get(key)));
@@ -111,11 +111,11 @@ export class ClientEntityRepository<
 		});
 	};
 
-	syncAsync: IClientEntityRepository<TEntity, TEntityKey>['syncAsync'] = async (entity) => {
+	syncAsync: IClientEntityRepository<TEntity, TEntityKey>["syncAsync"] = async (entity) => {
 		const entities = Array.isArray(entity) ? entity : [entity];
 		if (entities.length === 0) return;
 
-		await this.runTransaction([this.storeName], 'readwrite', async ({ tx }) => {
+		await this.runTransaction([this.storeName], "readwrite", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
 
 			for (const entity of entities) {

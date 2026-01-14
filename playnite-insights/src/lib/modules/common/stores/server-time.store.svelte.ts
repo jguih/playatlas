@@ -1,7 +1,7 @@
-import { getServerUtcNowResponseSchema } from '@playnite-insights/lib/client';
-import type { ILogServicePort } from '../application/log-service.port';
-import { HttpDataStore, type HttpDataStoreDeps } from './http-data.store.svelte';
-import type { IServerTimeStorePort, ServerTimeSignal } from './server-time.store.port';
+import { getServerUtcNowResponseSchema } from "@playnite-insights/lib/client";
+import type { ILogServicePort } from "../application/log-service.port";
+import { HttpDataStore, type HttpDataStoreDeps } from "./http-data.store.svelte";
+import type { IServerTimeStorePort, ServerTimeSignal } from "./server-time.store.port";
 
 export type ServerTimeStoreDeps = HttpDataStoreDeps & {
 	logService: ILogServicePort;
@@ -20,7 +20,7 @@ export class ServerTimeStore extends HttpDataStore implements IServerTimeStorePo
 	loadServerTime = async () => {
 		try {
 			this.serverTimeSignal.isLoading = true;
-			const response = await this.httpClient.getAsync({ endpoint: '/api/time/now' });
+			const response = await this.httpClient.getAsync({ endpoint: "/api/time/now" });
 			const jsonBody = await response.json();
 			const { success, data } = getServerUtcNowResponseSchema.safeParse(jsonBody);
 			if (success) {

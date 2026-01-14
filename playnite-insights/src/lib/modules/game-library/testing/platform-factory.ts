@@ -1,6 +1,6 @@
-import type { IClientEntityFactoryPort } from '$lib/modules/common/testing';
-import { faker } from '@faker-js/faker';
-import type { Platform } from '../domain/platform.entity';
+import type { IClientEntityFactoryPort } from "$lib/modules/common/testing";
+import { faker } from "@faker-js/faker";
+import type { Platform } from "../domain/platform.entity";
 
 export type IPlatformFactoryPort = IClientEntityFactoryPort<Platform>;
 
@@ -21,11 +21,11 @@ export class PlatformFactory implements IPlatformFactoryPort {
 		};
 	};
 
-	build: IPlatformFactoryPort['build'] = () => {
+	build: IPlatformFactoryPort["build"] = () => {
 		return this.buildPlatform();
 	};
 
-	buildList: IPlatformFactoryPort['buildList'] = (n) => {
+	buildList: IPlatformFactoryPort["buildList"] = (n) => {
 		return Array.from({ length: n }, () => this.buildPlatform());
 	};
 }

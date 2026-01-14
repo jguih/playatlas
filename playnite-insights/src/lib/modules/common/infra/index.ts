@@ -1,7 +1,7 @@
-export * from './client-entity.repository';
-export type * from './client-entity.repository.port';
-export type * from './client-entity.repository.types';
-export * from './date-time-handler';
-export type * from './date-time-handler.port';
-export type * from './indexeddb-schema';
-export * from './indexeddb.constants';
+export * from "./client-entity.repository";
+export type * from "./client-entity.repository.port";
+export type * from "./client-entity.repository.types";
+export * from "./date-time-handler";
+export type * from "./date-time-handler.port";
+export type * from "./indexeddb-schema";
+export * from "./indexeddb.constants";

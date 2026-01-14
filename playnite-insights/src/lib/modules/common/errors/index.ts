@@ -1,1 +1,1 @@
-export * from './indexeddb-not-initialized.error';
+export * from "./indexeddb-not-initialized.error";

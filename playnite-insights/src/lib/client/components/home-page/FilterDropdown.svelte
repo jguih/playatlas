@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { ChevronDown, ChevronUp, Trash } from '@lucide/svelte';
-	import type { Snippet } from 'svelte';
-	import LightButton from '../buttons/LightButton.svelte';
-	import Dropdown from '../dropdown/Dropdown.svelte';
-	import DropdownBody from '../dropdown/DropdownBody.svelte';
+	import { ChevronDown, ChevronUp, Trash } from "@lucide/svelte";
+	import type { Snippet } from "svelte";
+	import LightButton from "../buttons/LightButton.svelte";
+	import Dropdown from "../dropdown/Dropdown.svelte";
+	import DropdownBody from "../dropdown/DropdownBody.svelte";
 
 	let {
 		label,
@@ -13,12 +13,12 @@
 	}: { label: string; children: Snippet; counter?: number; onClear: () => void } = $props();
 </script>
 
-<Dropdown class={['w-full']}>
+<Dropdown class={["w-full"]}>
 	{#snippet button({ onclick, show })}
 		<div class="flex flex-row gap-1">
 			<LightButton
 				{onclick}
-				class={['w-full p-2']}
+				class={["w-full p-2"]}
 				justify="between"
 				selected={show}
 			>
@@ -28,20 +28,20 @@
 						{#if counter}
 							<p class="bg-primary-bg text-primary-fg rounded-2xl px-1 text-sm">{counter}</p>
 						{/if}
-						<ChevronUp class={['size-lg']} />
+						<ChevronUp class={["size-lg"]} />
 					</div>
 				{:else}
 					<div class="flex flex-row items-center gap-1">
 						{#if counter}
 							<p class="bg-primary-bg text-primary-fg rounded-2xl px-1 text-sm">{counter}</p>
 						{/if}
-						<ChevronDown class={['size-lg']} />
+						<ChevronDown class={["size-lg"]} />
 					</div>
 				{/if}
 			</LightButton>
 			{#if counter && counter > 0}
 				<LightButton onclick={onClear}>
-					<Trash class={['size-lg']} />
+					<Trash class={["size-lg"]} />
 				</LightButton>
 			{/if}
 		</div>

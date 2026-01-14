@@ -1,6 +1,6 @@
-import { createHashForObject } from '$lib/server/api/hash';
-import { instanceAuthMiddleware } from '$lib/server/api/middleware/auth.middleware';
-import { ensureSyncId } from '$lib/server/api/synchronization';
+import { createHashForObject } from "$lib/server/api/hash";
+import { instanceAuthMiddleware } from "$lib/server/api/middleware/auth.middleware";
+import { ensureSyncId } from "$lib/server/api/synchronization";
 import {
 	createGameNoteCommandSchema,
 	createGameNoteResponseSchema,
@@ -10,27 +10,27 @@ import {
 	updateGameNoteResponseSchema,
 	type ApiErrorResponse,
 	type GameNote,
-} from '@playnite-insights/lib/client';
-import { json, type RequestHandler } from '@sveltejs/kit';
+} from "@playnite-insights/lib/client";
+import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const GET: RequestHandler = ({ request, url, locals: { services, api } }) =>
 	instanceAuthMiddleware({ request, api }, async () => {
 		await ensureSyncId({ request, url, ...services });
-		const lastSync = url.searchParams.get('lastSync')?.trim();
-		const ifNoneMatch = request.headers.get('if-none-match');
+		const lastSync = url.searchParams.get("lastSync")?.trim();
+		const ifNoneMatch = request.headers.get("if-none-match");
 		let data: GameNote[] = [];
 		if (lastSync && isNaN(Date.parse(lastSync))) {
 			const response: ApiErrorResponse = {
 				error: {
-					code: 'invalid_iso_date',
-					message: 'lastSync param must be a valid ISO date string',
+					code: "invalid_iso_date",
+					message: "lastSync param must be a valid ISO date string",
 				},
 			};
 			return json(response, { status: 400 });
 		} else if (lastSync) {
 			const lastSyncDate = new Date(lastSync);
 			data = services.gameNoteRepository.all({
-				filters: { lastUpdatedAt: [{ op: 'gte', value: lastSyncDate.toISOString() }] },
+				filters: { lastUpdatedAt: [{ op: "gte", value: lastSyncDate.toISOString() }] },
 			});
 		} else {
 			data = services.gameNoteRepository.all();
@@ -44,7 +44,7 @@ export const GET: RequestHandler = ({ request, url, locals: { services, api } })
 		if (ifNoneMatch === etag) {
 			return emptyResponse(304);
 		}
-		return json(data, { headers: { 'Cache-Control': 'no-cache', ETag: etag } });
+		return json(data, { headers: { "Cache-Control": "no-cache", ETag: etag } });
 	});
 
 /**
@@ -60,7 +60,7 @@ export const POST: RequestHandler = async ({ request, url, locals: { services, a
 		if (existingNote) {
 			const response: ApiErrorResponse = {
 				error: {
-					code: 'note_already_exists',
+					code: "note_already_exists",
 					note: existingNote,
 				},
 			};

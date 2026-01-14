@@ -1,6 +1,6 @@
-import type { IAsyncCommandHandlerPort } from '$lib/modules/common/common';
-import type { IGameRepositoryPort } from '../../infra/game.repository.port';
-import type { SyncGamesCommand } from './sync-games.command';
+import type { IAsyncCommandHandlerPort } from "$lib/modules/common/common";
+import type { IGameRepositoryPort } from "../../infra/game.repository.port";
+import type { SyncGamesCommand } from "./sync-games.command";
 
 export type ISyncGamesCommandHandlerPort = IAsyncCommandHandlerPort<SyncGamesCommand, void>;
 
@@ -15,7 +15,7 @@ export class SyncGamesCommandHandler implements ISyncGamesCommandHandlerPort {
 		this.gameRepository = gameRepository;
 	}
 
-	executeAsync: ISyncGamesCommandHandlerPort['executeAsync'] = async (command) => {
+	executeAsync: ISyncGamesCommandHandlerPort["executeAsync"] = async (command) => {
 		return await this.gameRepository.syncAsync(command.games);
 	};
 }

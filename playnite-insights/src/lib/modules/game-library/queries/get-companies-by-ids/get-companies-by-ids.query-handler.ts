@@ -1,9 +1,9 @@
-import type { ICompanyRepositoryPort } from '../../infra/company.repository.port';
+import type { ICompanyRepositoryPort } from "../../infra/company.repository.port";
 import type {
 	GetCompaniesByIdsQuery,
 	GetCompaniesByIdsQueryResult,
-} from './get-companies-by-ids.query';
-import type { IGetCompaniesByIdsQueryHandlerPort } from './get-companies-by-ids.query-handler.port';
+} from "./get-companies-by-ids.query";
+import type { IGetCompaniesByIdsQueryHandlerPort } from "./get-companies-by-ids.query-handler.port";
 
 export type GetCompaniesByIdsQueryHandlerDeps = {
 	companyRepository: ICompanyRepositoryPort;

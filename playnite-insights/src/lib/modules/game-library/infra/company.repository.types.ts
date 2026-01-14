@@ -1,6 +1,6 @@
-import type { ClientRepositoryStoreName } from '$lib/modules/common/infra';
+import type { ClientRepositoryStoreName } from "$lib/modules/common/infra";
 
-export type CompanyRepositoryIndex = 'bySourceUpdatedAt';
+export type CompanyRepositoryIndex = "bySourceUpdatedAt";
 
 export type CompanyRepositoryMeta = {
 	storeName: ClientRepositoryStoreName;

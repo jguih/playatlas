@@ -1,10 +1,10 @@
-import type { ILogServicePort } from '$lib/modules/common/application';
+import type { ILogServicePort } from "$lib/modules/common/application";
 import {
 	INDEXEDDB_CURRENT_VERSION,
 	INDEXEDDB_NAME,
 	type IIndexedDbSchema,
-} from '$lib/modules/common/infra';
-import type { IClientInfraModulePort, IndexedDbSignal } from './infra.module.port';
+} from "$lib/modules/common/infra";
+import type { IClientInfraModulePort, IndexedDbSignal } from "./infra.module.port";
 
 export type ClientInfraModuleDeps = {
 	logService: ILogServicePort;
@@ -41,7 +41,7 @@ export class ClientInfraModule implements IClientInfraModulePort {
 
 				db.onversionchange = () => {
 					db.close();
-					this.logService.warning('Database is outdated, please reload the app');
+					this.logService.warning("Database is outdated, please reload the app");
 				};
 
 				resolve(request.result);

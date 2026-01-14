@@ -1,7 +1,7 @@
-import type { IServerHeartbeat } from '$lib/client/event-source-manager/serverHeartbeat.svelte';
-import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
-import { getServerUtcNowResponseSchema, JsonStrategy } from '@playnite-insights/lib/client';
-import { ApiDataStore, type ApiDataStoreDeps } from './apiDataStore.svelte';
+import type { IServerHeartbeat } from "$lib/client/event-source-manager/serverHeartbeat.svelte";
+import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte";
+import { getServerUtcNowResponseSchema, JsonStrategy } from "@playnite-insights/lib/client";
+import { ApiDataStore, type ApiDataStoreDeps } from "./apiDataStore.svelte";
 
 export type ServerTimeStoreDeps = ApiDataStoreDeps & {
 	serverHeartbeat: IServerHeartbeat;
@@ -14,7 +14,7 @@ export type ServerTimeSignal = {
 };
 
 export class ServerTimeStore extends ApiDataStore {
-	#serverHeartbeat: ServerTimeStoreDeps['serverHeartbeat'];
+	#serverHeartbeat: ServerTimeStoreDeps["serverHeartbeat"];
 	#dataSignal: ServerTimeSignal;
 
 	constructor({ httpClient, serverHeartbeat }: ServerTimeStoreDeps) {
@@ -28,7 +28,7 @@ export class ServerTimeStore extends ApiDataStore {
 		try {
 			this.#dataSignal.isLoading = true;
 			const result = await this.httpClient.httpGetAsync({
-				endpoint: '/api/time/now',
+				endpoint: "/api/time/now",
 				strategy: new JsonStrategy(getServerUtcNowResponseSchema),
 			});
 			this.#dataSignal.utcNow = result ? new Date(result.utcNow).getTime() : null;

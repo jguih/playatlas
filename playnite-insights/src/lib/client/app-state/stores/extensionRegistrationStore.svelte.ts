@@ -1,15 +1,15 @@
-import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
+import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte";
 import {
 	getAllExtensionRegistrationsSchema,
 	JsonStrategy,
 	type GetAllExtensionRegistrationsResponse,
-} from '@playnite-insights/lib/client';
-import { ApiDataStore, type ApiDataStoreDeps } from './apiDataStore.svelte';
+} from "@playnite-insights/lib/client";
+import { ApiDataStore, type ApiDataStoreDeps } from "./apiDataStore.svelte";
 
 export type ExtensionRegistrationStoreDeps = ApiDataStoreDeps;
 
 export type ExtensionRegistrationListSignal = {
-	list: GetAllExtensionRegistrationsResponse['registrations'] | null;
+	list: GetAllExtensionRegistrationsResponse["registrations"] | null;
 	isLoading: boolean;
 	hasLoaded: boolean;
 };
@@ -26,7 +26,7 @@ export class ExtensionRegistrationStore extends ApiDataStore {
 		try {
 			this.#dataSignal.isLoading = true;
 			const result = await this.httpClient.httpGetAsync({
-				endpoint: '/api/extension-registration',
+				endpoint: "/api/extension-registration",
 				strategy: new JsonStrategy(getAllExtensionRegistrationsSchema),
 			});
 			this.#dataSignal.list = result.registrations;

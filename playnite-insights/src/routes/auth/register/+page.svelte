@@ -1,29 +1,29 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { getLocatorContext } from '$lib/client/app-state/serviceLocator.svelte';
-	import { toast } from '$lib/client/app-state/toast.svelte';
-	import SolidButton from '$lib/client/components/buttons/SolidButton.svelte';
-	import BaseInput from '$lib/client/components/forms/BaseInput.svelte';
-	import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
-	import { m } from '$lib/paraglide/messages';
+	import { goto } from "$app/navigation";
+	import { getLocatorContext } from "$lib/client/app-state/serviceLocator.svelte";
+	import { toast } from "$lib/client/app-state/toast.svelte";
+	import SolidButton from "$lib/client/components/buttons/SolidButton.svelte";
+	import BaseInput from "$lib/client/components/forms/BaseInput.svelte";
+	import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte";
+	import { m } from "$lib/paraglide/messages";
 	import {
 		AppError,
 		EmptyStrategy,
 		HttpClientNotSetError,
 		type RegisterInstanceCommand,
-	} from '@playnite-insights/lib/client';
-	import type { FormEventHandler } from 'svelte/elements';
+	} from "@playnite-insights/lib/client";
+	import type { FormEventHandler } from "svelte/elements";
 
 	const locator = getLocatorContext();
 	let password: string | null = $state(null);
 	let isLoading: boolean = $state(false);
 
 	const registerInstance = async () => {
-		if (!password) throw new AppError('Instance password cannot be null');
+		if (!password) throw new AppError("Instance password cannot be null");
 		if (!locator.httpClient) throw new HttpClientNotSetError();
 		const command: RegisterInstanceCommand = { password };
 		await locator.httpClient.httpPostAsync({
-			endpoint: '/api/auth/register',
+			endpoint: "/api/auth/register",
 			strategy: new EmptyStrategy(),
 			body: command,
 		});
@@ -33,13 +33,13 @@
 		e.preventDefault();
 		registerInstance()
 			.then(async () => {
-				await goto('/auth/login', { replaceState: true });
+				await goto("/auth/login", { replaceState: true });
 				isLoading = false;
 			})
 			.catch((error) => {
 				handleClientErrors(error, `[registerInstance] failed`);
 				toast.error({
-					category: 'app',
+					category: "app",
 					message: m.toast_failed_to_create_instance_password_message(),
 					title: m.toast_failed_to_create_instance_password_title(),
 				});
@@ -57,11 +57,11 @@
 			<h1 class="mb-4 text-3xl">
 				{@html m.register_label_create_password({
 					begin_span: '<span class="text-primary-light-active-fg"">',
-					end_span: '</span>',
+					end_span: "</span>",
 				})}
 			</h1>
 			<BaseInput
-				class={['bg-background-1 p-2']}
+				class={["bg-background-1 p-2"]}
 				type="password"
 				id="instance-password"
 				name="password"
@@ -73,7 +73,7 @@
 			/>
 		</label>
 		<SolidButton
-			class={['mt-4 ml-auto block']}
+			class={["ml-auto mt-4 block"]}
 			size="lg"
 			type="submit"
 			{isLoading}

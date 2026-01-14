@@ -1,9 +1,9 @@
-import type { IPlatformRepositoryPort } from '../../infra/platform.repository.port';
+import type { IPlatformRepositoryPort } from "../../infra/platform.repository.port";
 import type {
 	GetPlatformsByIdsQuery,
 	GetPlatformsByIdsQueryResult,
-} from './get-platforms-by-ids.query';
-import type { IGetPlatformsByIdsQueryHandlerPort } from './get-platforms-by-ids.query-handler.port';
+} from "./get-platforms-by-ids.query";
+import type { IGetPlatformsByIdsQueryHandlerPort } from "./get-platforms-by-ids.query-handler.port";
 
 export type GetPlatformsByIdsQueryHandlerDeps = {
 	platformRepository: IPlatformRepositoryPort;

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { DropdownProps } from './types';
+	import { onMount } from "svelte";
+	import type { DropdownProps } from "./types";
 
 	let {
 		body,
@@ -20,8 +20,8 @@
 
 	onMount(() => {
 		if (hideOnClickOutside) {
-			document.addEventListener('click', handleClickOutside);
-			return () => document.removeEventListener('click', handleClickOutside);
+			document.addEventListener("click", handleClickOutside);
+			return () => document.removeEventListener("click", handleClickOutside);
 		}
 	});
 </script>

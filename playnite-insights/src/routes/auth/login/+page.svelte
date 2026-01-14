@@ -1,30 +1,30 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { getLocatorContext } from '$lib/client/app-state/serviceLocator.svelte';
-	import { toast } from '$lib/client/app-state/toast.svelte';
-	import SolidButton from '$lib/client/components/buttons/SolidButton.svelte';
-	import BaseInput from '$lib/client/components/forms/BaseInput.svelte';
-	import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
-	import { m } from '$lib/paraglide/messages';
+	import { goto } from "$app/navigation";
+	import { getLocatorContext } from "$lib/client/app-state/serviceLocator.svelte";
+	import { toast } from "$lib/client/app-state/toast.svelte";
+	import SolidButton from "$lib/client/components/buttons/SolidButton.svelte";
+	import BaseInput from "$lib/client/components/forms/BaseInput.svelte";
+	import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte";
+	import { m } from "$lib/paraglide/messages";
 	import {
 		AppError,
 		HttpClientNotSetError,
 		JsonStrategy,
 		loginInstanceResponseSchema,
 		type LoginInstanceCommand,
-	} from '@playnite-insights/lib/client';
-	import type { FormEventHandler } from 'svelte/elements';
+	} from "@playnite-insights/lib/client";
+	import type { FormEventHandler } from "svelte/elements";
 
 	const locator = getLocatorContext();
 	let password: string | null = $state(null);
 	let isLoading: boolean = $state(false);
 
 	const loginInstance = async () => {
-		if (!password) throw new AppError('Instance password cannot be null');
+		if (!password) throw new AppError("Instance password cannot be null");
 		if (!locator.httpClient) throw new HttpClientNotSetError();
 		const command: LoginInstanceCommand = { password };
 		const response = await locator.httpClient.httpPostAsync({
-			endpoint: '/api/auth/login',
+			endpoint: "/api/auth/login",
 			strategy: new JsonStrategy(loginInstanceResponseSchema),
 			body: command,
 		});
@@ -37,20 +37,20 @@
 		loginInstance()
 			.then(async ({ sessionId, syncId }) => {
 				await locator.keyValueRepository.putAsync({
-					keyvalue: { Key: 'session-id', Value: sessionId },
+					keyvalue: { Key: "session-id", Value: sessionId },
 				});
 				await locator.keyValueRepository.putAsync({
-					keyvalue: { Key: 'sync-id', Value: syncId },
+					keyvalue: { Key: "sync-id", Value: syncId },
 				});
 				await locator.eventSourceManager.connect();
 				await locator.loadStoresData();
-				await goto('/', { replaceState: true });
+				await goto("/", { replaceState: true });
 				isLoading = false;
 			})
 			.catch((error) => {
 				handleClientErrors(error, `[loginInstance] failed`);
 				toast.error({
-					category: 'app',
+					category: "app",
 					title: m.toast_failed_to_login_title(),
 					message: m.toast_failed_to_login_message(),
 				});
@@ -68,11 +68,11 @@
 			<h1 class="mb-4 text-3xl">
 				{@html m.login_label_enter_password({
 					begin_span: '<span class="text-primary-light-active-fg">',
-					end_span: '</span>',
+					end_span: "</span>",
 				})}
 			</h1>
 			<BaseInput
-				class={['bg-background-1 p-2']}
+				class={["bg-background-1 p-2"]}
 				type="password"
 				id="instance-password"
 				name="password"
@@ -83,7 +83,7 @@
 			/>
 		</label>
 		<SolidButton
-			class={['mt-4 ml-auto block']}
+			class={["ml-auto mt-4 block"]}
 			size="lg"
 			type="submit"
 			{isLoading}

@@ -1,10 +1,10 @@
-import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
+import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte";
 import {
 	getPlayniteLibraryMetricsResponseSchema,
 	JsonStrategy,
 	type GetPlayniteLibraryMetricsResponse,
-} from '@playnite-insights/lib/client';
-import { ApiDataStore, type ApiDataStoreDeps } from './apiDataStore.svelte';
+} from "@playnite-insights/lib/client";
+import { ApiDataStore, type ApiDataStoreDeps } from "./apiDataStore.svelte";
 
 export type LibraryMetricsStoreDeps = ApiDataStoreDeps;
 
@@ -25,7 +25,7 @@ export class LibraryMetricsStore extends ApiDataStore {
 		try {
 			this.#dataSignal.isLoading = true;
 			const result = await this.httpClient.httpGetAsync({
-				endpoint: '/api/library/metrics',
+				endpoint: "/api/library/metrics",
 				strategy: new JsonStrategy(getPlayniteLibraryMetricsResponseSchema),
 			});
 			this.#dataSignal.data = result;

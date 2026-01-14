@@ -1,2 +1,2 @@
-export * from './sync-platforms.command';
-export * from './sync-platforms.command-handler';
+export * from "./sync-platforms.command";
+export * from "./sync-platforms.command-handler";

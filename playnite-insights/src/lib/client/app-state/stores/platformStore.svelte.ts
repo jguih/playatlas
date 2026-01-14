@@ -1,11 +1,11 @@
-import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
+import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte";
 import {
 	FetchClientStrategyError,
 	getAllPlatformsResponseSchema,
 	JsonStrategy,
 	type GetAllPlatformsResponse,
-} from '@playnite-insights/lib/client';
-import { ApiDataStore, type ApiDataStoreDeps } from './apiDataStore.svelte';
+} from "@playnite-insights/lib/client";
+import { ApiDataStore, type ApiDataStoreDeps } from "./apiDataStore.svelte";
 
 export type PlatformStoreDeps = ApiDataStoreDeps;
 
@@ -26,7 +26,7 @@ export class PlatformStore extends ApiDataStore {
 		try {
 			this.#dataSignal.isLoading = true;
 			const result = await this.httpClient.httpGetAsync({
-				endpoint: '/api/platform',
+				endpoint: "/api/platform",
 				strategy: new JsonStrategy(getAllPlatformsResponseSchema),
 			});
 			this.#dataSignal.list = result;

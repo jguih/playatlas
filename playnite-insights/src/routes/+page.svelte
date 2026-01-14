@@ -1,31 +1,31 @@
 <script lang="ts">
-	import { beforeNavigate, goto } from '$app/navigation';
-	import { page } from '$app/state';
-	import { getLocatorContext } from '$lib/client/app-state/serviceLocator.svelte';
-	import Dashboard from '$lib/client/components/bottom-nav/Dashboard.svelte';
-	import Home, { updateBottomNavHomeHref } from '$lib/client/components/bottom-nav/Home.svelte';
-	import Settings from '$lib/client/components/bottom-nav/Settings.svelte';
-	import BottomNav from '$lib/client/components/BottomNav.svelte';
-	import LightButton from '$lib/client/components/buttons/LightButton.svelte';
-	import SolidButton from '$lib/client/components/buttons/SolidButton.svelte';
-	import Header from '$lib/client/components/header/Header.svelte';
-	import FiltersButton from '$lib/client/components/home-page/FiltersButton.svelte';
-	import FiltersSidebar from '$lib/client/components/home-page/FiltersSidebar.svelte';
-	import BaseAppLayout from '$lib/client/components/layout/BaseAppLayout.svelte';
-	import Main from '$lib/client/components/Main.svelte';
-	import SearchBar from '$lib/client/components/SearchBar.svelte';
-	import { HomePageViewModel } from '$lib/client/page/home/homePageViewModel.svelte';
+	import { beforeNavigate, goto } from "$app/navigation";
+	import { page } from "$app/state";
+	import { getLocatorContext } from "$lib/client/app-state/serviceLocator.svelte";
+	import Dashboard from "$lib/client/components/bottom-nav/Dashboard.svelte";
+	import Home, { updateBottomNavHomeHref } from "$lib/client/components/bottom-nav/Home.svelte";
+	import Settings from "$lib/client/components/bottom-nav/Settings.svelte";
+	import BottomNav from "$lib/client/components/BottomNav.svelte";
+	import LightButton from "$lib/client/components/buttons/LightButton.svelte";
+	import SolidButton from "$lib/client/components/buttons/SolidButton.svelte";
+	import Header from "$lib/client/components/header/Header.svelte";
+	import FiltersButton from "$lib/client/components/home-page/FiltersButton.svelte";
+	import FiltersSidebar from "$lib/client/components/home-page/FiltersSidebar.svelte";
+	import BaseAppLayout from "$lib/client/components/layout/BaseAppLayout.svelte";
+	import Main from "$lib/client/components/Main.svelte";
+	import SearchBar from "$lib/client/components/SearchBar.svelte";
+	import { HomePageViewModel } from "$lib/client/page/home/homePageViewModel.svelte";
 	import {
 		homePageSearchParamsFilterKeys,
 		homePageSearchParamsKeys,
-	} from '$lib/client/page/home/searchParams.constants';
-	import type { HomePageSearchParamKeys } from '$lib/client/page/home/searchParams.types';
-	import { parseHomePageSearchParams } from '$lib/client/page/home/searchParams.utils';
-	import { m } from '$lib/paraglide/messages.js';
-	import { ChevronLeft, ChevronRight } from '@lucide/svelte';
-	import { gameSortBy, gameSortOrder } from '@playatlas/game-library/domain';
-	import { type GameResponseDto } from '@playatlas/game-library/dtos';
-	import type { HTMLSelectAttributes } from 'svelte/elements';
+	} from "$lib/client/page/home/searchParams.constants";
+	import type { HomePageSearchParamKeys } from "$lib/client/page/home/searchParams.types";
+	import { parseHomePageSearchParams } from "$lib/client/page/home/searchParams.utils";
+	import { m } from "$lib/paraglide/messages.js";
+	import { ChevronLeft, ChevronRight } from "@lucide/svelte";
+	import { gameSortBy, gameSortOrder } from "@playatlas/game-library/domain";
+	import { type GameResponseDto } from "@playatlas/game-library/dtos";
+	import type { HTMLSelectAttributes } from "svelte/elements";
 
 	const locator = getLocatorContext();
 	const { gameStore, applicationSettingsStore } = locator;
@@ -43,11 +43,11 @@
 
 	let main: HTMLElement | undefined = $state();
 
-	const handleOnPageSizeChange: HTMLSelectAttributes['onchange'] = (event) => {
+	const handleOnPageSizeChange: HTMLSelectAttributes["onchange"] = (event) => {
 		const value = event.currentTarget.value;
 		const params = new URLSearchParams(page.url.searchParams);
 		params.set(homePageSearchParamsKeys.pageSize, value);
-		params.set(homePageSearchParamsKeys.page, '1');
+		params.set(homePageSearchParamsKeys.page, "1");
 		const newUrl = `${page.url.pathname}?${params.toString()}`;
 		if (main) {
 			main.scrollTop = 0;
@@ -67,14 +67,14 @@
 
 	const setSearchParam = (key: HomePageSearchParamKeys, value: string | boolean | null) => {
 		const params = new URLSearchParams(page.url.searchParams);
-		params.set(homePageSearchParamsKeys.page, '1');
+		params.set(homePageSearchParamsKeys.page, "1");
 		if (!value) {
 			params.delete(key);
-		} else if (typeof value === 'string') {
-			if (value === '') params.delete(key);
+		} else if (typeof value === "string") {
+			if (value === "") params.delete(key);
 			else params.set(key, value);
-		} else if (typeof value === 'boolean') {
-			if (value) params.set(key, '1');
+		} else if (typeof value === "boolean") {
+			if (value) params.set(key, "1");
 			else params.delete(key);
 		}
 		const newUrl = `${page.url.pathname}?${params.toString()}`;
@@ -86,7 +86,7 @@
 
 	const appendSearchParam = (key: HomePageSearchParamKeys, value: string) => {
 		const params = new URLSearchParams(page.url.searchParams);
-		params.set(homePageSearchParamsKeys.page, '1');
+		params.set(homePageSearchParamsKeys.page, "1");
 		params.append(key, value);
 		const newUrl = `${page.url.pathname}?${params.toString()}`;
 		if (main) {
@@ -97,7 +97,7 @@
 
 	const removeSearchParam = (key: HomePageSearchParamKeys, value?: string | null) => {
 		const params = new URLSearchParams(page.url.searchParams);
-		params.set(homePageSearchParamsKeys.page, '1');
+		params.set(homePageSearchParamsKeys.page, "1");
 		if (value) params.delete(key, value);
 		else params.delete(key);
 		const newUrl = `${page.url.pathname}?${params.toString()}`;
@@ -109,7 +109,7 @@
 
 	const removeAllFilterParams = () => {
 		const params = new URLSearchParams(page.url.searchParams);
-		params.set(homePageSearchParamsKeys.page, '1');
+		params.set(homePageSearchParamsKeys.page, "1");
 		for (const filterParamKey of Object.values(homePageSearchParamsFilterKeys)) {
 			params.delete(filterParamKey);
 		}
@@ -123,7 +123,7 @@
 	// Save current applied filters before navigate
 	beforeNavigate(() => {
 		const params = new URLSearchParams(page.url.searchParams);
-		const newHref = params.size > 0 ? `${page.url.pathname}?${params.toString()}` : '';
+		const newHref = params.size > 0 ? `${page.url.pathname}?${params.toString()}` : "";
 		updateBottomNavHomeHref(newHref);
 	});
 </script>
@@ -131,12 +131,12 @@
 {#snippet gameCard(game: GameResponseDto, imageSrc: string)}
 	<li
 		class={[
-			'contain-layout contain-paint contain-size contain-style',
-			'm-0 aspect-[1/1.6] p-0 shadow outline-0',
-			'border-background-1 border-4 border-solid',
-			'hover:border-primary-light-hover-fg',
-			'active:border-primary-light-active-fg',
-			'focus:border-primary-light-active-fg',
+			"contain-size contain-layout contain-paint contain-style",
+			"m-0 aspect-[1/1.6] p-0 shadow outline-0",
+			"border-background-1 border-4 border-solid",
+			"hover:border-primary-light-hover-fg",
+			"active:border-primary-light-active-fg",
+			"focus:border-primary-light-active-fg",
 		]}
 	>
 		<a href={`/game/?id=${game.Id}`}>
@@ -149,7 +149,7 @@
 				class="h-7/8 w-full object-cover"
 			/>
 			<div
-				class="bg-background-1 bottom-0 flex h-1/8 w-full flex-row items-center justify-center p-1"
+				class="bg-background-1 h-1/8 bottom-0 flex w-full flex-row items-center justify-center p-1"
 			>
 				<p class="mt-1 truncate text-center text-sm text-white">{game.Name}</p>
 			</div>
@@ -159,11 +159,11 @@
 
 {#snippet gameCardSkeleton()}
 	<li
-		class={['m-0 aspect-[1/1.6] p-0 shadow outline-0', 'border-background-1 border-4 border-solid']}
+		class={["m-0 aspect-[1/1.6] p-0 shadow outline-0", "border-background-1 border-4 border-solid"]}
 	>
 		<div class="bg-background-3 h-7/8 w-full animate-pulse"></div>
 		<div
-			class="bg-background-1 bottom-0 flex h-1/8 w-full flex-row items-center justify-center p-1"
+			class="bg-background-1 h-1/8 bottom-0 flex w-full flex-row items-center justify-center p-1"
 		>
 			<div class="bg-background-3 h-4 w-3/4 animate-pulse rounded"></div>
 		</div>
@@ -196,7 +196,7 @@
 	{/snippet}
 </FiltersSidebar>
 <BaseAppLayout>
-	<Header class={['flex flex-row items-center gap-2']}>
+	<Header class={["flex flex-row items-center gap-2"]}>
 		<a
 			href={`/?${page.url.searchParams.toString()}`}
 			class="h-fit w-fit"
@@ -284,7 +284,7 @@
 			<LightButton
 				disabled={homePageSearchParams.pagination.page <= 1}
 				onclick={() => handleOnPageChange(homePageSearchParams.pagination.page - 1)}
-				class={['px-2 py-1']}
+				class={["px-2 py-1"]}
 				aria-label="previous page"
 			>
 				<ChevronLeft />
@@ -295,14 +295,14 @@
 				{:else if page === homePageSearchParams.pagination.page}
 					<SolidButton
 						selected
-						class={['px-2 py-1']}
+						class={["px-2 py-1"]}
 					>
 						{page}
 					</SolidButton>
 				{:else}
 					<LightButton
 						onclick={() => handleOnPageChange(page)}
-						class={['px-2 py-1']}
+						class={["px-2 py-1"]}
 					>
 						{page}</LightButton
 					>
@@ -312,7 +312,7 @@
 				onclick={() => handleOnPageChange(homePageSearchParams.pagination.page + 1)}
 				disabled={!vm.gamesSignal ||
 					homePageSearchParams.pagination.page >= vm.gamesSignal.totalPages}
-				class={['px-2 py-1']}
+				class={["px-2 py-1"]}
 				aria-label="next page"
 			>
 				<ChevronRight />

@@ -1,14 +1,14 @@
-import { goto } from '$app/navigation';
-import { m } from '$lib/paraglide/messages';
-import { apiSSEventDataSchema, type APISSEventType } from '@playnite-insights/lib/client';
-import type z from 'zod';
-import type { CompanyStore } from '../app-state/stores/companyStore.svelte';
-import type { GameSessionStore } from '../app-state/stores/gameSessionStore.svelte';
-import type { GameStore } from '../app-state/stores/gameStore.svelte';
-import type { GenreStore } from '../app-state/stores/genreStore.svelte';
-import type { LibraryMetricsStore } from '../app-state/stores/libraryMetricsStore.svelte';
-import type { PlatformStore } from '../app-state/stores/platformStore.svelte';
-import { toast } from '../app-state/toast.svelte';
+import { goto } from "$app/navigation";
+import { m } from "$lib/paraglide/messages";
+import { apiSSEventDataSchema, type APISSEventType } from "@playnite-insights/lib/client";
+import type z from "zod";
+import type { CompanyStore } from "../app-state/stores/companyStore.svelte";
+import type { GameSessionStore } from "../app-state/stores/gameSessionStore.svelte";
+import type { GameStore } from "../app-state/stores/gameStore.svelte";
+import type { GenreStore } from "../app-state/stores/genreStore.svelte";
+import type { LibraryMetricsStore } from "../app-state/stores/libraryMetricsStore.svelte";
+import type { PlatformStore } from "../app-state/stores/platformStore.svelte";
+import { toast } from "../app-state/toast.svelte";
 
 export type EventSourceManagerListenerCallback<T extends APISSEventType> = (args: {
 	data: z.infer<(typeof apiSSEventDataSchema)[T]>;
@@ -37,7 +37,7 @@ export class EventSourceManager {
 	#serverConnectionStatusText: string;
 	#listeners: Map<APISSEventType, Set<(e: MessageEvent<string>) => void>>;
 	#clearHeartbeatListener: ReturnType<typeof this.addListener> | null = null;
-	#getSessionId: EventSourceManagerDeps['getSessionId'];
+	#getSessionId: EventSourceManagerDeps["getSessionId"];
 	#authFailed: boolean = false;
 	// Stores
 	#gameStore: GameStore;
@@ -47,7 +47,7 @@ export class EventSourceManager {
 	#genreStore: GenreStore;
 	#gameSessionStore: GameSessionStore;
 
-	static EVENT_ENDPOINT = '/api/event';
+	static EVENT_ENDPOINT = "/api/event";
 
 	constructor({
 		getSessionId,
@@ -126,7 +126,7 @@ export class EventSourceManager {
 			this.#eventSource.close();
 		}
 
-		const sessionId = (await this.#getSessionId()) ?? '';
+		const sessionId = (await this.#getSessionId()) ?? "";
 		this.#eventSource = new EventSource(
 			`${EventSourceManager.EVENT_ENDPOINT}?sessionId=${sessionId}`,
 		);
@@ -139,7 +139,7 @@ export class EventSourceManager {
 
 		this.#clearHeartbeatListener?.();
 		this.#clearHeartbeatListener = this.addListener({
-			type: 'heartbeat',
+			type: "heartbeat",
 			cb: () => {
 				if (this.serverConnectionStatus === false) {
 					this.#serverConnectionStatus = true;
@@ -179,16 +179,16 @@ export class EventSourceManager {
 		this.clearGlobalListeners();
 		this.#globalListenersUnsub.push(
 			this.addListener({
-				type: 'authError',
+				type: "authError",
 				cb: async () => {
 					if (!this.#authFailed) {
 						this.#authFailed = true;
 						toast.warning({
-							category: 'network',
+							category: "network",
 							title: m.toast_failed_to_connect_with_server_client_not_authorized_title(),
 							message: m.toast_failed_to_connect_with_server_client_not_authorized_message(),
 							durationMs: 60_000,
-							action: () => goto('/auth/login', { replaceState: true }),
+							action: () => goto("/auth/login", { replaceState: true }),
 						});
 						if (this.#eventSource) {
 							this.#detachAllListeners();
@@ -199,7 +199,7 @@ export class EventSourceManager {
 				},
 			}),
 			this.addListener({
-				type: 'gameLibraryUpdated',
+				type: "gameLibraryUpdated",
 				cb: async () =>
 					await Promise.all([
 						this.#gameStore.loadGames(),
@@ -210,11 +210,11 @@ export class EventSourceManager {
 					]),
 			}),
 			this.addListener({
-				type: 'sessionOpened',
+				type: "sessionOpened",
 				cb: async () => await this.#gameSessionStore.loadRecentSessions(),
 			}),
 			this.addListener({
-				type: 'sessionClosed',
+				type: "sessionClosed",
 				cb: async () => await this.#gameSessionStore.loadRecentSessions(),
 			}),
 		);

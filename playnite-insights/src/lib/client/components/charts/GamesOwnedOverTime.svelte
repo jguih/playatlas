@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { BarSeriesOption, ComposeOption } from 'echarts';
-	import { BarChart } from 'echarts/charts';
-	import { GridComponent, TitleComponent, TooltipComponent } from 'echarts/components';
-	import * as echarts from 'echarts/core';
-	import { CanvasRenderer } from 'echarts/renderers';
-	import { onMount } from 'svelte';
+	import type { BarSeriesOption, ComposeOption } from "echarts";
+	import { BarChart } from "echarts/charts";
+	import { GridComponent, TitleComponent, TooltipComponent } from "echarts/components";
+	import * as echarts from "echarts/core";
+	import { CanvasRenderer } from "echarts/renderers";
+	import { onMount } from "svelte";
 
 	echarts.use([BarChart, TitleComponent, TooltipComponent, GridComponent, CanvasRenderer]);
 
@@ -15,7 +15,7 @@
 
 	let { xAxis, series }: Props = $props();
 
-	const id = 'chart-games-owned-over-time';
+	const id = "chart-games-owned-over-time";
 	let chart: ReturnType<typeof echarts.init> | null = null;
 	const option: ComposeOption<BarSeriesOption> = $derived({
 		title: {
@@ -23,27 +23,27 @@
 		},
 		tooltip: {},
 		grid: {
-			top: '8%',
-			left: '15%',
-			bottom: '12%',
+			top: "8%",
+			left: "15%",
+			bottom: "12%",
 		},
 		xAxis: {
 			data: xAxis.data,
 			axisLabel: {
-				color: 'white',
+				color: "white",
 			},
 		},
 		yAxis: {
 			axisLabel: {
-				color: 'white',
+				color: "white",
 			},
 		},
 		series: [
 			{
 				name: series.bar.label,
-				type: 'bar',
+				type: "bar",
 				data: series.bar.data,
-				color: ['hsl(198, 100%, 67%)'],
+				color: ["hsl(198, 100%, 67%)"],
 			},
 		],
 	});
@@ -53,9 +53,9 @@
 		chart.setOption(option);
 
 		const resize = () => chart?.resize();
-		window.addEventListener('resize', resize);
+		window.addEventListener("resize", resize);
 		return () => {
-			window.removeEventListener('resize', resize);
+			window.removeEventListener("resize", resize);
 			chart?.dispose();
 		};
 	});

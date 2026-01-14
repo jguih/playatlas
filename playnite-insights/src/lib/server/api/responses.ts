@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+import { json } from "@sveltejs/kit";
 
 export type ApiErrorResponse = {
 	error: {
@@ -12,7 +12,7 @@ const errorResponse = (body: ApiErrorResponse, init: ResponseInit = { status: 40
 };
 
 const successResponse = (status: 200 | 201 = 200) => {
-	return json({ status: 'ok' }, { status });
+	return json({ status: "ok" }, { status });
 };
 
 export const apiResponse = {

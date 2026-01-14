@@ -1,6 +1,6 @@
-import type { IAsyncCommandHandlerPort } from '$lib/modules/common/common';
-import type { IGenreRepositoryPort } from '../../infra';
-import type { SyncGenresCommand } from './sync-genres.command';
+import type { IAsyncCommandHandlerPort } from "$lib/modules/common/common";
+import type { IGenreRepositoryPort } from "../../infra";
+import type { SyncGenresCommand } from "./sync-genres.command";
 
 export type ISyncGenresCommandHandlerPort = IAsyncCommandHandlerPort<SyncGenresCommand, void>;
 

@@ -1,4 +1,4 @@
-import type { EventSourceManager } from './eventSourceManager.svelte';
+import type { EventSourceManager } from "./eventSourceManager.svelte";
 
 export type ServerHeartbeatDeps = {
 	eventSourceManager: EventSourceManager;
@@ -9,7 +9,7 @@ export interface IServerHeartbeat {
 }
 
 export class ServerHeartbeat implements IServerHeartbeat {
-	#eventSourceManager: ServerHeartbeatDeps['eventSourceManager'];
+	#eventSourceManager: ServerHeartbeatDeps["eventSourceManager"];
 	#isAlive: boolean;
 
 	constructor(deps: ServerHeartbeatDeps) {

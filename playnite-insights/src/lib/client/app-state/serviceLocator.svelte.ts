@@ -4,36 +4,36 @@ import {
 	syncIdHeader,
 	SyncQueueFactory,
 	type IFetchClient,
-} from '@playnite-insights/lib/client';
-import { getContext, setContext } from 'svelte';
-import { AuthService } from '../auth-service/authService.svelte';
-import { GameNoteRepository } from '../db/gameNotesRepository.svelte';
-import { KeyValueRepository } from '../db/keyValueRepository.svelte';
-import { SyncQueueRepository } from '../db/syncQueueRepository.svelte';
-import { EventSourceManager } from '../event-source-manager/eventSourceManager.svelte';
-import { ServerHeartbeat } from '../event-source-manager/serverHeartbeat.svelte';
-import { InstanceManager } from '../instanceManager.svelte';
-import { LogService, type ILogService } from '../logService.svelte';
-import { ServiceWorkerManager } from '../serviceWorkerManager.svelte';
-import { SyncQueue } from '../sync-queue/syncQueue.svelte';
-import { SynchronizationService } from '../synchronization-service/synchronizationService.svelte';
-import { DateTimeHandler, type IDateTimeHandler } from '../utils/dateTimeHandler.svelte';
+} from "@playnite-insights/lib/client";
+import { getContext, setContext } from "svelte";
+import { AuthService } from "../auth-service/authService.svelte";
+import { GameNoteRepository } from "../db/gameNotesRepository.svelte";
+import { KeyValueRepository } from "../db/keyValueRepository.svelte";
+import { SyncQueueRepository } from "../db/syncQueueRepository.svelte";
+import { EventSourceManager } from "../event-source-manager/eventSourceManager.svelte";
+import { ServerHeartbeat } from "../event-source-manager/serverHeartbeat.svelte";
+import { InstanceManager } from "../instanceManager.svelte";
+import { LogService, type ILogService } from "../logService.svelte";
+import { ServiceWorkerManager } from "../serviceWorkerManager.svelte";
+import { SyncQueue } from "../sync-queue/syncQueue.svelte";
+import { SynchronizationService } from "../synchronization-service/synchronizationService.svelte";
+import { DateTimeHandler, type IDateTimeHandler } from "../utils/dateTimeHandler.svelte";
 import {
 	IndexedDbManager,
 	type IIndexedDbManager,
 	type IndexedDbSignal,
-} from './indexeddbManager.svelte';
-import { ApplicationSettingsStore } from './stores/applicationSettingsStore.svelte';
-import { CompanyStore } from './stores/companyStore.svelte';
-import { ExtensionRegistrationStore } from './stores/extensionRegistrationStore.svelte';
-import { GameNoteStore } from './stores/gameNoteStore.svelte';
-import { GameSessionStore } from './stores/gameSessionStore.svelte';
-import { GameStore } from './stores/gameStore.svelte';
-import { GenreStore } from './stores/genreStore.svelte';
-import { LibraryMetricsStore } from './stores/libraryMetricsStore.svelte';
-import { PlatformStore } from './stores/platformStore.svelte';
-import { ScreenshotStore } from './stores/screenshotStore.svelte';
-import { ServerTimeStore } from './stores/serverTimeStore.svelte';
+} from "./indexeddbManager.svelte";
+import { ApplicationSettingsStore } from "./stores/applicationSettingsStore.svelte";
+import { CompanyStore } from "./stores/companyStore.svelte";
+import { ExtensionRegistrationStore } from "./stores/extensionRegistrationStore.svelte";
+import { GameNoteStore } from "./stores/gameNoteStore.svelte";
+import { GameSessionStore } from "./stores/gameSessionStore.svelte";
+import { GameStore } from "./stores/gameStore.svelte";
+import { GenreStore } from "./stores/genreStore.svelte";
+import { LibraryMetricsStore } from "./stores/libraryMetricsStore.svelte";
+import { PlatformStore } from "./stores/platformStore.svelte";
+import { ScreenshotStore } from "./stores/screenshotStore.svelte";
+import { ServerTimeStore } from "./stores/serverTimeStore.svelte";
 
 export class ClientServiceLocator {
 	// Services
@@ -230,7 +230,7 @@ export class ClientServiceLocator {
 		const headers = new Headers();
 		const sessionId = await this.authService.getSessionId();
 		const syncId = await this.syncService.getSyncId();
-		if (sessionId) headers.set('Authorization', `Bearer ${sessionId}`);
+		if (sessionId) headers.set("Authorization", `Bearer ${sessionId}`);
 		if (syncId) headers.set(syncIdHeader, syncId);
 		return headers;
 	};
@@ -357,7 +357,7 @@ export class ClientServiceLocator {
 	}
 }
 
-const CONTEXT_KEY = 'locator';
+const CONTEXT_KEY = "locator";
 
 export const setLocatorContext = (locator: ClientServiceLocator) => {
 	setContext(CONTEXT_KEY, locator);

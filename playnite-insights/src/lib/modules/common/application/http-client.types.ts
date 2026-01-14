@@ -5,4 +5,4 @@ export type HttpClientCommonFnProps = {
 	searchParams?: HttpClientSearchParams;
 };
 
-export type HttpClientCommonFnExtraArgs = Omit<RequestInit, 'method'>;
+export type HttpClientCommonFnExtraArgs = Omit<RequestInit, "method">;

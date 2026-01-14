@@ -1,6 +1,6 @@
-import type { IAsyncCommandHandlerPort } from '$lib/modules/common/common';
-import type { IPlatformRepositoryPort } from '../../infra/platform.repository.port';
-import type { SyncPlatformsCommand } from './sync-platforms.command';
+import type { IAsyncCommandHandlerPort } from "$lib/modules/common/common";
+import type { IPlatformRepositoryPort } from "../../infra/platform.repository.port";
+import type { SyncPlatformsCommand } from "./sync-platforms.command";
 
 export type ISyncPlatformsCommandHandlerPort = IAsyncCommandHandlerPort<SyncPlatformsCommand, void>;
 

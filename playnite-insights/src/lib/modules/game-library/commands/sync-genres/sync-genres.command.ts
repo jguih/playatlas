@@ -1,4 +1,4 @@
-import type { Genre } from '../../domain/genre.entity';
+import type { Genre } from "../../domain/genre.entity";
 
 export type SyncGenresCommand = {
 	genres: Genre | Genre[];

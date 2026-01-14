@@ -1,4 +1,4 @@
-import type { ClientEntity } from '../common/client-entity';
+import type { ClientEntity } from "../common/client-entity";
 
 export interface IClientEntityRepository<
 	TEntity extends ClientEntity<TEntityKey>,

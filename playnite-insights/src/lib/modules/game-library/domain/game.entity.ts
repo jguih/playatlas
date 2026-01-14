@@ -1,4 +1,4 @@
-import type { ClientEntity } from '$lib/modules/common/common';
+import type { ClientEntity } from "$lib/modules/common/common";
 
 export type GameId = string;
 export type Game = ClientEntity<GameId> & {
@@ -24,7 +24,7 @@ export type Game = ClientEntity<GameId> & {
 	DeleteAfter: Date | null;
 	// Front-end specific
 	Sync: {
-		Status: 'pending' | 'synced' | 'error';
+		Status: "pending" | "synced" | "error";
 		ErrorMessage: string | null;
 		LastSyncedAt: Date | null;
 	};

@@ -5,13 +5,13 @@ import {
 	type GamePageSize,
 	type GameSortBy,
 	type GameSortOrder,
-} from '@playatlas/game-library/domain';
-import { homePageSearchParamsKeys } from './searchParams.constants';
+} from "@playatlas/game-library/domain";
+import { homePageSearchParamsKeys } from "./searchParams.constants";
 import type {
 	HomePageFilterParams,
 	HomePagePaginationParams,
 	HomePageSortingParams,
-} from './searchParams.types';
+} from "./searchParams.types";
 
 export const isValidPage = (value?: number | null): value is number => {
 	if (!value) return false;
@@ -50,8 +50,8 @@ export const parseHomePageSearchParams = (params: URLSearchParams): HomePageSear
 	const page: number = isValidPage(_page_as_number) ? _page_as_number : 1;
 	// Filtering
 	const query = params.get(homePageSearchParamsKeys.query);
-	const installed = params.get(homePageSearchParamsKeys.installed) === '1';
-	const notInstalled = params.get(homePageSearchParamsKeys.notInstalled) === '1';
+	const installed = params.get(homePageSearchParamsKeys.installed) === "1";
+	const notInstalled = params.get(homePageSearchParamsKeys.notInstalled) === "1";
 	const developers = params.getAll(homePageSearchParamsKeys.developer);
 	const publishers = params.getAll(homePageSearchParamsKeys.publisher);
 	const genres = params.getAll(homePageSearchParamsKeys.genre);
@@ -60,7 +60,7 @@ export const parseHomePageSearchParams = (params: URLSearchParams): HomePageSear
 	const _sortBy = params.get(homePageSearchParamsKeys.sortBy);
 	const sortBy: GameSortBy = isValidGameSortBy(_sortBy) ? _sortBy : gameSortBy[0];
 	const _sortOrder = params.get(homePageSearchParamsKeys.sortOrder);
-	const sortOrder: GameSortOrder = isValidGameSortOrder(_sortOrder) ? _sortOrder : 'asc';
+	const sortOrder: GameSortOrder = isValidGameSortOrder(_sortOrder) ? _sortOrder : "asc";
 
 	return {
 		pagination: { pageSize, page },

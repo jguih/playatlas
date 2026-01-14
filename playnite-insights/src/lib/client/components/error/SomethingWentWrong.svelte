@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import SolidButton from '../buttons/SolidButton.svelte';
+	import { m } from "$lib/paraglide/messages";
+	import SolidButton from "../buttons/SolidButton.svelte";
 </script>
 
 <div class="flex h-full w-full flex-col justify-end gap-2">

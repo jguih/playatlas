@@ -1,4 +1,4 @@
-import type { IHttpDataStorePort } from './http-data.store.port';
+import type { IHttpDataStorePort } from "./http-data.store.port";
 
 export type ServerTimeSignal = {
 	utcNow: number | null;

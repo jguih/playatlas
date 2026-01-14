@@ -1,6 +1,6 @@
-import type { IClientEntityFactoryPort } from '$lib/modules/common/testing';
-import { faker } from '@faker-js/faker';
-import type { Game } from '../domain';
+import type { IClientEntityFactoryPort } from "$lib/modules/common/testing";
+import { faker } from "@faker-js/faker";
+import type { Game } from "../domain";
 
 export type IGameFactoryPort = IClientEntityFactoryPort<Game>;
 
@@ -30,18 +30,18 @@ export class GameFactory implements IGameFactoryPort {
 			DeleteAfter: null,
 			DeletedAt: null,
 			Sync: {
-				Status: 'synced',
+				Status: "synced",
 				ErrorMessage: null,
 				LastSyncedAt: faker.date.recent(),
 			},
 		};
 	};
 
-	build: IGameFactoryPort['build'] = () => {
+	build: IGameFactoryPort["build"] = () => {
 		return this.buildGame();
 	};
 
-	buildList: IGameFactoryPort['buildList'] = (n) => {
+	buildList: IGameFactoryPort["buildList"] = (n) => {
 		const arr = Array.from({ length: n }, () => this.buildGame());
 		return arr;
 	};

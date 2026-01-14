@@ -1,8 +1,8 @@
-import { m } from '$lib/paraglide/messages';
+import { m } from "$lib/paraglide/messages";
 
 export const getPlayniteGameImageUrl = (imagePath?: string | null) => {
-	if (!imagePath) return '';
-	const [gameId, imageFileName] = imagePath.split('\\');
+	if (!imagePath) return "";
+	const [gameId, imageFileName] = imagePath.split("\\");
 	return `/api/assets/image/${gameId}/${imageFileName}`;
 };
 

@@ -1,4 +1,4 @@
-import type { Platform, PlatformId } from '../../domain/platform.entity';
+import type { Platform, PlatformId } from "../../domain/platform.entity";
 
 export type GetPlatformsByIdsQuery = {
 	platformIds: PlatformId[];

@@ -1,7 +1,7 @@
-import type { FullGame, GameActivity, GameSession } from '@playnite-insights/lib/client';
-import type { GameSessionStore } from '../app-state/stores/gameSessionStore.svelte';
-import type { GameStore } from '../app-state/stores/gameStore.svelte';
-import type { IDateTimeHandler } from '../utils/dateTimeHandler.svelte';
+import type { FullGame, GameActivity, GameSession } from "@playnite-insights/lib/client";
+import type { GameSessionStore } from "../app-state/stores/gameSessionStore.svelte";
+import type { GameStore } from "../app-state/stores/gameStore.svelte";
+import type { IDateTimeHandler } from "../utils/dateTimeHandler.svelte";
 
 export type RecentActivityViewModelProps = {
 	gameStore: GameStore;
@@ -10,9 +10,9 @@ export type RecentActivityViewModelProps = {
 };
 
 export class RecentActivityViewModel {
-	#gameStore: RecentActivityViewModelProps['gameStore'];
-	#gameSessionStore: RecentActivityViewModelProps['gameSessionStore'];
-	#dateTimeHandler: RecentActivityViewModelProps['dateTimeHandler'];
+	#gameStore: RecentActivityViewModelProps["gameStore"];
+	#gameSessionStore: RecentActivityViewModelProps["gameSessionStore"];
+	#dateTimeHandler: RecentActivityViewModelProps["dateTimeHandler"];
 
 	#sessionsForToday: GameSession[];
 	#inProgressGame: FullGame | null;
@@ -57,7 +57,7 @@ export class RecentActivityViewModel {
 		this.#inProgressActivity = $derived.by(() => {
 			const activitiesMap = this.#recentActivityMap;
 			for (const [, activity] of activitiesMap) {
-				if (activity.status === 'in_progress') {
+				if (activity.status === "in_progress") {
 					return activity;
 				}
 			}
@@ -68,7 +68,7 @@ export class RecentActivityViewModel {
 			const inProgressActivity = this.#inProgressActivity;
 			if (!inProgressActivity) return null;
 			const latestSession = inProgressActivity.sessions.at(0) ?? null;
-			if (latestSession && latestSession.Status === 'in_progress') return latestSession;
+			if (latestSession && latestSession.Status === "in_progress") return latestSession;
 			return null;
 		});
 
@@ -83,9 +83,9 @@ export class RecentActivityViewModel {
 		this.#inProgressSessionPlaytime = $derived(this.getInProgressSessionPlaytime());
 	}
 
-	private getActivityStateFromSession = (session: GameSession): 'in_progress' | 'not_playing' => {
-		if (session.Status === 'in_progress') return 'in_progress';
-		return 'not_playing';
+	private getActivityStateFromSession = (session: GameSession): "in_progress" | "not_playing" => {
+		if (session.Status === "in_progress") return "in_progress";
+		return "not_playing";
 	};
 
 	private buildRecentActivityMap = (sessions: GameSession[]): Map<string, GameActivity> => {
@@ -112,7 +112,7 @@ export class RecentActivityViewModel {
 			const value = data.get(key)!;
 			value.totalPlaytime += duration;
 			value.sessions.push(session);
-			if (value.status !== 'in_progress') {
+			if (value.status !== "in_progress") {
 				value.status = currentStatus;
 			}
 		}

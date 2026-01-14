@@ -1,7 +1,7 @@
-import type { GamePageSize } from '@playatlas/game-library/domain';
-import type { GameResponseDto } from '@playatlas/game-library/dtos';
-import type { GameSortBy, GameSortOrder } from '@playnite-insights/lib/client';
-import type { ApiDataStoreDeps } from './apiDataStore.svelte';
+import type { GamePageSize } from "@playatlas/game-library/domain";
+import type { GameResponseDto } from "@playatlas/game-library/dtos";
+import type { GameSortBy, GameSortOrder } from "@playnite-insights/lib/client";
+import type { ApiDataStoreDeps } from "./apiDataStore.svelte";
 
 export type GameStoreDeps = ApiDataStoreDeps & {};
 

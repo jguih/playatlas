@@ -12,6 +12,7 @@ export default ts.config(
 			"**/.svelte-kit/**",
 			"**/coverage/**",
 			"**/test-results/**",
+			"packages/@playnite-insights/**",
 		],
 	},
 

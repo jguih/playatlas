@@ -1,6 +1,6 @@
-import type { GameResponseDto } from '@playatlas/game-library/dtos';
-import type { IClientEntityMapper } from '../common/common/client-entity.mapper';
-import type { Game } from './domain/game.entity';
+import type { GameResponseDto } from "@playatlas/game-library/dtos";
+import type { IClientEntityMapper } from "../common/common/client-entity.mapper";
+import type { Game } from "./domain/game.entity";
 
 export const gameMapper: IClientEntityMapper<Game, GameResponseDto> = {
 	toDomain: (dto) => {
@@ -13,7 +13,7 @@ export const gameMapper: IClientEntityMapper<Game, GameResponseDto> = {
 			ReleaseDate: dto.ReleaseDate ? new Date(dto.ReleaseDate) : null,
 			SourceUpdatedAt: new Date(),
 			Sync: {
-				Status: 'pending',
+				Status: "pending",
 				LastSyncedAt: new Date(),
 				ErrorMessage: null,
 			},

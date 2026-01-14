@@ -1,8 +1,8 @@
-import { ClientEntityRepository, type ClientEntityRepositoryDeps } from '$lib/modules/common/infra';
-import type { Game, GameId } from '../domain/game.entity';
-import type { IGameRepositoryPort } from './game.repository.port';
-import { gameRepositoryMeta } from './game.repository.schema';
-import type { GameQueryResult } from './game.repository.types';
+import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
+import type { Game, GameId } from "../domain/game.entity";
+import type { IGameRepositoryPort } from "./game.repository.port";
+import { gameRepositoryMeta } from "./game.repository.schema";
+import type { GameQueryResult } from "./game.repository.types";
 
 export type GameRepositoryDeps = ClientEntityRepositoryDeps;
 
@@ -14,13 +14,13 @@ export class GameRepository
 		super({ indexedDbSignal, storeName: gameRepositoryMeta.storeName });
 	}
 
-	queryAsync: IGameRepositoryPort['queryAsync'] = async ({
+	queryAsync: IGameRepositoryPort["queryAsync"] = async ({
 		index,
-		direction = 'prev',
+		direction = "prev",
 		afterKey = null,
 		limit,
 	}) => {
-		return await this.runTransaction([this.storeName], 'readonly', async ({ tx }) => {
+		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
 			const idx = store.index(index);
 

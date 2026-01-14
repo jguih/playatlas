@@ -1,2 +1,2 @@
-export * from './game-factory';
-export * from './genre-factory';
+export * from "./game-factory";
+export * from "./genre-factory";

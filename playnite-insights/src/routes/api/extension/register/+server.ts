@@ -1,9 +1,9 @@
-import { apiResponse } from '$lib/server/api/responses';
+import { apiResponse } from "$lib/server/api/responses";
 import {
 	makeRegisterExtensionCommand,
 	registerExtensionRequestDtoSchema,
-} from '@playatlas/auth/commands';
-import { json, type RequestHandler } from '@sveltejs/kit';
+} from "@playatlas/auth/commands";
+import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request, locals: { api } }) => {
 	const requestDescription = api.getLogService().getRequestDescription(request);
@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) => {
 					error.issues.slice(0, 10),
 				);
 			return apiResponse.error({
-				error: { message: 'Validation error', details: error.issues },
+				error: { message: "Validation error", details: error.issues },
 			});
 		}
 
@@ -37,6 +37,6 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) => {
 		});
 	} catch (error) {
 		api.getLogService().error(`${requestDescription}: Error thrown while handling request`, error);
-		return apiResponse.error({ error: { message: 'Internal server error' } }, { status: 500 });
+		return apiResponse.error({ error: { message: "Internal server error" } }, { status: 500 });
 	}
 };

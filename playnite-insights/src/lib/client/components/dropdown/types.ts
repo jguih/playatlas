@@ -1,5 +1,5 @@
-import type { Snippet } from 'svelte';
-import type { HTMLAttributes, MouseEventHandler } from 'svelte/elements';
+import type { Snippet } from "svelte";
+import type { HTMLAttributes, MouseEventHandler } from "svelte/elements";
 
 export type DropdownProps = {
 	body?: Snippet;

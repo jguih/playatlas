@@ -1,12 +1,12 @@
-import type { IndexedDbSignal } from '../app-state/indexeddbManager.svelte';
-import { IndexedDBNotInitializedError } from './errors/indexeddbNotInitialized';
+import type { IndexedDbSignal } from "../app-state/indexeddbManager.svelte";
+import { IndexedDBNotInitializedError } from "./errors/indexeddbNotInitialized";
 
 export type IndexedDBRepositoryDeps = {
 	indexedDbSignal: IndexedDbSignal;
 };
 
 export class IndexedDBRepository {
-	#indexedDbSignal: IndexedDBRepositoryDeps['indexedDbSignal'];
+	#indexedDbSignal: IndexedDBRepositoryDeps["indexedDbSignal"];
 
 	constructor({ indexedDbSignal }: IndexedDBRepositoryDeps) {
 		this.#indexedDbSignal = indexedDbSignal;

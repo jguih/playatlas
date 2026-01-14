@@ -1,12 +1,12 @@
-import type { GameNote, SyncQueueItem } from '@playnite-insights/lib/client';
-import type { SyncQueueRepository } from './syncQueueRepository.svelte';
+import type { GameNote, SyncQueueItem } from "@playnite-insights/lib/client";
+import type { SyncQueueRepository } from "./syncQueueRepository.svelte";
 
 type GetAsyncArgs =
-	| ({ filterBy: typeof SyncQueueRepository.FILTER_BY.Id } & Required<Pick<SyncQueueItem, 'Id'>>)
+	| ({ filterBy: typeof SyncQueueRepository.FILTER_BY.Id } & Required<Pick<SyncQueueItem, "Id">>)
 	| ({ filterBy: typeof SyncQueueRepository.FILTER_BY.Entity_PayloadId_Status_Type } & (Pick<
 			SyncQueueItem,
-			'Entity' | 'Status' | 'Type'
-	  > & { PayloadId: GameNote['Id'] }));
+			"Entity" | "Status" | "Type"
+	  > & { PayloadId: GameNote["Id"] }));
 
 export interface ISyncQueueRepository {
 	/**

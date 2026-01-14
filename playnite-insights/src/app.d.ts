@@ -1,7 +1,7 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 
-import type { ServerServices } from '$lib/server/setup-services';
-import type { PlayAtlasApiV1 } from '@playatlas/bootstrap/application';
+import type { ServerServices } from "$lib/server/setup-services";
+import type { PlayAtlasApiV1 } from "@playatlas/bootstrap/application";
 
 // for information about these interfaces
 declare global {

@@ -1,13 +1,13 @@
-import type { GameNoteRepository } from '$lib/client/db/gameNotesRepository.svelte';
-import type { ServerHeartbeat } from '$lib/client/event-source-manager/serverHeartbeat.svelte';
-import type { IDateTimeHandler } from '$lib/client/utils/dateTimeHandler.svelte';
-import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
+import type { GameNoteRepository } from "$lib/client/db/gameNotesRepository.svelte";
+import type { ServerHeartbeat } from "$lib/client/event-source-manager/serverHeartbeat.svelte";
+import type { IDateTimeHandler } from "$lib/client/utils/dateTimeHandler.svelte";
+import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte";
 import {
 	FetchClientStrategyError,
 	getAllGameNotesResponseSchema,
 	JsonStrategy,
-} from '@playnite-insights/lib/client';
-import { ApiDataStore, type ApiDataStoreDeps } from './apiDataStore.svelte';
+} from "@playnite-insights/lib/client";
+import { ApiDataStore, type ApiDataStoreDeps } from "./apiDataStore.svelte";
 
 export type GameNoteStoreDeps = ApiDataStoreDeps & {
 	serverHeartbeat: ServerHeartbeat;
@@ -16,9 +16,9 @@ export type GameNoteStoreDeps = ApiDataStoreDeps & {
 };
 
 export class GameNoteStore extends ApiDataStore {
-	#serverHeartbeat: GameNoteStoreDeps['serverHeartbeat'];
-	#gameNoteRepository: GameNoteStoreDeps['gameNoteRepository'];
-	#dateTimeHandler: GameNoteStoreDeps['dateTimeHandler'];
+	#serverHeartbeat: GameNoteStoreDeps["serverHeartbeat"];
+	#gameNoteRepository: GameNoteStoreDeps["gameNoteRepository"];
+	#dateTimeHandler: GameNoteStoreDeps["dateTimeHandler"];
 
 	constructor({
 		httpClient,
@@ -33,7 +33,7 @@ export class GameNoteStore extends ApiDataStore {
 	}
 
 	#getLastServerSync = (): string | null => {
-		const lastSync = localStorage.getItem('lastServerSync');
+		const lastSync = localStorage.getItem("lastServerSync");
 		if (!lastSync) return null;
 		if (isNaN(Date.parse(lastSync))) return null;
 		return new Date(lastSync).toISOString();
@@ -41,11 +41,11 @@ export class GameNoteStore extends ApiDataStore {
 
 	#setLastServerSync = () => {
 		const serverNow = this.#dateTimeHandler.getUtcNow();
-		localStorage.setItem('lastServerSync', new Date(serverNow).toISOString());
+		localStorage.setItem("lastServerSync", new Date(serverNow).toISOString());
 	};
 
 	#clearLastServerSync = () => {
-		localStorage.setItem('lastServerSync', '');
+		localStorage.setItem("lastServerSync", "");
 	};
 
 	loadNotesFromServerAsync = async (override?: boolean) => {
@@ -54,7 +54,7 @@ export class GameNoteStore extends ApiDataStore {
 		try {
 			const lastSync = this.#getLastServerSync();
 			const notes = await this.httpClient.httpGetAsync({
-				endpoint: `/api/sync/note${lastSync ? `?lastSync=${lastSync}` : ''}`,
+				endpoint: `/api/sync/note${lastSync ? `?lastSync=${lastSync}` : ""}`,
 				strategy: new JsonStrategy(getAllGameNotesResponseSchema),
 			});
 			this.#setLastServerSync();

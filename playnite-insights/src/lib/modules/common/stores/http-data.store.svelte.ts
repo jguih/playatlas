@@ -1,5 +1,5 @@
-import type { IHttpClientPort } from '../application/http-client.port';
-import type { IHttpDataStorePort } from './http-data.store.port';
+import type { IHttpClientPort } from "../application/http-client.port";
+import type { IHttpDataStorePort } from "./http-data.store.port";
 
 export type HttpDataStoreDeps = {
 	httpClient: IHttpClientPort;

@@ -1,8 +1,8 @@
-import { IndexedDBNotInitializedError } from '$lib/client/db/errors/indexeddbNotInitialized';
-import type { KeyValueRepository } from '$lib/client/db/keyValueRepository.svelte';
-import type { ILogService } from '$lib/client/logService.svelte';
-import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
-import { AppClientError, type ApplicationSettings } from '@playnite-insights/lib/client';
+import { IndexedDBNotInitializedError } from "$lib/client/db/errors/indexeddbNotInitialized";
+import type { KeyValueRepository } from "$lib/client/db/keyValueRepository.svelte";
+import type { ILogService } from "$lib/client/logService.svelte";
+import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte";
+import { AppClientError, type ApplicationSettings } from "@playnite-insights/lib/client";
 
 export type ApplicationSettingsStoreDeps = {
 	keyValueRepository: KeyValueRepository;
@@ -23,8 +23,8 @@ export interface IApplicationSettingsStore {
 }
 
 export class ApplicationSettingsStore implements IApplicationSettingsStore {
-	#keyValueRepository: ApplicationSettingsStoreDeps['keyValueRepository'];
-	#logService: ApplicationSettingsStoreDeps['logService'];
+	#keyValueRepository: ApplicationSettingsStoreDeps["keyValueRepository"];
+	#logService: ApplicationSettingsStoreDeps["logService"];
 	#settingsSignal: ApplicationSettings;
 	#changeListeners: Set<SettingsChangeListener>;
 
@@ -37,7 +37,7 @@ export class ApplicationSettingsStore implements IApplicationSettingsStore {
 
 	loadSettings = async () => {
 		try {
-			const settings = await this.#keyValueRepository.getAsync({ key: 'application-settings' });
+			const settings = await this.#keyValueRepository.getAsync({ key: "application-settings" });
 			if (settings) this.#settingsSignal = settings;
 		} catch (error) {
 			if (error instanceof IndexedDBNotInitializedError) {
@@ -46,8 +46,8 @@ export class ApplicationSettingsStore implements IApplicationSettingsStore {
 				);
 				throw new AppClientError(
 					{
-						code: 'indexeddb_not_initialized',
-						message: 'IndexedDb not initialized while loading application settings',
+						code: "indexeddb_not_initialized",
+						message: "IndexedDb not initialized while loading application settings",
 					},
 					error,
 				);
@@ -58,7 +58,7 @@ export class ApplicationSettingsStore implements IApplicationSettingsStore {
 				);
 				throw new AppClientError(
 					{
-						code: 'dom_exception',
+						code: "dom_exception",
 						message: `DOMException while loading application settings`,
 					},
 					error,
@@ -67,8 +67,8 @@ export class ApplicationSettingsStore implements IApplicationSettingsStore {
 			this.#logService.error(`Unknown error while loading application settings`, error);
 			throw new AppClientError(
 				{
-					code: 'load_application_settings_failed',
-					message: 'Unknown error while loading application settings',
+					code: "load_application_settings_failed",
+					message: "Unknown error while loading application settings",
 				},
 				error,
 			);
@@ -79,7 +79,7 @@ export class ApplicationSettingsStore implements IApplicationSettingsStore {
 		try {
 			const newSettings = { ...settings };
 			await this.#keyValueRepository.putAsync({
-				keyvalue: { Key: 'application-settings', Value: newSettings },
+				keyvalue: { Key: "application-settings", Value: newSettings },
 			});
 			this.#settingsSignal = newSettings;
 			for (const listener of this.#changeListeners) {

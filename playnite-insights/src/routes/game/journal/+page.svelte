@@ -1,36 +1,36 @@
 <script lang="ts">
-	import { getLocatorContext } from '$lib/client/app-state/serviceLocator.svelte.js';
-	import { toast } from '$lib/client/app-state/toast.svelte.js';
-	import LightButton from '$lib/client/components/buttons/LightButton.svelte';
-	import Divider from '$lib/client/components/Divider.svelte';
-	import Dropdown from '$lib/client/components/dropdown/Dropdown.svelte';
-	import DropdownBody from '$lib/client/components/dropdown/DropdownBody.svelte';
-	import { GameNoteEditor } from '$lib/client/components/game-page/journal/gameNoteEditor.svelte.js';
-	import { ImageOptions } from '$lib/client/components/game-page/journal/imageOptions.svelte.js';
-	import ImageOptionsPanel from '$lib/client/components/game-page/journal/ImageOptionsPanel.svelte';
-	import NoteCard from '$lib/client/components/game-page/journal/NoteCard.svelte';
-	import NoteEditor from '$lib/client/components/game-page/journal/NoteEditor.svelte';
-	import { NoteExtras } from '$lib/client/components/game-page/journal/noteExtras.svelte.js';
-	import NoteExtrasPanel from '$lib/client/components/game-page/journal/NoteExtrasPanel.svelte';
-	import { ScreenshotsGallery } from '$lib/client/components/game-page/journal/screenshotsGallery.svelte.js';
-	import ScreenshotsGalleryPanel from '$lib/client/components/game-page/journal/ScreenshotsGalleryPanel.svelte';
-	import Header from '$lib/client/components/header/Header.svelte';
-	import BaseAppLayout from '$lib/client/components/layout/BaseAppLayout.svelte';
-	import Main from '$lib/client/components/Main.svelte';
-	import { IndexedDBNotInitializedError } from '$lib/client/db/errors/indexeddbNotInitialized.js';
-	import type { EventSourceManagerListener } from '$lib/client/event-source-manager/eventSourceManager.svelte.js';
-	import { PlayniteRemoteAction } from '$lib/client/playnite-remote-action/playniteRemoteAction.svelte.js';
-	import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte.js';
+	import { getLocatorContext } from "$lib/client/app-state/serviceLocator.svelte.js";
+	import { toast } from "$lib/client/app-state/toast.svelte.js";
+	import LightButton from "$lib/client/components/buttons/LightButton.svelte";
+	import Divider from "$lib/client/components/Divider.svelte";
+	import Dropdown from "$lib/client/components/dropdown/Dropdown.svelte";
+	import DropdownBody from "$lib/client/components/dropdown/DropdownBody.svelte";
+	import { GameNoteEditor } from "$lib/client/components/game-page/journal/gameNoteEditor.svelte.js";
+	import { ImageOptions } from "$lib/client/components/game-page/journal/imageOptions.svelte.js";
+	import ImageOptionsPanel from "$lib/client/components/game-page/journal/ImageOptionsPanel.svelte";
+	import NoteCard from "$lib/client/components/game-page/journal/NoteCard.svelte";
+	import NoteEditor from "$lib/client/components/game-page/journal/NoteEditor.svelte";
+	import { NoteExtras } from "$lib/client/components/game-page/journal/noteExtras.svelte.js";
+	import NoteExtrasPanel from "$lib/client/components/game-page/journal/NoteExtrasPanel.svelte";
+	import { ScreenshotsGallery } from "$lib/client/components/game-page/journal/screenshotsGallery.svelte.js";
+	import ScreenshotsGalleryPanel from "$lib/client/components/game-page/journal/ScreenshotsGalleryPanel.svelte";
+	import Header from "$lib/client/components/header/Header.svelte";
+	import BaseAppLayout from "$lib/client/components/layout/BaseAppLayout.svelte";
+	import Main from "$lib/client/components/Main.svelte";
+	import { IndexedDBNotInitializedError } from "$lib/client/db/errors/indexeddbNotInitialized.js";
+	import type { EventSourceManagerListener } from "$lib/client/event-source-manager/eventSourceManager.svelte.js";
+	import { PlayniteRemoteAction } from "$lib/client/playnite-remote-action/playniteRemoteAction.svelte.js";
+	import { handleClientErrors } from "$lib/client/utils/handleClientErrors.svelte.js";
 	import {
 		getPlayniteGameImageUrl,
 		getPlaytimeInHoursMinutesAndSeconds,
-	} from '$lib/client/utils/playnite-game';
-	import { GamePageViewModel } from '$lib/client/viewmodel/gamePageViewModel.svelte';
-	import { RecentActivityViewModel } from '$lib/client/viewmodel/recentActivityViewModel.svelte.js';
-	import { m } from '$lib/paraglide/messages.js';
-	import { ArrowLeft, ChevronDown, ChevronUp, Menu, PlusIcon } from '@lucide/svelte';
-	import { type GameNote } from '@playnite-insights/lib/client';
-	import { onMount } from 'svelte';
+	} from "$lib/client/utils/playnite-game";
+	import { GamePageViewModel } from "$lib/client/viewmodel/gamePageViewModel.svelte";
+	import { RecentActivityViewModel } from "$lib/client/viewmodel/recentActivityViewModel.svelte.js";
+	import { m } from "$lib/paraglide/messages.js";
+	import { ArrowLeft, ChevronDown, ChevronUp, Menu, PlusIcon } from "@lucide/svelte";
+	import { type GameNote } from "@playnite-insights/lib/client";
+	import { onMount } from "svelte";
 
 	const { data } = $props();
 	const locator = getLocatorContext();
@@ -82,14 +82,14 @@
 		try {
 			notesSignal.isLoading = true;
 			const notes = await locator.gameNoteRepository.getAllAsync({
-				filterBy: 'byGameId',
+				filterBy: "byGameId",
 				GameId: gameId,
 			});
 			notesSignal.notes = notes;
 		} catch (err) {
 			console.error(err);
 			if (err instanceof IndexedDBNotInitializedError)
-				toast.error({ message: m.error_db_not_ready(), category: 'local-database' });
+				toast.error({ message: m.error_db_not_ready(), category: "local-database" });
 		} finally {
 			notesSignal.isLoading = false;
 		}
@@ -145,7 +145,7 @@
 			noteEditor.currentNote.ImagePath = uploadedImage;
 			await handleOnNoteChange();
 		} catch (error) {
-			handleClientErrors(error, 'Failed to upload image');
+			handleClientErrors(error, "Failed to upload image");
 		} finally {
 			noteExtras.close();
 		}
@@ -169,14 +169,14 @@
 		await playniteRemoteAction.takeScreenshotAsync();
 	};
 
-	const handleOnScreenshotTakenSSE: EventSourceManagerListener<'screenshotTaken'>['cb'] = async ({
+	const handleOnScreenshotTakenSSE: EventSourceManagerListener<"screenshotTaken">["cb"] = async ({
 		data,
 	}) => {
 		const warnMessage =
 			m.toast_remote_action_take_screenshot_warn_no_screenshots_returned_message();
 		const first = data.paths.at(0)?.trim();
 		if (!first) {
-			toast.warning({ message: warnMessage, category: 'network' });
+			toast.warning({ message: warnMessage, category: "network" });
 			return;
 		}
 		noteEditor.currentNote.ImagePath = first;
@@ -193,15 +193,15 @@
 		});
 
 		const unsub = locator.eventSourceManager.addListener({
-			type: 'screenshotTaken',
+			type: "screenshotTaken",
 			cb: handleOnScreenshotTakenSSE,
 		});
 
 		activityVm.setTickInterval();
-		window.addEventListener('focus', handleFocus);
+		window.addEventListener("focus", handleFocus);
 		return () => {
 			activityVm.clearTickInterval();
-			window.removeEventListener('focus', handleFocus);
+			window.removeEventListener("focus", handleFocus);
 			unsub?.();
 		};
 	});
@@ -242,12 +242,12 @@
 	isImageLoading={playniteRemoteAction.actionLoadingState.takeScreenShot}
 />
 <BaseAppLayout>
-	<Header class={['flex items-center justify-between']}>
+	<Header class={["flex items-center justify-between"]}>
 		<LightButton onclick={() => history.back()}>
-			<ArrowLeft class={['size-md']} />
+			<ArrowLeft class={["size-md"]} />
 		</LightButton>
 		<LightButton>
-			<Menu class={['size-md']} />
+			<Menu class={["size-md"]} />
 		</LightButton>
 	</Header>
 	<Main bottomNav={false}>
@@ -292,16 +292,16 @@
 					<div class="flex flex-row gap-1">
 						<LightButton
 							{onclick}
-							class={['w-full']}
+							class={["w-full"]}
 							size="md"
 							justify="between"
 							disabled={!pageVm.game}
 						>
 							<h1 class="text-xl font-semibold">{m.game_journal_title_notes()}</h1>
 							{#if show}
-								<ChevronUp class={['size-lg']} />
+								<ChevronUp class={["size-lg"]} />
 							{:else}
-								<ChevronDown class={['size-lg']} />
+								<ChevronDown class={["size-lg"]} />
 							{/if}
 						</LightButton>
 						<LightButton
@@ -316,7 +316,7 @@
 					<Divider class="border-1" />
 				{/snippet}
 				{#snippet body()}
-					<DropdownBody class={['px-0!']}>
+					<DropdownBody class={["px-0!"]}>
 						<ul class="flex flex-col gap-4">
 							{#each notesSignal.notes as note (note.Id)}
 								<li class="bg-background-1">
@@ -337,15 +337,15 @@
 					<div class="flex flex-row gap-1">
 						<LightButton
 							{onclick}
-							class={['w-full p-2']}
+							class={["w-full p-2"]}
 							justify="between"
 							disabled={!pageVm.game}
 						>
 							<h1 class="text-xl font-semibold">{m.game_journal_title_links()}</h1>
 							{#if show}
-								<ChevronUp class={['size-lg']} />
+								<ChevronUp class={["size-lg"]} />
 							{:else}
-								<ChevronDown class={['size-lg']} />
+								<ChevronDown class={["size-lg"]} />
 							{/if}
 						</LightButton>
 						<LightButton

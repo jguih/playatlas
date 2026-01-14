@@ -1,14 +1,14 @@
-import { gameResponseDtoSchema, type GameResponseDto } from '@playatlas/game-library/dtos';
-import { FetchClientStrategyError, JsonStrategy } from '@playnite-insights/lib/client';
-import z from 'zod';
-import { ApiDataStore } from './apiDataStore.svelte';
+import { gameResponseDtoSchema, type GameResponseDto } from "@playatlas/game-library/dtos";
+import { FetchClientStrategyError, JsonStrategy } from "@playnite-insights/lib/client";
+import z from "zod";
+import { ApiDataStore } from "./apiDataStore.svelte";
 import type {
 	GameStoreDataSignal,
 	GameStoreDeps,
 	GameStoreFiltersParams,
 	GameStorePaginationParams,
 	GameStoreSortingParams,
-} from './gameStore.types';
+} from "./gameStore.types";
 
 export class GameStore extends ApiDataStore {
 	#dataSignal: GameStoreDataSignal;
@@ -93,13 +93,13 @@ export class GameStore extends ApiDataStore {
 		const { sortBy, sortOrder } = params;
 		if (!sortBy || !sortOrder) return filtered;
 
-		const multiplier = sortOrder === 'asc' ? 1 : -1;
+		const multiplier = sortOrder === "asc" ? 1 : -1;
 
 		const sorted = filtered.sort((a, b) => {
 			let aValue = a[sortBy];
 			let bValue = b[sortBy];
 
-			if (sortBy === 'Added' || sortBy === 'LastActivity') {
+			if (sortBy === "Added" || sortBy === "LastActivity") {
 				aValue = aValue ? new Date(aValue).getTime() : null;
 				bValue = bValue ? new Date(bValue).getTime() : null;
 			}
@@ -135,7 +135,7 @@ export class GameStore extends ApiDataStore {
 		try {
 			this.#dataSignal.isLoading = true;
 			const result = await this.httpClient.httpGetAsync({
-				endpoint: '/api/game',
+				endpoint: "/api/game",
 				strategy: new JsonStrategy(responseSchema),
 			});
 			this.#dataSignal.raw = result;

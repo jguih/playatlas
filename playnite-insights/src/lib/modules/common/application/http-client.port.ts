@@ -1,4 +1,4 @@
-import type { HttpClientCommonFnExtraArgs, HttpClientCommonFnProps } from './http-client.types';
+import type { HttpClientCommonFnExtraArgs, HttpClientCommonFnProps } from "./http-client.types";
 
 export interface IHttpClientPort {
 	getAsync: (

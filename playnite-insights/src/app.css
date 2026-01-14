@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @plugin '@tailwindcss/typography';
 
 @theme {
@@ -97,7 +97,7 @@
 	/* END: Dark Theme */
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
 	/* BEGIN: Dark Theme */
 	--color-background: var(--pl-color-background);
 	--color-background-1: var(--pl-color-background-1);

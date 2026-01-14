@@ -1,4 +1,4 @@
-import type { ILogServicePort } from './log-service.port';
+import type { ILogServicePort } from "./log-service.port";
 
 export class LogService implements ILogServicePort {
 	error = (message: string, error?: unknown) => {
