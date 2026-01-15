@@ -19,6 +19,7 @@ export const COLUMNS: (keyof GameModel)[] = [
 	"Hidden",
 	"CompletionStatusId",
 	"ContentHash",
+	"LastUpdatedAt",
 ];
 
 export const RELATIONSHIP_TABLE_NAME = {

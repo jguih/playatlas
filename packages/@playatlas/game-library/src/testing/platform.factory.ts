@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import { PlatformIdParser } from "@playatlas/common/domain";
 import type { TestEntityFactory } from "@playatlas/common/testing";
 import { makePlatform, type Platform } from "../domain/platform.entity";
 import type { MakePlatformProps } from "../domain/platform.entity.types";
@@ -13,12 +14,13 @@ export const makePlatformFactory = (): PlatformFactory => {
 
 	const build: PlatformFactory["build"] = (props = {}) => {
 		return makePlatform({
-			id: propOrDefault(props.id, faker.string.uuid()),
+			id: PlatformIdParser.fromExternal(propOrDefault(props.id, faker.string.uuid())),
 			name: propOrDefault(props.name, faker.lorem.words({ min: 1, max: 4 })),
 			specificationId: propOrDefault(props.specificationId, faker.string.uuid()),
 			background: propOrDefault(props.background, faker.internet.url()),
 			cover: propOrDefault(props.cover, faker.internet.url()),
 			icon: propOrDefault(props.icon, faker.internet.url()),
+			lastUpdatedAt: propOrDefault(props.lastUpdatedAt, faker.date.recent()),
 		});
 	};
 

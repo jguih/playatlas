@@ -62,6 +62,7 @@ export const gameMapper: GameMapper = {
 			Hidden: +game.isHidden(),
 			CompletionStatusId: game.getCompletionStatusId(),
 			ContentHash: game.getContentHash(),
+			LastUpdatedAt: game.getLastUpdatedAt().toISOString(),
 		};
 		return record;
 	},
@@ -86,6 +87,7 @@ export const gameMapper: GameMapper = {
 			publisherIds: relationships.publisherIds,
 			completionStatusId: game.CompletionStatusId,
 			contentHash: game.ContentHash,
+			lastUpdatedAt: new Date(game.LastUpdatedAt),
 		});
 		return entity;
 	},

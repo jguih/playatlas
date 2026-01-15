@@ -36,7 +36,15 @@ export type ExtractedSyncData = {
 	deleted: GameId[];
 };
 
-export const extractSyncData = ({ payload }: SyncGamesCommand): ExtractedSyncData => {
+export const extractSyncData = (props: {
+	command: SyncGamesCommand;
+	now: Date;
+}): ExtractedSyncData => {
+	const {
+		command: { payload },
+		now,
+	} = props;
+
 	const genres = new Map<GenreId, Genre>();
 	const platforms = new Map<PlatformId, Platform>();
 	const developers = new Map<CompanyId, Company>();
@@ -50,7 +58,7 @@ export const extractSyncData = ({ payload }: SyncGamesCommand): ExtractedSyncDat
 	const processCommandItem = (item: SyncGamesCommandItem) => {
 		item.Genres?.forEach((g) => {
 			const genreId = GenreIdParser.fromExternal(g.Id);
-			genres.set(genreId, makeGenre({ id: genreId, name: g.Name }));
+			genres.set(genreId, makeGenre({ id: genreId, name: g.Name, lastUpdatedAt: now }));
 		});
 
 		item.Platforms?.forEach((p) => {
@@ -64,18 +72,19 @@ export const extractSyncData = ({ payload }: SyncGamesCommand): ExtractedSyncDat
 					icon: p.Icon,
 					cover: p.Cover,
 					background: p.Background,
+					lastUpdatedAt: now,
 				}),
 			);
 		});
 
 		item.Developers?.forEach((d) => {
 			const companyId = CompanyIdParser.fromExternal(d.Id);
-			developers.set(companyId, makeCompany({ id: companyId, name: d.Name }));
+			developers.set(companyId, makeCompany({ id: companyId, name: d.Name, lastUpdatedAt: now }));
 		});
 
 		item.Publishers?.forEach((p) => {
 			const companyId = CompanyIdParser.fromExternal(p.Id);
-			publishers.set(companyId, makeCompany({ id: companyId, name: p.Name }));
+			publishers.set(companyId, makeCompany({ id: companyId, name: p.Name, lastUpdatedAt: now }));
 		});
 
 		if (item.CompletionStatus) {
@@ -85,6 +94,7 @@ export const extractSyncData = ({ payload }: SyncGamesCommand): ExtractedSyncDat
 				makeCompletionStatus({
 					id: completionStatusId,
 					name: item.CompletionStatus.Name,
+					lastUpdatedAt: now,
 				}),
 			);
 		}
@@ -110,6 +120,7 @@ export const extractSyncData = ({ payload }: SyncGamesCommand): ExtractedSyncDat
 				lastActivity: item.LastActivity ? new Date(item.LastActivity) : null,
 				playtime: item.Playtime,
 				releaseDate: item.ReleaseDate ? new Date(item.ReleaseDate) : null,
+				lastUpdatedAt: now,
 			}),
 		);
 	};

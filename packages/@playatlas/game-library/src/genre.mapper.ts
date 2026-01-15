@@ -19,11 +19,16 @@ export const genreMapper: GenreMapper = {
 		const model: GenreModel = {
 			Id: entity.getId(),
 			Name: entity.getName(),
+			LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
 		};
 		return model;
 	},
 	toDomain: (model) => {
-		const entity: Genre = makeGenre({ id: GenreIdParser.fromTrusted(model.Id), name: model.Name });
+		const entity: Genre = makeGenre({
+			id: GenreIdParser.fromTrusted(model.Id),
+			name: model.Name,
+			lastUpdatedAt: new Date(model.LastUpdatedAt),
+		});
 		return entity;
 	},
 	toDto: _toDto,

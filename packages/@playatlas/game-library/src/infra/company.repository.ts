@@ -1,3 +1,4 @@
+import { ISODateSchema } from "@playatlas/common/common";
 import { companyIdSchema, type CompanyId } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
@@ -8,6 +9,7 @@ import type { ICompanyRepositoryPort } from "./company.repository.port";
 export const companySchema = z.object({
 	Id: companyIdSchema,
 	Name: z.string(),
+	LastUpdatedAt: ISODateSchema,
 });
 
 export type CompanyModel = z.infer<typeof companySchema>;
@@ -17,7 +19,7 @@ export const makeCompanyRepository = ({
 	logService,
 }: BaseRepositoryDeps): ICompanyRepositoryPort => {
 	const TABLE_NAME = "company";
-	const COLUMNS: (keyof CompanyModel)[] = ["Id", "Name"];
+	const COLUMNS: (keyof CompanyModel)[] = ["Id", "Name", "LastUpdatedAt"];
 	const base = makeBaseRepository<CompanyId, Company, CompanyModel>({
 		getDb,
 		logService,

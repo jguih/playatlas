@@ -27,6 +27,7 @@ export const platformMapper: PlatformMapper = {
 			Background: entity.getBackground(),
 			Cover: entity.getCover(),
 			Icon: entity.getIcon(),
+			LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
 		};
 		return model;
 	},
@@ -38,6 +39,7 @@ export const platformMapper: PlatformMapper = {
 			background: model.Background,
 			cover: model.Cover,
 			icon: model.Icon,
+			lastUpdatedAt: new Date(model.LastUpdatedAt),
 		});
 		return entity;
 	},

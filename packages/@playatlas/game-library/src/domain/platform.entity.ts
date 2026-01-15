@@ -1,4 +1,5 @@
-import type { BaseEntity, PlatformId } from "@playatlas/common/domain";
+import { validation } from "@playatlas/common/application";
+import { InvalidStateError, type BaseEntity, type PlatformId } from "@playatlas/common/domain";
 import type { MakePlatformProps } from "./platform.entity.types";
 
 export type Platform = BaseEntity<PlatformId> &
@@ -18,6 +19,14 @@ export const makePlatform = (props: MakePlatformProps): Platform => {
 	const _icon = props.icon ?? null;
 	const _cover = props.cover ?? null;
 	const _background = props.background ?? null;
+	const _last_updated_at = props.lastUpdatedAt;
+
+	const _validate = () => {
+		if (validation.isNullOrEmptyString(_name))
+			throw new InvalidStateError("Platform name must not be empty");
+	};
+
+	_validate();
 
 	const platform: Platform = {
 		getId: () => _id,
@@ -27,7 +36,8 @@ export const makePlatform = (props: MakePlatformProps): Platform => {
 		getIcon: () => _icon,
 		getCover: () => _cover,
 		getBackground: () => _background,
-		validate: () => {},
+		getLastUpdatedAt: () => _last_updated_at,
+		validate: _validate,
 	};
 
 	return Object.freeze(platform);

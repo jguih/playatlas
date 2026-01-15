@@ -9,6 +9,8 @@ export type MakeGameRelationshipProps = {
 
 export type MakeGameProps = {
 	id: GameId;
+	contentHash: string;
+	lastUpdatedAt: Date;
 	name?: string | null;
 	description?: string | null;
 	releaseDate?: Date | null;
@@ -22,5 +24,4 @@ export type MakeGameProps = {
 	icon?: string | null;
 	hidden?: boolean;
 	completionStatusId?: string | null;
-	contentHash: string;
 } & MakeGameRelationshipProps;

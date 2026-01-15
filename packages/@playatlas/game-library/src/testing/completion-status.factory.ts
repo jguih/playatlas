@@ -29,6 +29,7 @@ export const makeCompletionStatusFactory = (): CompletionStatusFactory => {
 					completionStatusName.abandoned,
 					completionStatusName.toPlay,
 				]),
+			lastUpdatedAt: props.lastUpdatedAt ?? faker.date.recent(),
 		});
 	};
 

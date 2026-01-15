@@ -6,5 +6,6 @@ export type BaseEntity<EntityId extends BaseEntityId> = Readonly<{
 	 * @returns A string representation of the id
 	 */
 	getSafeId: () => string;
+	getLastUpdatedAt: () => Date;
 	validate: () => void;
 }>;

@@ -8,6 +8,7 @@ export const completionStatusMapper: EntityMapper<CompletionStatus, CompletionSt
 		const record: CompletionStatusModel = {
 			Id: completionStatus.getId(),
 			Name: completionStatus.getName(),
+			LastUpdatedAt: completionStatus.getLastUpdatedAt().toISOString(),
 		};
 		return record;
 	},
@@ -15,6 +16,7 @@ export const completionStatusMapper: EntityMapper<CompletionStatus, CompletionSt
 		const entity: CompletionStatus = makeCompletionStatus({
 			id: CompletionStatusIdParser.fromTrusted(completionStatus.Id),
 			name: completionStatus.Name,
+			lastUpdatedAt: new Date(completionStatus.LastUpdatedAt),
 		});
 		return entity;
 	},

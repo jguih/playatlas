@@ -15,6 +15,7 @@ export const makeSyncGamesCommandHandler = ({
 	return {
 		executeAsync: async (command) => {
 			const payload = command.payload;
+			const now = new Date();
 
 			logService.info(
 				`Syncing game library (add: ${payload.toAdd.length} games, update: ${payload.toUpdate.length} games, delete: ${payload.toRemove.length} games)`,
@@ -23,7 +24,7 @@ export const makeSyncGamesCommandHandler = ({
 			let extracted: ExtractedSyncData;
 
 			try {
-				extracted = extractSyncData(command);
+				extracted = extractSyncData({ command, now });
 			} catch (error) {
 				logService.error(`Failed to parse game library sync payload`, error);
 				return {

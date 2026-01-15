@@ -11,6 +11,7 @@ export const makeCompanyFactory = (): CompanyFactory => {
 		return makeCompany({
 			id: CompanyIdParser.fromExternal(props.id ?? faker.string.uuid()),
 			name: props.name ?? faker.company.name(),
+			lastUpdatedAt: props.lastUpdatedAt ?? faker.date.recent(),
 		});
 	};
 

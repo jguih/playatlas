@@ -63,6 +63,19 @@ export const makeGame = (props: MakeGameProps): Game => {
 	const _hidden = Boolean(props.hidden);
 	const _completionStatusId = props.completionStatusId ?? null;
 	const _contentHash = props.contentHash;
+	let _last_updated_at = props.lastUpdatedAt;
+
+	const _validate = () => {
+		if (_playtime < 0) throw new InvalidStateError("Playtime must not be negative");
+		if (validation.isEmptyString(_contentHash))
+			throw new InvalidStateError("ContentHash must not be an empty string");
+	};
+
+	const _touch = () => {
+		_last_updated_at = new Date();
+	};
+
+	_validate();
 
 	const game: Game = {
 		getId: () => _id,
@@ -81,6 +94,7 @@ export const makeGame = (props: MakeGameProps): Game => {
 		getIcon: () => _icon,
 		getCompletionStatusId: () => _completionStatusId,
 		getContentHash: () => _contentHash,
+		getLastUpdatedAt: () => _last_updated_at,
 		relationships: {
 			developers: createRelationship(props.developerIds ?? null),
 			genres: createRelationship(props.genreIds ?? null),
@@ -106,12 +120,9 @@ export const makeGame = (props: MakeGameProps): Game => {
 					break;
 				}
 			}
+			_touch();
 		},
-		validate: () => {
-			if (_playtime < 0) throw new InvalidStateError("Playtime must not be negative");
-			if (validation.isEmptyString(_contentHash))
-				throw new InvalidStateError("ContentHash must not be an empty string");
-		},
+		validate: _validate,
 	};
 	return Object.freeze(game);
 };

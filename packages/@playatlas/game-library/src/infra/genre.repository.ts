@@ -1,3 +1,4 @@
+import { ISODateSchema } from "@playatlas/common/common";
 import { genreIdSchema } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
@@ -7,6 +8,7 @@ import type { IGenreRepositoryPort } from "./genre.repository.port";
 export const genreSchema = z.object({
 	Id: genreIdSchema,
 	Name: z.string(),
+	LastUpdatedAt: ISODateSchema,
 });
 
 export type GenreModel = z.infer<typeof genreSchema>;
@@ -16,7 +18,7 @@ export const makeGenreRepository = ({
 	logService,
 }: BaseRepositoryDeps): IGenreRepositoryPort => {
 	const TABLE_NAME = "genre";
-	const COLUMNS: (keyof GenreModel)[] = ["Id", "Name"];
+	const COLUMNS: (keyof GenreModel)[] = ["Id", "Name", "LastUpdatedAt"];
 	const base = makeBaseRepository({
 		getDb,
 		logService,

@@ -1,3 +1,4 @@
+import { ISODateSchema } from "@playatlas/common/common";
 import { completionStatusIdSchema } from "@playatlas/common/domain";
 import { type BaseRepositoryDeps, makeBaseRepository } from "@playatlas/common/infra";
 import z from "zod";
@@ -7,6 +8,7 @@ import type { ICompletionStatusRepositoryPort } from "./completion-status.reposi
 export const completionStatusSchema = z.object({
 	Id: completionStatusIdSchema,
 	Name: z.string(),
+	LastUpdatedAt: ISODateSchema,
 });
 
 export type CompletionStatusModel = z.infer<typeof completionStatusSchema>;
@@ -16,7 +18,7 @@ export const makeCompletionStatusRepository = ({
 	logService,
 }: BaseRepositoryDeps): ICompletionStatusRepositoryPort => {
 	const TABLE_NAME = `completion_status`;
-	const COLUMNS: (keyof CompletionStatusModel)[] = ["Id", "Name"];
+	const COLUMNS: (keyof CompletionStatusModel)[] = ["Id", "Name", "LastUpdatedAt"];
 	const base = makeBaseRepository({
 		getDb,
 		logService,

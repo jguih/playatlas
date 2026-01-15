@@ -17,6 +17,7 @@ export const companyMapper: EntityMapper<Company, CompanyModel, CompanyResponseD
 		const record: CompanyModel = {
 			Id: company.getId(),
 			Name: company.getName(),
+			LastUpdatedAt: company.getLastUpdatedAt().toISOString(),
 		};
 		return record;
 	},
@@ -24,6 +25,7 @@ export const companyMapper: EntityMapper<Company, CompanyModel, CompanyResponseD
 		const entity: Company = makeCompany({
 			id: CompanyIdParser.fromTrusted(company.Id),
 			name: company.Name,
+			lastUpdatedAt: new Date(company.LastUpdatedAt),
 		});
 		return entity;
 	},

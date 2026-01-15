@@ -1,3 +1,4 @@
+import { ISODateSchema } from "@playatlas/common/common";
 import { platformIdSchema } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
@@ -11,6 +12,7 @@ export const platformSchema = z.object({
 	Icon: z.string().nullable(),
 	Cover: z.string().nullable(),
 	Background: z.string().nullable(),
+	LastUpdatedAt: ISODateSchema,
 });
 
 export type PlatformModel = z.infer<typeof platformSchema>;
@@ -27,6 +29,7 @@ export const makePlatformRepository = ({
 		"Icon",
 		"Cover",
 		"Background",
+		"LastUpdatedAt",
 	];
 	const base = makeBaseRepository({
 		getDb,

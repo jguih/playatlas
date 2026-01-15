@@ -77,6 +77,7 @@ export const makeGameFactory = ({
 			genreIds,
 			platformIds,
 			publisherIds,
+			lastUpdatedAt: propOrDefault(props.lastUpdatedAt, faker.date.recent()),
 		});
 	};
 

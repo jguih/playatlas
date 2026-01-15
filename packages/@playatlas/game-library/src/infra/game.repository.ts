@@ -1,3 +1,4 @@
+import { ISODateSchema } from "@playatlas/common/common";
 import {
 	GameIdParser,
 	gameIdSchema,
@@ -21,10 +22,10 @@ export const gameSchema = z.object({
 	Id: gameIdSchema,
 	Name: z.string().nullable(),
 	Description: z.string().nullable(),
-	ReleaseDate: z.string().nullable(),
+	ReleaseDate: ISODateSchema.nullable(),
 	Playtime: z.number(),
 	LastActivity: z.string().nullable(),
-	Added: z.string().nullable(),
+	Added: ISODateSchema.nullable(),
 	InstallDirectory: z.string().nullable(),
 	IsInstalled: z.number(),
 	BackgroundImage: z.string().nullable(),
@@ -33,6 +34,7 @@ export const gameSchema = z.object({
 	Hidden: z.number(),
 	CompletionStatusId: z.string().nullable(),
 	ContentHash: z.string(),
+	LastUpdatedAt: ISODateSchema,
 });
 
 export type GameModel = z.infer<typeof gameSchema>;
