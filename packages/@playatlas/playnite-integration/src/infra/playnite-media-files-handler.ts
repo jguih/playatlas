@@ -112,8 +112,9 @@ export const makePlayniteMediaFilesHandler = ({
 			try {
 				await context.init();
 
+				const mediaFilesPromises: Promise<PlayniteMediaFileStreamResult>[] = [];
+
 				await new Promise<void>((resolve, reject) => {
-					const mediaFilesPromises: Promise<PlayniteMediaFileStreamResult>[] = [];
 					let uploadCount: number = 0;
 
 					bb.on("field", async (name, val) => {
@@ -136,7 +137,8 @@ export const makePlayniteMediaFilesHandler = ({
 
 						const filePromise = new Promise<PlayniteMediaFileStreamResult>((resolve, reject) => {
 							const writeStream = fileSystemService.createWriteStream(filepath);
-							writeStream.on("finish", () => {
+
+							writeStream.on("close", () => {
 								logService.debug(`File ${filepath} saved successfully`);
 								resolve({ name, filename, filepath });
 							});
@@ -286,6 +288,9 @@ export const makePlayniteMediaFilesHandler = ({
 		async (context) => {
 			context.validate();
 			await context.ensureGameDir({ cleanUp: true });
+			logService.debug(
+				`Moving files from ${context.getTmpOptimizedDirPath()} to ${context.getGameDirPath()}`,
+			);
 			await fileSystemService.rename(context.getTmpOptimizedDirPath(), context.getGameDirPath());
 			logService.debug(
 				`Moved temporary files at ${context.getTmpOptimizedDirPath()} to game media files location ${context.getGameDirPath()}`,

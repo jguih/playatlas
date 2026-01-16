@@ -8,13 +8,14 @@ export const makePlayniteSyncService = ({
 	playniteMediaFilesHandler: handler,
 	gameRepository,
 	libraryManifestService,
+	logService,
 }: PlayniteSyncServiceDeps): IPlayniteSyncServicePort => {
 	const handleMediaFilesSynchronizationRequest: IPlayniteSyncServicePort["handleMediaFilesSynchronizationRequest"] =
 		async (request) => {
 			return await handler.withMediaFilesContext(
 				request,
 				async (context): Promise<PlayniteSynchronizationResult> => {
-					if (!handler.verifyIntegrity(context))
+					if (!(await handler.verifyIntegrity(context)))
 						return {
 							success: false,
 							reason: "Integrity check validation failed",
@@ -22,12 +23,14 @@ export const makePlayniteSyncService = ({
 						};
 
 					const game = gameRepository.getById(context.getGameId());
-					if (!game)
+					if (!game) {
+						logService.debug(`Game not found ${context.getGameId()}`);
 						return {
 							reason: "Game not found",
 							reason_code: "game_not_found",
 							success: false,
 						};
+					}
 
 					const optimized = await handler.processImages(context);
 					await handler.moveProcessedImagesToGameFolder(context);

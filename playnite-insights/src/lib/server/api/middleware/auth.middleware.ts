@@ -16,13 +16,13 @@ export const extensionAuthMiddleware = async (
 	{ request, api }: AuthMiddlewareDeps,
 	cb: (result: ExtensionAuthServiceVerifyResult) => Response | Promise<Response>,
 ) => {
-	const utcNow = Date.now();
 	const requestDescription = api.getLogService().getRequestDescription(request);
-	const result = await api.auth.getExtensionAuthService().verify({ request, utcNow });
-	if (!result.authorized) {
-		return json({ error: { message: result.reason } }, { status: 403 });
-	}
 	try {
+		const utcNow = Date.now();
+		const result = await api.auth.getExtensionAuthService().verify({ request, utcNow });
+		if (!result.authorized) {
+			return json({ error: { message: result.reason } }, { status: 403 });
+		}
 		return await cb(result);
 	} catch (error) {
 		api.getLogService().error(`${requestDescription}: Error thrown while handling request`, error);
@@ -35,11 +35,11 @@ export const instanceAuthMiddleware = async (
 	cb: (result: InstanceAuthServiceVerifyResult) => Response | Promise<Response>,
 ) => {
 	const requestDescription = api.getLogService().getRequestDescription(request);
-	const result = api.auth.getInstanceAuthService().verify({ request });
-	if (!result.authorized) {
-		return json({ error: { message: result.reason } }, { status: 403 });
-	}
 	try {
+		const result = api.auth.getInstanceAuthService().verify({ request });
+		if (!result.authorized) {
+			return json({ error: { message: result.reason } }, { status: 403 });
+		}
 		return await cb(result);
 	} catch (error) {
 		if (error instanceof InvalidDataError) {

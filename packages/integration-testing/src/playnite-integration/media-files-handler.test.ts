@@ -271,7 +271,7 @@ describe("Playnite Integration / Media Files Handler", () => {
 		root.seedGame(game);
 
 		const gameFolder = join(api.system.getSystemConfig().getLibFilesDir(), game.getId());
-		const gameId = game.getId();
+		const gameId = game.getPlayniteSnapshot().id;
 		const contentHash = game.getContentHash();
 		const formData = await buildFormData({ gameId, contentHash });
 		const canonicalDigestBase64 = await buildCanonicalHashBase64({

@@ -42,7 +42,7 @@ export const makePlayniteMediaFilesContext = (
 	const _context_id = crypto.randomUUID();
 	let _game_id: string | null = props.gameId ?? null;
 	let _content_hash: string | null = props.contentHash ?? null;
-	let _stream_results: PlayniteMediaFileStreamResult[] | null = props.streamResults ?? null;
+	let _stream_results: PlayniteMediaFileStreamResult[] = props.streamResults ?? [];
 	const _tmp_dir_path = join(systemConfig.getTmpDir(), _context_id);
 	const _tmp_optimized_dir_path = join(_tmp_dir_path, "/optimized");
 	let _game_dir_path: string | null = null;
@@ -81,17 +81,14 @@ export const makePlayniteMediaFilesContext = (
 				throw new InvalidStateError(validation.message.isEmptyString("ContentHashHeader"));
 			return _content_hash_header;
 		},
-		getStreamResults: () => {
-			if (!_stream_results) throw new InvalidStateError("Stream results is not set.");
-			return _stream_results;
-		},
+		getStreamResults: () => _stream_results,
 		setStreamResults: (value) => (_stream_results = value),
 		getTmpDirPath: () => _tmp_dir_path,
 		getTmpOptimizedDirPath: () => _tmp_optimized_dir_path,
 		getGameDirPath: _getGameDirPath,
 		ensureGameDir: async (args = {}) => {
-			const createGameDir = () =>
-				fileSystemService.mkdir(_getGameDirPath(), {
+			const createGameDir = async () =>
+				await fileSystemService.mkdir(_getGameDirPath(), {
 					recursive: true,
 					mode: "0744",
 				});
@@ -117,14 +114,13 @@ export const makePlayniteMediaFilesContext = (
 			if (!_content_hash) throw new InvalidStateError("Content hash is not set.");
 			if (validation.isEmptyString(_content_hash))
 				throw new InvalidStateError(validation.message.isEmptyString("ContentHash"));
-			if (!_stream_results) throw new InvalidStateError("Stream results is not set.");
 			if (!_game_dir_path) throw new InvalidStateError("Game dir path is not set.");
 			if (validation.isEmptyString(_game_dir_path))
 				throw new InvalidStateError(validation.message.isEmptyString("GameDirPath"));
 		},
 		dispose: async () => {
 			logService.debug(`Disposing Playnite media files context ${_context_id}`);
-			fileSystemService.rm(_tmp_dir_path, { recursive: true, force: true });
+			await fileSystemService.rm(_tmp_dir_path, { recursive: true, force: true });
 			logService.debug(`Deleted temporary folder at ${_tmp_dir_path}.`);
 		},
 		init: async () => {

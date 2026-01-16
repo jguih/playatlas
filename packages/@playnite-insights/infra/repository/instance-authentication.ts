@@ -6,7 +6,7 @@ export const makeInstanceAuthenticationRepository = (
 	deps: Partial<BaseRepositoryDeps> = {},
 ): InstanceAuthenticationRepository => {
 	const { getDb, logService } = { ...getDefaultRepositoryDeps(), ...deps };
-	const TABLE_NAME = "instance_authentication";
+	const TABLE_NAME = "instance_auth_settings";
 
 	const get: InstanceAuthenticationRepository["get"] = () => {
 		return repositoryCall(

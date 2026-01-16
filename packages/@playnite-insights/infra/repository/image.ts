@@ -12,7 +12,7 @@ export const makeImageRepository = (deps: Partial<BaseRepositoryDeps> = {}): Ima
 			() => {
 				const db = getDb();
 				const query = `
-        INSERT INTO image (
+        INSERT INTO screenshot (
           FileExtension, 
           FilePath, 
           FileName, 
@@ -53,7 +53,7 @@ export const makeImageRepository = (deps: Partial<BaseRepositoryDeps> = {}): Ima
 			logService,
 			() => {
 				const db = getDb();
-				const query = `SELECT * FROM image`;
+				const query = `SELECT * FROM screenshot`;
 				const stmt = db.prepare(query);
 				const result = stmt.all();
 				const images = z.array(imageSchema).parse(result);
@@ -69,7 +69,7 @@ export const makeImageRepository = (deps: Partial<BaseRepositoryDeps> = {}): Ima
 			logService,
 			() => {
 				const db = getDb();
-				const query = `SELECT * FROM image WHERE CheckSum = ?`;
+				const query = `SELECT * FROM screenshot WHERE CheckSum = ?`;
 				const stmt = db.prepare(query);
 				const result = stmt.get(checksum);
 				const image = z.optional(imageSchema).parse(result);
