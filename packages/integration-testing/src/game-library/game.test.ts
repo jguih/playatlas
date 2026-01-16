@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { GameIdParser } from "@playatlas/common/domain";
+import { GameIdParser, PlayniteGameIdParser } from "@playatlas/common/domain";
 import { describe, expect, it } from "vitest";
 import { api, factory, root } from "../vitest.global.setup";
 
@@ -17,8 +17,10 @@ describe("Game Library / Game", () => {
 		const addedRandomGame = added.find((g) => g.Id === randomGame.getId());
 		expect(added).toHaveLength(games.length);
 		expect(addedRandomGame?.Id).toBe(randomGame.getId());
-		expect(addedRandomGame?.Name).toBe(randomGame.getName());
-		expect(addedRandomGame?.CompletionStatusId).toBe(randomGame.getCompletionStatusId());
+		expect(addedRandomGame?.Name).toBe(randomGame.getPlayniteSnapshot().name);
+		expect(addedRandomGame?.CompletionStatusId).toBe(
+			randomGame.getPlayniteSnapshot().completionStatusId,
+		);
 	});
 
 	it("persists a game and eager load its developers", () => {
@@ -141,19 +143,22 @@ describe("Game Library / Game", () => {
 		expect(
 			result.data.every((g) => gameIds.includes(GameIdParser.fromExternal(g.Id))),
 		).toBeTruthy();
-		expect(oneResult.Name).toBe(oneGame.getName());
-		expect(oneResult.Description).toBe(oneGame.getDescription());
-		expect(oneResult.ReleaseDate).toBe(oneGame.getReleaseDate()?.toISOString() ?? null);
-		expect(oneResult.Playtime).toBe(oneGame.getPlaytime());
-		expect(oneResult.LastActivity).toBe(oneGame.getLastActivity()?.toISOString() ?? null);
-		expect(oneResult.Added).toBe(oneGame.getAdded()?.toISOString() ?? null);
-		expect(oneResult.InstallDirectory).toBe(oneGame.getInstallDirectory());
-		expect(oneResult.IsInstalled).toBe(+oneGame.isInstalled());
-		expect(oneResult.BackgroundImage).toBe(oneGame.getBackgroundImage());
-		expect(oneResult.CoverImage).toBe(oneGame.getCoverImage());
-		expect(oneResult.Icon).toBe(oneGame.getIcon());
-		expect(oneResult.Hidden).toBe(+oneGame.isHidden());
-		expect(oneResult.CompletionStatusId).toBe(oneGame.getCompletionStatusId());
+		const oneGamePlayniteSnapshot = oneGame.getPlayniteSnapshot();
+		expect(oneResult.Name).toBe(oneGamePlayniteSnapshot.name);
+		expect(oneResult.Description).toBe(oneGamePlayniteSnapshot.description);
+		expect(oneResult.ReleaseDate).toBe(oneGamePlayniteSnapshot.releaseDate?.toISOString() ?? null);
+		expect(oneResult.Playtime).toBe(oneGamePlayniteSnapshot.playtime);
+		expect(oneResult.LastActivity).toBe(
+			oneGamePlayniteSnapshot.lastActivity?.toISOString() ?? null,
+		);
+		expect(oneResult.Added).toBe(oneGamePlayniteSnapshot.added?.toISOString() ?? null);
+		expect(oneResult.InstallDirectory).toBe(oneGamePlayniteSnapshot.installDirectory);
+		expect(oneResult.IsInstalled).toBe(+oneGamePlayniteSnapshot.isInstalled);
+		expect(oneResult.BackgroundImage).toBe(oneGamePlayniteSnapshot.backgroundImage);
+		expect(oneResult.CoverImage).toBe(oneGamePlayniteSnapshot.coverImage);
+		expect(oneResult.Icon).toBe(oneGamePlayniteSnapshot.icon);
+		expect(oneResult.Hidden).toBe(+oneGamePlayniteSnapshot.hidden);
+		expect(oneResult.CompletionStatusId).toBe(oneGamePlayniteSnapshot.completionStatusId);
 		expect(oneResult.ContentHash).toBe(oneGame.getContentHash());
 		expect(new Set(oneResult.Developers)).toEqual(new Set(oneGame.relationships.developers.get()));
 		expect(new Set(oneResult.Publishers)).toEqual(new Set(oneGame.relationships.publishers.get()));
@@ -191,16 +196,22 @@ describe("Game Library / Game", () => {
 	it("shows null values as null and not empty string", () => {
 		// Arrange
 		const game = factory.getGameFactory().build({
-			name: null,
-			description: null,
-			releaseDate: null,
-			lastActivity: null,
-			added: null,
-			installDirectory: null,
-			backgroundImage: null,
-			coverImage: null,
-			icon: null,
-			completionStatusId: null,
+			playniteSnapshot: {
+				name: null,
+				description: null,
+				releaseDate: null,
+				lastActivity: null,
+				added: null,
+				installDirectory: null,
+				backgroundImage: null,
+				coverImage: null,
+				icon: null,
+				completionStatusId: null,
+				hidden: false,
+				id: PlayniteGameIdParser.fromTrusted(faker.string.uuid()),
+				isInstalled: false,
+				playtime: 0,
+			},
 		});
 		root.seedGame([game]);
 		// Act

@@ -17,7 +17,7 @@ export const makeCompletionStatusRepository = ({
 	getDb,
 	logService,
 }: BaseRepositoryDeps): ICompletionStatusRepositoryPort => {
-	const TABLE_NAME = `completion_status`;
+	const TABLE_NAME = `playnite_completion_status`;
 	const COLUMNS: (keyof CompletionStatusModel)[] = ["Id", "Name", "LastUpdatedAt"];
 	const base = makeBaseRepository({
 		getDb,

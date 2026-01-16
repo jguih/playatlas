@@ -1,5 +1,5 @@
 import { type EntityMapper } from "@playatlas/common/application";
-import { GameIdParser } from "@playatlas/common/domain";
+import { GameIdParser, PlayniteGameIdParser } from "@playatlas/common/domain";
 import type { MakeGameRelationshipProps } from "./domain";
 import { type Game, makeGame } from "./domain/game.entity";
 import type { GameResponseDto } from "./dtos/game.response.dto";
@@ -20,74 +20,93 @@ const _toDto = (game: Game): GameResponseDto => {
 	const Platforms = game.relationships.platforms.isLoaded()
 		? game.relationships.platforms.get()
 		: [];
+	const playniteSnapshot = game.getPlayniteSnapshot();
+
 	const dto: GameResponseDto = {
-		Id: game.getId(),
-		Name: game.getName(),
-		Description: game.getDescription(),
-		ReleaseDate: game.getReleaseDate()?.toISOString() ?? null,
-		Playtime: game.getPlaytime(),
-		LastActivity: game.getLastActivity()?.toISOString() ?? null,
-		Added: game.getAdded()?.toISOString() ?? null,
-		InstallDirectory: game.getInstallDirectory(),
-		IsInstalled: +game.isInstalled(),
-		BackgroundImage: game.getBackgroundImage(),
-		CoverImage: game.getCoverImage(),
-		Icon: game.getIcon(),
-		Hidden: +game.isHidden(),
-		CompletionStatusId: game.getCompletionStatusId(),
+		Id: playniteSnapshot.id,
+		Name: playniteSnapshot.name,
+		Description: playniteSnapshot.description,
+		ReleaseDate: playniteSnapshot.releaseDate?.toISOString() ?? null,
+		Playtime: playniteSnapshot.playtime,
+		LastActivity: playniteSnapshot.lastActivity?.toISOString() ?? null,
+		Added: playniteSnapshot.added?.toISOString() ?? null,
+		InstallDirectory: playniteSnapshot.installDirectory,
+		IsInstalled: +playniteSnapshot.isInstalled,
+		BackgroundImage: playniteSnapshot.backgroundImage,
+		CoverImage: playniteSnapshot.coverImage,
+		Icon: playniteSnapshot.icon,
+		Hidden: +playniteSnapshot.hidden,
+		CompletionStatusId: playniteSnapshot.completionStatusId,
 		ContentHash: game.getContentHash(),
 		Developers,
 		Publishers,
 		Genres,
 		Platforms,
+		DeletedAt: game.getDeletedAt()?.toISOString() ?? null,
+		DeleteAfter: game.getDeleteAfter()?.toISOString() ?? null,
 	};
 	return dto;
 };
 
 export const gameMapper: GameMapper = {
 	toPersistence: (game: Game): GameModel => {
+		const playniteSnapshot = game.getPlayniteSnapshot();
 		const record: GameModel = {
 			Id: game.getId(),
-			Name: game.getName(),
-			Description: game.getDescription(),
-			ReleaseDate: game.getReleaseDate()?.toISOString() ?? null,
-			Playtime: game.getPlaytime(),
-			LastActivity: game.getLastActivity()?.toISOString() ?? null,
-			Added: game.getAdded()?.toISOString() ?? null,
-			InstallDirectory: game.getInstallDirectory(),
-			IsInstalled: +game.isInstalled(),
-			BackgroundImage: game.getBackgroundImage(),
-			CoverImage: game.getCoverImage(),
-			Icon: game.getIcon(),
-			Hidden: +game.isHidden(),
-			CompletionStatusId: game.getCompletionStatusId(),
+			PlayniteId: playniteSnapshot.id,
+			PlayniteName: playniteSnapshot.name,
+			PlayniteDescription: playniteSnapshot.description,
+			PlayniteReleaseDate: playniteSnapshot.releaseDate?.toISOString() ?? null,
+			PlaynitePlaytime: playniteSnapshot.playtime,
+			PlayniteLastActivity: playniteSnapshot.lastActivity?.toISOString() ?? null,
+			PlayniteAdded: playniteSnapshot.added?.toISOString() ?? null,
+			PlayniteInstallDirectory: playniteSnapshot.installDirectory,
+			PlayniteIsInstalled: +playniteSnapshot.isInstalled,
+			PlayniteBackgroundImage: playniteSnapshot.backgroundImage,
+			PlayniteCoverImage: playniteSnapshot.coverImage,
+			PlayniteIcon: playniteSnapshot.icon,
+			PlayniteHidden: +playniteSnapshot.hidden,
+			PlayniteCompletionStatusId: playniteSnapshot.completionStatusId,
 			ContentHash: game.getContentHash(),
 			LastUpdatedAt: game.getLastUpdatedAt().toISOString(),
+			DeletedAt: game.getDeletedAt()?.toISOString() ?? null,
+			DeleteAfter: game.getDeleteAfter()?.toISOString() ?? null,
+			BackgroundImagePath: game.getBackgroundImagePath(),
+			CoverImagePath: game.getCoverImagePath(),
+			IconImagePath: game.getIconImagePath(),
 		};
 		return record;
 	},
 	toDomain: (game: GameModel, relationships: MakeGameRelationshipProps = {}): Game => {
 		const entity: Game = makeGame({
 			id: GameIdParser.fromTrusted(game.Id),
-			name: game.Name,
-			description: game.Description,
-			releaseDate: game.ReleaseDate ? new Date(game.ReleaseDate) : null,
-			playtime: game.Playtime,
-			lastActivity: game.LastActivity ? new Date(game.LastActivity) : null,
-			added: game.Added ? new Date(game.Added) : null,
-			installDirectory: game.InstallDirectory,
-			isInstalled: Boolean(game.IsInstalled),
-			backgroundImage: game.BackgroundImage,
-			coverImage: game.CoverImage,
-			icon: game.Icon,
-			hidden: Boolean(game.Hidden),
+			playniteSnapshot: {
+				id: PlayniteGameIdParser.fromTrusted(game.PlayniteId),
+				name: game.PlayniteName,
+				description: game.PlayniteDescription,
+				releaseDate: game.PlayniteReleaseDate ? new Date(game.PlayniteReleaseDate) : null,
+				playtime: game.PlaynitePlaytime,
+				lastActivity: game.PlayniteLastActivity ? new Date(game.PlayniteLastActivity) : null,
+				added: game.PlayniteAdded ? new Date(game.PlayniteAdded) : null,
+				installDirectory: game.PlayniteInstallDirectory,
+				isInstalled: Boolean(game.PlayniteIsInstalled),
+				backgroundImage: game.PlayniteBackgroundImage,
+				coverImage: game.PlayniteCoverImage,
+				icon: game.PlayniteIcon,
+				hidden: Boolean(game.PlayniteHidden),
+				completionStatusId: game.PlayniteCompletionStatusId,
+			},
 			developerIds: relationships.developerIds,
 			genreIds: relationships.genreIds,
 			platformIds: relationships.platformIds,
 			publisherIds: relationships.publisherIds,
-			completionStatusId: game.CompletionStatusId,
 			contentHash: game.ContentHash,
 			lastUpdatedAt: new Date(game.LastUpdatedAt),
+			deletedAt: game.DeletedAt ? new Date(game.DeletedAt) : null,
+			deleteAfter: game.DeleteAfter ? new Date(game.DeleteAfter) : null,
+			backgroundImagePath: game.BackgroundImagePath,
+			coverImagePath: game.CoverImagePath,
+			iconImagePath: game.IconImagePath,
 		});
 		return entity;
 	},

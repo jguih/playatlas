@@ -4,11 +4,12 @@ import {
 	GameIdParser,
 	GenreIdParser,
 	PlatformIdParser,
+	PlayniteGameIdParser,
 	type CompanyId,
 	type CompletionStatusId,
-	type GameId,
 	type GenreId,
 	type PlatformId,
+	type PlayniteGameId,
 } from "@playatlas/common/domain";
 import {
 	makeCompany,
@@ -21,6 +22,7 @@ import {
 	type Game,
 	type Genre,
 	type Platform,
+	type PlayniteGameSnapshot,
 } from "@playatlas/game-library/domain";
 import type { SyncGamesCommand, SyncGamesCommandItem } from "./sync-games.command";
 
@@ -31,18 +33,20 @@ export type ExtractedSyncData = {
 	publishers: Company[];
 	completionStatuses: CompletionStatus[];
 	games: Game[];
-	added: GameId[];
-	updated: GameId[];
-	deleted: GameId[];
+	added: PlayniteGameId[];
+	updated: PlayniteGameId[];
+	deleted: PlayniteGameId[];
 };
 
 export const extractSyncData = (props: {
 	command: SyncGamesCommand;
 	now: Date;
+	existingGames: Map<PlayniteGameId, Game>;
 }): ExtractedSyncData => {
 	const {
 		command: { payload },
 		now,
+		existingGames,
 	} = props;
 
 	const genres = new Map<GenreId, Genre>();
@@ -51,11 +55,20 @@ export const extractSyncData = (props: {
 	const publishers = new Map<CompanyId, Company>();
 	const completionStatuses = new Map<CompletionStatusId, CompletionStatus>();
 	const games: Game[] = [];
-	const added: GameId[] = [];
-	const updated: GameId[] = [];
-	const deleted: GameId[] = [];
+	const added: PlayniteGameId[] = [];
+	const updated: PlayniteGameId[] = [];
+	const deleted: PlayniteGameId[] = [];
 
-	const processCommandItem = (item: SyncGamesCommandItem) => {
+	const processCommandItem = (item: SyncGamesCommandItem): Game | null => {
+		const itemPlayniteGameId = PlayniteGameIdParser.fromExternal(item.Id);
+		const existingGame = existingGames.has(itemPlayniteGameId)
+			? existingGames.get(itemPlayniteGameId)!
+			: null;
+
+		if (existingGame && existingGame.getContentHash() === item.ContentHash) {
+			return null;
+		}
+
 		item.Genres?.forEach((g) => {
 			const genreId = GenreIdParser.fromExternal(g.Id);
 			genres.set(genreId, makeGenre({ id: genreId, name: g.Name, lastUpdatedAt: now }));
@@ -99,44 +112,75 @@ export const extractSyncData = (props: {
 			);
 		}
 
-		games.push(
-			makeGame({
-				id: GameIdParser.fromExternal(item.Id),
-				name: item.Name,
-				added: item.Added ? new Date(item.Added) : null,
-				contentHash: item.ContentHash,
-				backgroundImage: item.BackgroundImage,
-				coverImage: item.CoverImage,
-				icon: item.Icon,
-				completionStatusId: item.CompletionStatus?.Id,
-				description: item.Description,
-				developerIds: item.Developers?.map((d) => CompanyIdParser.fromExternal(d.Id)) ?? [],
-				genreIds: item.Genres?.map((g) => GenreIdParser.fromExternal(g.Id)) ?? [],
-				publisherIds: item.Publishers?.map((p) => CompanyIdParser.fromExternal(p.Id)) ?? [],
-				platformIds: item.Platforms?.map((p) => PlatformIdParser.fromExternal(p.Id)) ?? [],
-				hidden: item.Hidden,
-				installDirectory: item.InstallDirectory,
-				isInstalled: item.IsInstalled,
-				lastActivity: item.LastActivity ? new Date(item.LastActivity) : null,
-				playtime: item.Playtime,
-				releaseDate: item.ReleaseDate ? new Date(item.ReleaseDate) : null,
-				lastUpdatedAt: now,
-			}),
-		);
+		const playniteSnapshot: PlayniteGameSnapshot = {
+			id: itemPlayniteGameId,
+			name: item.Name ?? null,
+			added: item.Added ? new Date(item.Added) : null,
+			backgroundImage: item.BackgroundImage ?? null,
+			coverImage: item.CoverImage ?? null,
+			icon: item.Icon ?? null,
+			completionStatusId: item.CompletionStatus?.Id ?? null,
+			description: item.Description ?? null,
+			hidden: item.Hidden,
+			installDirectory: item.InstallDirectory ?? null,
+			isInstalled: item.IsInstalled,
+			lastActivity: item.LastActivity ? new Date(item.LastActivity) : null,
+			playtime: item.Playtime,
+			releaseDate: item.ReleaseDate ? new Date(item.ReleaseDate) : null,
+		};
+
+		const developerIds = item.Developers?.map((d) => CompanyIdParser.fromExternal(d.Id)) ?? [];
+		const genreIds = item.Genres?.map((g) => GenreIdParser.fromExternal(g.Id)) ?? [];
+		const publisherIds = item.Publishers?.map((p) => CompanyIdParser.fromExternal(p.Id)) ?? [];
+		const platformIds = item.Platforms?.map((p) => PlatformIdParser.fromExternal(p.Id)) ?? [];
+
+		if (existingGame) {
+			existingGame.setPlayniteSnapshot(playniteSnapshot);
+			existingGame.relationships.developers.set(developerIds);
+			existingGame.relationships.genres.set(genreIds);
+			existingGame.relationships.publishers.set(publisherIds);
+			existingGame.relationships.platforms.set(platformIds);
+			games.push(existingGame);
+			return existingGame;
+		}
+
+		const newGame = makeGame({
+			id: GameIdParser.fromTrusted(crypto.randomUUID()),
+			playniteSnapshot,
+			developerIds: developerIds,
+			genreIds: genreIds,
+			publisherIds: publisherIds,
+			platformIds: platformIds,
+			lastUpdatedAt: now,
+			contentHash: item.ContentHash,
+		});
+
+		games.push(newGame);
+
+		return newGame;
 	};
 
 	for (const item of payload.toAdd) {
 		processCommandItem(item);
-		added.push(GameIdParser.fromExternal(item.Id));
+		added.push(PlayniteGameIdParser.fromExternal(item.Id));
 	}
 
 	for (const item of payload.toUpdate) {
 		processCommandItem(item);
-		updated.push(GameIdParser.fromExternal(item.Id));
+		updated.push(PlayniteGameIdParser.fromExternal(item.Id));
 	}
 
-	for (const item of payload.toRemove) {
-		deleted.push(GameIdParser.fromExternal(item));
+	for (const itemId of payload.toRemove) {
+		const itemPlayniteGameId = PlayniteGameIdParser.fromExternal(itemId);
+		const existingGame = existingGames.has(itemPlayniteGameId)
+			? existingGames.get(itemPlayniteGameId)!
+			: null;
+
+		if (existingGame) {
+			existingGame.delete();
+			games.push(existingGame);
+			deleted.push(PlayniteGameIdParser.fromExternal(itemId));
+		}
 	}
 
 	return {

@@ -1,7 +1,9 @@
+import { ISODateSchema } from "@playatlas/common/common";
+import { playniteGameIdSchema } from "@playatlas/common/domain";
 import z from "zod";
 
 export const gameResponseDtoSchema = z.object({
-	Id: z.string(),
+	Id: playniteGameIdSchema,
 	Name: z.string().nullable(),
 	Description: z.string().nullable(),
 	ReleaseDate: z.string().nullable(),
@@ -20,6 +22,8 @@ export const gameResponseDtoSchema = z.object({
 	Publishers: z.array(z.string()),
 	Genres: z.array(z.string()),
 	Platforms: z.array(z.string()),
+	DeletedAt: ISODateSchema.nullable(),
+	DeleteAfter: ISODateSchema.nullable(),
 });
 
 export type GameResponseDto = z.infer<typeof gameResponseDtoSchema>;

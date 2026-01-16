@@ -21,7 +21,7 @@ export const makePlatformRepository = ({
 	getDb,
 	logService,
 }: BaseRepositoryDeps): IPlatformRepositoryPort => {
-	const TABLE_NAME = "platform";
+	const TABLE_NAME = "playnite_platform";
 	const COLUMNS: (keyof PlatformModel)[] = [
 		"Id",
 		"Name",

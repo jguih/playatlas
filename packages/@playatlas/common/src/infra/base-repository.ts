@@ -41,7 +41,7 @@ export const makeBaseRepository = <
     VALUES
       (${insertColumns.map(() => "?").join(", ")})
     ON CONFLICT DO UPDATE SET
-      ${insertColumns.map((c) => `${String(c)} = excluded.${String(c)}`).join(", ")};
+      ${updateColumns.map((c) => `${String(c)} = excluded.${String(c)}`).join(", ")};
   `;
 	const updateSql = `
     UPDATE ${tableName}

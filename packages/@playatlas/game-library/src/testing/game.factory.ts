@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import {
 	GameIdParser,
+	PlayniteGameIdParser,
 	type CompanyId,
 	type CompletionStatusId,
 	type GenreId,
@@ -37,7 +38,7 @@ export const makeGameFactory = ({
 
 	const build = (props: Partial<MakeGameProps> = {}): Game => {
 		const completionStatusId = propOrDefault(
-			props.completionStatusId,
+			props.playniteSnapshot?.completionStatusId,
 			faker.helpers.arrayElement(completionStatusOptions),
 		);
 		const developerIds = propOrDefault(
@@ -59,20 +60,29 @@ export const makeGameFactory = ({
 
 		return makeGame({
 			id: GameIdParser.fromExternal(props.id ?? faker.string.uuid()),
-			name: propOrDefault(props.name, faker.commerce.productName()),
-			description: propOrDefault(props.description, faker.lorem.sentence()),
-			releaseDate: propOrDefault(props.releaseDate, faker.date.past()),
-			playtime: propOrDefault(props.playtime, faker.number.int({ min: 0, max: 500 })),
-			lastActivity: propOrDefault(props.lastActivity, faker.date.recent()),
-			added: propOrDefault(props.added, faker.date.past()),
-			installDirectory: propOrDefault(props.installDirectory, faker.system.directoryPath()),
-			isInstalled: propOrDefault(props.isInstalled, faker.datatype.boolean()),
-			backgroundImage: propOrDefault(props.backgroundImage, faker.image.url()),
-			coverImage: propOrDefault(props.coverImage, faker.image.url()),
-			icon: propOrDefault(props.icon, faker.image.url()),
+			playniteSnapshot: {
+				id: PlayniteGameIdParser.fromExternal(props.playniteSnapshot?.id ?? faker.string.uuid()),
+				name: propOrDefault(props.playniteSnapshot?.name, faker.commerce.productName()),
+				description: propOrDefault(props.playniteSnapshot?.description, faker.lorem.sentence()),
+				releaseDate: propOrDefault(props.playniteSnapshot?.releaseDate, faker.date.past()),
+				playtime: propOrDefault(
+					props.playniteSnapshot?.playtime,
+					faker.number.int({ min: 0, max: 500 }),
+				),
+				lastActivity: propOrDefault(props.playniteSnapshot?.lastActivity, faker.date.recent()),
+				added: propOrDefault(props.playniteSnapshot?.added, faker.date.past()),
+				installDirectory: propOrDefault(
+					props.playniteSnapshot?.installDirectory,
+					faker.system.directoryPath(),
+				),
+				isInstalled: propOrDefault(props.playniteSnapshot?.isInstalled, faker.datatype.boolean()),
+				backgroundImage: propOrDefault(props.playniteSnapshot?.backgroundImage, faker.image.url()),
+				coverImage: propOrDefault(props.playniteSnapshot?.coverImage, faker.image.url()),
+				icon: propOrDefault(props.playniteSnapshot?.icon, faker.image.url()),
+				hidden: propOrDefault(props.playniteSnapshot?.hidden, faker.datatype.boolean()),
+				completionStatusId,
+			},
 			contentHash: propOrDefault(props.contentHash, faker.string.hexadecimal({ length: 32 })),
-			hidden: propOrDefault(props.hidden, faker.datatype.boolean()),
-			completionStatusId,
 			developerIds,
 			genreIds,
 			platformIds,

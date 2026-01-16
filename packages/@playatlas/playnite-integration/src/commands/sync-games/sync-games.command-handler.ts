@@ -1,4 +1,3 @@
-import { GameIdParser } from "@playatlas/common/domain";
 import { extractSyncData, type ExtractedSyncData } from "./sync-data.extractor";
 import type { ISyncGamesCommandHandlerPort, SyncGamesServiceDeps } from "./sync-games.service.type";
 
@@ -24,7 +23,9 @@ export const makeSyncGamesCommandHandler = ({
 			let extracted: ExtractedSyncData;
 
 			try {
-				extracted = extractSyncData({ command, now });
+				const games = gameRepository.all();
+				const existingGames = new Map(games.map((g) => [g.getPlayniteSnapshot().id, g]));
+				extracted = extractSyncData({ command, now, existingGames });
 			} catch (error) {
 				logService.error(`Failed to parse game library sync payload`, error);
 				return {
@@ -40,7 +41,6 @@ export const makeSyncGamesCommandHandler = ({
 			companyRepository.upsert(extracted.publishers);
 			completionStatusRepository.upsert(extracted.completionStatuses);
 			gameRepository.upsert(extracted.games);
-			gameRepository.remove(payload.toRemove.map(GameIdParser.fromExternal));
 
 			await libraryManifestService.write();
 

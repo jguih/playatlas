@@ -17,7 +17,7 @@ export const makeGenreRepository = ({
 	getDb,
 	logService,
 }: BaseRepositoryDeps): IGenreRepositoryPort => {
-	const TABLE_NAME = "genre";
+	const TABLE_NAME = "playnite_genre";
 	const COLUMNS: (keyof GenreModel)[] = ["Id", "Name", "LastUpdatedAt"];
 	const base = makeBaseRepository({
 		getDb,

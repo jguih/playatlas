@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import type { DomainEvent } from "@playatlas/common/application";
-import { GameIdParser } from "@playatlas/common/domain";
+import { GameIdParser, PlayniteGameIdParser } from "@playatlas/common/domain";
 import type { GameResponseDto } from "@playatlas/game-library/dtos";
 import {
 	makeSyncGamesCommand,
@@ -25,8 +25,8 @@ describe("Game Library Sync", () => {
 	it("adds games", async () => {
 		// Arrange
 		const addedItems = factory.getSyncGameRequestDtoFactory().buildList(2000);
-		const addedGameIds = addedItems.map((i) => i.Id);
-		const sampleGame = faker.helpers.arrayElement(addedItems);
+		const addedItemIds = addedItems.map((i) => i.Id);
+		const sampleItem = faker.helpers.arrayElement(addedItems);
 		const requestDto: SyncGamesRequestDto = {
 			AddedItems: addedItems,
 			RemovedItems: [],
@@ -40,22 +40,22 @@ describe("Game Library Sync", () => {
 			.executeAsync(command);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = queryResult.type === "ok" ? queryResult.data : [];
-		const persistedGame = games.find((g) => g.Id === sampleGame.Id);
+		const persistedGame = games.find((g) => g.Id === sampleItem.Id);
 
 		// Assert
 		expect(commandResult.success).toBe(true);
 		expect(commandResult.reason_code).toBe("game_library_synchronized");
 
 		expect(new Set(games.map((g) => g.Id)).size).toBe(2000);
-		expect(games.every((g) => addedGameIds.includes(g.Id))).toBe(true);
+		expect(games.every((g) => addedItemIds.includes(g.Id))).toBe(true);
 
 		expect(persistedGame).toBeDefined();
-		expect(sampleGame).toMatchObject({
+		expect(sampleItem).toMatchObject({
 			Id: persistedGame?.Id,
 			Name: persistedGame?.Name,
 			Description: persistedGame?.Description,
 		} satisfies Partial<GameResponseDto>);
-		expect(new Set(sampleGame.Genres?.map((g) => g.Id))).toEqual(new Set(persistedGame?.Genres));
+		expect(new Set(sampleItem.Genres?.map((g) => g.Id))).toEqual(new Set(persistedGame?.Genres));
 
 		expect(events).toHaveLength(1);
 
@@ -64,7 +64,7 @@ describe("Game Library Sync", () => {
 
 		expect(syncEvent).not.toBeNull();
 		expect(new Set(syncEvent!.payload.added)).toEqual(
-			new Set(addedGameIds.map(GameIdParser.fromExternal)),
+			new Set(addedItemIds.map(GameIdParser.fromExternal)),
 		);
 		expect(syncEvent!.payload.deleted).toHaveLength(0);
 		expect(syncEvent!.payload.updated).toHaveLength(0);
@@ -72,15 +72,15 @@ describe("Game Library Sync", () => {
 
 	it("removes games", async () => {
 		// Arrange
-		const initialGames = factory.getSyncGameRequestDtoFactory().buildList(2000);
-		const removedGames = faker.helpers.arrayElements(initialGames, 500);
-		const removedGameIds = removedGames.map((i) => i.Id);
+		const initialItems = factory.getSyncGameRequestDtoFactory().buildList(2000);
+		const removedItems = faker.helpers.arrayElements(initialItems, 500);
+		const removedItemIds = removedItems.map((i) => i.Id);
 
-		const remainingGames = initialGames.filter((g) => !removedGameIds.includes(g.Id));
+		const remainingGames = initialItems.filter((g) => !removedItemIds.includes(g.Id));
 		const remainingGameIds = remainingGames.map((i) => i.Id);
 
 		const seedCommand = makeSyncGamesCommand({
-			AddedItems: initialGames,
+			AddedItems: initialItems,
 			RemovedItems: [],
 			UpdatedItems: [],
 		});
@@ -91,7 +91,7 @@ describe("Game Library Sync", () => {
 
 		const removeCommand = makeSyncGamesCommand({
 			AddedItems: [],
-			RemovedItems: removedGames.map((i) => i.Id),
+			RemovedItems: removedItems.map((i) => i.Id),
 			UpdatedItems: [],
 		});
 
@@ -101,13 +101,14 @@ describe("Game Library Sync", () => {
 			.executeAsync(removeCommand);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = queryResult.type === "ok" ? queryResult.data : [];
+		const visibleGames = games.filter((g) => g.DeletedAt === null);
 
 		// Assert
 		expect(commandResult.success).toBe(true);
 		expect(commandResult.reason_code).toBe("game_library_synchronized");
 
-		expect(games).toHaveLength(remainingGames.length);
-		expect(new Set(games.map((g) => g.Id))).toEqual(new Set(remainingGameIds));
+		expect(visibleGames).toHaveLength(remainingGames.length);
+		expect(new Set(visibleGames.map((g) => g.Id))).toEqual(new Set(remainingGameIds));
 
 		expect(events).toHaveLength(1);
 
@@ -116,7 +117,7 @@ describe("Game Library Sync", () => {
 
 		expect(syncEvent).not.toBeNull();
 		expect(new Set(syncEvent!.payload.deleted)).toEqual(
-			new Set(removedGameIds.map(GameIdParser.fromExternal)),
+			new Set(removedItemIds.map(GameIdParser.fromExternal)),
 		);
 		expect(syncEvent!.payload.added).toHaveLength(0);
 		expect(syncEvent!.payload.updated).toHaveLength(0);
@@ -128,21 +129,22 @@ describe("Game Library Sync", () => {
 			factory.getSyncGameRequestDtoFactory().genreOptions,
 			{ min: 3, max: 3 },
 		);
-		const initialGames = factory.getSyncGameRequestDtoFactory().buildList(2000);
-		const gamesToUpdate = faker.helpers.arrayElements(initialGames, 500);
+		const initialSyncItems = factory.getSyncGameRequestDtoFactory().buildList(2000);
+		const itemsToUpdate = faker.helpers.arrayElements(initialSyncItems, 500);
 
-		const updatedGames = gamesToUpdate.map((game) => ({
+		const updatedItems = itemsToUpdate.map((game) => ({
 			...game,
 			Name: `${game.Name} (Updated)`,
 			Description: faker.lorem.paragraph(),
 			Genres: genreOptions,
+			ContentHash: faker.string.uuid(),
 		}));
-		const updatedGameIds = updatedGames.map((i) => i.Id);
+		const updatedItemIds = updatedItems.map((i) => i.Id);
 
-		const untouchedGames = initialGames.filter((g) => !updatedGameIds.includes(g.Id));
+		const untouchedItems = initialSyncItems.filter((g) => !updatedItemIds.includes(g.Id));
 
 		const seedCommand = makeSyncGamesCommand({
-			AddedItems: initialGames,
+			AddedItems: initialSyncItems,
 			RemovedItems: [],
 			UpdatedItems: [],
 		});
@@ -154,7 +156,7 @@ describe("Game Library Sync", () => {
 		const updateCommand = makeSyncGamesCommand({
 			AddedItems: [],
 			RemovedItems: [],
-			UpdatedItems: updatedGames,
+			UpdatedItems: updatedItems,
 		});
 
 		// Act
@@ -169,10 +171,10 @@ describe("Game Library Sync", () => {
 		expect(commandResult.success).toBe(true);
 		expect(commandResult.reason_code).toBe("game_library_synchronized");
 
-		expect(games).toHaveLength(initialGames.length);
-		expect(new Set(games.map((g) => g.Id))).toEqual(new Set(initialGames.map((g) => g.Id)));
+		expect(games).toHaveLength(initialSyncItems.length);
+		expect(new Set(games.map((g) => g.Id))).toEqual(new Set(initialSyncItems.map((g) => g.Id)));
 
-		for (const updated of updatedGames) {
+		for (const updated of updatedItems) {
 			const persisted = games.find((g) => g.Id === updated.Id);
 			expect(persisted).toBeDefined();
 			expect(persisted).toMatchObject({
@@ -184,7 +186,7 @@ describe("Game Library Sync", () => {
 			expect(new Set(updated.Genres.map((g) => g.Id))).toEqual(new Set(persisted?.Genres));
 		}
 
-		for (const game of untouchedGames) {
+		for (const game of untouchedItems) {
 			const persisted = games.find((g) => g.Id === game.Id);
 			expect(persisted).toBeDefined();
 			expect(persisted!.Name).not.toMatch(/\(Updated\)/);
@@ -197,7 +199,7 @@ describe("Game Library Sync", () => {
 
 		expect(syncEvent).not.toBeNull();
 		expect(new Set(syncEvent!.payload.updated)).toEqual(
-			new Set(updatedGameIds.map(GameIdParser.fromExternal)),
+			new Set(updatedItemIds.map(PlayniteGameIdParser.fromExternal)),
 		);
 		expect(syncEvent!.payload.added).toHaveLength(0);
 		expect(syncEvent!.payload.deleted).toHaveLength(0);

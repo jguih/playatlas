@@ -12,7 +12,9 @@ import {
 	InvalidStateError,
 	type PlatformId,
 } from "@playatlas/common/domain";
-import type { MakeGameProps } from "./game.entity.types";
+import type { MakeGameProps, PlayniteGameSnapshot } from "./game.entity.types";
+
+const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 
 export type GameRelationshipMap = {
 	developers: CompanyId;
@@ -29,19 +31,14 @@ export type GameRelationshipProps = {
 
 export type Game = BaseEntity<GameId> &
 	Readonly<{
-		getName: () => string | null;
-		getDescription: () => string | null;
-		getReleaseDate: () => Date | null;
-		getPlaytime: () => number;
-		getLastActivity: () => Date | null;
-		getAdded: () => Date | null;
-		getInstallDirectory: () => string | null;
-		isInstalled: () => boolean;
-		isHidden: () => boolean;
-		getBackgroundImage: () => string | null;
-		getCoverImage: () => string | null;
-		getIcon: () => string | null;
-		getCompletionStatusId: () => string | null;
+		getBackgroundImagePath: () => string | null;
+		getCoverImagePath: () => string | null;
+		getIconImagePath: () => string | null;
+		getDeletedAt: () => Date | null;
+		getDeleteAfter: () => Date | null;
+		delete: () => void;
+		getPlayniteSnapshot: () => PlayniteGameSnapshot;
+		setPlayniteSnapshot: (value: PlayniteGameSnapshot) => void;
 		getContentHash: () => string;
 		setImageReference: (props: { name: GameImageType; path: { filename: string } }) => void;
 		relationships: GameRelationshipProps;
@@ -49,26 +46,24 @@ export type Game = BaseEntity<GameId> &
 
 export const makeGame = (props: MakeGameProps): Game => {
 	const _id = props.id;
-	const _name = props.name ?? null;
-	const _description = props.description ?? null;
-	const _releaseDate = props.releaseDate ?? null;
-	const _playtime = props.playtime ?? 0;
-	const _lastActivity = props.lastActivity ?? null;
-	const _added = props.added ?? null;
-	const _installDirectory = props.installDirectory ?? null;
-	const _isInstalled = Boolean(props.isInstalled);
-	let _backgroundImage = props.backgroundImage ?? null;
-	let _coverImage = props.coverImage ?? null;
-	let _icon = props.icon ?? null;
-	const _hidden = Boolean(props.hidden);
-	const _completionStatusId = props.completionStatusId ?? null;
 	const _contentHash = props.contentHash;
 	let _last_updated_at = props.lastUpdatedAt;
+	let _deleted_at = props.deletedAt ?? null;
+	let _delete_after = props.deleteAfter ?? null;
+	let _background_image_path = props.backgroundImagePath ?? null;
+	let _cover_image_path = props.coverImagePath ?? null;
+	let _icon_image_path = props.iconImagePath ?? null;
+	let _playnite_game: PlayniteGameSnapshot = props.playniteSnapshot;
 
 	const _validate = () => {
-		if (_playtime < 0) throw new InvalidStateError("Playtime must not be negative");
+		if (_playnite_game.playtime < 0)
+			throw new InvalidStateError("Playnite playtime must not be negative");
 		if (validation.isEmptyString(_contentHash))
 			throw new InvalidStateError("ContentHash must not be an empty string");
+		if (_deleted_at && !_delete_after)
+			throw new InvalidStateError("DeleteAfter must be defined if entity was deleted");
+		if (!_deleted_at && _delete_after)
+			throw new InvalidStateError("DeletedAt must be defined if entity was deleted");
 	};
 
 	const _touch = () => {
@@ -80,19 +75,23 @@ export const makeGame = (props: MakeGameProps): Game => {
 	const game: Game = {
 		getId: () => _id,
 		getSafeId: () => _id,
-		getName: () => _name,
-		getDescription: () => _description,
-		getReleaseDate: () => _releaseDate,
-		getPlaytime: () => _playtime,
-		getLastActivity: () => _lastActivity,
-		getAdded: () => _added,
-		getInstallDirectory: () => _installDirectory,
-		isInstalled: () => _isInstalled,
-		isHidden: () => _hidden,
-		getBackgroundImage: () => _backgroundImage,
-		getCoverImage: () => _coverImage,
-		getIcon: () => _icon,
-		getCompletionStatusId: () => _completionStatusId,
+		getBackgroundImagePath: () => _background_image_path,
+		getCoverImagePath: () => _cover_image_path,
+		getIconImagePath: () => _icon_image_path,
+		getDeletedAt: () => _deleted_at,
+		getDeleteAfter: () => _delete_after,
+		delete: () => {
+			_deleted_at = new Date();
+			_delete_after = new Date(_deleted_at.getTime() + THIRTY_DAYS);
+			_touch();
+			_validate();
+		},
+		getPlayniteSnapshot: () => _playnite_game,
+		setPlayniteSnapshot: (value) => {
+			_playnite_game = value;
+			_touch();
+			_validate();
+		},
 		getContentHash: () => _contentHash,
 		getLastUpdatedAt: () => _last_updated_at,
 		relationships: {
@@ -105,22 +104,23 @@ export const makeGame = (props: MakeGameProps): Game => {
 			if (validation.isNullOrEmptyString(path.filename))
 				throw new InvalidStateError("Filename must not be an empty string or null");
 
-			const filepath = `${_id}\\${path.filename}`;
+			const filepath = `${_id}/${path.filename}`;
 			switch (name) {
 				case "background": {
-					_backgroundImage = filepath;
+					_background_image_path = filepath;
 					break;
 				}
 				case "cover": {
-					_coverImage = filepath;
+					_cover_image_path = filepath;
 					break;
 				}
 				case "icon": {
-					_icon = filepath;
+					_icon_image_path = filepath;
 					break;
 				}
 			}
 			_touch();
+			_validate();
 		},
 		validate: _validate,
 	};

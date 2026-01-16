@@ -2,6 +2,7 @@ import { ISODateSchema } from "@playatlas/common/common";
 import {
 	GameIdParser,
 	gameIdSchema,
+	playniteGameIdSchema,
 	type CompanyId,
 	type GameId,
 	type GenreId,
@@ -20,21 +21,27 @@ export const GROUPADD_SEPARATOR = ",";
 
 export const gameSchema = z.object({
 	Id: gameIdSchema,
-	Name: z.string().nullable(),
-	Description: z.string().nullable(),
-	ReleaseDate: ISODateSchema.nullable(),
-	Playtime: z.number(),
-	LastActivity: z.string().nullable(),
-	Added: ISODateSchema.nullable(),
-	InstallDirectory: z.string().nullable(),
-	IsInstalled: z.number(),
-	BackgroundImage: z.string().nullable(),
-	CoverImage: z.string().nullable(),
-	Icon: z.string().nullable(),
-	Hidden: z.number(),
-	CompletionStatusId: z.string().nullable(),
+	PlayniteId: playniteGameIdSchema,
+	PlayniteName: z.string().nullable(),
+	PlayniteDescription: z.string().nullable(),
+	PlayniteReleaseDate: ISODateSchema.nullable(),
+	PlaynitePlaytime: z.number(),
+	PlayniteLastActivity: z.string().nullable(),
+	PlayniteAdded: ISODateSchema.nullable(),
+	PlayniteInstallDirectory: z.string().nullable(),
+	PlayniteIsInstalled: z.number(),
+	PlayniteBackgroundImage: z.string().nullable(),
+	PlayniteCoverImage: z.string().nullable(),
+	PlayniteIcon: z.string().nullable(),
+	PlayniteHidden: z.number(),
+	PlayniteCompletionStatusId: z.string().nullable(),
 	ContentHash: z.string(),
 	LastUpdatedAt: ISODateSchema,
+	DeletedAt: ISODateSchema.nullable(),
+	DeleteAfter: ISODateSchema.nullable(),
+	BackgroundImagePath: z.string().nullable(),
+	CoverImagePath: z.string().nullable(),
+	IconImagePath: z.string().nullable(),
 });
 
 export type GameModel = z.infer<typeof gameSchema>;
@@ -59,7 +66,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 			tableName: TABLE_NAME,
 			idColumn: "Id",
 			insertColumns: COLUMNS,
-			updateColumns: COLUMNS, // TODO
+			updateColumns: COLUMNS.filter((c) => c !== "Id"),
 			mapper: gameMapper,
 			modelSchema: gameSchema,
 		},
@@ -207,7 +214,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 						gameIds: [modelId],
 					}).get(modelId) ?? [];
 
-			logService.debug(`Found game ${gameModel?.Name}`);
+			logService.debug(`Found game ${gameModel?.PlayniteName}`);
 			return gameMapper.toDomain(gameModel, {
 				developerIds,
 				publisherIds,
@@ -251,7 +258,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 
 	const getManifestData: IGameRepositoryPort["getManifestData"] = () => {
 		return base.run(({ db }) => {
-			const query = `SELECT Id, ContentHash FROM playnite_game`;
+			const query = `SELECT Id, ContentHash FROM ${TABLE_NAME}`;
 			const stmt = db.prepare(query);
 			const result = stmt.all();
 			const data: GameManifestData = gameManifestDataSchema.parse(result);
@@ -262,7 +269,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 
 	const getTotalPlaytimeSeconds: IGameRepositoryPort["getTotalPlaytimeSeconds"] = (filters) => {
 		return base.run(({ db }) => {
-			let query = `SELECT SUM(Playtime) as totalPlaytimeSeconds FROM playnite_game `;
+			let query = `SELECT SUM(Playtime) as totalPlaytimeSeconds FROM ${TABLE_NAME} `;
 			const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
 			query += where;
 			const stmt = db.prepare(query);

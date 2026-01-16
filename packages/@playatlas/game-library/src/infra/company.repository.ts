@@ -18,7 +18,7 @@ export const makeCompanyRepository = ({
 	getDb,
 	logService,
 }: BaseRepositoryDeps): ICompanyRepositoryPort => {
-	const TABLE_NAME = "company";
+	const TABLE_NAME = "playnite_company";
 	const COLUMNS: (keyof CompanyModel)[] = ["Id", "Name", "LastUpdatedAt"];
 	const base = makeBaseRepository<CompanyId, Company, CompanyModel>({
 		getDb,

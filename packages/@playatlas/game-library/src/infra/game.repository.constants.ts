@@ -1,25 +1,28 @@
 import type { GameRelationship } from "../domain/game.entity";
 import type { GameModel } from "./game.repository";
 
-export const TABLE_NAME = "playnite_game" as const;
+export const TABLE_NAME = "game" as const;
 
 export const COLUMNS: (keyof GameModel)[] = [
 	"Id",
-	"Name",
-	"Description",
-	"ReleaseDate",
-	"Playtime",
-	"LastActivity",
-	"Added",
-	"InstallDirectory",
-	"IsInstalled",
-	"BackgroundImage",
-	"CoverImage",
-	"Icon",
-	"Hidden",
-	"CompletionStatusId",
+	"PlayniteId",
+	"PlayniteName",
+	"PlayniteDescription",
+	"PlayniteReleaseDate",
+	"PlaynitePlaytime",
+	"PlayniteLastActivity",
+	"PlayniteAdded",
+	"PlayniteInstallDirectory",
+	"PlayniteIsInstalled",
+	"PlayniteBackgroundImage",
+	"PlayniteCoverImage",
+	"PlayniteIcon",
+	"PlayniteHidden",
+	"PlayniteCompletionStatusId",
 	"ContentHash",
 	"LastUpdatedAt",
+	"DeletedAt",
+	"DeleteAfter",
 ];
 
 export const RELATIONSHIP_TABLE_NAME = {
