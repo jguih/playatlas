@@ -7,6 +7,6 @@ export type ILogServicePort = {
 	getRequestDescription: (request: Request) => string;
 };
 
-export type LogServiceFactory = {
+export type ILogServiceFactoryPort = {
 	build: (context?: string) => ILogServicePort;
 };

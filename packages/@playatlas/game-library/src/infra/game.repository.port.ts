@@ -1,4 +1,4 @@
-import type { GameId } from "@playatlas/common/domain";
+import type { GameId, PlayniteGameId } from "@playatlas/common/domain";
 import type { IEntityRepositoryPort } from "@playatlas/common/infra";
 import type { Game, GameRelationship } from "../domain/game.entity";
 import type { GameFilters } from "../domain/game.types";
@@ -12,7 +12,8 @@ export type IGameRepositoryPort = Omit<
 	IEntityRepositoryPort<GameId, Game>,
 	"all" | "getById" | "add" | "update"
 > & {
-	getById: (id: string, props?: GameRepositoryEagerLoadProps) => Game | null;
+	getById: (id: GameId, props?: GameRepositoryEagerLoadProps) => Game | null;
+	getByPlayniteId: (id: PlayniteGameId, props?: GameRepositoryEagerLoadProps) => Game | null;
 	getManifestData: () => GameManifestData;
 	getTotal: (filters?: GameFilters) => number;
 	getTotalPlaytimeSeconds: (filters?: GameFilters) => number;

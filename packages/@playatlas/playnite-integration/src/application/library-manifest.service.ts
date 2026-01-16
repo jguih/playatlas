@@ -12,7 +12,7 @@ export const makeLibraryManifestService = ({
 	systemConfig,
 }: LibraryManifestServiceDeps): ILibraryManifestServicePort => {
 	const _getLibraryFolders = async (): Promise<string[]> => {
-		const entries = await fileSystemService.readdir(systemConfig.getLibFilesDir(), {
+		const entries = await fileSystemService.readdir(systemConfig.getMediaFilesRootDirPath(), {
 			withFileTypes: true,
 		});
 		const libraryFolders = entries
@@ -33,7 +33,7 @@ export const makeLibraryManifestService = ({
 		// Read the contentHash.txt inside every library folder and append it to the manifest's `mediaExistsFor`
 		for (const folderName of libraryFolders) {
 			const contentHashFilePath = join(
-				systemConfig.getLibFilesDir(),
+				systemConfig.getMediaFilesRootDirPath(),
 				folderName,
 				CONTENT_HASH_FILE_NAME,
 			);

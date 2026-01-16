@@ -1,4 +1,5 @@
-import type { LogServiceFactory } from "@playatlas/common/application";
+import type { ILogServiceFactoryPort } from "@playatlas/common/application";
+import type { ISystemConfigPort } from "@playatlas/common/infra";
 import { makeSignatureService } from "@playatlas/system/application";
 import { InvalidServerConfigurationError } from "@playatlas/system/domain";
 import {
@@ -6,15 +7,14 @@ import {
 	makeDatabaseConnection,
 	makeFileSystemService,
 	type IEnvironmentServicePort,
-	type SystemConfig,
 } from "@playatlas/system/infra";
 import type { DatabaseSync } from "node:sqlite";
 import type { IInfraModulePort } from "./infra.module.port";
 
 export type InfraModuleDeps = {
-	logServiceFactory: LogServiceFactory;
+	logServiceFactory: ILogServiceFactoryPort;
 	envService: IEnvironmentServicePort;
-	systemConfig: SystemConfig;
+	systemConfig: ISystemConfigPort;
 };
 
 export const makeInfraModule = ({
@@ -62,7 +62,7 @@ export const makeInfraModule = ({
 			const dirs = [
 				systemConfig.getDataDir(),
 				systemConfig.getTmpDir(),
-				systemConfig.getLibFilesDir(),
+				systemConfig.getMediaFilesRootDirPath(),
 				systemConfig.getSecurityDir(),
 			];
 
@@ -78,7 +78,7 @@ export const makeInfraModule = ({
 			}
 
 			try {
-				_signature_service.generateAsymmetricKeyPair();
+				await _signature_service.generateAsymmetricKeyPair();
 			} catch (error) {
 				throw new InvalidServerConfigurationError("Failed to generate asymmetric key pair", error);
 			}

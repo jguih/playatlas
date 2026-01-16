@@ -15,6 +15,8 @@ export const makePlayniteSyncService = ({
 			return await handler.withMediaFilesContext(
 				request,
 				async (context): Promise<PlayniteSynchronizationResult> => {
+					const { gameContext } = context;
+
 					if (!(await handler.verifyIntegrity(context)))
 						return {
 							success: false,
@@ -22,9 +24,10 @@ export const makePlayniteSyncService = ({
 							reason_code: "integrity_check_failed",
 						};
 
-					const game = gameRepository.getById(context.getGameId());
+					const game = gameRepository.getByPlayniteId(gameContext.getPlayniteGameId());
 					if (!game) {
-						logService.debug(`Game not found ${context.getGameId()}`);
+						logService.debug(`Game not found with Playnite id: ${gameContext.getPlayniteGameId()}`);
+
 						return {
 							reason: "Game not found",
 							reason_code: "game_not_found",

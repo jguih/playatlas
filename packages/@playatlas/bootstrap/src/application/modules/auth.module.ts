@@ -18,15 +18,15 @@ import {
 import { makeGetAllExtensionRegistrationsQueryHandler } from "@playatlas/auth/queries";
 import type {
 	IDomainEventBusPort,
+	ILogServiceFactoryPort,
 	ISignatureServicePort,
-	LogServiceFactory,
 } from "@playatlas/common/application";
 import type { BaseRepositoryDeps } from "@playatlas/common/infra";
 import type { IAuthModulePort } from "./auth.module.port";
 
 export type AuthModuleDeps = {
 	getDb: BaseRepositoryDeps["getDb"];
-	logServiceFactory: LogServiceFactory;
+	logServiceFactory: ILogServiceFactoryPort;
 	signatureService: ISignatureServicePort;
 	eventBus: IDomainEventBusPort;
 };

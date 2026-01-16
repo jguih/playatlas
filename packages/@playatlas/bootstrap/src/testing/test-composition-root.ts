@@ -45,7 +45,11 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 
 	const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus };
 
-	const gameLibrary = makeGameLibraryModule({ ...baseDeps });
+	const gameLibrary = makeGameLibraryModule({
+		...baseDeps,
+		fileSystemService: infra.getFsService(),
+		systemConfig: system.getSystemConfig(),
+	});
 
 	const factory = makeTestFactoryModule();
 
@@ -97,6 +101,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			completionStatusRepository: gameLibrary.getCompletionStatusRepository(),
 			genreRepository: gameLibrary.getGenreRepository(),
 			platformRepository: gameLibrary.getPlatformRepository(),
+			gameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory(),
 		});
 
 		const gameSession = makeGameSessionModule({

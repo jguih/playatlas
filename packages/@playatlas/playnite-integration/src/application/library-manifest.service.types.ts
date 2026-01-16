@@ -1,9 +1,9 @@
 import type { IFileSystemServicePort, ILogServicePort } from "@playatlas/common/application";
+import type { ISystemConfigPort } from "@playatlas/common/infra";
 import type { IGameRepositoryPort } from "@playatlas/game-library/infra";
-import type { SystemConfig } from "@playatlas/system/infra";
 
 export type LibraryManifestServiceDeps = {
-	systemConfig: SystemConfig;
+	systemConfig: ISystemConfigPort;
 	logService: ILogServicePort;
 	fileSystemService: IFileSystemServicePort;
 	gameRepository: IGameRepositoryPort;

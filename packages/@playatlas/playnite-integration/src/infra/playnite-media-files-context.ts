@@ -10,24 +10,12 @@ import { type PlayniteMediaFileStreamResult } from "./playnite-media-files-handl
 
 export type PlayniteMediaFilesContextId = string;
 export type PlayniteMediaFilesContext = DisposableAsync & {
-	getContextId: () => string;
-	getGameId: () => string;
-	setGameId: (value: string) => void;
-	getContentHash: () => string;
-	setContentHash: (value: string) => void;
-	getContentHashHeader: () => string;
+	getIntegrityHash: () => string;
+	getIntegrityHashBuffer: () => Buffer;
 	getStreamResults: () => PlayniteMediaFileStreamResult[];
 	setStreamResults: (value: PlayniteMediaFileStreamResult[]) => void;
 	getTmpDirPath: () => string;
 	getTmpOptimizedDirPath: () => string;
-	/**
-	 * Returns the final path where media files should be stored permanently
-	 */
-	getGameDirPath: () => string;
-	/**
-	 * Ensures the game directory is created
-	 */
-	ensureGameDir: (args?: { cleanUp?: boolean }) => Promise<void>;
 	validate: () => void;
 	/**
 	 * Creates the resources required by this context
@@ -40,83 +28,56 @@ export const makePlayniteMediaFilesContext = (
 	props: MakePlayniteMediaFilesContextProps,
 ): PlayniteMediaFilesContext => {
 	const _context_id = crypto.randomUUID();
-	let _game_id: string | null = props.gameId ?? null;
-	let _content_hash: string | null = props.contentHash ?? null;
-	let _stream_results: PlayniteMediaFileStreamResult[] = props.streamResults ?? [];
 	const _tmp_dir_path = join(systemConfig.getTmpDir(), _context_id);
 	const _tmp_optimized_dir_path = join(_tmp_dir_path, "/optimized");
-	let _game_dir_path: string | null = null;
-	const _content_hash_header = props.contentHashHeader;
+
+	const _integrity_hash = props.integrityHash ?? null;
+	let _stream_results: PlayniteMediaFileStreamResult[] = props.streamResults ?? [];
+	let _decoded_integrity_hash: Buffer | null = null;
 	let initialized: boolean = false;
 
-	const _getGameDirPath = () => {
-		if (!_game_dir_path) throw new InvalidStateError("Game dir path is not set.");
-		if (validation.isEmptyString(_game_dir_path))
-			throw new InvalidStateError(validation.message.isEmptyString("GameDirPath"));
-		return _game_dir_path;
+	const _validate = () => {
+		if (!_integrity_hash) throw new InvalidStateError("Content hash is not set.");
+		if (validation.isEmptyString(_integrity_hash))
+			throw new InvalidStateError(validation.message.isEmptyString("ContentHash"));
+
+		try {
+			_decoded_integrity_hash = Buffer.from(_integrity_hash, "base64");
+		} catch {
+			throw new InvalidStateError(`Integrity hash is not valid base64`);
+		}
+
+		if (
+			_decoded_integrity_hash.length === 0 ||
+			_decoded_integrity_hash.toString("base64") !== _integrity_hash
+		) {
+			throw new InvalidStateError(`Integrity hash is not valid base64`);
+		}
+
+		if (_decoded_integrity_hash.length !== 32) {
+			throw new InvalidStateError(`Integrity hash must decode to 32 bytes`);
+		}
 	};
 
-	return {
-		getContextId: () => _context_id,
-		getGameId: () => {
-			if (!_game_id) throw new InvalidStateError("Game id is not set.");
-			if (validation.isEmptyString(_game_id))
-				throw new InvalidStateError("Game id cannot be empty");
-			return _game_id;
+	_validate();
+
+	const context: PlayniteMediaFilesContext = {
+		getIntegrityHash: () => {
+			if (!_integrity_hash) throw new InvalidStateError("Integrity hash is not set");
+			return _integrity_hash;
 		},
-		setGameId: (value) => {
-			_game_id = value;
-			_game_dir_path = join(systemConfig.getLibFilesDir(), _game_id);
-		},
-		getContentHash: () => {
-			if (!_content_hash) throw new InvalidStateError("Content hash is not set.");
-			if (validation.isEmptyString(_content_hash))
-				throw new InvalidStateError("Content hash cannot be empty");
-			return _content_hash;
-		},
-		setContentHash: (value) => (_content_hash = value),
-		getContentHashHeader: () => {
-			if (!_content_hash_header) throw new InvalidStateError("Content hash header is not set.");
-			if (validation.isEmptyString(_content_hash_header))
-				throw new InvalidStateError(validation.message.isEmptyString("ContentHashHeader"));
-			return _content_hash_header;
+		getIntegrityHashBuffer: () => {
+			if (!_decoded_integrity_hash)
+				throw new InvalidStateError("Decoded integrity hash is not defined");
+			return _decoded_integrity_hash;
 		},
 		getStreamResults: () => _stream_results,
 		setStreamResults: (value) => (_stream_results = value),
 		getTmpDirPath: () => _tmp_dir_path,
 		getTmpOptimizedDirPath: () => _tmp_optimized_dir_path,
-		getGameDirPath: _getGameDirPath,
-		ensureGameDir: async (args = {}) => {
-			const createGameDir = async () =>
-				await fileSystemService.mkdir(_getGameDirPath(), {
-					recursive: true,
-					mode: "0744",
-				});
-			try {
-				await fileSystemService.access(_getGameDirPath());
-				if (args.cleanUp) {
-					await fileSystemService.rm(_getGameDirPath(), {
-						force: true,
-						recursive: true,
-					});
-					await createGameDir();
-				}
-			} catch {
-				logService.debug(`Created game media folder at ${_getGameDirPath()}`);
-				await createGameDir();
-			}
-		},
 		validate: () => {
 			if (!initialized) throw new InvalidStateError("Context not initialized.");
-			if (!_game_id) throw new InvalidStateError("Game id is not set.");
-			if (validation.isEmptyString(_game_id))
-				throw new InvalidStateError(validation.message.isEmptyString("GameId"));
-			if (!_content_hash) throw new InvalidStateError("Content hash is not set.");
-			if (validation.isEmptyString(_content_hash))
-				throw new InvalidStateError(validation.message.isEmptyString("ContentHash"));
-			if (!_game_dir_path) throw new InvalidStateError("Game dir path is not set.");
-			if (validation.isEmptyString(_game_dir_path))
-				throw new InvalidStateError(validation.message.isEmptyString("GameDirPath"));
+			_validate();
 		},
 		dispose: async () => {
 			logService.debug(`Disposing Playnite media files context ${_context_id}`);
@@ -134,4 +95,5 @@ export const makePlayniteMediaFilesContext = (
 			initialized = true;
 		},
 	};
+	return Object.freeze(context);
 };

@@ -1,5 +1,11 @@
+import type { GameAssetsContext } from "@playatlas/game-library/infra";
 import type { PlayniteMediaFilesContext } from "./playnite-media-files-context";
 import type { PlayniteMediaFileStreamResult } from "./playnite-media-files-handler.types";
+
+export type PlayniteMediaFilesHandlerContext = {
+	mediaContext: PlayniteMediaFilesContext;
+	gameContext: GameAssetsContext;
+};
 
 export type IPlayniteMediaFilesHandlerPort = {
 	/**
@@ -7,21 +13,23 @@ export type IPlayniteMediaFilesHandlerPort = {
 	 *
 	 * IMPORTANT: caller owns the context and MUST call `dispose()`.
 	 */
-	streamMultipartToTempFolder: (request: Request) => Promise<PlayniteMediaFilesContext>;
+	streamMultipartToTempFolder: (request: Request) => Promise<PlayniteMediaFilesHandlerContext>;
 	/**
 	 * Scoped helper that guarantees context disposal.
 	 * Preferred API for most use cases.
 	 */
 	withMediaFilesContext: <T>(
 		request: Request,
-		cb: (context: PlayniteMediaFilesContext) => Promise<T>,
+		cb: (context: PlayniteMediaFilesHandlerContext) => Promise<T>,
 	) => Promise<T>;
-	verifyIntegrity: (context: PlayniteMediaFilesContext) => Promise<boolean>;
+	verifyIntegrity: (context: PlayniteMediaFilesHandlerContext) => Promise<boolean>;
 	/**
 	 * Process images using sharp.
 	 * @param imageFilePaths Array of image paths for process
 	 */
-	processImages: (context: PlayniteMediaFilesContext) => Promise<PlayniteMediaFileStreamResult[]>;
-	moveProcessedImagesToGameFolder: (context: PlayniteMediaFilesContext) => Promise<void>;
-	writeContentHashFileToGameFolder: (context: PlayniteMediaFilesContext) => Promise<void>;
+	processImages: (
+		context: PlayniteMediaFilesHandlerContext,
+	) => Promise<PlayniteMediaFileStreamResult[]>;
+	moveProcessedImagesToGameFolder: (context: PlayniteMediaFilesHandlerContext) => Promise<void>;
+	writeContentHashFileToGameFolder: (context: PlayniteMediaFilesHandlerContext) => Promise<void>;
 };

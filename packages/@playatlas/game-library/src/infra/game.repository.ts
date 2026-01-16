@@ -159,6 +159,45 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 		else return false;
 	};
 
+	const _getAllRelationshipEntities = (
+		gameIds: GameId[],
+		load: GameRepositoryEagerLoadProps["load"],
+	) => {
+		let developerIds: Map<GameId, CompanyId[]> | null = null;
+		if (_shouldLoadRelationship(load, "developers"))
+			developerIds =
+				_getRelationshipsFor({
+					relationship: "developers",
+					gameIds,
+				}) ?? [];
+
+		let publisherIds: Map<GameId, CompanyId[]> | null = null;
+		if (_shouldLoadRelationship(load, "publishers"))
+			publisherIds =
+				_getRelationshipsFor({
+					relationship: "publishers",
+					gameIds,
+				}) ?? [];
+
+		let genreIds: Map<GameId, GenreId[]> | null = null;
+		if (_shouldLoadRelationship(load, "genres"))
+			genreIds =
+				_getRelationshipsFor({
+					relationship: "genres",
+					gameIds,
+				}) ?? [];
+
+		let platformIds: Map<GameId, PlatformId[]> | null = null;
+		if (_shouldLoadRelationship(load, "platforms"))
+			platformIds =
+				_getRelationshipsFor({
+					relationship: "platforms",
+					gameIds,
+				}) ?? [];
+
+		return { developerIds, publisherIds, genreIds, platformIds };
+	};
+
 	const getTotal: IGameRepositoryPort["getTotal"] = (filters) => {
 		return base.run(({ db }) => {
 			let query = `
@@ -189,46 +228,50 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 
 			const modelId = GameIdParser.fromTrusted(gameModel.Id);
 
-			let developerIds: CompanyId[] | null = null;
-			if (_shouldLoadRelationship(props.load, "developers"))
-				developerIds =
-					_getRelationshipsFor({
-						relationship: "developers",
-						gameIds: [modelId],
-					}).get(modelId) ?? [];
-
-			let publisherIds: CompanyId[] | null = null;
-			if (_shouldLoadRelationship(props.load, "publishers"))
-				publisherIds =
-					_getRelationshipsFor({
-						relationship: "publishers",
-						gameIds: [modelId],
-					}).get(modelId) ?? [];
-
-			let genreIds: GenreId[] | null = null;
-			if (_shouldLoadRelationship(props.load, "genres"))
-				genreIds =
-					_getRelationshipsFor({
-						relationship: "genres",
-						gameIds: [modelId],
-					}).get(modelId) ?? [];
-
-			let platformIds: PlatformId[] | null = null;
-			if (_shouldLoadRelationship(props.load, "platforms"))
-				platformIds =
-					_getRelationshipsFor({
-						relationship: "platforms",
-						gameIds: [modelId],
-					}).get(modelId) ?? [];
+			const { developerIds, genreIds, platformIds, publisherIds } = _getAllRelationshipEntities(
+				[modelId],
+				props.load,
+			);
 
 			logService.debug(`Found game ${gameModel?.PlayniteName}`);
 			return gameMapper.toDomain(gameModel, {
-				developerIds,
-				publisherIds,
-				genreIds,
-				platformIds,
+				developerIds: developerIds?.get(modelId),
+				publisherIds: publisherIds?.get(modelId),
+				genreIds: genreIds?.get(modelId),
+				platformIds: platformIds?.get(modelId),
 			});
 		}, `getById(${id})`);
+	};
+
+	const getByPlayniteId: IGameRepositoryPort["getByPlayniteId"] = (id, props = {}) => {
+		return base.run(({ db }) => {
+			const query = `SELECT * FROM ${TABLE_NAME} WHERE PlayniteId = (?)`;
+			const stmt = db.prepare(query);
+			const result = stmt.get(id);
+
+			const { success, data: gameModel, error } = z.optional(gameSchema).safeParse(result);
+
+			if (!success) {
+				throw base.buildInvalidDataError(error, { entity: "game", operation: "load" });
+			}
+
+			if (!gameModel) return null;
+
+			const modelId = GameIdParser.fromTrusted(gameModel.Id);
+
+			const { developerIds, genreIds, platformIds, publisherIds } = _getAllRelationshipEntities(
+				[modelId],
+				props.load,
+			);
+
+			logService.debug(`Found game ${gameModel?.PlayniteName}`);
+			return gameMapper.toDomain(gameModel, {
+				developerIds: developerIds?.get(modelId),
+				publisherIds: publisherIds?.get(modelId),
+				genreIds: genreIds?.get(modelId),
+				platformIds: platformIds?.get(modelId),
+			});
+		}, `getByPlayniteId(${id})`);
 	};
 
 	const upsert: IGameRepositoryPort["upsert"] = (games) => {
@@ -371,6 +414,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 		...base.public,
 		upsert,
 		getById,
+		getByPlayniteId,
 		getTotalPlaytimeSeconds,
 		getManifestData,
 		getTotal,

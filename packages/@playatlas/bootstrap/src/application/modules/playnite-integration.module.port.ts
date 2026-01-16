@@ -3,7 +3,10 @@ import type {
 	IPlayniteSyncServicePort,
 } from "@playatlas/playnite-integration/application";
 import type { ISyncGamesCommandHandlerPort } from "@playatlas/playnite-integration/commands";
-import type { IPlayniteMediaFilesHandlerPort } from "@playatlas/playnite-integration/infra";
+import type {
+	IPlayniteMediaFilesContextFactoryPort,
+	IPlayniteMediaFilesHandlerPort,
+} from "@playatlas/playnite-integration/infra";
 
 export type IPlayniteIntegrationModulePort = Readonly<{
 	getPlayniteMediaFilesHandler: () => IPlayniteMediaFilesHandlerPort;
@@ -12,4 +15,5 @@ export type IPlayniteIntegrationModulePort = Readonly<{
 	commands: {
 		getSyncGamesCommandHandler: () => ISyncGamesCommandHandlerPort;
 	};
+	getPlayniteMediaFilesContextFactory: () => IPlayniteMediaFilesContextFactoryPort;
 }>;

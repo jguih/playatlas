@@ -1,4 +1,4 @@
-import type { IDomainEventBusPort, LogServiceFactory } from "@playatlas/common/application";
+import type { IDomainEventBusPort, ILogServiceFactoryPort } from "@playatlas/common/application";
 import type { BaseRepositoryDeps } from "@playatlas/common/infra";
 import type { IGameRepositoryPort } from "@playatlas/game-library/infra";
 import {
@@ -12,7 +12,7 @@ import type { IGameSessionModulePort } from "./game-session.module.port";
 
 export type GameSessionModuleDeps = {
 	getDb: BaseRepositoryDeps["getDb"];
-	logServiceFactory: LogServiceFactory;
+	logServiceFactory: ILogServiceFactoryPort;
 	gameRepository: IGameRepositoryPort;
 	eventBus: IDomainEventBusPort;
 };

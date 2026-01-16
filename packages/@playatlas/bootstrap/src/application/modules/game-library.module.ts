@@ -1,8 +1,12 @@
-import { type LogServiceFactory } from "@playatlas/common/application";
-import type { BaseRepositoryDeps } from "@playatlas/common/infra";
+import {
+	type IFileSystemServicePort,
+	type ILogServiceFactoryPort,
+} from "@playatlas/common/application";
+import type { BaseRepositoryDeps, ISystemConfigPort } from "@playatlas/common/infra";
 import {
 	makeCompanyRepository,
 	makeCompletionStatusRepository,
+	makeGameAssetsContextFactory,
 	makeGameRepository,
 	makeGenreRepository,
 	makePlatformRepository,
@@ -17,12 +21,16 @@ import type { IGameLibraryModulePort } from "./game-library.module.port";
 
 export type GameLibraryModuleDeps = {
 	getDb: BaseRepositoryDeps["getDb"];
-	logServiceFactory: LogServiceFactory;
+	logServiceFactory: ILogServiceFactoryPort;
+	fileSystemService: IFileSystemServicePort;
+	systemConfig: ISystemConfigPort;
 };
 
 export const makeGameLibraryModule = ({
 	getDb,
 	logServiceFactory,
+	fileSystemService,
+	systemConfig,
 }: GameLibraryModuleDeps): IGameLibraryModulePort => {
 	const _company_repository = makeCompanyRepository({
 		getDb,
@@ -56,6 +64,11 @@ export const makeGameLibraryModule = ({
 	const _query_handler_get_all_genres = makeGetAllGenresQueryHandler({
 		genreRepository: _genre_repository,
 	});
+	const _game_assets_context_factory = makeGameAssetsContextFactory({
+		fileSystemService,
+		logServiceFactory,
+		systemConfig,
+	});
 
 	const gameLibrary: IGameLibraryModulePort = {
 		getCompanyRepository: () => _company_repository,
@@ -69,6 +82,7 @@ export const makeGameLibraryModule = ({
 			getGetAllPlatformsQueryHandler: () => _query_handler_get_all_platforms,
 			getGetAllGenresQueryHandler: () => _query_handler_get_all_genres,
 		},
+		getGameAssetsContextFactory: () => _game_assets_context_factory,
 	};
 	return Object.freeze(gameLibrary);
 };

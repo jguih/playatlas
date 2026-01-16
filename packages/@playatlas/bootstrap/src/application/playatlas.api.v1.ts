@@ -12,6 +12,8 @@ import type {
 } from "@playatlas/auth/commands";
 import type { IGetAllExtensionRegistrationsQueryHandlerPort } from "@playatlas/auth/queries";
 import type { IDomainEventBusPort, ILogServicePort } from "@playatlas/common/application";
+import type { ISystemConfigPort } from "@playatlas/common/infra";
+import type { IGameAssetsContextFactoryPort } from "@playatlas/game-library/infra";
 import type {
 	IGetAllCompaniesQueryHandlerPort,
 	IGetAllGamesQueryHandlerPort,
@@ -29,11 +31,10 @@ import type {
 } from "@playatlas/playnite-integration/application";
 import type { ISyncGamesCommandHandlerPort } from "@playatlas/playnite-integration/commands";
 import type { IPlayniteMediaFilesHandlerPort } from "@playatlas/playnite-integration/infra";
-import type { SystemConfig } from "@playatlas/system/infra";
 
 export type PlayAtlasApiV1 = {
 	system: {
-		getSystemConfig: () => SystemConfig;
+		getSystemConfig: () => ISystemConfigPort;
 	};
 	gameLibrary: {
 		queries: {
@@ -42,6 +43,7 @@ export type PlayAtlasApiV1 = {
 			getGetAllPlatformsQueryHandler: () => IGetAllPlatformsQueryHandlerPort;
 			getGetAllGenresQueryHandler: () => IGetAllGenresQueryHandlerPort;
 		};
+		getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
 	};
 	auth: {
 		getExtensionAuthService: () => IExtensionAuthServicePort;

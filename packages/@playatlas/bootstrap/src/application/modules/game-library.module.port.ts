@@ -1,6 +1,7 @@
 import type {
 	ICompanyRepositoryPort,
 	ICompletionStatusRepositoryPort,
+	IGameAssetsContextFactoryPort,
 	IGameRepositoryPort,
 	IGenreRepositoryPort,
 	IPlatformRepositoryPort,
@@ -24,4 +25,5 @@ export type IGameLibraryModulePort = Readonly<{
 		getGetAllPlatformsQueryHandler: () => IGetAllPlatformsQueryHandlerPort;
 		getGetAllGenresQueryHandler: () => IGetAllGenresQueryHandlerPort;
 	};
+	getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
 }>;

@@ -1,10 +1,13 @@
+import { type IFileSystemServicePort, type ILogServicePort } from "@playatlas/common/application";
 import {
-	type IFileSystemServicePort,
-	type ILogServicePort,
-	type LogServiceFactory,
-} from "@playatlas/common/application";
-import { InvalidFileTypeError } from "@playatlas/common/domain";
-import type { SystemConfig } from "@playatlas/system/infra";
+	InvalidFileTypeError,
+	InvalidStateError,
+	PlayniteGameIdParser,
+} from "@playatlas/common/domain";
+import type {
+	GameAssetsContext,
+	IGameAssetsContextFactoryPort,
+} from "@playatlas/game-library/infra";
 import busboy from "busboy";
 import { createHash, timingSafeEqual, type Hash } from "crypto";
 import { once } from "events";
@@ -12,27 +15,23 @@ import { basename, extname, join } from "path";
 import sharp from "sharp";
 import { Readable } from "stream";
 import type { ReadableStream } from "stream/web";
-import { makePlayniteMediaFilesContext } from "./playnite-media-files-context";
-import {
-	CONTENT_HASH_FILE_NAME,
-	isValidFileName,
-	MEDIA_PRESETS,
-} from "./playnite-media-files-handler.constants";
+import type { IPlayniteMediaFilesContextFactoryPort } from "./playnite-media-files-context.factory.port";
+import { isValidFileName, MEDIA_PRESETS } from "./playnite-media-files-handler.constants";
 import type { IPlayniteMediaFilesHandlerPort } from "./playnite-media-files-handler.port";
 import type { PlayniteMediaFileStreamResult } from "./playnite-media-files-handler.types";
 
 export type PlayniteMediaFilesHandlerDeps = {
 	fileSystemService: IFileSystemServicePort;
 	logService: ILogServicePort;
-	logServiceFactory: LogServiceFactory;
-	systemConfig: SystemConfig;
+	playniteMediaFilesContextFactory: IPlayniteMediaFilesContextFactoryPort;
+	gameAssetsContextFactory: IGameAssetsContextFactoryPort;
 };
 
 export const makePlayniteMediaFilesHandler = ({
 	logService,
-	logServiceFactory,
 	fileSystemService,
-	systemConfig,
+	playniteMediaFilesContextFactory,
+	gameAssetsContextFactory,
 }: PlayniteMediaFilesHandlerDeps): IPlayniteMediaFilesHandlerPort => {
 	const _validateImages = async (filepaths: string[]) => {
 		for (const filepath of filepaths) {
@@ -98,19 +97,13 @@ export const makePlayniteMediaFilesHandler = ({
 		async (request) => {
 			const bb = busboy({ headers: Object.fromEntries(request.headers) });
 			const stream = Readable.fromWeb(request.body! as ReadableStream<Uint8Array>);
-			const contentHashHeader = request.headers.get("X-ContentHash");
-			const context = makePlayniteMediaFilesContext(
-				{
-					fileSystemService,
-					logService: logServiceFactory.build("PlayniteMediaFilesContext"),
-					systemConfig,
-				},
-				{ contentHashHeader },
-			);
+			const integrityHash = request.headers.get("X-ContentHash");
+			const mediaContext = playniteMediaFilesContextFactory.buildContext({ integrityHash });
+			let gameContext: GameAssetsContext | null = null;
 			let handedContext = false;
 
 			try {
-				await context.init();
+				await mediaContext.init();
 
 				const mediaFilesPromises: Promise<PlayniteMediaFileStreamResult>[] = [];
 
@@ -119,10 +112,12 @@ export const makePlayniteMediaFilesHandler = ({
 
 					bb.on("field", async (name, val) => {
 						if (name === "gameId") {
-							context.setGameId(val);
+							gameContext = gameAssetsContextFactory.buildContext(
+								PlayniteGameIdParser.fromExternal(val),
+							);
 						}
 						if (name === "contentHash") {
-							context.setContentHash(val);
+							gameContext?.setMediaFilesContentHash(val);
 						}
 					});
 
@@ -132,7 +127,7 @@ export const makePlayniteMediaFilesHandler = ({
 							fileStream.resume();
 							return;
 						}
-						const filepath = join(context.getTmpDirPath(), filename);
+						const filepath = join(mediaContext.getTmpDirPath(), filename);
 						logService.debug(`Saving file ${filename} to ${filepath}`);
 
 						const filePromise = new Promise<PlayniteMediaFileStreamResult>((resolve, reject) => {
@@ -159,10 +154,10 @@ export const makePlayniteMediaFilesHandler = ({
 
 							await _validateImages(results.map((r) => r.filepath));
 
-							context.setStreamResults(results);
-							context.validate();
+							mediaContext.setStreamResults(results);
+							mediaContext.validate();
 							logService.info(
-								`Downloaded ${uploadCount} files to temporary location ${context.getTmpDirPath()}`,
+								`Downloaded ${uploadCount} files to temporary location ${mediaContext.getTmpDirPath()}`,
 							);
 							resolve();
 						} catch (error) {
@@ -176,13 +171,19 @@ export const makePlayniteMediaFilesHandler = ({
 					stream.pipe(bb);
 				});
 
+				if (!gameContext) {
+					throw new InvalidStateError("Game assets context was null");
+				}
+
+				gameContext.validate();
+
 				handedContext = true;
-				return context;
+				return { mediaContext, gameContext };
 			} catch (error) {
-				await context.dispose();
+				await mediaContext.dispose();
 				throw error;
 			} finally {
-				if (!handedContext) await context.dispose();
+				if (!handedContext) await mediaContext.dispose();
 			}
 		};
 
@@ -195,22 +196,25 @@ export const makePlayniteMediaFilesHandler = ({
 		try {
 			return await cb(context);
 		} finally {
-			await context.dispose();
+			await context.mediaContext.dispose();
 		}
 	};
 
-	const verifyIntegrity: IPlayniteMediaFilesHandlerPort["verifyIntegrity"] = async (context) => {
-		context.validate();
+	const verifyIntegrity: IPlayniteMediaFilesHandlerPort["verifyIntegrity"] = async ({
+		mediaContext,
+		gameContext,
+	}) => {
+		mediaContext.validate();
 
 		const SEP = Buffer.from([0]);
 		const canonicalHash = createHash("sha256");
 
-		canonicalHash.update(Buffer.from(context.getGameId(), "utf-8"));
+		canonicalHash.update(Buffer.from(gameContext.getPlayniteGameId(), "utf-8"));
 		canonicalHash.update(SEP);
-		canonicalHash.update(Buffer.from(context.getContentHash(), "utf-8"));
+		canonicalHash.update(Buffer.from(gameContext.getMediaFilesContentHash(), "utf-8"));
 		canonicalHash.update(SEP);
 
-		const files = [...context.getStreamResults()].sort((a, b) =>
+		const files = [...mediaContext.getStreamResults()].sort((a, b) =>
 			a.filename.localeCompare(b.filename, undefined, {
 				sensitivity: "variant",
 			}),
@@ -225,7 +229,7 @@ export const makePlayniteMediaFilesHandler = ({
 		}
 
 		const canonicalDigest = canonicalHash.digest();
-		const headerDigest = Buffer.from(context.getContentHashHeader(), "base64");
+		const headerDigest = mediaContext.getIntegrityHashBuffer();
 
 		if (canonicalDigest.length !== headerDigest.length) {
 			return false;
@@ -234,18 +238,20 @@ export const makePlayniteMediaFilesHandler = ({
 		return timingSafeEqual(canonicalDigest, headerDigest);
 	};
 
-	const processImages: IPlayniteMediaFilesHandlerPort["processImages"] = async (context) => {
-		context.validate();
+	const processImages: IPlayniteMediaFilesHandlerPort["processImages"] = async ({
+		mediaContext,
+	}) => {
+		mediaContext.validate();
 
-		await fileSystemService.mkdir(context.getTmpOptimizedDirPath(), {
+		await fileSystemService.mkdir(mediaContext.getTmpOptimizedDirPath(), {
 			recursive: true,
 		});
 
 		const results = await Promise.all(
-			context.getStreamResults().map(async ({ name, filepath, filename }) => {
+			mediaContext.getStreamResults().map(async ({ name, filepath, filename }) => {
 				const preset = MEDIA_PRESETS[name];
 				const outputFilename = basename(filename, extname(filename)) + ".webp";
-				const outputPath = join(context.getTmpOptimizedDirPath(), outputFilename);
+				const outputPath = join(mediaContext.getTmpOptimizedDirPath(), outputFilename);
 
 				return sharp(filepath, { failOn: "none" })
 					.rotate()
@@ -276,7 +282,7 @@ export const makePlayniteMediaFilesHandler = ({
 
 		const cover = results.find((r) => r.name === "cover");
 		if (!results.find((r) => r.name === "icon") && cover) {
-			const outputPath = join(context.getTmpOptimizedDirPath(), `${crypto.randomUUID()}.webp`);
+			const outputPath = join(mediaContext.getTmpOptimizedDirPath(), `${crypto.randomUUID()}.webp`);
 			const result = await _deriveIconFromCover(cover.filepath, outputPath);
 			results.push(result);
 		}
@@ -285,24 +291,31 @@ export const makePlayniteMediaFilesHandler = ({
 	};
 
 	const moveProcessedImagesToGameFolder: IPlayniteMediaFilesHandlerPort["moveProcessedImagesToGameFolder"] =
-		async (context) => {
-			context.validate();
-			await context.ensureGameDir({ cleanUp: true });
+		async ({ mediaContext, gameContext }) => {
+			mediaContext.validate();
+
+			await gameContext.ensureMediaFilesDirAsync({ cleanup: true });
+
 			logService.debug(
-				`Moving files from ${context.getTmpOptimizedDirPath()} to ${context.getGameDirPath()}`,
+				`Moving files from ${mediaContext.getTmpOptimizedDirPath()} to ${gameContext.getMediaFilesDirPath()}`,
 			);
-			await fileSystemService.rename(context.getTmpOptimizedDirPath(), context.getGameDirPath());
+
+			await fileSystemService.rename(
+				mediaContext.getTmpOptimizedDirPath(),
+				gameContext.getMediaFilesDirPath(),
+			);
+
 			logService.debug(
-				`Moved temporary files at ${context.getTmpOptimizedDirPath()} to game media files location ${context.getGameDirPath()}`,
+				`Moved temporary files at ${mediaContext.getTmpOptimizedDirPath()} to game media files location ${gameContext.getMediaFilesDirPath()}`,
 			);
 		};
 
 	const writeContentHashFileToGameFolder: IPlayniteMediaFilesHandlerPort["writeContentHashFileToGameFolder"] =
-		async (context) => {
-			context.validate();
-			await context.ensureGameDir();
-			const filepath = join(context.getGameDirPath(), CONTENT_HASH_FILE_NAME);
-			await fileSystemService.writeFile(filepath, context.getContentHash(), "utf-8");
+		async ({ mediaContext, gameContext }) => {
+			mediaContext.validate();
+
+			await gameContext.ensureMediaFilesDirAsync();
+			await gameContext.writeMediaFilesContentHashAsync();
 		};
 
 	return {

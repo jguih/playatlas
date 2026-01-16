@@ -106,7 +106,7 @@ export const makeGame = (props: MakeGameProps): Game => {
 			if (validation.isNullOrEmptyString(path.filename))
 				throw new InvalidStateError("Filename must not be an empty string or null");
 
-			const filepath = `${_id}/${path.filename}`;
+			const filepath = `${_playnite_game.id}/${path.filename}`;
 			switch (name) {
 				case "background": {
 					_background_image_path = filepath;

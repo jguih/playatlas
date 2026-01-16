@@ -45,7 +45,11 @@ export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot
 
 	const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus };
 
-	const gameLibrary = makeGameLibraryModule({ ...baseDeps });
+	const gameLibrary = makeGameLibraryModule({
+		...baseDeps,
+		fileSystemService: infra.getFsService(),
+		systemConfig: system.getSystemConfig(),
+	});
 
 	const playniteIntegration = makePlayniteIntegrationModule({
 		...baseDeps,
@@ -56,6 +60,7 @@ export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot
 		completionStatusRepository: gameLibrary.getCompletionStatusRepository(),
 		genreRepository: gameLibrary.getGenreRepository(),
 		platformRepository: gameLibrary.getPlatformRepository(),
+		gameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory(),
 	});
 
 	const initEnvironmentAsync = async () => {
