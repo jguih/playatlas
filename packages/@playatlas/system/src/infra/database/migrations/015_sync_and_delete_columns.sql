@@ -9,6 +9,7 @@ DROP TABLE `company`;
 DROP TABLE `platform`;
 DROP TABLE `genre`;
 DROP TABLE `playnite_game`;
+DROP TABLE `game_session`;
 
 CREATE TABLE IF NOT EXISTS `game` (
   `Id` TEXT NOT NULL PRIMARY KEY,
@@ -101,6 +102,17 @@ CREATE TABLE IF NOT EXISTS `playnite_game_publisher` (
   PRIMARY KEY (`GameId`, `PublisherId`),
   FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
   FOREIGN KEY (`PublisherId`) REFERENCES `playnite_company`(`Id`)
+);
+
+CREATE TABLE IF NOT EXISTS `game_session` (
+  `SessionId` TEXT NOT NULL PRIMARY KEY,
+  `GameId` TEXT,
+  `GameName` TEXT,
+  `StartTime` DATETIME NOT NULL,
+  `EndTime` DATETIME,
+  `Duration` REAL,
+  `Status` TEXT NOT NULL,
+  FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`)
 );
 
 COMMIT;

@@ -31,7 +31,7 @@ export const makeGameSessionModule = ({
 	const gameInfoProvider: GameInfoProvider = {
 		getGameInfo: (id) => {
 			const game = gameRepository.getById(id);
-			return game ? { name: game.getName() } : null;
+			return game ? { name: game.getPlayniteSnapshot().name } : null;
 		},
 	};
 

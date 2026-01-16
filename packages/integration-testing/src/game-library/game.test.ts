@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { GameIdParser, PlayniteGameIdParser } from "@playatlas/common/domain";
+import { PlayniteGameIdParser } from "@playatlas/common/domain";
 import { describe, expect, it } from "vitest";
 import { api, factory, root } from "../vitest.global.setup";
 
@@ -14,9 +14,9 @@ describe("Game Library / Game", () => {
 		// Assert
 		if (queryResult.type !== "ok") throw new Error("Invalid query result");
 		const added = queryResult.data;
-		const addedRandomGame = added.find((g) => g.Id === randomGame.getId());
+		const addedRandomGame = added.find((g) => g.Id === randomGame.getPlayniteSnapshot().id);
 		expect(added).toHaveLength(games.length);
-		expect(addedRandomGame?.Id).toBe(randomGame.getId());
+		expect(addedRandomGame?.Id).toBe(randomGame.getPlayniteSnapshot().id);
 		expect(addedRandomGame?.Name).toBe(randomGame.getPlayniteSnapshot().name);
 		expect(addedRandomGame?.CompletionStatusId).toBe(
 			randomGame.getPlayniteSnapshot().completionStatusId,
@@ -35,7 +35,7 @@ describe("Game Library / Game", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = result.type === "ok" ? result.data : null;
-		const insertedGame = games?.find((g) => g.Id === game.getId());
+		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
 		// Assert
 		expect(games).toBeTruthy();
@@ -55,7 +55,7 @@ describe("Game Library / Game", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = result.type === "ok" ? result.data : null;
-		const insertedGame = games?.find((g) => g.Id === game.getId());
+		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
 		// Assert
 		expect(games).toBeTruthy();
@@ -75,7 +75,7 @@ describe("Game Library / Game", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = result.type === "ok" ? result.data : null;
-		const insertedGame = games?.find((g) => g.Id === game.getId());
+		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
 		// Assert
 		expect(games).toBeTruthy();
@@ -95,7 +95,7 @@ describe("Game Library / Game", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = result.type === "ok" ? result.data : null;
-		const insertedGame = games?.find((g) => g.Id === game.getId());
+		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
 		// Assert
 		expect(games).toBeTruthy();
@@ -129,19 +129,19 @@ describe("Game Library / Game", () => {
 		// Arrange
 		const listLength = 2000;
 		const games = factory.getGameFactory().buildList(listLength);
-		const gameIds = games.map((g) => g.getId());
+		const gameIds = games.map((g) => g.getPlayniteSnapshot().id);
 		const oneGame = faker.helpers.arrayElement(games);
 		root.seedGame(games);
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		// Assert
 		if (result.type !== "ok") throw new Error("Invalid result type");
-		const oneResult = result.data.find((g) => g.Id === oneGame.getId());
+		const oneResult = result.data.find((g) => g.Id === oneGame.getPlayniteSnapshot().id);
 		if (!oneResult) throw new Error("Could not find random game");
 
 		expect(result.data).toHaveLength(listLength);
 		expect(
-			result.data.every((g) => gameIds.includes(GameIdParser.fromExternal(g.Id))),
+			result.data.every((g) => gameIds.includes(PlayniteGameIdParser.fromExternal(g.Id))),
 		).toBeTruthy();
 		const oneGamePlayniteSnapshot = oneGame.getPlayniteSnapshot();
 		expect(oneResult.Name).toBe(oneGamePlayniteSnapshot.name);
@@ -154,9 +154,9 @@ describe("Game Library / Game", () => {
 		expect(oneResult.Added).toBe(oneGamePlayniteSnapshot.added?.toISOString() ?? null);
 		expect(oneResult.InstallDirectory).toBe(oneGamePlayniteSnapshot.installDirectory);
 		expect(oneResult.IsInstalled).toBe(+oneGamePlayniteSnapshot.isInstalled);
-		expect(oneResult.BackgroundImage).toBe(oneGamePlayniteSnapshot.backgroundImage);
-		expect(oneResult.CoverImage).toBe(oneGamePlayniteSnapshot.coverImage);
-		expect(oneResult.Icon).toBe(oneGamePlayniteSnapshot.icon);
+		expect(oneResult.BackgroundImage).toBe(oneGame.getBackgroundImagePath());
+		expect(oneResult.CoverImage).toBe(oneGame.getCoverImagePath());
+		expect(oneResult.Icon).toBe(oneGame.getIconImagePath());
 		expect(oneResult.Hidden).toBe(+oneGamePlayniteSnapshot.hidden);
 		expect(oneResult.CompletionStatusId).toBe(oneGamePlayniteSnapshot.completionStatusId);
 		expect(oneResult.ContentHash).toBe(oneGame.getContentHash());
@@ -184,7 +184,7 @@ describe("Game Library / Game", () => {
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		// Assert
 		if (result.type !== "ok") throw new Error("Invalid result type");
-		const oneResult = result.data.find((g) => g.Id === game.getId());
+		const oneResult = result.data.find((g) => g.Id === game.getPlayniteSnapshot().id);
 		if (!oneResult) throw new Error("Could not find game from result");
 
 		expect(oneResult.Developers).toHaveLength(0);
@@ -214,23 +214,24 @@ describe("Game Library / Game", () => {
 			},
 		});
 		root.seedGame([game]);
+
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		// Assert
-		if (result.type !== "ok") throw new Error("Invalid result type");
-		const oneResult = result.data.find((g) => g.Id === game.getId());
-		if (!oneResult) throw new Error("Could not find game from result");
+		const games = result.type === "ok" ? result.data : [];
+		const oneResult = games.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
-		expect(oneResult.Name).toBeNull();
-		expect(oneResult.Description).toBeNull();
-		expect(oneResult.ReleaseDate).toBeNull();
-		expect(oneResult.LastActivity).toBeNull();
-		expect(oneResult.Added).toBeNull();
-		expect(oneResult.InstallDirectory).toBeNull();
-		expect(oneResult.BackgroundImage).toBeNull();
-		expect(oneResult.CoverImage).toBeNull();
-		expect(oneResult.Icon).toBeNull();
-		expect(oneResult.CompletionStatusId).toBeNull();
+		// Assert
+		expect(oneResult).toBeDefined();
+		expect(oneResult!.Name).toBeNull();
+		expect(oneResult!.Description).toBeNull();
+		expect(oneResult!.ReleaseDate).toBeNull();
+		expect(oneResult!.LastActivity).toBeNull();
+		expect(oneResult!.Added).toBeNull();
+		expect(oneResult!.InstallDirectory).toBeNull();
+		expect(oneResult!.BackgroundImage).toBeNull();
+		expect(oneResult!.CoverImage).toBeNull();
+		expect(oneResult!.Icon).toBeNull();
+		expect(oneResult!.CompletionStatusId).toBeNull();
 	});
 
 	it("returns 'not_modified' when provided a valid etag", () => {

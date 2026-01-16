@@ -23,6 +23,9 @@ export const COLUMNS: (keyof GameModel)[] = [
 	"LastUpdatedAt",
 	"DeletedAt",
 	"DeleteAfter",
+	"BackgroundImagePath",
+	"CoverImagePath",
+	"IconImagePath",
 ];
 
 export const RELATIONSHIP_TABLE_NAME = {

@@ -261,9 +261,13 @@ describe("Playnite Integration / Media Files Handler", () => {
 
 	it("synchronizes game images from request", async () => {
 		// Arrange
-		const game = factory
-			.getGameFactory()
-			.build({ backgroundImage: null, icon: null, coverImage: null });
+		const game = factory.getGameFactory().build();
+		game.setPlayniteSnapshot({
+			...game.getPlayniteSnapshot(),
+			backgroundImage: null,
+			coverImage: null,
+			icon: null,
+		});
 		root.seedGame(game);
 
 		const gameFolder = join(api.system.getSystemConfig().getLibFilesDir(), game.getId());
@@ -283,7 +287,7 @@ describe("Playnite Integration / Media Files Handler", () => {
 		const result = await service.handleMediaFilesSynchronizationRequest(request);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const queryGames = queryResult.type === "ok" ? queryResult.data : [];
-		const updatedGame = queryGames.find((g) => g.Id === game.getId());
+		const updatedGame = queryGames.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
 		// Assert
 		expect(result.success).toBeTruthy();
