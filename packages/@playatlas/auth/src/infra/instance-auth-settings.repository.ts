@@ -18,7 +18,7 @@ export const makeInstanceAuthSettingsRepository = ({
 	getDb,
 	logService,
 }: BaseRepositoryDeps): InstanceAuthSettingsRepository => {
-	const TABLE_NAME = "instance_authentication";
+	const TABLE_NAME = "instance_auth_settings";
 	const COLUMNS: (keyof InstanceAuthSettingsModel)[] = [
 		"Id",
 		"LastUpdatedAt",

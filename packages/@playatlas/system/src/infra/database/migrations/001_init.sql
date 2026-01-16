@@ -1,78 +1,186 @@
-CREATE TABLE IF NOT EXISTS `playnite_library_sync` (
-  `Id` INTEGER NOT NULL PRIMARY KEY, 
-  `Timestamp` DATETIME NOT NULL,
-  `TotalPlaytimeHours` REAL NOT NULL,
-  `TotalGames` INTEGER NOT NULL
+BEGIN TRANSACTION;
+
+CREATE TABLE IF NOT EXISTS `game` (
+  `Id` TEXT NOT NULL PRIMARY KEY,
+  `PlayniteId` TEXT NOT NULL UNIQUE,
+  `PlayniteName` TEXT,
+  `PlayniteDescription` TEXT,
+  `PlayniteReleaseDate` DATETIME,
+  `PlaynitePlaytime` REAL NOT NULL DEFAULT 0,
+  `PlayniteLastActivity` TEXT,
+  `PlayniteAdded` DATETIME,
+  `PlayniteInstallDirectory` TEXT,
+  `PlayniteIsInstalled` BOOLEAN NOT NULL DEFAULT FALSE,
+  `PlayniteBackgroundImage` TEXT,
+  `PlayniteCoverImage` TEXT,
+  `PlayniteIcon` TEXT,
+  `PlayniteHidden` BOOLEAN NOT NULL DEFAULT FALSE,
+  `PlayniteCompletionStatusId` TEXT,
+  `ContentHash` TEXT NOT NULL,
+  `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `DeletedAt` DATETIME DEFAULT NULL,
+  `DeleteAfter` DATETIME DEFAULT NULL,
+  `BackgroundImagePath` TEXT DEFAULT NULL,
+  `CoverImagePath` TEXT DEFAULT NULL,
+  `IconImagePath` TEXT DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS `platform` (
+CREATE TABLE IF NOT EXISTS `playnite_company` (
+  `Id` TEXT NOT NULL PRIMARY KEY,
+  `Name` TEXT NOT NULL,
+  `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `DeletedAt` DATETIME DEFAULT NULL,
+  `DeleteAfter` DATETIME DEFAULT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `playnite_completion_status` (
+  `Id` TEXT PRIMARY KEY,
+  `Name` TEXT NOT NULL,
+  `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `DeletedAt` DATETIME DEFAULT NULL,
+  `DeleteAfter` DATETIME DEFAULT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `playnite_platform` (
   `Id` TEXT NOT NULL PRIMARY KEY,
   `Name` TEXT NOT NULL,
   `SpecificationId` TEXT NOT NULL,
   `Icon` TEXT,
   `Cover` TEXT,
-  `Background` TEXT
+  `Background` TEXT,
+  `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `DeletedAt` DATETIME DEFAULT NULL,
+  `DeleteAfter` DATETIME DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS `genre` (
+CREATE TABLE IF NOT EXISTS `playnite_genre` (
   `Id` TEXT NOT NULL PRIMARY KEY,
-  `Name` TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS `developer` (
-  `Id` TEXT NOT NULL PRIMARY KEY,
-  `Name` TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS `publisher` (
-  `Id` TEXT NOT NULL PRIMARY KEY,
-  `Name` TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS `playnite_game` (
-  `Id` TEXT NOT NULL PRIMARY KEY,
-  `Name` TEXT,
-  `Description` TEXT,
-  `ReleaseDate` DATETIME,
-  `Playtime` REAL NOT NULL,
-  `LastActivity` TEXT,
-  `Added` DATETIME,
-  `InstallDirectory` TEXT,
-  `IsInstalled` BOOLEAN NOT NULL,
-  `BackgroundImage` TEXT,
-  `CoverImage` TEXT,
-  `Icon` TEXT,
-  `ContentHash` TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS `playnite_game_platform` (
-  `GameId` TEXT NOT NULL,
-  `PlatformId` TEXT NOT NULL,
-  PRIMARY KEY (`GameId`, `PlatformId`),
-  FOREIGN KEY (`GameId`) REFERENCES `playnite_game`(`Id`) ON DELETE CASCADE,
-  FOREIGN KEY (`PlatformId`) REFERENCES `platform`(`Id`)
-);
-
-CREATE TABLE IF NOT EXISTS `playnite_game_genre` (
-  `GameId` TEXT NOT NULL,
-  `GenreId` TEXT NOT NULL,
-  PRIMARY KEY (`GameId`, `GenreId`),
-  FOREIGN KEY (`GameId`) REFERENCES `playnite_game`(`Id`) ON DELETE CASCADE,
-  FOREIGN KEY (`GenreId`) REFERENCES `genre`(`Id`)
+  `Name` TEXT NOT NULL,
+  `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `DeletedAt` DATETIME DEFAULT NULL,
+  `DeleteAfter` DATETIME DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS `playnite_game_developer` (
   `GameId` TEXT NOT NULL,
   `DeveloperId` TEXT NOT NULL,
   PRIMARY KEY (`GameId`, `DeveloperId`),
-  FOREIGN KEY (`GameId`) REFERENCES `playnite_game`(`Id`) ON DELETE CASCADE,
-  FOREIGN KEY (`DeveloperId`) REFERENCES `developer`(`Id`)
+  FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
+  FOREIGN KEY (`DeveloperId`) REFERENCES `playnite_company`(`Id`) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS `playnite_game_platform` (
+  `GameId` TEXT NOT NULL,
+  `PlatformId` TEXT NOT NULL,
+  PRIMARY KEY (`GameId`, `PlatformId`),
+  FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
+  FOREIGN KEY (`PlatformId`) REFERENCES `playnite_platform`(`Id`)
+);
+
+CREATE TABLE IF NOT EXISTS `playnite_game_genre` (
+  `GameId` TEXT NOT NULL,
+  `GenreId` TEXT NOT NULL,
+  PRIMARY KEY (`GameId`, `GenreId`),
+  FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
+  FOREIGN KEY (`GenreId`) REFERENCES `playnite_genre`(`Id`)
 );
 
 CREATE TABLE IF NOT EXISTS `playnite_game_publisher` (
   `GameId` TEXT NOT NULL,
   `PublisherId` TEXT NOT NULL,
   PRIMARY KEY (`GameId`, `PublisherId`),
-  FOREIGN KEY (`GameId`) REFERENCES `playnite_game`(`Id`) ON DELETE CASCADE,
-  FOREIGN KEY (`PublisherId`) REFERENCES `publisher`(`Id`)
+  FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
+  FOREIGN KEY (`PublisherId`) REFERENCES `playnite_company`(`Id`)
 );
+
+CREATE TABLE IF NOT EXISTS `game_session` (
+  `SessionId` TEXT NOT NULL PRIMARY KEY,
+  `GameId` TEXT,
+  `GameName` TEXT,
+  `StartTime` DATETIME NOT NULL,
+  `EndTime` DATETIME,
+  `Duration` REAL,
+  `Status` TEXT NOT NULL,
+  `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`)
+);
+
+CREATE TABLE IF NOT EXISTS `synchronization_id` (
+  `Id` INTEGER PRIMARY KEY CHECK (Id = 1),
+  `SyncId` TEXT NOT NULL,
+  `CreatedAt` TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUsedAt` TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS `instance_sessions` (
+  `Id` TEXT PRIMARY KEY,
+  `CreatedAt` TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUsedAt` TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS `instance_auth_settings` (
+  `Id` INTEGER PRIMARY KEY CHECK (id = 1),
+  `PasswordHash` TEXT NOT NULL,
+  `Salt` TEXT NOT NULL,
+  `CreatedAt` TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS `extension_registration` (
+  `Id` INTEGER PRIMARY KEY,
+  `ExtensionId` TEXT UNIQUE NOT NULL,
+  `PublicKey` TEXT NOT NULL,
+  `Hostname` TEXT,
+  `Os` TEXT,
+  `ExtensionVersion` TEXT,
+  `Status` TEXT NOT NULL DEFAULT 'pending', -- 'pending', 'trusted', 'rejected'
+  `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS `screenshot` (
+  `Id` INTEGER PRIMARY KEY,
+  `FileExtension` TEXT NOT NULL,
+  `FilePath` TEXT NOT NULL,
+  `FileName` TEXT NOT NULL,
+  `FileSize` REAL NOT NULL,
+  `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `DeletedAt` DATETIME DEFAULT NULL,
+  `DeleteAfter` DATETIME DEFAULT NULL,
+  `CheckSum` TEXT UNIQUE NOT NULL,
+  `MimeType` TEXT,
+  `Source` TEXT NOT NULL,
+  `Width` INTEGER,
+  `Height` INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS `game_note` (
+  `Id` TEXT NOT NULL PRIMARY KEY,
+  `Title` TEXT,
+  `Content` TEXT,
+  `ImagePath` TEXT,
+  `GameId` TEXT,
+  `SessionId` TEXT,
+  `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `DeletedAt` DATETIME DEFAULT NULL,
+  `DeleteAfter` DATETIME DEFAULT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `playnite_library_metrics` (
+  `Id` INTEGER NOT NULL PRIMARY KEY,
+  `Timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `TotalPlaytimeSeconds` REAL NOT NULL DEFAULT 0,
+  `TotalGames` INTEGER NOT NULL DEFAULT 0,
+  `VisibleTotalPlaytimeSeconds` REAL NOT NULL DEFAULT 0,
+  `VisibleTotalGames` INTEGER NOT NULL DEFAULT 0
+);
+
+COMMIT;

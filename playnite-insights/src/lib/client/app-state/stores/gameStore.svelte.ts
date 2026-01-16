@@ -1,4 +1,7 @@
-import { gameResponseDtoSchema, type GameResponseDto } from "@playatlas/game-library/dtos";
+import {
+	playniteProjectionResponseDtoSchema,
+	type PlayniteProjectionResponseDto,
+} from "@playatlas/game-library/dtos";
 import { FetchClientStrategyError, JsonStrategy } from "@playnite-insights/lib/client";
 import z from "zod";
 import { ApiDataStore } from "./apiDataStore.svelte";
@@ -24,9 +27,9 @@ export class GameStore extends ApiDataStore {
 	}
 
 	applyFilters = (
-		games: GameResponseDto[],
+		games: PlayniteProjectionResponseDto[],
 		params: GameStoreFiltersParams = {},
-	): GameResponseDto[] => {
+	): PlayniteProjectionResponseDto[] => {
 		let filtered = games;
 		const {
 			query,
@@ -87,9 +90,9 @@ export class GameStore extends ApiDataStore {
 	};
 
 	applySorting = (
-		filtered: GameResponseDto[],
+		filtered: PlayniteProjectionResponseDto[],
 		params: GameStoreSortingParams = {},
-	): GameResponseDto[] => {
+	): PlayniteProjectionResponseDto[] => {
 		const { sortBy, sortOrder } = params;
 		if (!sortBy || !sortOrder) return filtered;
 
@@ -121,9 +124,9 @@ export class GameStore extends ApiDataStore {
 	};
 
 	applyPagination = (
-		sorted: GameResponseDto[],
+		sorted: PlayniteProjectionResponseDto[],
 		params: GameStorePaginationParams,
-	): GameResponseDto[] => {
+	): PlayniteProjectionResponseDto[] => {
 		const pageSize = Number(params.pageSize);
 		const offset = (Number(params.page) - 1) * Number(params.pageSize);
 		const end = Math.min(offset + pageSize, sorted.length);
@@ -131,7 +134,7 @@ export class GameStore extends ApiDataStore {
 	};
 
 	loadGames = async () => {
-		const responseSchema = z.array(gameResponseDtoSchema);
+		const responseSchema = z.array(playniteProjectionResponseDtoSchema);
 		try {
 			this.#dataSignal.isLoading = true;
 			const result = await this.httpClient.httpGetAsync({
