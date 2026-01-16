@@ -2,7 +2,7 @@ import { ISODateSchema } from "@playatlas/common/common";
 import { playniteGameIdSchema } from "@playatlas/common/domain";
 import z from "zod";
 
-export const gameResponseDtoSchema = z.object({
+export const playniteProjectionResponseDtoSchema = z.object({
 	Id: playniteGameIdSchema,
 	Name: z.string().nullable(),
 	Description: z.string().nullable(),
@@ -12,9 +12,6 @@ export const gameResponseDtoSchema = z.object({
 	Added: z.string().nullable(),
 	InstallDirectory: z.string().nullable(),
 	IsInstalled: z.number(),
-	BackgroundImage: z.string().nullable(),
-	CoverImage: z.string().nullable(),
-	Icon: z.string().nullable(),
 	Hidden: z.number(),
 	CompletionStatusId: z.string().nullable(),
 	ContentHash: z.string(),
@@ -22,8 +19,16 @@ export const gameResponseDtoSchema = z.object({
 	Publishers: z.array(z.string()),
 	Genres: z.array(z.string()),
 	Platforms: z.array(z.string()),
-	DeletedAt: ISODateSchema.nullable(),
-	DeleteAfter: ISODateSchema.nullable(),
+	Assets: z.object({
+		BackgroundImagePath: z.string().nullable(),
+		CoverImagePath: z.string().nullable(),
+		IconImagePath: z.string().nullable(),
+	}),
+	Sync: z.object({
+		LastUpdatedAt: ISODateSchema.nullable(),
+		DeletedAt: ISODateSchema.nullable(),
+		DeleteAfter: ISODateSchema.nullable(),
+	}),
 });
 
-export type GameResponseDto = z.infer<typeof gameResponseDtoSchema>;
+export type PlayniteProjectionResponseDto = z.infer<typeof playniteProjectionResponseDtoSchema>;

@@ -2,14 +2,14 @@ import { type EntityMapper } from "@playatlas/common/application";
 import { GameIdParser, PlayniteGameIdParser } from "@playatlas/common/domain";
 import type { MakeGameRelationshipProps } from "./domain";
 import { type Game, makeGame } from "./domain/game.entity";
-import type { GameResponseDto } from "./dtos/game.response.dto";
+import type { PlayniteProjectionResponseDto } from "./dtos/game.response.dto";
 import { type GameModel } from "./infra";
 
-export type GameMapper = EntityMapper<Game, GameModel, GameResponseDto> & {
+export type GameMapper = EntityMapper<Game, GameModel, PlayniteProjectionResponseDto> & {
 	toDomain: (model: GameModel, relationships: MakeGameRelationshipProps) => Game;
 };
 
-const _toDto = (game: Game): GameResponseDto => {
+const _toDto = (game: Game): PlayniteProjectionResponseDto => {
 	const Developers = game.relationships.developers.isLoaded()
 		? game.relationships.developers.get()
 		: [];
@@ -22,7 +22,7 @@ const _toDto = (game: Game): GameResponseDto => {
 		: [];
 	const playniteSnapshot = game.getPlayniteSnapshot();
 
-	const dto: GameResponseDto = {
+	const dto: PlayniteProjectionResponseDto = {
 		Id: playniteSnapshot.id,
 		Name: playniteSnapshot.name,
 		Description: playniteSnapshot.description,
@@ -32,9 +32,6 @@ const _toDto = (game: Game): GameResponseDto => {
 		Added: playniteSnapshot.added?.toISOString() ?? null,
 		InstallDirectory: playniteSnapshot.installDirectory,
 		IsInstalled: +playniteSnapshot.isInstalled,
-		BackgroundImage: game.getBackgroundImagePath(),
-		CoverImage: game.getCoverImagePath(),
-		Icon: game.getIconImagePath(),
 		Hidden: +playniteSnapshot.hidden,
 		CompletionStatusId: playniteSnapshot.completionStatusId,
 		ContentHash: game.getContentHash(),
@@ -42,8 +39,16 @@ const _toDto = (game: Game): GameResponseDto => {
 		Publishers,
 		Genres,
 		Platforms,
-		DeletedAt: game.getDeletedAt()?.toISOString() ?? null,
-		DeleteAfter: game.getDeleteAfter()?.toISOString() ?? null,
+		Sync: {
+			LastUpdatedAt: game.getLastUpdatedAt().toISOString(),
+			DeletedAt: game.getDeletedAt()?.toISOString() ?? null,
+			DeleteAfter: game.getDeleteAfter()?.toISOString() ?? null,
+		},
+		Assets: {
+			BackgroundImagePath: game.getBackgroundImagePath(),
+			CoverImagePath: game.getCoverImagePath(),
+			IconImagePath: game.getIconImagePath(),
+		},
 	};
 	return dto;
 };
@@ -111,8 +116,8 @@ export const gameMapper: GameMapper = {
 		return entity;
 	},
 	toDto: _toDto,
-	toDtoList: (games: Game[]): GameResponseDto[] => {
-		const dtos: GameResponseDto[] = [];
+	toDtoList: (games: Game[]): PlayniteProjectionResponseDto[] => {
+		const dtos: PlayniteProjectionResponseDto[] = [];
 		for (const game of games) dtos.push(_toDto(game));
 		return dtos;
 	},

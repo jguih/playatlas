@@ -1,5 +1,6 @@
 import type { SQLInputValue } from "node:sqlite";
 import z from "zod";
+import { InvalidDataError } from "../domain";
 import type { BaseEntity, BaseEntityId } from "../domain/base-entity";
 import type { BaseRepositoryPort } from "./base-repository.port";
 import type { MakeBaseRepositoryDeps } from "./base-repository.types";
@@ -88,10 +89,18 @@ export const makeBaseRepository = <
 			return result;
 		} catch (error) {
 			const duration = performance.now() - start;
-			logService.error(
-				`Repository call ${context ? context : ""} failed after ${duration.toFixed(1)}ms`,
-				error,
-			);
+
+			if (error instanceof InvalidDataError) {
+				logService.debug(
+					`Repository call ${context ?? ""} threw InvalidDataError after ${duration.toFixed(1)}ms`,
+				);
+			} else {
+				logService.error(
+					`Repository call ${context ?? ""} failed after ${duration.toFixed(1)}ms`,
+					error,
+				);
+			}
+
 			throw error;
 		}
 	};
@@ -111,6 +120,27 @@ export const makeBaseRepository = <
 			db.exec(`ROLLBACK TO SAVEPOINT "${savepoint}"`);
 			throw error;
 		}
+	};
+
+	const buildInvalidDataError: BaseRepositoryPort<
+		TEntityId,
+		TEntity,
+		TPersistence
+	>["buildInvalidDataError"] = (error, context) => {
+		const first = error.issues.at(0);
+
+		return new InvalidDataError({
+			entity: context.entity,
+			operation: context.operation,
+			issueCount: error.issues.length,
+			firstIssue: first
+				? {
+						path: first.path.join("."),
+						message: first.message,
+						code: first.code,
+					}
+				: undefined,
+		});
 	};
 
 	const _add: BaseRepositoryPort<TEntityId, TEntity, TPersistence>["_add"] = (
@@ -156,7 +186,13 @@ export const makeBaseRepository = <
 		return run(({ db }) => {
 			const stmt = db.prepare(getAllSql);
 			const result = stmt.all();
-			const models = z.array(modelSchema).parse(result);
+
+			const { success, data: models, error } = z.array(modelSchema).safeParse(result);
+
+			if (!success) {
+				throw buildInvalidDataError(error, { entity: tableName, operation: "load" });
+			}
+
 			const entities: TEntity[] = [];
 			for (const model of models) entities.push(mapper.toDomain(model));
 			logService.debug(`Found ${entities.length} records`);
@@ -185,8 +221,14 @@ export const makeBaseRepository = <
 			const stmt = db.prepare(getByIdSql);
 			const result = stmt.get(id);
 			if (!result) return null;
-			const extensionRegistration = modelSchema.parse(result);
-			const entity = mapper.toDomain(extensionRegistration);
+
+			const { success, data: model, error } = modelSchema.safeParse(result);
+
+			if (!success) {
+				throw buildInvalidDataError(error, { entity: tableName, operation: "load" });
+			}
+
+			const entity = mapper.toDomain(model);
 			logService.debug(`Found record with id ${entity.getSafeId()}`);
 			return entity;
 		}, `getById(${id})`);
@@ -232,6 +274,7 @@ export const makeBaseRepository = <
 	return {
 		run,
 		runTransaction,
+		buildInvalidDataError,
 		public: {
 			all,
 			remove,

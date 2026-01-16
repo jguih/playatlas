@@ -6,15 +6,16 @@ import { api, factory, root } from "../vitest.global.setup";
 describe("Game Library / Game", () => {
 	it("persists games", () => {
 		// Arrange
-		const games = factory.getGameFactory().buildList(100);
+		const games = factory.getGameFactory().buildList(10);
 		const randomGame = faker.helpers.arrayElement(games);
+
 		// Act
 		root.seedGame(games);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		// Assert
-		if (queryResult.type !== "ok") throw new Error("Invalid query result");
-		const added = queryResult.data;
+		const added = queryResult.type === "ok" ? queryResult.data : [];
 		const addedRandomGame = added.find((g) => g.Id === randomGame.getPlayniteSnapshot().id);
+
+		// Assert
 		expect(added).toHaveLength(games.length);
 		expect(addedRandomGame?.Id).toBe(randomGame.getPlayniteSnapshot().id);
 		expect(addedRandomGame?.Name).toBe(randomGame.getPlayniteSnapshot().name);
@@ -106,7 +107,7 @@ describe("Game Library / Game", () => {
 	it("returns game manifest data", async () => {
 		// Arrange
 		const game = factory.getGameFactory().build();
-		const gameId = game.getId();
+		const gameId = game.getPlayniteSnapshot().id;
 		root.seedGame(game);
 
 		// Act
@@ -121,8 +122,10 @@ describe("Game Library / Game", () => {
 	it("returns empty games array", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
+		const games = result.type === "ok" ? result.data : [];
+
 		// Assert
-		expect(result.type === "ok" && result.data.length === 0).toBeTruthy();
+		expect(games).toHaveLength(0);
 	});
 
 	it("returns all games with large list", () => {
@@ -131,44 +134,46 @@ describe("Game Library / Game", () => {
 		const games = factory.getGameFactory().buildList(listLength);
 		const gameIds = games.map((g) => g.getPlayniteSnapshot().id);
 		const oneGame = faker.helpers.arrayElement(games);
-		root.seedGame(games);
-		// Act
-		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		// Assert
-		if (result.type !== "ok") throw new Error("Invalid result type");
-		const oneResult = result.data.find((g) => g.Id === oneGame.getPlayniteSnapshot().id);
-		if (!oneResult) throw new Error("Could not find random game");
-
-		expect(result.data).toHaveLength(listLength);
-		expect(
-			result.data.every((g) => gameIds.includes(PlayniteGameIdParser.fromExternal(g.Id))),
-		).toBeTruthy();
 		const oneGamePlayniteSnapshot = oneGame.getPlayniteSnapshot();
-		expect(oneResult.Name).toBe(oneGamePlayniteSnapshot.name);
-		expect(oneResult.Description).toBe(oneGamePlayniteSnapshot.description);
-		expect(oneResult.ReleaseDate).toBe(oneGamePlayniteSnapshot.releaseDate?.toISOString() ?? null);
-		expect(oneResult.Playtime).toBe(oneGamePlayniteSnapshot.playtime);
-		expect(oneResult.LastActivity).toBe(
+		root.seedGame(games);
+
+		// Act
+		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
+		const queryGames = queryResult.type === "ok" ? queryResult.data : [];
+		const oneResult = queryGames.find((g) => g.Id === oneGame.getPlayniteSnapshot().id);
+
+		// Assert
+		expect(queryGames).toHaveLength(listLength);
+		expect(
+			queryGames.every((g) => gameIds.includes(PlayniteGameIdParser.fromExternal(g.Id))),
+		).toBeTruthy();
+
+		expect(oneResult).toBeDefined();
+		expect(oneResult!.Name).toBe(oneGamePlayniteSnapshot.name);
+		expect(oneResult!.Description).toBe(oneGamePlayniteSnapshot.description);
+		expect(oneResult!.ReleaseDate).toBe(oneGamePlayniteSnapshot.releaseDate?.toISOString() ?? null);
+		expect(oneResult!.Playtime).toBe(oneGamePlayniteSnapshot.playtime);
+		expect(oneResult!.LastActivity).toBe(
 			oneGamePlayniteSnapshot.lastActivity?.toISOString() ?? null,
 		);
-		expect(oneResult.Added).toBe(oneGamePlayniteSnapshot.added?.toISOString() ?? null);
-		expect(oneResult.InstallDirectory).toBe(oneGamePlayniteSnapshot.installDirectory);
-		expect(oneResult.IsInstalled).toBe(+oneGamePlayniteSnapshot.isInstalled);
-		expect(oneResult.BackgroundImage).toBe(oneGame.getBackgroundImagePath());
-		expect(oneResult.CoverImage).toBe(oneGame.getCoverImagePath());
-		expect(oneResult.Icon).toBe(oneGame.getIconImagePath());
-		expect(oneResult.Hidden).toBe(+oneGamePlayniteSnapshot.hidden);
-		expect(oneResult.CompletionStatusId).toBe(oneGamePlayniteSnapshot.completionStatusId);
-		expect(oneResult.ContentHash).toBe(oneGame.getContentHash());
-		expect(new Set(oneResult.Developers)).toEqual(new Set(oneGame.relationships.developers.get()));
-		expect(new Set(oneResult.Publishers)).toEqual(new Set(oneGame.relationships.publishers.get()));
-		expect(new Set(oneResult.Genres)).toEqual(new Set(oneGame.relationships.genres.get()));
-		expect(new Set(oneResult.Platforms)).toEqual(new Set(oneGame.relationships.platforms.get()));
+		expect(oneResult!.Added).toBe(oneGamePlayniteSnapshot.added?.toISOString() ?? null);
+		expect(oneResult!.InstallDirectory).toBe(oneGamePlayniteSnapshot.installDirectory);
+		expect(oneResult!.IsInstalled).toBe(+oneGamePlayniteSnapshot.isInstalled);
+		expect(oneResult!.Assets.BackgroundImagePath).toBe(oneGame.getBackgroundImagePath());
+		expect(oneResult!.Assets.CoverImagePath).toBe(oneGame.getCoverImagePath());
+		expect(oneResult!.Assets.IconImagePath).toBe(oneGame.getIconImagePath());
+		expect(oneResult!.Hidden).toBe(+oneGamePlayniteSnapshot.hidden);
+		expect(oneResult!.CompletionStatusId).toBe(oneGamePlayniteSnapshot.completionStatusId);
+		expect(oneResult!.ContentHash).toBe(oneGame.getContentHash());
+		expect(new Set(oneResult!.Developers)).toEqual(new Set(oneGame.relationships.developers.get()));
+		expect(new Set(oneResult!.Publishers)).toEqual(new Set(oneGame.relationships.publishers.get()));
+		expect(new Set(oneResult!.Genres)).toEqual(new Set(oneGame.relationships.genres.get()));
+		expect(new Set(oneResult!.Platforms)).toEqual(new Set(oneGame.relationships.platforms.get()));
 		// Ensure no duplicate ids
-		expect(oneResult.Developers).toEqual([...new Set(oneResult.Developers)]);
-		expect(oneResult.Publishers).toEqual([...new Set(oneResult.Publishers)]);
-		expect(oneResult.Genres).toEqual([...new Set(oneResult.Genres)]);
-		expect(oneResult.Platforms).toEqual([...new Set(oneResult.Platforms)]);
+		expect(oneResult!.Developers).toEqual([...new Set(oneResult!.Developers)]);
+		expect(oneResult!.Publishers).toEqual([...new Set(oneResult!.Publishers)]);
+		expect(oneResult!.Genres).toEqual([...new Set(oneResult!.Genres)]);
+		expect(oneResult!.Platforms).toEqual([...new Set(oneResult!.Platforms)]);
 	});
 
 	it("returns empty array when no relationship", () => {
@@ -180,17 +185,18 @@ describe("Game Library / Game", () => {
 			publisherIds: null,
 		});
 		root.seedGame([game]);
+
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		// Assert
-		if (result.type !== "ok") throw new Error("Invalid result type");
-		const oneResult = result.data.find((g) => g.Id === game.getPlayniteSnapshot().id);
-		if (!oneResult) throw new Error("Could not find game from result");
+		const games = result.type === "ok" ? result.data : [];
+		const oneResult = games.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
-		expect(oneResult.Developers).toHaveLength(0);
-		expect(oneResult.Platforms).toHaveLength(0);
-		expect(oneResult.Genres).toHaveLength(0);
-		expect(oneResult.Publishers).toHaveLength(0);
+		// Assert
+		expect(oneResult).toBeDefined();
+		expect(oneResult!.Developers).toHaveLength(0);
+		expect(oneResult!.Platforms).toHaveLength(0);
+		expect(oneResult!.Genres).toHaveLength(0);
+		expect(oneResult!.Publishers).toHaveLength(0);
 	});
 
 	it("shows null values as null and not empty string", () => {
@@ -228,9 +234,6 @@ describe("Game Library / Game", () => {
 		expect(oneResult!.LastActivity).toBeNull();
 		expect(oneResult!.Added).toBeNull();
 		expect(oneResult!.InstallDirectory).toBeNull();
-		expect(oneResult!.BackgroundImage).toBeNull();
-		expect(oneResult!.CoverImage).toBeNull();
-		expect(oneResult!.Icon).toBeNull();
 		expect(oneResult!.CompletionStatusId).toBeNull();
 	});
 

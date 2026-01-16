@@ -48,7 +48,7 @@ export type GameModel = z.infer<typeof gameSchema>;
 
 export const gameManifestDataSchema = z.array(
 	z.object({
-		Id: z.string(),
+		Id: playniteGameIdSchema,
 		ContentHash: z.string(),
 	}),
 );
@@ -177,7 +177,13 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 			const query = `SELECT * FROM ${TABLE_NAME} WHERE Id = (?)`;
 			const stmt = db.prepare(query);
 			const result = stmt.get(id);
-			const gameModel = z.optional(gameSchema).parse(result);
+
+			const { success, data: gameModel, error } = z.optional(gameSchema).safeParse(result);
+
+			if (!success) {
+				throw base.buildInvalidDataError(error, { entity: "game", operation: "load" });
+			}
+
 			if (!gameModel) return null;
 
 			const modelId = GameIdParser.fromTrusted(gameModel.Id);
@@ -258,10 +264,16 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 
 	const getManifestData: IGameRepositoryPort["getManifestData"] = () => {
 		return base.run(({ db }) => {
-			const query = `SELECT Id, ContentHash FROM ${TABLE_NAME}`;
+			const query = `SELECT PlayniteId as Id, ContentHash FROM ${TABLE_NAME}`;
 			const stmt = db.prepare(query);
 			const result = stmt.all();
-			const data: GameManifestData = gameManifestDataSchema.parse(result);
+
+			const { success, data, error } = gameManifestDataSchema.safeParse(result);
+
+			if (!success) {
+				throw base.buildInvalidDataError(error, { entity: "game", operation: "load" });
+			}
+
 			logService.debug(`Fetched manifest game data, total games in library: ${data.length}`);
 			return data;
 		}, `getManifestData()`);
@@ -290,7 +302,13 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
         `;
 			const stmt = db.prepare(query);
 			const rows = stmt.all();
-			const gameModels = z.array(gameSchema).parse(rows);
+
+			const { success, data: gameModels, error } = z.array(gameSchema).safeParse(rows);
+
+			if (!success) {
+				throw base.buildInvalidDataError(error, { entity: "game", operation: "load" });
+			}
+
 			const gameModelsIds = gameModels.map((m) => m.Id).map(GameIdParser.fromTrusted);
 
 			let developerIdsMap: Map<GameId, CompanyId[]> = new Map();

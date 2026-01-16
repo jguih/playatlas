@@ -3,6 +3,7 @@ import type {
 	InstanceAuthServiceVerifyResult,
 } from "@playatlas/auth/application";
 import type { PlayAtlasApiV1 } from "@playatlas/bootstrap/application";
+import { InvalidDataError } from "@playatlas/common/domain";
 import { json } from "@sveltejs/kit";
 import { apiResponse } from "../responses";
 
@@ -41,6 +42,13 @@ export const instanceAuthMiddleware = async (
 	try {
 		return await cb(result);
 	} catch (error) {
+		if (error instanceof InvalidDataError) {
+			api
+				.getLogService()
+				.error(`${requestDescription}: Invalid data while handling request`, error.details);
+			return apiResponse.error({ error: { message: error.message } }, { status: 500 });
+		}
+
 		api.getLogService().error(`${requestDescription}: Error thrown while handling request`, error);
 		return apiResponse.error({ error: { message: "Internal server error" } }, { status: 500 });
 	}

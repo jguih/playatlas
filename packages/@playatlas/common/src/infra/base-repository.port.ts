@@ -1,4 +1,6 @@
 import type { DatabaseSync } from "node:sqlite";
+import type z from "zod";
+import type { InvalidDataError } from "../domain";
 import type { IEntityRepositoryPort } from "./repository.types";
 
 type ToPersistenceFnOverride<TEntity, TPersistence> = {
@@ -39,4 +41,8 @@ export type BaseRepositoryPort<TEntityId, TEntity, TPersistence> = {
 	) => Array<[TEntity, TPersistence, { lastInsertRowid: number | bigint }]>;
 	run: <T>(fn: (props: { db: DatabaseSync }) => T, context?: string, shouldLog?: boolean) => T;
 	runTransaction: <T>(fn: (props: { db: DatabaseSync }) => T) => T;
+	buildInvalidDataError: (
+		error: z.ZodError,
+		context: { entity: string; operation?: "load" | "save" | "query" },
+	) => InvalidDataError;
 };

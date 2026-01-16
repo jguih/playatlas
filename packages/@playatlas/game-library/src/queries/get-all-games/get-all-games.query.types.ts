@@ -1,4 +1,4 @@
-import type { GameResponseDto } from "../../dtos/game.response.dto";
+import type { PlayniteProjectionResponseDto } from "../../dtos/game.response.dto";
 import { type IGameRepositoryPort } from "../../infra/game.repository.port";
 
 export type GetAllGamesQueryHandlerDeps = {
@@ -7,4 +7,4 @@ export type GetAllGamesQueryHandlerDeps = {
 
 export type GetAllGamesQueryResult =
 	| { type: "not_modified" }
-	| { type: "ok"; data: GameResponseDto[]; etag: string };
+	| { type: "ok"; data: PlayniteProjectionResponseDto[]; etag: string };

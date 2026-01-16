@@ -10,7 +10,7 @@ import {
 import type { TestEntityFactory } from "@playatlas/common/testing";
 import { makeGame, type Game } from "../domain/game.entity";
 import { type MakeGameProps } from "../domain/game.entity.types";
-import type { GameResponseDto } from "../dtos";
+import type { PlayniteProjectionResponseDto } from "../dtos";
 import { gameMapper } from "../game.mapper";
 
 export type GameFactoryDeps = {
@@ -21,8 +21,8 @@ export type GameFactoryDeps = {
 };
 
 export type GameFactory = TestEntityFactory<MakeGameProps, Game> & {
-	buildDto: (props?: Partial<MakeGameProps>) => GameResponseDto;
-	buildDtoList: (n: number, props?: Partial<MakeGameProps>) => GameResponseDto[];
+	buildDto: (props?: Partial<MakeGameProps>) => PlayniteProjectionResponseDto;
+	buildDtoList: (n: number, props?: Partial<MakeGameProps>) => PlayniteProjectionResponseDto[];
 };
 
 export const makeGameFactory = ({

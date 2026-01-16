@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import type { DomainEvent } from "@playatlas/common/application";
 import { GameIdParser, PlayniteGameIdParser } from "@playatlas/common/domain";
-import type { GameResponseDto } from "@playatlas/game-library/dtos";
+import type { PlayniteProjectionResponseDto } from "@playatlas/game-library/dtos";
 import {
 	makeSyncGamesCommand,
 	type SyncGamesRequestDto,
@@ -54,7 +54,7 @@ describe("Game Library Sync", () => {
 			Id: persistedGame?.Id,
 			Name: persistedGame?.Name,
 			Description: persistedGame?.Description,
-		} satisfies Partial<GameResponseDto>);
+		} satisfies Partial<PlayniteProjectionResponseDto>);
 		expect(new Set(sampleItem.Genres?.map((g) => g.Id))).toEqual(new Set(persistedGame?.Genres));
 
 		expect(events).toHaveLength(1);
@@ -101,7 +101,7 @@ describe("Game Library Sync", () => {
 			.executeAsync(removeCommand);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = queryResult.type === "ok" ? queryResult.data : [];
-		const visibleGames = games.filter((g) => g.DeletedAt === null);
+		const visibleGames = games.filter((g) => g.Sync.DeletedAt === null);
 
 		// Assert
 		expect(commandResult.success).toBe(true);
@@ -181,7 +181,7 @@ describe("Game Library Sync", () => {
 				Id: updated?.Id,
 				Name: updated?.Name,
 				Description: updated?.Description,
-			} satisfies Partial<GameResponseDto>);
+			} satisfies Partial<PlayniteProjectionResponseDto>);
 			expect(persisted!.Name).toMatch(/\(Updated\)$/);
 			expect(new Set(updated.Genres.map((g) => g.Id))).toEqual(new Set(persisted?.Genres));
 		}

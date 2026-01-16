@@ -307,9 +307,9 @@ describe("Playnite Integration / Media Files Handler", () => {
 			expect(ext).toBe(".webp");
 			expect(metadata.format).toBe("webp");
 		}
-		expect(updatedGame!.BackgroundImage).not.toBe(null);
-		expect(updatedGame!.Icon).not.toBe(null);
-		expect(updatedGame!.CoverImage).not.toBe(null);
+		expect(updatedGame!.Assets.BackgroundImagePath).not.toBe(null);
+		expect(updatedGame!.Assets.CoverImagePath).not.toBe(null);
+		expect(updatedGame!.Assets.IconImagePath).not.toBe(null);
 		expect(wroteContentHash).toBe(true);
 	});
 });

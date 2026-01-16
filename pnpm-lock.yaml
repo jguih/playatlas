@@ -341,6 +341,9 @@ importers:
       '@playatlas/bootstrap':
         specifier: workspace:*
         version: link:../packages/@playatlas/bootstrap
+      '@playatlas/common':
+        specifier: workspace:*
+        version: link:../packages/@playatlas/common
       '@playatlas/game-library':
         specifier: workspace:*
         version: link:../packages/@playatlas/game-library
