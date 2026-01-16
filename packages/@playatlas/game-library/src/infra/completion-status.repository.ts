@@ -9,6 +9,9 @@ export const completionStatusSchema = z.object({
 	Id: completionStatusIdSchema,
 	Name: z.string(),
 	LastUpdatedAt: ISODateSchema,
+	CreatedAt: ISODateSchema,
+	DeletedAt: ISODateSchema.nullable(),
+	DeleteAfter: ISODateSchema.nullable(),
 });
 
 export type CompletionStatusModel = z.infer<typeof completionStatusSchema>;
@@ -18,7 +21,14 @@ export const makeCompletionStatusRepository = ({
 	logService,
 }: BaseRepositoryDeps): ICompletionStatusRepositoryPort => {
 	const TABLE_NAME = `playnite_completion_status`;
-	const COLUMNS: (keyof CompletionStatusModel)[] = ["Id", "Name", "LastUpdatedAt"];
+	const COLUMNS: (keyof CompletionStatusModel)[] = [
+		"Id",
+		"Name",
+		"LastUpdatedAt",
+		"CreatedAt",
+		"DeletedAt",
+		"DeleteAfter",
+	];
 	const base = makeBaseRepository({
 		getDb,
 		logService,

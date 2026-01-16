@@ -4,4 +4,5 @@ export type MakeGenreProps = {
 	id: GenreId;
 	name: string;
 	lastUpdatedAt: Date;
+	createdAt?: Date | null;
 };

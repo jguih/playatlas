@@ -37,6 +37,7 @@ export const gameSchema = z.object({
 	PlayniteCompletionStatusId: z.string().nullable(),
 	ContentHash: z.string(),
 	LastUpdatedAt: ISODateSchema,
+	CreatedAt: ISODateSchema,
 	DeletedAt: ISODateSchema.nullable(),
 	DeleteAfter: ISODateSchema.nullable(),
 	BackgroundImagePath: z.string().nullable(),

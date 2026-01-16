@@ -47,6 +47,7 @@ export type Game = BaseEntity<GameId> &
 export const makeGame = (props: MakeGameProps): Game => {
 	const _id = props.id;
 	const _contentHash = props.contentHash;
+	const _created_at = props.createdAt ?? new Date();
 	let _last_updated_at = props.lastUpdatedAt;
 	let _deleted_at = props.deletedAt ?? null;
 	let _delete_after = props.deleteAfter ?? null;
@@ -94,6 +95,7 @@ export const makeGame = (props: MakeGameProps): Game => {
 		},
 		getContentHash: () => _contentHash,
 		getLastUpdatedAt: () => _last_updated_at,
+		getCreatedAt: () => _created_at,
 		relationships: {
 			developers: createRelationship(props.developerIds ?? null),
 			genres: createRelationship(props.genreIds ?? null),

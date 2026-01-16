@@ -13,6 +13,7 @@ export const makeCompany = (props: MakeCompanyProps): Company => {
 	const _id: CompanyId = props.id;
 	const _name: CompanyName = props.name;
 	const _last_updated_at = props.lastUpdatedAt;
+	const _created_at = props.createdAt ?? new Date();
 
 	const _validate = () => {
 		if (validation.isNullOrEmptyString(_name))
@@ -26,6 +27,7 @@ export const makeCompany = (props: MakeCompanyProps): Company => {
 		getSafeId: () => _id,
 		getName: () => _name,
 		getLastUpdatedAt: () => _last_updated_at,
+		getCreatedAt: () => _created_at,
 		validate: _validate,
 	};
 	return Object.freeze(company);

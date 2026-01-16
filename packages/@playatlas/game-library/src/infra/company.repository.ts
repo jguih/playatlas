@@ -10,6 +10,9 @@ export const companySchema = z.object({
 	Id: companyIdSchema,
 	Name: z.string(),
 	LastUpdatedAt: ISODateSchema,
+	CreatedAt: ISODateSchema,
+	DeletedAt: ISODateSchema.nullable(),
+	DeleteAfter: ISODateSchema.nullable(),
 });
 
 export type CompanyModel = z.infer<typeof companySchema>;
@@ -19,7 +22,14 @@ export const makeCompanyRepository = ({
 	logService,
 }: BaseRepositoryDeps): ICompanyRepositoryPort => {
 	const TABLE_NAME = "playnite_company";
-	const COLUMNS: (keyof CompanyModel)[] = ["Id", "Name", "LastUpdatedAt"];
+	const COLUMNS: (keyof CompanyModel)[] = [
+		"Id",
+		"Name",
+		"LastUpdatedAt",
+		"CreatedAt",
+		"DeletedAt",
+		"DeleteAfter",
+	];
 	const base = makeBaseRepository<CompanyId, Company, CompanyModel>({
 		getDb,
 		logService,

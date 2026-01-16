@@ -17,6 +17,7 @@ export const makeCompletionStatus = (props: MakeCompletionStatusProps): Completi
 	const _id: CompletionStatusId = props.id;
 	const _name: CompletionStatusName = props.name;
 	const _last_updated_at = props.lastUpdatedAt;
+	const _created_at = props.createdAt ?? new Date();
 
 	const _validate = () => {
 		if (validation.isNullOrEmptyString(_name))
@@ -30,6 +31,7 @@ export const makeCompletionStatus = (props: MakeCompletionStatusProps): Completi
 		getSafeId: () => _id,
 		getName: () => _name,
 		getLastUpdatedAt: () => _last_updated_at,
+		getCreatedAt: () => _created_at,
 		validate: _validate,
 	};
 	return Object.freeze(completionStatus);

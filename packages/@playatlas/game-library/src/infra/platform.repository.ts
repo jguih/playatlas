@@ -13,6 +13,9 @@ export const platformSchema = z.object({
 	Cover: z.string().nullable(),
 	Background: z.string().nullable(),
 	LastUpdatedAt: ISODateSchema,
+	CreatedAt: ISODateSchema,
+	DeletedAt: ISODateSchema.nullable(),
+	DeleteAfter: ISODateSchema.nullable(),
 });
 
 export type PlatformModel = z.infer<typeof platformSchema>;
@@ -30,6 +33,9 @@ export const makePlatformRepository = ({
 		"Cover",
 		"Background",
 		"LastUpdatedAt",
+		"CreatedAt",
+		"DeletedAt",
+		"DeleteAfter",
 	];
 	const base = makeBaseRepository({
 		getDb,

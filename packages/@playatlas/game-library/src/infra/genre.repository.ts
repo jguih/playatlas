@@ -9,6 +9,9 @@ export const genreSchema = z.object({
 	Id: genreIdSchema,
 	Name: z.string(),
 	LastUpdatedAt: ISODateSchema,
+	CreatedAt: ISODateSchema,
+	DeletedAt: ISODateSchema.nullable(),
+	DeleteAfter: ISODateSchema.nullable(),
 });
 
 export type GenreModel = z.infer<typeof genreSchema>;
@@ -18,7 +21,14 @@ export const makeGenreRepository = ({
 	logService,
 }: BaseRepositoryDeps): IGenreRepositoryPort => {
 	const TABLE_NAME = "playnite_genre";
-	const COLUMNS: (keyof GenreModel)[] = ["Id", "Name", "LastUpdatedAt"];
+	const COLUMNS: (keyof GenreModel)[] = [
+		"Id",
+		"Name",
+		"LastUpdatedAt",
+		"CreatedAt",
+		"DeletedAt",
+		"DeleteAfter",
+	];
 	const base = makeBaseRepository({
 		getDb,
 		logService,

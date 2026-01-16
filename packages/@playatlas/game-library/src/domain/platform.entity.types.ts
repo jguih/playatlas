@@ -8,4 +8,5 @@ export type MakePlatformProps = {
 	icon?: string | null;
 	cover?: string | null;
 	background?: string | null;
+	createdAt?: Date | null;
 };

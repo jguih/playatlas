@@ -20,6 +20,7 @@ export const makePlatform = (props: MakePlatformProps): Platform => {
 	const _cover = props.cover ?? null;
 	const _background = props.background ?? null;
 	const _last_updated_at = props.lastUpdatedAt;
+	const _created_at = props.createdAt ?? new Date();
 
 	const _validate = () => {
 		if (validation.isNullOrEmptyString(_name))
@@ -37,6 +38,7 @@ export const makePlatform = (props: MakePlatformProps): Platform => {
 		getCover: () => _cover,
 		getBackground: () => _background,
 		getLastUpdatedAt: () => _last_updated_at,
+		getCreatedAt: () => _created_at,
 		validate: _validate,
 	};
 

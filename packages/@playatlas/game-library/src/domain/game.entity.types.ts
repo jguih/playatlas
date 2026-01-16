@@ -34,10 +34,11 @@ export type MakeGameProps = {
 	id: GameId;
 	contentHash: string;
 	lastUpdatedAt: Date;
+	playniteSnapshot: PlayniteGameSnapshot;
 	backgroundImagePath?: string | null;
 	coverImagePath?: string | null;
 	iconImagePath?: string | null;
 	deletedAt?: Date | null;
 	deleteAfter?: Date | null;
-	playniteSnapshot: PlayniteGameSnapshot;
+	createdAt?: Date | null;
 } & MakeGameRelationshipProps;

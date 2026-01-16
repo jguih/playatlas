@@ -20,6 +20,9 @@ export const genreMapper: GenreMapper = {
 			Id: entity.getId(),
 			Name: entity.getName(),
 			LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
+			CreatedAt: entity.getCreatedAt().toISOString(),
+			DeleteAfter: null,
+			DeletedAt: null,
 		};
 		return model;
 	},
@@ -28,6 +31,7 @@ export const genreMapper: GenreMapper = {
 			id: GenreIdParser.fromTrusted(model.Id),
 			name: model.Name,
 			lastUpdatedAt: new Date(model.LastUpdatedAt),
+			createdAt: new Date(model.CreatedAt),
 		});
 		return entity;
 	},

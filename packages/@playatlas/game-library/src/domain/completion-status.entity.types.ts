@@ -4,4 +4,5 @@ export type MakeCompletionStatusProps = {
 	id: CompletionStatusId;
 	name: string;
 	lastUpdatedAt: Date;
+	createdAt?: Date | null;
 };

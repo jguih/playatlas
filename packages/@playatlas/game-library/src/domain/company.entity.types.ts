@@ -4,4 +4,5 @@ export type MakeCompanyProps = {
 	id: CompanyId;
 	name: string;
 	lastUpdatedAt: Date;
+	createdAt?: Date | null;
 };
