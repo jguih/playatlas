@@ -1,5 +1,9 @@
 import { faker } from "@faker-js/faker";
 import { PlayniteGameIdParser } from "@playatlas/common/domain";
+import {
+	makeSyncGamesCommand,
+	type SyncGamesRequestDtoItem,
+} from "@playatlas/playnite-integration/commands";
 import { describe, expect, it } from "vitest";
 import { api, factory, root } from "../vitest.global.setup";
 
@@ -249,5 +253,50 @@ describe("Game Library / Game", () => {
 			.execute({ ifNoneMatch: result.etag });
 		// Assert
 		expect(afterResult.type === "not_modified").toBeTruthy();
+	});
+
+	it.only("only returns updated games", async () => {
+		// Arrange
+		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+
+		const syncItems = factory.getSyncGameRequestDtoFactory().buildList(200);
+
+		const seedCommand = makeSyncGamesCommand({
+			AddedItems: syncItems,
+			RemovedItems: [],
+			UpdatedItems: [],
+		});
+
+		const seedResult = await api.playniteIntegration.commands
+			.getSyncGamesCommandHandler()
+			.executeAsync(seedCommand);
+		expect(seedResult.success).toBe(true);
+
+		const since = root.clock.now();
+		root.clock.advance(1000);
+
+		const itemsToUpdate = faker.helpers.arrayElements(syncItems, 20);
+		const updatedItems: SyncGamesRequestDtoItem[] = itemsToUpdate.map((i) => ({
+			...i,
+			Name: `${i.Name} (Updated)`,
+			ContentHash: faker.string.uuid(),
+		}));
+		const updateCommand = makeSyncGamesCommand({
+			AddedItems: [],
+			RemovedItems: [],
+			UpdatedItems: updatedItems,
+		});
+
+		const updateResult = await api.playniteIntegration.commands
+			.getSyncGamesCommandHandler()
+			.executeAsync(updateCommand);
+
+		// Act
+		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute({ since });
+		const games = queryResult.type === "ok" ? queryResult.data : [];
+
+		// Assert
+		expect(updateResult.success).toBe(true);
+		expect(games).toHaveLength(20);
 	});
 });

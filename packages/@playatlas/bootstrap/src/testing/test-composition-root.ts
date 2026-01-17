@@ -3,11 +3,12 @@ import type { AppEnvironmentVariables } from "@playatlas/common/common";
 import type { Company, Game, Genre, Platform } from "@playatlas/game-library/domain";
 import { makeGameFactory } from "@playatlas/game-library/testing";
 import { makeLogServiceFactory } from "@playatlas/system/application";
-import { type PlayAtlasApiV1, bootstrapV1 } from "../application";
+import { bootstrapV1, type PlayAtlasApiV1 } from "../application";
 import { makeAuthModule, makeGameLibraryModule, makeSystemModule } from "../application/modules";
 import { makeGameSessionModule } from "../application/modules/game-session.module";
 import { makeInfraModule } from "../application/modules/infra.module";
 import { makePlayniteIntegrationModule } from "../application/modules/playnite-integration.module";
+import { makeTestClock, type TestClock } from "./test-clock";
 import { type ITestFactoryModulePort, makeTestFactoryModule } from "./test-factory.module";
 
 export type TestCompositionRootDeps = {
@@ -23,6 +24,7 @@ export type TestRoot = {
 	seedGenre: (genre: Genre | Genre[]) => void;
 	seedPlatform: (platform: Platform | Platform[]) => void;
 	resetDbAsync: () => Promise<void>;
+	clock: TestClock;
 };
 
 export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestRoot => {
@@ -37,13 +39,15 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		logService: logServiceFactory.build("EventBus"),
 	});
 
+	const clock = makeTestClock();
+
 	const infra = makeInfraModule({
 		logServiceFactory,
 		envService: system.getEnvService(),
 		systemConfig: system.getSystemConfig(),
 	});
 
-	const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus };
+	const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus, clock };
 
 	const gameLibrary = makeGameLibraryModule({
 		...baseDeps,
@@ -162,5 +166,6 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		seedGenre,
 		seedPlatform,
 		resetDbAsync,
+		clock,
 	};
 };

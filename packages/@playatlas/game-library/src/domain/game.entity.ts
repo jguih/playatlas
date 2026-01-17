@@ -40,14 +40,15 @@ export type Game = BaseEntity<GameId> &
 		getPlayniteSnapshot: () => PlayniteGameSnapshot;
 		setPlayniteSnapshot: (value: PlayniteGameSnapshot) => void;
 		getContentHash: () => string;
+		setContentHash: (value: string) => void;
 		setImageReference: (props: { name: GameImageType; path: { filename: string } }) => void;
 		relationships: GameRelationshipProps;
 	}>;
 
 export const makeGame = (props: MakeGameProps): Game => {
 	const _id = props.id;
-	const _contentHash = props.contentHash;
 	const _created_at = props.createdAt ?? new Date();
+	let _contentHash = props.contentHash;
 	let _last_updated_at = props.lastUpdatedAt;
 	let _deleted_at = props.deletedAt ?? null;
 	let _delete_after = props.deleteAfter ?? null;
@@ -94,6 +95,11 @@ export const makeGame = (props: MakeGameProps): Game => {
 			_validate();
 		},
 		getContentHash: () => _contentHash,
+		setContentHash: (value) => {
+			_contentHash = value;
+			_touch();
+			_validate();
+		},
 		getLastUpdatedAt: () => _last_updated_at,
 		getCreatedAt: () => _created_at,
 		relationships: {

@@ -3,7 +3,7 @@ import {
 	type IFileSystemServicePort,
 	type ILogServiceFactoryPort,
 } from "@playatlas/common/application";
-import type { ISystemConfigPort } from "@playatlas/common/infra";
+import type { IClockPort, ISystemConfigPort } from "@playatlas/common/infra";
 import type {
 	ICompanyRepositoryPort,
 	ICompletionStatusRepositoryPort,
@@ -34,6 +34,7 @@ export type PlayniteIntegrationModuleDeps = {
 	completionStatusRepository: ICompletionStatusRepositoryPort;
 	eventBus: IDomainEventBusPort;
 	gameAssetsContextFactory: IGameAssetsContextFactoryPort;
+	clock: IClockPort;
 };
 
 export const makePlayniteIntegrationModule = ({
@@ -47,6 +48,7 @@ export const makePlayniteIntegrationModule = ({
 	platformRepository,
 	eventBus,
 	gameAssetsContextFactory,
+	clock,
 }: PlayniteIntegrationModuleDeps): IPlayniteIntegrationModulePort => {
 	const _playnite_media_files_context_factory = makePlayniteMediaFilesContextFactory({
 		fileSystemService,
@@ -80,6 +82,7 @@ export const makePlayniteIntegrationModule = ({
 		logService: logServiceFactory.build("SyncGamesCommandHandler"),
 		libraryManifestService: _library_manifest_service,
 		eventBus,
+		clock,
 	});
 
 	const playniteIntegrationApi: IPlayniteIntegrationModulePort = {

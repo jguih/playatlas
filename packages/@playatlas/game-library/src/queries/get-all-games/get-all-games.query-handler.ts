@@ -1,6 +1,7 @@
 import type { QueryHandler } from "@playatlas/common/common";
 import { createHashForObject } from "@playatlas/common/infra";
 import { gameMapper } from "../../game.mapper";
+import type { GameFilters } from "../../infra/game.repository.types";
 import type { GetAllGamesQuery } from "./get-all-games.query";
 import type {
 	GetAllGamesQueryHandlerDeps,
@@ -14,7 +15,13 @@ export const makeGetAllGamesQueryHandler = ({
 }: GetAllGamesQueryHandlerDeps): IGetAllGamesQueryHandlerPort => {
 	return {
 		execute: ({ ifNoneMatch, since } = {}) => {
-			const games = gameRepository.all({ load: true }, { modifiedSince: since ?? undefined });
+			const filters: GameFilters | undefined = since
+				? {
+						lastUpdatedAt: [{ op: "gte", value: since }],
+					}
+				: undefined;
+
+			const games = gameRepository.all({ load: true }, filters);
 
 			if (!games || games.length === 0) {
 				return { type: "ok", data: [], etag: '"empty"' };

@@ -10,11 +10,12 @@ export const makeSyncGamesCommandHandler = ({
 	completionStatusRepository,
 	libraryManifestService,
 	eventBus,
+	clock,
 }: SyncGamesServiceDeps): ISyncGamesCommandHandlerPort => {
 	return {
 		executeAsync: async (command) => {
 			const payload = command.payload;
-			const now = new Date();
+			const now = clock.now();
 
 			logService.info(
 				`Syncing game library (add: ${payload.toAdd.length} games, update: ${payload.toUpdate.length} games, delete: ${payload.toRemove.length} games)`,
@@ -49,7 +50,7 @@ export const makeSyncGamesCommandHandler = ({
 			eventBus.emit({
 				id: crypto.randomUUID(),
 				name: "game-library-synchronized",
-				occurredAt: new Date(),
+				occurredAt: now,
 				payload: { added: extracted.added, updated: extracted.updated, deleted: extracted.deleted },
 			});
 

@@ -1,3 +1,4 @@
+import type { DateFilter } from "@playatlas/common/common";
 import type { GameId } from "@playatlas/common/domain";
 import { type GameRelationship, type GameRelationshipMap } from "../domain/game.entity";
 
@@ -14,4 +15,11 @@ export type UpdateRelationshipsForFn = {
 		gameId: GameId;
 		newRelationshipIds: GameRelationshipMap[R][];
 	}): void;
+};
+
+export type GameFilters = {
+	query?: string;
+	installed?: boolean;
+	hidden?: boolean;
+	lastUpdatedAt?: DateFilter[];
 };

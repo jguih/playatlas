@@ -136,6 +136,7 @@ export const extractSyncData = (props: {
 
 		if (existingGame) {
 			existingGame.setPlayniteSnapshot(playniteSnapshot);
+			existingGame.setContentHash(item.ContentHash);
 			existingGame.relationships.developers.set(developerIds);
 			existingGame.relationships.genres.set(genreIds);
 			existingGame.relationships.publishers.set(publisherIds);

@@ -1,8 +1,8 @@
 import type { GameId, PlayniteGameId } from "@playatlas/common/domain";
 import type { IEntityRepositoryPort } from "@playatlas/common/infra";
 import type { Game, GameRelationship } from "../domain/game.entity";
-import type { GameFilters } from "../domain/game.types";
 import type { GameManifestData } from "./game.repository";
+import type { GameFilters } from "./game.repository.types";
 
 export type GameRepositoryEagerLoadProps = {
 	load?: Partial<Record<GameRelationship, boolean>> | boolean;

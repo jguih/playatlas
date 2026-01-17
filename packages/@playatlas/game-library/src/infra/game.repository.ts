@@ -11,11 +11,14 @@ import {
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
 import type { GameRelationship, GameRelationshipMap } from "../domain/game.entity";
-import type { GameFilters } from "../domain/game.types";
 import { gameMapper } from "../game.mapper";
 import { COLUMNS, GAME_RELATIONSHIP_META, TABLE_NAME } from "./game.repository.constants";
 import type { GameRepositoryEagerLoadProps, IGameRepositoryPort } from "./game.repository.port";
-import type { GetRelationshipsForFn, UpdateRelationshipsForFn } from "./game.repository.types";
+import type {
+	GameFilters,
+	GetRelationshipsForFn,
+	UpdateRelationshipsForFn,
+} from "./game.repository.types";
 
 export const GROUPADD_SEPARATOR = ",";
 
@@ -96,9 +99,36 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 			params.push(+filters.hidden);
 		}
 
-		if (filters.modifiedSince !== undefined) {
-			where.push(`LastUpdatedAt >= ?`);
-			params.push(filters.modifiedSince.toISOString());
+		if (filters.lastUpdatedAt !== undefined) {
+			for (const startTimeFilter of filters.lastUpdatedAt) {
+				switch (startTimeFilter.op) {
+					case "between": {
+						where.push(`LastUpdatedAt >= (?) AND LastUpdatedAt < (?)`);
+						params.push(startTimeFilter.start.toISOString(), startTimeFilter.end.toISOString());
+						break;
+					}
+					case "eq": {
+						where.push(`LastUpdatedAt = (?)`);
+						params.push(startTimeFilter.value.toISOString());
+						break;
+					}
+					case "gte": {
+						where.push(`LastUpdatedAt > (?)`);
+						params.push(startTimeFilter.value.toISOString());
+						break;
+					}
+					case "lte": {
+						where.push(`LastUpdatedAt < (?)`);
+						params.push(startTimeFilter.value.toISOString());
+						break;
+					}
+					case "overlaps": {
+						where.push(`LastUpdatedAt < (?) AND LastUpdatedAt >= (?)`);
+						params.push(startTimeFilter.end.toISOString(), startTimeFilter.start.toISOString());
+						break;
+					}
+				}
+			}
 		}
 
 		return {
