@@ -255,7 +255,7 @@ describe("Game Library / Game", () => {
 		expect(afterResult.type === "not_modified").toBeTruthy();
 	});
 
-	it("only returns updated games", async () => {
+	it("update games and returns only those updated after a certain date", async () => {
 		// Arrange
 		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
 
@@ -279,7 +279,7 @@ describe("Game Library / Game", () => {
 		const updatedItems: SyncGamesRequestDtoItem[] = itemsToUpdate.map((i) => ({
 			...i,
 			Name: `${i.Name} (Updated)`,
-			ContentHash: faker.string.uuid(),
+			ContentHash: `${faker.string.uuid()}-updated`,
 		}));
 		const updateCommand = makeSyncGamesCommand({
 			AddedItems: [],
@@ -298,5 +298,7 @@ describe("Game Library / Game", () => {
 		// Assert
 		expect(updateResult.success).toBe(true);
 		expect(games).toHaveLength(20);
+		expect(games.every((g) => g.Name?.match(/(updated)/i))).toBe(true);
+		expect(games.every((g) => g.ContentHash?.match(/updated/i))).toBe(true);
 	});
 });
