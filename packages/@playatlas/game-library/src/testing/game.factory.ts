@@ -8,16 +8,18 @@ import {
 	type PlatformId,
 } from "@playatlas/common/domain";
 import type { TestEntityFactory } from "@playatlas/common/testing";
-import { makeGame, type Game } from "../domain/game.entity";
+import type { IGameFactoryPort, IGameMapperPort } from "../application";
+import { type Game } from "../domain/game.entity";
 import { type MakeGameProps } from "../domain/game.entity.types";
 import type { PlayniteProjectionResponseDto } from "../dtos";
-import { gameMapper } from "../game.mapper";
 
 export type GameFactoryDeps = {
 	completionStatusOptions: CompletionStatusId[];
 	companyOptions: CompanyId[];
 	genreOptions: GenreId[];
 	platformOptions: PlatformId[];
+	gameFactory: IGameFactoryPort;
+	gameMapper: IGameMapperPort;
 };
 
 export type GameFactory = TestEntityFactory<MakeGameProps, Game> & {
@@ -30,6 +32,8 @@ export const makeGameFactory = ({
 	companyOptions,
 	genreOptions,
 	platformOptions,
+	gameFactory,
+	gameMapper,
 }: GameFactoryDeps): GameFactory => {
 	const propOrDefault = <T, V>(prop: T | undefined, value: V) => {
 		if (prop === undefined) return value;
@@ -58,7 +62,7 @@ export const makeGameFactory = ({
 			faker.helpers.arrayElements(platformOptions, { min: 1, max: 5 }),
 		);
 
-		return makeGame({
+		return gameFactory.create({
 			id: GameIdParser.fromExternal(props.id ?? faker.string.uuid()),
 			playniteSnapshot: {
 				id: PlayniteGameIdParser.fromExternal(props.playniteSnapshot?.id ?? faker.string.uuid()),

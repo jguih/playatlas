@@ -1,3 +1,4 @@
+import type { IGameFactoryPort, IGameMapperPort } from "@playatlas/game-library/application";
 import type {
 	ICompanyRepositoryPort,
 	ICompletionStatusRepositoryPort,
@@ -26,4 +27,6 @@ export type IGameLibraryModulePort = Readonly<{
 		getGetAllGenresQueryHandler: () => IGetAllGenresQueryHandlerPort;
 	};
 	getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
+	getGameMapper: () => IGameMapperPort;
+	getGameFactory: () => IGameFactoryPort;
 }>;

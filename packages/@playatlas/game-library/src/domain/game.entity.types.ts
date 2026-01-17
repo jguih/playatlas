@@ -5,6 +5,7 @@ import type {
 	PlatformId,
 	PlayniteGameId,
 } from "@playatlas/common/domain";
+import type { IClockPort } from "@playatlas/common/infra";
 
 export type MakeGameRelationshipProps = {
 	developerIds?: CompanyId[] | null;
@@ -30,15 +31,26 @@ export type PlayniteGameSnapshot = Readonly<{
 	completionStatusId: string | null;
 }>;
 
-export type MakeGameProps = {
+type BaseGame = {
 	id: GameId;
 	contentHash: string;
-	lastUpdatedAt: Date;
 	playniteSnapshot: PlayniteGameSnapshot;
 	backgroundImagePath?: string | null;
 	coverImagePath?: string | null;
 	iconImagePath?: string | null;
 	deletedAt?: Date | null;
 	deleteAfter?: Date | null;
-	createdAt?: Date | null;
-} & MakeGameRelationshipProps;
+};
+
+type CommonGameProps = {
+	lastUpdatedAt: Date;
+	createdAt: Date;
+};
+
+export type MakeGameProps = Partial<CommonGameProps> & BaseGame & MakeGameRelationshipProps;
+
+export type RehydrateGameProps = CommonGameProps & BaseGame & MakeGameRelationshipProps;
+
+export type MakeGameDeps = {
+	clock: IClockPort;
+};

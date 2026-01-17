@@ -10,8 +10,8 @@ import {
 } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
+import type { IGameMapperPort } from "../application";
 import type { GameRelationship, GameRelationshipMap } from "../domain/game.entity";
-import { gameMapper } from "../game.mapper";
 import { COLUMNS, GAME_RELATIONSHIP_META, TABLE_NAME } from "./game.repository.constants";
 import type { GameRepositoryEagerLoadProps, IGameRepositoryPort } from "./game.repository.port";
 import type {
@@ -59,10 +59,11 @@ export const gameManifestDataSchema = z.array(
 
 export type GameManifestData = z.infer<typeof gameManifestDataSchema>;
 
-type GameRepositoryDeps = BaseRepositoryDeps;
+type GameRepositoryDeps = BaseRepositoryDeps & { gameMapper: IGameMapperPort };
 
 export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPort => {
-	const { getDb, logService } = deps;
+	const { getDb, logService, gameMapper } = deps;
+
 	const base = makeBaseRepository({
 		getDb,
 		logService,

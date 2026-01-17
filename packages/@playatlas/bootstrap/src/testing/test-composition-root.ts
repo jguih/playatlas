@@ -81,6 +81,8 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 				completionStatusOptions,
 				genreOptions,
 				platformOptions,
+				gameFactory: gameLibrary.getGameFactory(),
+				gameMapper: gameLibrary.getGameMapper(),
 			}),
 		);
 	};
@@ -106,6 +108,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			genreRepository: gameLibrary.getGenreRepository(),
 			platformRepository: gameLibrary.getPlatformRepository(),
 			gameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory(),
+			gameFactory: gameLibrary.getGameFactory(),
 		});
 
 		const gameSession = makeGameSessionModule({

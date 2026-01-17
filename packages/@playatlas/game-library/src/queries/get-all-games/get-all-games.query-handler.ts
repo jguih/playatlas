@@ -1,6 +1,5 @@
 import type { QueryHandler } from "@playatlas/common/common";
 import { createHashForObject } from "@playatlas/common/infra";
-import { gameMapper } from "../../game.mapper";
 import type { GameFilters } from "../../infra/game.repository.types";
 import type { GetAllGamesQuery } from "./get-all-games.query";
 import type {
@@ -12,6 +11,7 @@ export type IGetAllGamesQueryHandlerPort = QueryHandler<GetAllGamesQuery, GetAll
 
 export const makeGetAllGamesQueryHandler = ({
 	gameRepository,
+	gameMapper,
 }: GetAllGamesQueryHandlerDeps): IGetAllGamesQueryHandlerPort => {
 	return {
 		execute: ({ ifNoneMatch, since } = {}) => {

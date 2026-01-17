@@ -11,10 +11,10 @@ import {
 	type PlatformId,
 	type PlayniteGameId,
 } from "@playatlas/common/domain";
+import type { IGameFactoryPort } from "@playatlas/game-library/application";
 import {
 	makeCompany,
 	makeCompletionStatus,
-	makeGame,
 	makeGenre,
 	makePlatform,
 	type Company,
@@ -40,13 +40,15 @@ export type ExtractedSyncData = {
 
 export const extractSyncData = (props: {
 	command: SyncGamesCommand;
-	now: Date;
 	existingGames: Map<PlayniteGameId, Game>;
+	now: Date;
+	gameFactory: IGameFactoryPort;
 }): ExtractedSyncData => {
 	const {
 		command: { payload },
 		now,
 		existingGames,
+		gameFactory,
 	} = props;
 
 	const genres = new Map<GenreId, Genre>();
@@ -145,7 +147,7 @@ export const extractSyncData = (props: {
 			return existingGame;
 		}
 
-		const newGame = makeGame({
+		const newGame = gameFactory.create({
 			id: GameIdParser.fromTrusted(crypto.randomUUID()),
 			playniteSnapshot,
 			developerIds: developerIds,

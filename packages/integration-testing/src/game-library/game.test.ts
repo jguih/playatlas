@@ -255,7 +255,7 @@ describe("Game Library / Game", () => {
 		expect(afterResult.type === "not_modified").toBeTruthy();
 	});
 
-	it.only("only returns updated games", async () => {
+	it("only returns updated games", async () => {
 		// Arrange
 		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
 

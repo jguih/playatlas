@@ -2,7 +2,8 @@ import {
 	type IFileSystemServicePort,
 	type ILogServiceFactoryPort,
 } from "@playatlas/common/application";
-import type { BaseRepositoryDeps, ISystemConfigPort } from "@playatlas/common/infra";
+import type { BaseRepositoryDeps, IClockPort, ISystemConfigPort } from "@playatlas/common/infra";
+import { makeGameFactory, makeGameMapper } from "@playatlas/game-library/application";
 import {
 	makeCompanyRepository,
 	makeCompletionStatusRepository,
@@ -24,6 +25,7 @@ export type GameLibraryModuleDeps = {
 	logServiceFactory: ILogServiceFactoryPort;
 	fileSystemService: IFileSystemServicePort;
 	systemConfig: ISystemConfigPort;
+	clock: IClockPort;
 };
 
 export const makeGameLibraryModule = ({
@@ -31,7 +33,10 @@ export const makeGameLibraryModule = ({
 	logServiceFactory,
 	fileSystemService,
 	systemConfig,
+	clock,
 }: GameLibraryModuleDeps): IGameLibraryModulePort => {
+	const _game_factory = makeGameFactory({ clock });
+	const _game_mapper = makeGameMapper({ gameFactory: _game_factory });
 	const _company_repository = makeCompanyRepository({
 		getDb,
 		logService: logServiceFactory.build("CompanyRepository"),
@@ -43,6 +48,7 @@ export const makeGameLibraryModule = ({
 	const _game_repository = makeGameRepository({
 		getDb,
 		logService: logServiceFactory.build("GameRepository"),
+		gameMapper: _game_mapper,
 	});
 	const _platform_repository = makePlatformRepository({
 		getDb,
@@ -54,6 +60,7 @@ export const makeGameLibraryModule = ({
 	});
 	const _query_handler_get_all_games = makeGetAllGamesQueryHandler({
 		gameRepository: _game_repository,
+		gameMapper: _game_mapper,
 	});
 	const _query_handler_get_all_companies = makeGetAllCompaniesQueryHandler({
 		companyRepository: _company_repository,
@@ -83,6 +90,8 @@ export const makeGameLibraryModule = ({
 			getGetAllGenresQueryHandler: () => _query_handler_get_all_genres,
 		},
 		getGameAssetsContextFactory: () => _game_assets_context_factory,
+		getGameFactory: () => _game_factory,
+		getGameMapper: () => _game_mapper,
 	};
 	return Object.freeze(gameLibrary);
 };

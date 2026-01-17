@@ -12,7 +12,12 @@ import {
 	InvalidStateError,
 	type PlatformId,
 } from "@playatlas/common/domain";
-import type { MakeGameProps, PlayniteGameSnapshot } from "./game.entity.types";
+import type {
+	MakeGameDeps,
+	MakeGameProps,
+	PlayniteGameSnapshot,
+	RehydrateGameProps,
+} from "./game.entity.types";
 
 const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 
@@ -45,11 +50,11 @@ export type Game = BaseEntity<GameId> &
 		relationships: GameRelationshipProps;
 	}>;
 
-export const makeGame = (props: MakeGameProps): Game => {
+export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game => {
 	const _id = props.id;
-	const _created_at = props.createdAt ?? new Date();
+	const _created_at = props.createdAt ?? clock.now();
 	let _contentHash = props.contentHash;
-	let _last_updated_at = props.lastUpdatedAt;
+	let _last_updated_at = props.lastUpdatedAt ?? clock.now();
 	let _deleted_at = props.deletedAt ?? null;
 	let _delete_after = props.deleteAfter ?? null;
 	let _background_image_path = props.backgroundImagePath ?? null;
@@ -69,7 +74,7 @@ export const makeGame = (props: MakeGameProps): Game => {
 	};
 
 	const _touch = () => {
-		_last_updated_at = new Date();
+		_last_updated_at = clock.now();
 	};
 
 	_validate();
@@ -83,7 +88,7 @@ export const makeGame = (props: MakeGameProps): Game => {
 		getDeletedAt: () => _deleted_at,
 		getDeleteAfter: () => _delete_after,
 		delete: () => {
-			_deleted_at = new Date();
+			_deleted_at = clock.now();
 			_delete_after = new Date(_deleted_at.getTime() + THIRTY_DAYS);
 			_touch();
 			_validate();
@@ -134,3 +139,6 @@ export const makeGame = (props: MakeGameProps): Game => {
 	};
 	return Object.freeze(game);
 };
+
+export const rehydrateGame = (props: RehydrateGameProps, deps: MakeGameDeps) =>
+	makeGame(props, deps);
