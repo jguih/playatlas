@@ -17,5 +17,5 @@ export type IGameRepositoryPort = Omit<
 	getManifestData: () => GameManifestData;
 	getTotal: (filters?: GameFilters) => number;
 	getTotalPlaytimeSeconds: (filters?: GameFilters) => number;
-	all: (props?: GameRepositoryEagerLoadProps) => Game[];
+	all: (props?: GameRepositoryEagerLoadProps, filters?: GameFilters) => Game[];
 };

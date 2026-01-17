@@ -91,9 +91,14 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 			params.push(+filters.installed);
 		}
 
-		if (filters.hidden != undefined) {
+		if (filters.hidden !== undefined) {
 			where.push(`Hidden = ?`);
 			params.push(+filters.hidden);
+		}
+
+		if (filters.modifiedSince !== undefined) {
+			where.push(`LastUpdatedAt >= ?`);
+			params.push(filters.modifiedSince.toISOString());
 		}
 
 		return {
@@ -337,15 +342,14 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 		}, `getTotalPlaytimeSeconds()`);
 	};
 
-	const all: IGameRepositoryPort["all"] = (props = {}) => {
+	const all: IGameRepositoryPort["all"] = (props = {}, filters = {}) => {
 		return base.run(({ db }) => {
-			const query = `
-          SELECT g.*
-          FROM ${TABLE_NAME} g
-          ORDER BY g.Id ASC;
-        `;
+			let query = `SELECT g.* FROM ${TABLE_NAME} g `;
+			const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
+			query += where;
+			query += `ORDER BY g.Id ASC;`;
 			const stmt = db.prepare(query);
-			const rows = stmt.all();
+			const rows = stmt.all(...params);
 
 			const { success, data: gameModels, error } = z.array(gameSchema).safeParse(rows);
 

@@ -25,7 +25,7 @@ export const playniteProjectionResponseDtoSchema = z.object({
 		IconImagePath: z.string().nullable(),
 	}),
 	Sync: z.object({
-		LastUpdatedAt: ISODateSchema.nullable(),
+		LastUpdatedAt: ISODateSchema,
 		DeletedAt: ISODateSchema.nullable(),
 		DeleteAfter: ISODateSchema.nullable(),
 	}),

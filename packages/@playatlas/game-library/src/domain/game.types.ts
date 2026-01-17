@@ -11,6 +11,7 @@ export type GameFilters = {
 	query?: string;
 	installed?: boolean;
 	hidden?: boolean;
+	modifiedSince?: Date;
 };
 
 export type GamePageSizes = typeof gamePageSizes;

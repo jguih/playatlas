@@ -13,8 +13,8 @@ export const makeGetAllGamesQueryHandler = ({
 	gameRepository,
 }: GetAllGamesQueryHandlerDeps): IGetAllGamesQueryHandlerPort => {
 	return {
-		execute: ({ ifNoneMatch } = {}) => {
-			const games = gameRepository.all({ load: true });
+		execute: ({ ifNoneMatch, since } = {}) => {
+			const games = gameRepository.all({ load: true }, { modifiedSince: since ?? undefined });
 
 			if (!games || games.length === 0) {
 				return { type: "ok", data: [], etag: '"empty"' };

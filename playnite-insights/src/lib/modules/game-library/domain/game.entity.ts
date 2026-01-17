@@ -10,9 +10,9 @@ export type Game = ClientEntity<GameId> & {
 	Added: Date | null;
 	InstallDirectory: string | null;
 	IsInstalled: boolean;
-	BackgroundImage: string | null;
-	CoverImage: string | null;
-	Icon: string | null;
+	BackgroundImagePath: string | null;
+	CoverImagePath: string | null;
+	IconImagePath: string | null;
 	Hidden: boolean;
 	CompletionStatusId: string | null;
 	ContentHash: string;

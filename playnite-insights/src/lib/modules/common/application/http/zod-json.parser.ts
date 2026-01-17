@@ -9,5 +9,10 @@ export const zodJsonParser =
 		}
 
 		const json = await response.json();
-		return schema.parse(json);
+
+		const { success, data, error } = schema.safeParse(json);
+
+		if (success) return data;
+
+		throw new Error(`Validation error: ${error.message}`);
 	};
