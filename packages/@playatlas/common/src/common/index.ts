@@ -7,3 +7,4 @@ export * from "./game.constants";
 export type * from "./game.types";
 export * from "./query-handler";
 export * from "./relationship";
+export * from "./soft-deletable";

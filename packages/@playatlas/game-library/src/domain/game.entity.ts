@@ -1,15 +1,17 @@
 import { validation } from "@playatlas/common/application";
 import {
 	createRelationship,
+	makeSoftDeletable,
+	type EntitySoftDeleteProps,
 	type GameImageType,
 	type Relationship,
 } from "@playatlas/common/common";
 import {
+	InvalidStateError,
 	type BaseEntity,
 	type CompanyId,
 	type GameId,
 	type GenreId,
-	InvalidStateError,
 	type PlatformId,
 } from "@playatlas/common/domain";
 import type {
@@ -18,8 +20,6 @@ import type {
 	PlayniteGameSnapshot,
 	RehydrateGameProps,
 } from "./game.entity.types";
-
-const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 
 export type GameRelationshipMap = {
 	developers: CompanyId;
@@ -35,13 +35,11 @@ export type GameRelationshipProps = {
 };
 
 export type Game = BaseEntity<GameId> &
+	EntitySoftDeleteProps &
 	Readonly<{
 		getBackgroundImagePath: () => string | null;
 		getCoverImagePath: () => string | null;
 		getIconImagePath: () => string | null;
-		getDeletedAt: () => Date | null;
-		getDeleteAfter: () => Date | null;
-		delete: () => void;
 		getPlayniteSnapshot: () => PlayniteGameSnapshot;
 		setPlayniteSnapshot: (value: PlayniteGameSnapshot) => void;
 		getContentHash: () => string;
@@ -51,12 +49,12 @@ export type Game = BaseEntity<GameId> &
 	}>;
 
 export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game => {
+	const now = clock.now();
+
 	const _id = props.id;
-	const _created_at = props.createdAt ?? clock.now();
+	const _created_at = props.createdAt ?? now;
 	let _contentHash = props.contentHash;
-	let _last_updated_at = props.lastUpdatedAt ?? clock.now();
-	let _deleted_at = props.deletedAt ?? null;
-	let _delete_after = props.deleteAfter ?? null;
+	let _last_updated_at = props.lastUpdatedAt ?? now;
 	let _background_image_path = props.backgroundImagePath ?? null;
 	let _cover_image_path = props.coverImagePath ?? null;
 	let _icon_image_path = props.iconImagePath ?? null;
@@ -67,10 +65,6 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 			throw new InvalidStateError("Playnite playtime must not be negative");
 		if (validation.isEmptyString(_contentHash))
 			throw new InvalidStateError("ContentHash must not be an empty string");
-		if (_deleted_at && !_delete_after)
-			throw new InvalidStateError("DeleteAfter must be defined if entity was deleted");
-		if (!_deleted_at && _delete_after)
-			throw new InvalidStateError("DeletedAt must be defined if entity was deleted");
 	};
 
 	const _touch = () => {
@@ -79,20 +73,21 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 
 	_validate();
 
+	const softDelete = makeSoftDeletable(
+		{
+			deletedAt: props.deletedAt,
+			deleteAfter: props.deleteAfter,
+		},
+		{ clock, touch: _touch, validate: _validate },
+	);
+
 	const game: Game = {
 		getId: () => _id,
 		getSafeId: () => _id,
 		getBackgroundImagePath: () => _background_image_path,
 		getCoverImagePath: () => _cover_image_path,
 		getIconImagePath: () => _icon_image_path,
-		getDeletedAt: () => _deleted_at,
-		getDeleteAfter: () => _delete_after,
-		delete: () => {
-			_deleted_at = clock.now();
-			_delete_after = new Date(_deleted_at.getTime() + THIRTY_DAYS);
-			_touch();
-			_validate();
-		},
+		...softDelete,
 		getPlayniteSnapshot: () => _playnite_game,
 		setPlayniteSnapshot: (value) => {
 			_playnite_game = value;

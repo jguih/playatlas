@@ -2,7 +2,7 @@ import { ISODateSchema } from "@playatlas/common/common";
 import { companyIdSchema, type CompanyId } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
-import { companyMapper } from "../company.mapper";
+import type { ICompanyMapperPort } from "../application";
 import type { Company } from "../domain/company.entity";
 import type { ICompanyRepositoryPort } from "./company.repository.port";
 
@@ -17,10 +17,15 @@ export const companySchema = z.object({
 
 export type CompanyModel = z.infer<typeof companySchema>;
 
+export type CompanyRepositoryDeps = BaseRepositoryDeps & {
+	companyMapper: ICompanyMapperPort;
+};
+
 export const makeCompanyRepository = ({
 	getDb,
 	logService,
-}: BaseRepositoryDeps): ICompanyRepositoryPort => {
+	companyMapper,
+}: CompanyRepositoryDeps): ICompanyRepositoryPort => {
 	const TABLE_NAME = "playnite_company";
 	const COLUMNS: (keyof CompanyModel)[] = [
 		"Id",

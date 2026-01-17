@@ -1,8 +1,22 @@
 import type { CompanyId } from "@playatlas/common/domain";
+import type { IClockPort } from "@playatlas/common/infra";
 
-export type MakeCompanyProps = {
+type CommonProps = {
+	lastUpdatedAt: Date;
+	createdAt: Date;
+};
+
+type BaseProps = {
 	id: CompanyId;
 	name: string;
-	lastUpdatedAt: Date;
-	createdAt?: Date | null;
+	deletedAt?: Date;
+	deleteAfter?: Date;
+};
+
+export type MakeCompanyProps = Partial<CommonProps> & BaseProps;
+
+export type RehydrateCompanyProps = CommonProps & BaseProps;
+
+export type MakeCompanyDeps = {
+	clock: IClockPort;
 };
