@@ -19,17 +19,7 @@ export default defineConfig({
 		expect: { requireAssertions: true },
 		globals: true,
 		reporters: ["default", ["junit", { outputFile: "../test-results/svelte-app.xml" }]],
-		setupFiles: ["./src/vitest.unit-testing.setup.ts"],
 		projects: [
-			{
-				extends: "./vite.config.ts",
-				test: {
-					name: "unit",
-					environment: "node",
-					include: ["src/**/*.{test,spec}.{js,ts}", "src/**/*.svelte.{test,spec}.{js,ts}"],
-					exclude: ["src/lib/modules/integration-testing"],
-				},
-			},
 			{
 				extends: "./vite.config.ts",
 				test: {
