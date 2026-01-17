@@ -4,7 +4,7 @@ import {
 	type ILogServiceFactoryPort,
 } from "@playatlas/common/application";
 import type { IClockPort, ISystemConfigPort } from "@playatlas/common/infra";
-import type { IGameFactoryPort } from "@playatlas/game-library/application";
+import type { ICompanyFactoryPort, IGameFactoryPort } from "@playatlas/game-library/application";
 import type {
 	ICompanyRepositoryPort,
 	ICompletionStatusRepositoryPort,
@@ -37,6 +37,7 @@ export type PlayniteIntegrationModuleDeps = {
 	gameAssetsContextFactory: IGameAssetsContextFactoryPort;
 	clock: IClockPort;
 	gameFactory: IGameFactoryPort;
+	companyFactory: ICompanyFactoryPort;
 };
 
 export const makePlayniteIntegrationModule = ({
@@ -52,6 +53,7 @@ export const makePlayniteIntegrationModule = ({
 	gameAssetsContextFactory,
 	clock,
 	gameFactory,
+	companyFactory,
 }: PlayniteIntegrationModuleDeps): IPlayniteIntegrationModulePort => {
 	const _playnite_media_files_context_factory = makePlayniteMediaFilesContextFactory({
 		fileSystemService,
@@ -87,6 +89,7 @@ export const makePlayniteIntegrationModule = ({
 		eventBus,
 		clock,
 		gameFactory,
+		companyFactory,
 	});
 
 	const playniteIntegrationApi: IPlayniteIntegrationModulePort = {

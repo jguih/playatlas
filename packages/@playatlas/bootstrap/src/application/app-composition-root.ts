@@ -65,6 +65,7 @@ export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot
 		platformRepository: gameLibrary.getPlatformRepository(),
 		gameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory(),
 		gameFactory: gameLibrary.getGameFactory(),
+		companyFactory: gameLibrary.getCompanyFactory(),
 	});
 
 	const initEnvironmentAsync = async () => {

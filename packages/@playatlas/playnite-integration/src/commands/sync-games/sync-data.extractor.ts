@@ -11,9 +11,8 @@ import {
 	type PlatformId,
 	type PlayniteGameId,
 } from "@playatlas/common/domain";
-import type { IGameFactoryPort } from "@playatlas/game-library/application";
+import type { ICompanyFactoryPort, IGameFactoryPort } from "@playatlas/game-library/application";
 import {
-	makeCompany,
 	makeCompletionStatus,
 	makeGenre,
 	makePlatform,
@@ -43,12 +42,14 @@ export const extractSyncData = (props: {
 	existingGames: Map<PlayniteGameId, Game>;
 	now: Date;
 	gameFactory: IGameFactoryPort;
+	companyFactory: ICompanyFactoryPort;
 }): ExtractedSyncData => {
 	const {
 		command: { payload },
 		now,
 		existingGames,
 		gameFactory,
+		companyFactory,
 	} = props;
 
 	const genres = new Map<GenreId, Genre>();
@@ -94,12 +95,18 @@ export const extractSyncData = (props: {
 
 		item.Developers?.forEach((d) => {
 			const companyId = CompanyIdParser.fromExternal(d.Id);
-			developers.set(companyId, makeCompany({ id: companyId, name: d.Name, lastUpdatedAt: now }));
+			developers.set(
+				companyId,
+				companyFactory.create({ id: companyId, name: d.Name, lastUpdatedAt: now }),
+			);
 		});
 
 		item.Publishers?.forEach((p) => {
 			const companyId = CompanyIdParser.fromExternal(p.Id);
-			publishers.set(companyId, makeCompany({ id: companyId, name: p.Name, lastUpdatedAt: now }));
+			publishers.set(
+				companyId,
+				companyFactory.create({ id: companyId, name: p.Name, lastUpdatedAt: now }),
+			);
 		});
 
 		if (item.CompletionStatus) {

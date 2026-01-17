@@ -12,6 +12,7 @@ export const makeSyncGamesCommandHandler = ({
 	eventBus,
 	clock,
 	gameFactory,
+	companyFactory,
 }: SyncGamesServiceDeps): ISyncGamesCommandHandlerPort => {
 	return {
 		executeAsync: async (command) => {
@@ -27,7 +28,7 @@ export const makeSyncGamesCommandHandler = ({
 			try {
 				const games = gameRepository.all();
 				const existingGames = new Map(games.map((g) => [g.getPlayniteSnapshot().id, g]));
-				extracted = extractSyncData({ command, now, existingGames, gameFactory });
+				extracted = extractSyncData({ command, now, existingGames, gameFactory, companyFactory });
 			} catch (error) {
 				logService.error(`Failed to parse game library sync payload`, error);
 				return {

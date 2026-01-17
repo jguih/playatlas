@@ -1,6 +1,5 @@
 import type { QueryHandler } from "@playatlas/common/common";
 import { createHashForObject } from "@playatlas/common/infra";
-import { companyMapper } from "../../application/company.mapper";
 import type { GetAllCompaniesQuery } from "./get-all-companies.query";
 import type {
 	GetAllCompaniesQueryHandlerDeps,
@@ -14,6 +13,7 @@ export type IGetAllCompaniesQueryHandlerPort = QueryHandler<
 
 export const makeGetAllCompaniesQueryHandler = ({
 	companyRepository,
+	companyMapper,
 }: GetAllCompaniesQueryHandlerDeps): IGetAllCompaniesQueryHandlerPort => {
 	return {
 		execute: ({ ifNoneMatch } = {}) => {

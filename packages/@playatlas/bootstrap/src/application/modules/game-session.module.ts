@@ -1,4 +1,5 @@
 import type { IDomainEventBusPort, ILogServiceFactoryPort } from "@playatlas/common/application";
+import { GameIdParser } from "@playatlas/common/domain";
 import type { BaseRepositoryDeps } from "@playatlas/common/infra";
 import type { IGameRepositoryPort } from "@playatlas/game-library/infra";
 import {
@@ -30,7 +31,7 @@ export const makeGameSessionModule = ({
 
 	const gameInfoProvider: GameInfoProvider = {
 		getGameInfo: (id) => {
-			const game = gameRepository.getById(id);
+			const game = gameRepository.getById(GameIdParser.fromExternal(id));
 			return game ? { name: game.getPlayniteSnapshot().name } : null;
 		},
 	};

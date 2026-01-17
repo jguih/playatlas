@@ -2,6 +2,7 @@ import {
 	makeExtensionRegistrationFactory,
 	type ExtensionRegistrationFactory,
 } from "@playatlas/auth/testing";
+import type { ICompanyFactoryPort } from "@playatlas/game-library/application";
 import {
 	makeCompanyFactory,
 	makeCompletionStatusFactory,
@@ -29,12 +30,16 @@ export type ITestFactoryModulePort = {
 	getSyncGameRequestDtoFactory: () => SyncGamesRequestDtoFactory;
 };
 
-export const makeTestFactoryModule = (): ITestFactoryModulePort => {
-	const _completion_status = makeCompletionStatusFactory();
-	const _genre = makeGenreFactory();
-	const _company = makeCompanyFactory();
+export type TestFactoryModuleDeps = {
+	companyFactory: ICompanyFactoryPort;
+};
+
+export const makeTestFactoryModule = (deps: TestFactoryModuleDeps): ITestFactoryModulePort => {
+	const _completion_status = makeCompletionStatusFactory(deps);
+	const _genre = makeGenreFactory(deps);
+	const _company = makeCompanyFactory(deps);
 	let _game_factory: GameFactory | null = null;
-	const _platform = makePlatformFactory();
+	const _platform = makePlatformFactory(deps);
 	const _extension_registration_factory = makeExtensionRegistrationFactory();
 	const _sync_game_dto_factory = makeSyncGamesRequestDtoFactory();
 

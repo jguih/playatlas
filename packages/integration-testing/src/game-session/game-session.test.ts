@@ -86,7 +86,7 @@ describe("Game Sessions", () => {
 
 	it("closes an in progress game session", () => {
 		// Arrange
-		const now = new Date().toISOString();
+		const now = new Date("2026-01-01T00:00:00Z").toISOString();
 		const gameId = game.getId();
 		const sessionId = faker.string.uuid();
 
@@ -101,8 +101,8 @@ describe("Game Sessions", () => {
 			ClientUtcNow: now,
 			GameId: gameId,
 			SessionId: sessionId,
-			Duration: faker.number.int({ min: 1000 }),
-			EndTime: faker.date.future({ refDate: now }).toISOString(),
+			Duration: 30,
+			EndTime: new Date("2026-01-01T00:00:30Z").toISOString(),
 			StartTime: now,
 		};
 		const closeCommand = makeCloseGameSessionCommand(closeRequestDto);

@@ -3,7 +3,12 @@ import {
 	type ILogServiceFactoryPort,
 } from "@playatlas/common/application";
 import type { BaseRepositoryDeps, IClockPort, ISystemConfigPort } from "@playatlas/common/infra";
-import { makeGameFactory, makeGameMapper } from "@playatlas/game-library/application";
+import {
+	makeCompanyFactory,
+	makeCompanyMapper,
+	makeGameFactory,
+	makeGameMapper,
+} from "@playatlas/game-library/application";
 import {
 	makeCompanyRepository,
 	makeCompletionStatusRepository,
@@ -37,9 +42,14 @@ export const makeGameLibraryModule = ({
 }: GameLibraryModuleDeps): IGameLibraryModulePort => {
 	const _game_factory = makeGameFactory({ clock });
 	const _game_mapper = makeGameMapper({ gameFactory: _game_factory });
+
+	const _company_factory = makeCompanyFactory({ clock });
+	const _company_mapper = makeCompanyMapper({ companyFactory: _company_factory });
+
 	const _company_repository = makeCompanyRepository({
 		getDb,
 		logService: logServiceFactory.build("CompanyRepository"),
+		companyMapper: _company_mapper,
 	});
 	const _genre_repository = makeGenreRepository({
 		getDb,
@@ -64,6 +74,7 @@ export const makeGameLibraryModule = ({
 	});
 	const _query_handler_get_all_companies = makeGetAllCompaniesQueryHandler({
 		companyRepository: _company_repository,
+		companyMapper: _company_mapper,
 	});
 	const _query_handler_get_all_platforms = makeGetAllPlatformQueryHandler({
 		platformRepository: _platform_repository,
@@ -92,6 +103,8 @@ export const makeGameLibraryModule = ({
 		getGameAssetsContextFactory: () => _game_assets_context_factory,
 		getGameFactory: () => _game_factory,
 		getGameMapper: () => _game_mapper,
+		getCompanyFactory: () => _company_factory,
+		getCompanyMapper: () => _company_mapper,
 	};
 	return Object.freeze(gameLibrary);
 };
