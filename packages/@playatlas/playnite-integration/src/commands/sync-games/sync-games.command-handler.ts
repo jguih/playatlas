@@ -19,6 +19,7 @@ export const makeSyncGamesCommandHandler = ({
 	companyFactory,
 	completionStatusFactory,
 	platformFactory,
+	genreFactory,
 }: SyncGamesServiceDeps): ISyncGamesCommandHandlerPort => {
 	const repositories = {
 		gameRepository,
@@ -33,6 +34,7 @@ export const makeSyncGamesCommandHandler = ({
 		companyFactory,
 		completionStatusFactory,
 		platformFactory,
+		genreFactory,
 	};
 
 	return {

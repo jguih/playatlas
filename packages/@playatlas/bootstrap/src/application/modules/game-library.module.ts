@@ -10,6 +10,8 @@ import {
 	makeCompletionStatusMapper,
 	makeGameFactory,
 	makeGameMapper,
+	makeGenreFactory,
+	makeGenreMapper,
 	makePlatformFactory,
 	makePlatformMapper,
 } from "@playatlas/game-library/application";
@@ -90,9 +92,12 @@ export const makeGameLibraryModule = ({
 		platformMapper,
 	});
 
+	const genreFactory = makeGenreFactory({ clock });
+	const genreMapper = makeGenreMapper({ genreFactory });
 	const genreRepository = makeGenreRepository({
 		getDb,
 		logService: buildLog("GenreRepository"),
+		genreMapper,
 	});
 
 	const _query_handler_get_all_genres = makeGetAllGenresQueryHandler({
@@ -126,6 +131,8 @@ export const makeGameLibraryModule = ({
 		getCompletionStatusMapper: () => completionStatusMapper,
 		getPlatformFactory: () => platformFactory,
 		getPlatformMapper: () => platformMapper,
+		getGenreFactory: () => genreFactory,
+		getGenreMapper: () => genreMapper,
 	};
 	return Object.freeze(gameLibrary);
 };

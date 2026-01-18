@@ -15,10 +15,10 @@ import type {
 	ICompanyFactoryPort,
 	ICompletionStatusFactoryPort,
 	IGameFactoryPort,
+	IGenreFactoryPort,
 	IPlatformFactoryPort,
 } from "@playatlas/game-library/application";
 import {
-	makeGenre,
 	type Company,
 	type CompletionStatus,
 	type Game,
@@ -54,6 +54,7 @@ export type SyncDataExtractorDeps = {
 	companyFactory: ICompanyFactoryPort;
 	completionStatusFactory: ICompletionStatusFactoryPort;
 	platformFactory: IPlatformFactoryPort;
+	genreFactory: IGenreFactoryPort;
 	context: GameLibrarySyncContext;
 };
 
@@ -65,6 +66,7 @@ export const extractSyncData = ({
 	completionStatusFactory,
 	gameFactory,
 	platformFactory,
+	genreFactory,
 }: SyncDataExtractorDeps): ExtractedSyncData => {
 	const genres = new Map<GenreId, Genre>();
 	const platforms = new Map<PlatformId, Platform>();
@@ -94,7 +96,7 @@ export const extractSyncData = ({
 				const updated = genre.updateFromPlaynite({ name: g.Name });
 				if (updated) genres.set(genreId, genre);
 			} else {
-				const newGenre = makeGenre({
+				const newGenre = genreFactory.create({
 					id: genreId,
 					name: g.Name,
 					lastUpdatedAt: now,

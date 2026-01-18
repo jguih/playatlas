@@ -1,6 +1,6 @@
 import type { QueryHandler } from "@playatlas/common/common";
 import { createHashForObject } from "@playatlas/common/infra";
-import { genreMapper } from "../../genre.mapper";
+import { genreMapper } from "../../application/genre.mapper";
 import type { GetAllGenresQuery } from "./get-all-genres.query";
 import type {
 	GetAllGenresQueryHandlerDeps,

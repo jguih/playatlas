@@ -2,7 +2,7 @@ import { ISODateSchema } from "@playatlas/common/common";
 import { genreIdSchema } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
-import { genreMapper } from "../genre.mapper";
+import type { IGenreMapperPort } from "../application";
 import type { IGenreRepositoryPort } from "./genre.repository.port";
 
 export const genreSchema = z.object({
@@ -16,10 +16,15 @@ export const genreSchema = z.object({
 
 export type GenreModel = z.infer<typeof genreSchema>;
 
+export type GenreRepositoryDeps = BaseRepositoryDeps & {
+	genreMapper: IGenreMapperPort;
+};
+
 export const makeGenreRepository = ({
 	getDb,
 	logService,
-}: BaseRepositoryDeps): IGenreRepositoryPort => {
+	genreMapper,
+}: GenreRepositoryDeps): IGenreRepositoryPort => {
 	const TABLE_NAME = "playnite_genre";
 	const COLUMNS: (keyof GenreModel)[] = [
 		"Id",

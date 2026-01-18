@@ -5,6 +5,8 @@ import type {
 	ICompletionStatusMapperPort,
 	IGameFactoryPort,
 	IGameMapperPort,
+	IGenreFactoryPort,
+	IGenreMapperPort,
 	IPlatformFactoryPort,
 	IPlatformMapperPort,
 } from "@playatlas/game-library/application";
@@ -48,4 +50,7 @@ export type IGameLibraryModulePort = Readonly<{
 
 	getPlatformMapper: () => IPlatformMapperPort;
 	getPlatformFactory: () => IPlatformFactoryPort;
+
+	getGenreMapper: () => IGenreMapperPort;
+	getGenreFactory: () => IGenreFactoryPort;
 }>;

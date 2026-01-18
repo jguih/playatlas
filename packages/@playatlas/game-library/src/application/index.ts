@@ -4,5 +4,7 @@ export * from "./completion-status.factory";
 export * from "./completion-status.mapper";
 export * from "./game.factory";
 export * from "./game.mapper";
+export * from "./genre.factory";
+export * from "./genre.mapper";
 export * from "./platform.factory";
 export * from "./platform.mapper";
