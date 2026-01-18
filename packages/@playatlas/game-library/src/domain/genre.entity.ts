@@ -7,13 +7,18 @@ export type GenreName = string;
 export type Genre = BaseEntity<GenreId> &
 	Readonly<{
 		getName: () => GenreName;
+		updateFromPlaynite: (value: { name: GenreName }) => void;
 	}>;
 
 export const makeGenre = (props: MakeGenreProps): Genre => {
 	const _id: GenreId = props.id;
-	const _name: GenreName = props.name;
-	const _last_updated_at = props.lastUpdatedAt;
+	let _name: GenreName = props.name;
+	let _last_updated_at = props.lastUpdatedAt;
 	const _created_at = props.createdAt ?? new Date();
+
+	const _touch = () => {
+		_last_updated_at = new Date();
+	};
 
 	const _validate = () => {
 		if (validation.isNullOrEmptyString(_name))
@@ -28,6 +33,11 @@ export const makeGenre = (props: MakeGenreProps): Genre => {
 		getName: () => _name,
 		getLastUpdatedAt: () => _last_updated_at,
 		getCreatedAt: () => _created_at,
+		updateFromPlaynite: ({ name }) => {
+			_name = name;
+			_touch();
+			_validate();
+		},
 		validate: _validate,
 	};
 	return Object.freeze(genre);

@@ -1,4 +1,8 @@
-import { extractSyncData, type ExtractedSyncData } from "./sync-data.extractor";
+import {
+	buildGameLibrarySyncContext,
+	extractSyncData,
+	type ExtractedSyncData,
+} from "./sync-data.extractor";
 import type { ISyncGamesCommandHandlerPort, SyncGamesServiceDeps } from "./sync-games.service.type";
 
 export const makeSyncGamesCommandHandler = ({
@@ -15,6 +19,20 @@ export const makeSyncGamesCommandHandler = ({
 	companyFactory,
 	completionStatusFactory,
 }: SyncGamesServiceDeps): ISyncGamesCommandHandlerPort => {
+	const repositories = {
+		gameRepository,
+		genreRepository,
+		platformRepository,
+		companyRepository,
+		completionStatusRepository,
+	};
+
+	const factories = {
+		gameFactory,
+		companyFactory,
+		completionStatusFactory,
+	};
+
 	return {
 		executeAsync: async (command) => {
 			const payload = command.payload;
@@ -26,16 +44,14 @@ export const makeSyncGamesCommandHandler = ({
 
 			let extracted: ExtractedSyncData;
 
+			const context = buildGameLibrarySyncContext({ ...repositories });
+
 			try {
-				const games = gameRepository.all();
-				const existingGames = new Map(games.map((g) => [g.getPlayniteSnapshot().id, g]));
 				extracted = extractSyncData({
 					command,
 					now,
-					existingGames,
-					gameFactory,
-					companyFactory,
-					completionStatusFactory,
+					context,
+					...factories,
 				});
 			} catch (error) {
 				logService.error(`Failed to parse game library sync payload`, error);

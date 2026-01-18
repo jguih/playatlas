@@ -26,6 +26,13 @@ import {
 	type Platform,
 	type PlayniteGameSnapshot,
 } from "@playatlas/game-library/domain";
+import type {
+	ICompanyRepositoryPort,
+	ICompletionStatusRepositoryPort,
+	IGameRepositoryPort,
+	IGenreRepositoryPort,
+	IPlatformRepositoryPort,
+} from "@playatlas/game-library/infra";
 import type { SyncGamesCommand, SyncGamesCommandItem } from "./sync-games.command";
 
 export type ExtractedSyncData = {
@@ -40,23 +47,23 @@ export type ExtractedSyncData = {
 	deleted: PlayniteGameId[];
 };
 
-export const extractSyncData = (props: {
+export type SyncDataExtractorDeps = {
 	command: SyncGamesCommand;
-	existingGames: Map<PlayniteGameId, Game>;
 	now: Date;
 	gameFactory: IGameFactoryPort;
 	companyFactory: ICompanyFactoryPort;
 	completionStatusFactory: ICompletionStatusFactoryPort;
-}): ExtractedSyncData => {
-	const {
-		command: { payload },
-		now,
-		existingGames,
-		gameFactory,
-		companyFactory,
-		completionStatusFactory,
-	} = props;
+	context: GameLibrarySyncContext;
+};
 
+export const extractSyncData = ({
+	command: { payload },
+	now,
+	context,
+	companyFactory,
+	completionStatusFactory,
+	gameFactory,
+}: SyncDataExtractorDeps): ExtractedSyncData => {
 	const genres = new Map<GenreId, Genre>();
 	const platforms = new Map<PlatformId, Platform>();
 	const developers = new Map<CompanyId, Company>();
@@ -69,8 +76,8 @@ export const extractSyncData = (props: {
 
 	const processCommandItem = (item: SyncGamesCommandItem): Game | null => {
 		const itemPlayniteGameId = PlayniteGameIdParser.fromExternal(item.Id);
-		const existingGame = existingGames.has(itemPlayniteGameId)
-			? existingGames.get(itemPlayniteGameId)!
+		const existingGame = context.games.has(itemPlayniteGameId)
+			? context.games.get(itemPlayniteGameId)!
 			: null;
 
 		if (existingGame && existingGame.getContentHash() === item.ContentHash) {
@@ -79,7 +86,15 @@ export const extractSyncData = (props: {
 
 		item.Genres?.forEach((g) => {
 			const genreId = GenreIdParser.fromExternal(g.Id);
-			genres.set(genreId, makeGenre({ id: genreId, name: g.Name, lastUpdatedAt: now }));
+
+			if (context.genres.has(genreId)) {
+				const genre = context.genres.get(genreId)!;
+				genre.updateFromPlaynite({ name: g.Name });
+				genres.set(genreId, genre);
+			} else {
+				const newGenre = makeGenre({ id: genreId, name: g.Name, lastUpdatedAt: now });
+				genres.set(genreId, newGenre);
+			}
 		});
 
 		item.Platforms?.forEach((p) => {
@@ -187,8 +202,8 @@ export const extractSyncData = (props: {
 
 	for (const itemId of payload.toRemove) {
 		const itemPlayniteGameId = PlayniteGameIdParser.fromExternal(itemId);
-		const existingGame = existingGames.has(itemPlayniteGameId)
-			? existingGames.get(itemPlayniteGameId)!
+		const existingGame = context.games.has(itemPlayniteGameId)
+			? context.games.get(itemPlayniteGameId)!
 			: null;
 
 		if (existingGame) {
@@ -208,5 +223,48 @@ export const extractSyncData = (props: {
 		added,
 		updated,
 		deleted,
+	};
+};
+
+export type GameLibrarySyncContext = {
+	readonly games: ReadonlyMap<PlayniteGameId, Game>;
+	readonly genres: ReadonlyMap<GenreId, Genre>;
+	readonly completionStatuses: ReadonlyMap<CompletionStatusId, CompletionStatus>;
+	readonly platforms: ReadonlyMap<PlatformId, Platform>;
+	readonly companies: ReadonlyMap<CompanyId, Company>;
+};
+
+export type GameLibrarySyncContextBuilderDeps = {
+	gameRepository: IGameRepositoryPort;
+	genreRepository: IGenreRepositoryPort;
+	platformRepository: IPlatformRepositoryPort;
+	completionStatusRepository: ICompletionStatusRepositoryPort;
+	companyRepository: ICompanyRepositoryPort;
+};
+
+export const buildGameLibrarySyncContext = ({
+	gameRepository,
+	genreRepository,
+	platformRepository,
+	completionStatusRepository,
+	companyRepository,
+}: GameLibrarySyncContextBuilderDeps): GameLibrarySyncContext => {
+	const _games = gameRepository.all();
+	const games = new Map(_games.map((g) => [g.getPlayniteSnapshot().id, g]));
+	const _genres = genreRepository.all();
+	const genres = new Map(_genres.map((g) => [g.getId(), g]));
+	const _platforms = platformRepository.all();
+	const platforms = new Map(_platforms.map((p) => [p.getId(), p]));
+	const _completionStatuses = completionStatusRepository.all();
+	const completionStatuses = new Map(_completionStatuses.map((c) => [c.getId(), c]));
+	const _companies = companyRepository.all();
+	const companies = new Map(_companies.map((c) => [c.getId(), c]));
+
+	return {
+		games,
+		genres,
+		platforms,
+		completionStatuses,
+		companies,
 	};
 };
