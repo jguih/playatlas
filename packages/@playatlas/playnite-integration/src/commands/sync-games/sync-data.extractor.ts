@@ -15,10 +15,10 @@ import type {
 	ICompanyFactoryPort,
 	ICompletionStatusFactoryPort,
 	IGameFactoryPort,
+	IPlatformFactoryPort,
 } from "@playatlas/game-library/application";
 import {
 	makeGenre,
-	makePlatform,
 	type Company,
 	type CompletionStatus,
 	type Game,
@@ -53,6 +53,7 @@ export type SyncDataExtractorDeps = {
 	gameFactory: IGameFactoryPort;
 	companyFactory: ICompanyFactoryPort;
 	completionStatusFactory: ICompletionStatusFactoryPort;
+	platformFactory: IPlatformFactoryPort;
 	context: GameLibrarySyncContext;
 };
 
@@ -63,6 +64,7 @@ export const extractSyncData = ({
 	companyFactory,
 	completionStatusFactory,
 	gameFactory,
+	platformFactory,
 }: SyncDataExtractorDeps): ExtractedSyncData => {
 	const genres = new Map<GenreId, Genre>();
 	const platforms = new Map<PlatformId, Platform>();
@@ -104,9 +106,19 @@ export const extractSyncData = ({
 
 		item.Platforms?.forEach((p) => {
 			const platformId = PlatformIdParser.fromExternal(p.Id);
-			platforms.set(
-				platformId,
-				makePlatform({
+
+			if (context.platforms.has(platformId)) {
+				const platform = context.platforms.get(platformId)!;
+				const updated = platform.updateFromPlaynite({
+					name: p.Name,
+					specificationId: p.SpecificationId,
+					background: p.Background,
+					cover: p.Cover,
+					icon: p.Icon,
+				});
+				if (updated) platforms.set(platformId, platform);
+			} else {
+				const newPlatform = platformFactory.create({
 					id: platformId,
 					specificationId: p.SpecificationId,
 					name: p.Name,
@@ -115,8 +127,9 @@ export const extractSyncData = ({
 					background: p.Background,
 					lastUpdatedAt: now,
 					createdAt: now,
-				}),
-			);
+				});
+				platforms.set(platformId, newPlatform);
+			}
 		});
 
 		item.Developers?.forEach((d) => {
@@ -214,6 +227,7 @@ export const extractSyncData = ({
 			publisherIds: publisherIds,
 			platformIds: platformIds,
 			lastUpdatedAt: now,
+			createdAt: now,
 			contentHash: item.ContentHash,
 		});
 

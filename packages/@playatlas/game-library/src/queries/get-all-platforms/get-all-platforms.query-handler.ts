@@ -1,6 +1,5 @@
 import type { QueryHandler } from "@playatlas/common/common";
 import { createHashForObject } from "@playatlas/common/infra";
-import { platformMapper } from "../../platform.mapper";
 import type { GetAllPlatformsQuery } from "./get-all-platforms.query";
 import type {
 	GetAllPlatformsQueryHandlerDeps,
@@ -14,6 +13,7 @@ export type IGetAllPlatformsQueryHandlerPort = QueryHandler<
 
 export const makeGetAllPlatformQueryHandler = ({
 	platformRepository,
+	platformMapper,
 }: GetAllPlatformsQueryHandlerDeps): IGetAllPlatformsQueryHandlerPort => {
 	return {
 		execute: ({ ifNoneMatch } = {}) => {

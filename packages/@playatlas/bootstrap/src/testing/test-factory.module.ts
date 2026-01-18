@@ -5,6 +5,7 @@ import {
 import type {
 	ICompanyFactoryPort,
 	ICompletionStatusFactoryPort,
+	IPlatformFactoryPort,
 } from "@playatlas/game-library/application";
 import {
 	makeCompanyFactory,
@@ -36,6 +37,7 @@ export type ITestFactoryModulePort = {
 export type TestFactoryModuleDeps = {
 	companyFactory: ICompanyFactoryPort;
 	completionStatusFactory: ICompletionStatusFactoryPort;
+	platformFactory: IPlatformFactoryPort;
 };
 
 export const makeTestFactoryModule = (deps: TestFactoryModuleDeps): ITestFactoryModulePort => {

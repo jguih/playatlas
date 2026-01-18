@@ -1,12 +1,34 @@
 import type { PlatformId } from "@playatlas/common/domain";
+import type { IClockPort } from "@playatlas/common/infra";
 
-export type MakePlatformProps = {
+type CommonProps = {
+	lastUpdatedAt: Date;
+	createdAt: Date;
+};
+
+type BaseProps = {
 	id: PlatformId;
 	name: string;
 	specificationId: string;
-	lastUpdatedAt: Date;
 	icon?: string | null;
 	cover?: string | null;
 	background?: string | null;
-	createdAt?: Date | null;
+	deletedAt?: Date;
+	deleteAfter?: Date;
+};
+
+export type MakePlatformProps = Partial<CommonProps> & BaseProps;
+
+export type RehydratePlatformProps = CommonProps & BaseProps;
+
+export type MakePlatformDeps = {
+	clock: IClockPort;
+};
+
+export type UpdatePlatformFromPlayniteProps = {
+	name: string;
+	specificationId: string;
+	icon?: string | null;
+	cover?: string | null;
+	background?: string | null;
 };

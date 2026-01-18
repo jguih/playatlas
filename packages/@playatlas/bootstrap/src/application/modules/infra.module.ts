@@ -30,8 +30,6 @@ export const makeInfraModule = ({
 		logService: logServiceFactory.build("SignatureService"),
 	});
 
-	if (envService.getUseInMemoryDb()) logService.warning("Using in memory database");
-
 	let _db: DatabaseSync | null = null;
 
 	const infra: IInfraModulePort = {
@@ -43,9 +41,12 @@ export const makeInfraModule = ({
 		},
 		setDb: (db) => (_db = db),
 		initDb: () => {
+			if (envService.getUseInMemoryDb()) logService.warning("Using in memory database");
+
 			_db = envService.getUseInMemoryDb()
 				? makeDatabaseConnection({ inMemory: true })
 				: makeDatabaseConnection({ path: systemConfig.getDbPath() });
+
 			return initDatabase({
 				db: _db,
 				fileSystemService: _fs_service,

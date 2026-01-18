@@ -5,6 +5,7 @@ import type {
 	ICompanyFactoryPort,
 	ICompletionStatusFactoryPort,
 	IGameFactoryPort,
+	IPlatformFactoryPort,
 } from "@playatlas/game-library/application";
 import type {
 	ICompanyRepositoryPort,
@@ -46,4 +47,5 @@ export type SyncGamesServiceDeps = {
 	gameFactory: IGameFactoryPort;
 	companyFactory: ICompanyFactoryPort;
 	completionStatusFactory: ICompletionStatusFactoryPort;
+	platformFactory: IPlatformFactoryPort;
 };

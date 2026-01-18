@@ -10,6 +10,8 @@ import {
 	makeCompletionStatusMapper,
 	makeGameFactory,
 	makeGameMapper,
+	makePlatformFactory,
+	makePlatformMapper,
 } from "@playatlas/game-library/application";
 import {
 	makeCompanyRepository,
@@ -76,18 +78,23 @@ export const makeGameLibraryModule = ({
 		completionStatusMapper,
 	});
 
+	const platformFactory = makePlatformFactory({ clock });
+	const platformMapper = makePlatformMapper({ platformFactory });
+	const platformRepository = makePlatformRepository({
+		getDb,
+		logService: buildLog("PlatformRepository"),
+		platformMapper,
+	});
+	const queryHandlerGetAllPlatforms = makeGetAllPlatformQueryHandler({
+		platformRepository: platformRepository,
+		platformMapper,
+	});
+
 	const genreRepository = makeGenreRepository({
 		getDb,
 		logService: buildLog("GenreRepository"),
 	});
-	const _platform_repository = makePlatformRepository({
-		getDb,
-		logService: buildLog("PlatformRepository"),
-	});
 
-	const _query_handler_get_all_platforms = makeGetAllPlatformQueryHandler({
-		platformRepository: _platform_repository,
-	});
 	const _query_handler_get_all_genres = makeGetAllGenresQueryHandler({
 		genreRepository: genreRepository,
 	});
@@ -102,12 +109,12 @@ export const makeGameLibraryModule = ({
 		getCompanyRepository: () => companyRepository,
 		getGameRepository: () => gameRepository,
 		getGenreRepository: () => genreRepository,
-		getPlatformRepository: () => _platform_repository,
+		getPlatformRepository: () => platformRepository,
 		getCompletionStatusRepository: () => completionStatusRepository,
 		queries: {
 			getGetAllGamesQueryHandler: () => getAllGamesQueryHandler,
 			getGetAllCompaniesQueryHandler: () => getAllCompaniesQueryHandler,
-			getGetAllPlatformsQueryHandler: () => _query_handler_get_all_platforms,
+			getGetAllPlatformsQueryHandler: () => queryHandlerGetAllPlatforms,
 			getGetAllGenresQueryHandler: () => _query_handler_get_all_genres,
 		},
 		getGameAssetsContextFactory: () => gameAssetsContextFactory,
@@ -116,6 +123,9 @@ export const makeGameLibraryModule = ({
 		getCompanyFactory: () => companyFactory,
 		getCompanyMapper: () => companyMapper,
 		getCompletionStatusFactory: () => completionStatusFactory,
+		getCompletionStatusMapper: () => completionStatusMapper,
+		getPlatformFactory: () => platformFactory,
+		getPlatformMapper: () => platformMapper,
 	};
 	return Object.freeze(gameLibrary);
 };

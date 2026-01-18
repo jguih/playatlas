@@ -27,7 +27,7 @@ export const makeSystemConfig = ({ envService }: MakeSystemConfigDeps): ISystemC
 		);
 
 	const _log_level = isValidLogLevel(envLogLevel) ? envLogLevel : logLevel.info;
-	const _db_path = join(_data_dir, "/db");
+	const _db_path = join(_data_dir, "/db.sqlite");
 
 	const systemConfig: ISystemConfigPort = {
 		getMigrationsDir: () => _migrations_dir,

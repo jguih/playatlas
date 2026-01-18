@@ -8,6 +8,7 @@ import type {
 	ICompanyFactoryPort,
 	ICompletionStatusFactoryPort,
 	IGameFactoryPort,
+	IPlatformFactoryPort,
 } from "@playatlas/game-library/application";
 import type {
 	ICompanyRepositoryPort,
@@ -43,6 +44,7 @@ export type PlayniteIntegrationModuleDeps = {
 	gameFactory: IGameFactoryPort;
 	companyFactory: ICompanyFactoryPort;
 	completionStatusFactory: ICompletionStatusFactoryPort;
+	platformFactory: IPlatformFactoryPort;
 };
 
 export const makePlayniteIntegrationModule = ({
@@ -60,6 +62,7 @@ export const makePlayniteIntegrationModule = ({
 	gameFactory,
 	companyFactory,
 	completionStatusFactory,
+	platformFactory,
 }: PlayniteIntegrationModuleDeps): IPlayniteIntegrationModulePort => {
 	const buildLog = (ctx: string) => logServiceFactory.build(ctx);
 
@@ -100,6 +103,7 @@ export const makePlayniteIntegrationModule = ({
 		gameFactory,
 		companyFactory,
 		completionStatusFactory,
+		platformFactory,
 	});
 
 	const playniteIntegrationApi: IPlayniteIntegrationModulePort = {

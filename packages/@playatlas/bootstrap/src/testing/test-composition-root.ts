@@ -58,6 +58,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 	const factory = makeTestFactoryModule({
 		companyFactory: gameLibrary.getCompanyFactory(),
 		completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
+		platformFactory: gameLibrary.getPlatformFactory(),
 	});
 
 	const setupGameFactoryAsync = async () => {
@@ -114,6 +115,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			gameFactory: gameLibrary.getGameFactory(),
 			companyFactory: gameLibrary.getCompanyFactory(),
 			completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
+			platformFactory: gameLibrary.getPlatformFactory(),
 		});
 
 		const gameSession = makeGameSessionModule({

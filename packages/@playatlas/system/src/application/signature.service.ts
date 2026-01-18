@@ -3,14 +3,14 @@ import type {
 	ILogServicePort,
 	ISignatureServicePort,
 } from "@playatlas/common/application";
+import type { ISystemConfigPort } from "@playatlas/common/infra";
 import { createVerify, sign as cryptoSign, generateKeyPairSync } from "crypto";
 import { join } from "path";
-import type { SystemConfig } from "../infra";
 
 export type SignatureServiceDeps = {
 	fileSystemService: IFileSystemServicePort;
 	logService: ILogServicePort;
-	getSecurityDir: SystemConfig["getSecurityDir"];
+	getSecurityDir: ISystemConfigPort["getSecurityDir"];
 };
 
 export const makeSignatureService = ({
