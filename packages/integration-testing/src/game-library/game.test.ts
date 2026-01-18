@@ -301,4 +301,52 @@ describe("Game Library / Game", () => {
 		expect(games.every((g) => g.Name?.match(/(updated)/i))).toBe(true);
 		expect(games.every((g) => g.ContentHash?.match(/updated/i))).toBe(true);
 	});
+
+	it("deletion don't actually delete games, but mark them as deleted", async () => {
+		// Arrange
+		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+
+		const syncItems = factory.getSyncGameRequestDtoFactory().buildList(200);
+
+		const seedCommand = makeSyncGamesCommand({
+			AddedItems: syncItems,
+			RemovedItems: [],
+			UpdatedItems: [],
+		});
+
+		const seedResult = await api.playniteIntegration.commands
+			.getSyncGamesCommandHandler()
+			.executeAsync(seedCommand);
+		expect(seedResult.success).toBe(true);
+
+		root.clock.advance(1000);
+		const deletedAtTime = root.clock.now();
+
+		const itemsToDelete = faker.helpers.arrayElements(syncItems, 20);
+		const deleteCommand = makeSyncGamesCommand({
+			AddedItems: [],
+			RemovedItems: itemsToDelete.map((i) => i.Id),
+			UpdatedItems: [],
+		});
+
+		const deleteResult = await api.playniteIntegration.commands
+			.getSyncGamesCommandHandler()
+			.executeAsync(deleteCommand);
+		expect(deleteResult.success).toBe(true);
+
+		// Act
+		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
+		const games = queryResult.type === "ok" ? queryResult.data : [];
+		const deletedGames = games.filter((g) => g.Sync.DeletedAt !== null);
+
+		// Assert
+		expect(games).toHaveLength(200);
+		expect(deletedGames).toHaveLength(20);
+		expect(
+			deletedGames.every((g) => new Date(g.Sync.DeletedAt!).getTime() >= deletedAtTime.getTime()),
+		).toBe(true);
+
+		const uniqueDeletedAt = new Set(deletedGames.map((g) => g.Sync.DeletedAt));
+		expect(uniqueDeletedAt.size).toBe(1);
+	});
 });
