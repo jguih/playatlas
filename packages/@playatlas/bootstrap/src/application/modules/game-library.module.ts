@@ -6,6 +6,8 @@ import type { BaseRepositoryDeps, IClockPort, ISystemConfigPort } from "@playatl
 import {
 	makeCompanyFactory,
 	makeCompanyMapper,
+	makeCompletionStatusFactory,
+	makeCompletionStatusMapper,
 	makeGameFactory,
 	makeGameMapper,
 } from "@playatlas/game-library/application";
@@ -40,71 +42,80 @@ export const makeGameLibraryModule = ({
 	systemConfig,
 	clock,
 }: GameLibraryModuleDeps): IGameLibraryModulePort => {
-	const _game_factory = makeGameFactory({ clock });
-	const _game_mapper = makeGameMapper({ gameFactory: _game_factory });
+	const buildLog = (ctx: string) => logServiceFactory.build(ctx);
 
-	const _company_factory = makeCompanyFactory({ clock });
-	const _company_mapper = makeCompanyMapper({ companyFactory: _company_factory });
+	const gameFactory = makeGameFactory({ clock });
+	const gameMapper = makeGameMapper({ gameFactory });
+	const gameRepository = makeGameRepository({
+		getDb,
+		logService: buildLog("GameRepository"),
+		gameMapper: gameMapper,
+	});
+	const getAllGamesQueryHandler = makeGetAllGamesQueryHandler({
+		gameRepository: gameRepository,
+		gameMapper: gameMapper,
+	});
 
-	const _company_repository = makeCompanyRepository({
+	const companyFactory = makeCompanyFactory({ clock });
+	const companyMapper = makeCompanyMapper({ companyFactory: companyFactory });
+	const companyRepository = makeCompanyRepository({
 		getDb,
-		logService: logServiceFactory.build("CompanyRepository"),
-		companyMapper: _company_mapper,
+		logService: buildLog("CompanyRepository"),
+		companyMapper: companyMapper,
 	});
-	const _genre_repository = makeGenreRepository({
-		getDb,
-		logService: logServiceFactory.build("GenreRepository"),
+	const getAllCompaniesQueryHandler = makeGetAllCompaniesQueryHandler({
+		companyRepository: companyRepository,
+		companyMapper: companyMapper,
 	});
-	const _game_repository = makeGameRepository({
+
+	const completionStatusFactory = makeCompletionStatusFactory({ clock });
+	const completionStatusMapper = makeCompletionStatusMapper({ completionStatusFactory });
+	const completionStatusRepository = makeCompletionStatusRepository({
 		getDb,
-		logService: logServiceFactory.build("GameRepository"),
-		gameMapper: _game_mapper,
+		logService: buildLog("CompletionStatusRepository"),
+		completionStatusMapper,
+	});
+
+	const genreRepository = makeGenreRepository({
+		getDb,
+		logService: buildLog("GenreRepository"),
 	});
 	const _platform_repository = makePlatformRepository({
 		getDb,
-		logService: logServiceFactory.build("PlatformRepository"),
+		logService: buildLog("PlatformRepository"),
 	});
-	const _completion_status_repository = makeCompletionStatusRepository({
-		getDb,
-		logService: logServiceFactory.build("CompletionStatusRepository"),
-	});
-	const _query_handler_get_all_games = makeGetAllGamesQueryHandler({
-		gameRepository: _game_repository,
-		gameMapper: _game_mapper,
-	});
-	const _query_handler_get_all_companies = makeGetAllCompaniesQueryHandler({
-		companyRepository: _company_repository,
-		companyMapper: _company_mapper,
-	});
+
 	const _query_handler_get_all_platforms = makeGetAllPlatformQueryHandler({
 		platformRepository: _platform_repository,
 	});
 	const _query_handler_get_all_genres = makeGetAllGenresQueryHandler({
-		genreRepository: _genre_repository,
+		genreRepository: genreRepository,
 	});
-	const _game_assets_context_factory = makeGameAssetsContextFactory({
+
+	const gameAssetsContextFactory = makeGameAssetsContextFactory({
 		fileSystemService,
 		logServiceFactory,
 		systemConfig,
 	});
 
 	const gameLibrary: IGameLibraryModulePort = {
-		getCompanyRepository: () => _company_repository,
-		getGameRepository: () => _game_repository,
-		getGenreRepository: () => _genre_repository,
+		getCompanyRepository: () => companyRepository,
+		getGameRepository: () => gameRepository,
+		getGenreRepository: () => genreRepository,
 		getPlatformRepository: () => _platform_repository,
-		getCompletionStatusRepository: () => _completion_status_repository,
+		getCompletionStatusRepository: () => completionStatusRepository,
 		queries: {
-			getGetAllGamesQueryHandler: () => _query_handler_get_all_games,
-			getGetAllCompaniesQueryHandler: () => _query_handler_get_all_companies,
+			getGetAllGamesQueryHandler: () => getAllGamesQueryHandler,
+			getGetAllCompaniesQueryHandler: () => getAllCompaniesQueryHandler,
 			getGetAllPlatformsQueryHandler: () => _query_handler_get_all_platforms,
 			getGetAllGenresQueryHandler: () => _query_handler_get_all_genres,
 		},
-		getGameAssetsContextFactory: () => _game_assets_context_factory,
-		getGameFactory: () => _game_factory,
-		getGameMapper: () => _game_mapper,
-		getCompanyFactory: () => _company_factory,
-		getCompanyMapper: () => _company_mapper,
+		getGameAssetsContextFactory: () => gameAssetsContextFactory,
+		getGameFactory: () => gameFactory,
+		getGameMapper: () => gameMapper,
+		getCompanyFactory: () => companyFactory,
+		getCompanyMapper: () => companyMapper,
+		getCompletionStatusFactory: () => completionStatusFactory,
 	};
 	return Object.freeze(gameLibrary);
 };

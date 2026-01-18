@@ -4,7 +4,11 @@ import {
 	type ILogServiceFactoryPort,
 } from "@playatlas/common/application";
 import type { IClockPort, ISystemConfigPort } from "@playatlas/common/infra";
-import type { ICompanyFactoryPort, IGameFactoryPort } from "@playatlas/game-library/application";
+import type {
+	ICompanyFactoryPort,
+	ICompletionStatusFactoryPort,
+	IGameFactoryPort,
+} from "@playatlas/game-library/application";
 import type {
 	ICompanyRepositoryPort,
 	ICompletionStatusRepositoryPort,
@@ -38,6 +42,7 @@ export type PlayniteIntegrationModuleDeps = {
 	clock: IClockPort;
 	gameFactory: IGameFactoryPort;
 	companyFactory: ICompanyFactoryPort;
+	completionStatusFactory: ICompletionStatusFactoryPort;
 };
 
 export const makePlayniteIntegrationModule = ({
@@ -54,52 +59,57 @@ export const makePlayniteIntegrationModule = ({
 	clock,
 	gameFactory,
 	companyFactory,
+	completionStatusFactory,
 }: PlayniteIntegrationModuleDeps): IPlayniteIntegrationModulePort => {
-	const _playnite_media_files_context_factory = makePlayniteMediaFilesContextFactory({
+	const buildLog = (ctx: string) => logServiceFactory.build(ctx);
+
+	const playniteMediaFilesContextFactory = makePlayniteMediaFilesContextFactory({
 		fileSystemService,
 		logServiceFactory,
 		systemConfig,
 	});
-	const _playnite_media_files_handler = makePlayniteMediaFilesHandler({
-		logService: logServiceFactory.build("PlayniteMediaFilesHandler"),
+	const playniteMediaFilesHandler = makePlayniteMediaFilesHandler({
+		logService: buildLog("PlayniteMediaFilesHandler"),
 		fileSystemService,
 		gameAssetsContextFactory,
-		playniteMediaFilesContextFactory: _playnite_media_files_context_factory,
+		playniteMediaFilesContextFactory,
 	});
-	const _library_manifest_service = makeLibraryManifestService({
+
+	const libraryManifestService = makeLibraryManifestService({
 		systemConfig,
 		fileSystemService,
-		logService: logServiceFactory.build("LibraryManifestService"),
-		gameRepository: gameRepository,
+		logService: buildLog("LibraryManifestService"),
+		gameRepository,
 	});
-	const _playnite_sync_service = makePlayniteSyncService({
-		gameRepository: gameRepository,
-		libraryManifestService: _library_manifest_service,
-		logService: logServiceFactory.build("PlayniteSyncService"),
-		playniteMediaFilesHandler: _playnite_media_files_handler,
+	const playniteSyncService = makePlayniteSyncService({
+		gameRepository,
+		libraryManifestService,
+		logService: buildLog("PlayniteSyncService"),
+		playniteMediaFilesHandler,
 	});
-	const _sync_games_command_handler = makeSyncGamesCommandHandler({
-		companyRepository: companyRepository,
-		completionStatusRepository: completionStatusRepository,
-		gameRepository: gameRepository,
-		genreRepository: genreRepository,
-		platformRepository: platformRepository,
-		logService: logServiceFactory.build("SyncGamesCommandHandler"),
-		libraryManifestService: _library_manifest_service,
+	const syncGamesCommandHandler = makeSyncGamesCommandHandler({
+		companyRepository,
+		completionStatusRepository,
+		gameRepository,
+		genreRepository,
+		platformRepository,
+		logService: buildLog("SyncGamesCommandHandler"),
+		libraryManifestService,
 		eventBus,
 		clock,
 		gameFactory,
 		companyFactory,
+		completionStatusFactory,
 	});
 
 	const playniteIntegrationApi: IPlayniteIntegrationModulePort = {
-		getPlayniteMediaFilesHandler: () => _playnite_media_files_handler,
-		getLibraryManifestService: () => _library_manifest_service,
-		getPlayniteSyncService: () => _playnite_sync_service,
+		getPlayniteMediaFilesHandler: () => playniteMediaFilesHandler,
+		getLibraryManifestService: () => libraryManifestService,
+		getPlayniteSyncService: () => playniteSyncService,
 		commands: {
-			getSyncGamesCommandHandler: () => _sync_games_command_handler,
+			getSyncGamesCommandHandler: () => syncGamesCommandHandler,
 		},
-		getPlayniteMediaFilesContextFactory: () => _playnite_media_files_context_factory,
+		getPlayniteMediaFilesContextFactory: () => playniteMediaFilesContextFactory,
 	};
 	return Object.freeze(playniteIntegrationApi);
 };

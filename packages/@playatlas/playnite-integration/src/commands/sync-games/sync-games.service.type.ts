@@ -1,7 +1,11 @@
 import type { IDomainEventBusPort, ILogServicePort } from "@playatlas/common/application";
 import type { IAsyncCommandHandlerPort } from "@playatlas/common/common";
 import type { IClockPort } from "@playatlas/common/infra";
-import type { ICompanyFactoryPort, IGameFactoryPort } from "@playatlas/game-library/application";
+import type {
+	ICompanyFactoryPort,
+	ICompletionStatusFactoryPort,
+	IGameFactoryPort,
+} from "@playatlas/game-library/application";
 import type {
 	ICompanyRepositoryPort,
 	ICompletionStatusRepositoryPort,
@@ -41,4 +45,5 @@ export type SyncGamesServiceDeps = {
 	clock: IClockPort;
 	gameFactory: IGameFactoryPort;
 	companyFactory: ICompanyFactoryPort;
+	completionStatusFactory: ICompletionStatusFactoryPort;
 };

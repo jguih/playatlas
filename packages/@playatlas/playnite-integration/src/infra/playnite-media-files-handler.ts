@@ -175,8 +175,6 @@ export const makePlayniteMediaFilesHandler = ({
 					throw new InvalidStateError("Game assets context was null");
 				}
 
-				gameContext.validate();
-
 				handedContext = true;
 				return { mediaContext, gameContext };
 			} catch (error) {

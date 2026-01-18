@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { CompletionStatusIdParser } from "@playatlas/common/domain";
-import { type CompletionStatus, makeCompletionStatus } from "../domain/completion-status.entity";
+import type { ICompletionStatusFactoryPort } from "../application/completion-status.factory";
+import { type CompletionStatus } from "../domain/completion-status.entity";
 import type { MakeCompletionStatusProps } from "../domain/completion-status.entity.types";
 
 const completionStatusName = {
@@ -16,9 +17,15 @@ export type CompletionStatusFactory = {
 	buildDefaultCompletionStatusList: () => CompletionStatus[];
 };
 
-export const makeCompletionStatusFactory = (): CompletionStatusFactory => {
+export type CompletionStatusFactoryDeps = {
+	completionStatusFactory: ICompletionStatusFactoryPort;
+};
+
+export const makeCompletionStatusFactory = ({
+	completionStatusFactory,
+}: CompletionStatusFactoryDeps): CompletionStatusFactory => {
 	const buildCompletionStatus: CompletionStatusFactory["buildCompletionStatus"] = (props = {}) => {
-		return makeCompletionStatus({
+		return completionStatusFactory.create({
 			id: CompletionStatusIdParser.fromExternal(props.id ?? faker.string.uuid()),
 			name:
 				props.name ??

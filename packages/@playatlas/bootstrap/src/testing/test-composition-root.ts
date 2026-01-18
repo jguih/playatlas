@@ -55,7 +55,10 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		systemConfig: system.getSystemConfig(),
 	});
 
-	const factory = makeTestFactoryModule({ companyFactory: gameLibrary.getCompanyFactory() });
+	const factory = makeTestFactoryModule({
+		companyFactory: gameLibrary.getCompanyFactory(),
+		completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
+	});
 
 	const setupGameFactoryAsync = async () => {
 		const completionStatusList = factory
@@ -110,6 +113,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			gameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory(),
 			gameFactory: gameLibrary.getGameFactory(),
 			companyFactory: gameLibrary.getCompanyFactory(),
+			completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
 		});
 
 		const gameSession = makeGameSessionModule({

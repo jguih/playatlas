@@ -2,7 +2,10 @@ import {
 	makeExtensionRegistrationFactory,
 	type ExtensionRegistrationFactory,
 } from "@playatlas/auth/testing";
-import type { ICompanyFactoryPort } from "@playatlas/game-library/application";
+import type {
+	ICompanyFactoryPort,
+	ICompletionStatusFactoryPort,
+} from "@playatlas/game-library/application";
 import {
 	makeCompanyFactory,
 	makeCompletionStatusFactory,
@@ -32,6 +35,7 @@ export type ITestFactoryModulePort = {
 
 export type TestFactoryModuleDeps = {
 	companyFactory: ICompanyFactoryPort;
+	completionStatusFactory: ICompletionStatusFactoryPort;
 };
 
 export const makeTestFactoryModule = (deps: TestFactoryModuleDeps): ITestFactoryModulePort => {
