@@ -89,10 +89,15 @@ export const extractSyncData = ({
 
 			if (context.genres.has(genreId)) {
 				const genre = context.genres.get(genreId)!;
-				genre.updateFromPlaynite({ name: g.Name });
-				genres.set(genreId, genre);
+				const updated = genre.updateFromPlaynite({ name: g.Name });
+				if (updated) genres.set(genreId, genre);
 			} else {
-				const newGenre = makeGenre({ id: genreId, name: g.Name, lastUpdatedAt: now });
+				const newGenre = makeGenre({
+					id: genreId,
+					name: g.Name,
+					lastUpdatedAt: now,
+					createdAt: now,
+				});
 				genres.set(genreId, newGenre);
 			}
 		});
@@ -109,36 +114,63 @@ export const extractSyncData = ({
 					cover: p.Cover,
 					background: p.Background,
 					lastUpdatedAt: now,
+					createdAt: now,
 				}),
 			);
 		});
 
 		item.Developers?.forEach((d) => {
 			const companyId = CompanyIdParser.fromExternal(d.Id);
-			developers.set(
-				companyId,
-				companyFactory.create({ id: companyId, name: d.Name, lastUpdatedAt: now }),
-			);
+
+			if (context.companies.has(companyId)) {
+				const company = context.companies.get(companyId)!;
+				const updated = company.updateFromPlaynite({ name: d.Name });
+				if (updated) developers.set(companyId, company);
+			} else {
+				const newCompany = companyFactory.create({
+					id: companyId,
+					name: d.Name,
+					lastUpdatedAt: now,
+					createdAt: now,
+				});
+				developers.set(companyId, newCompany);
+			}
 		});
 
 		item.Publishers?.forEach((p) => {
 			const companyId = CompanyIdParser.fromExternal(p.Id);
-			publishers.set(
-				companyId,
-				companyFactory.create({ id: companyId, name: p.Name, lastUpdatedAt: now }),
-			);
+
+			if (context.companies.has(companyId)) {
+				const company = context.companies.get(companyId)!;
+				const updated = company.updateFromPlaynite({ name: p.Name });
+				if (updated) publishers.set(companyId, company);
+			} else {
+				const newCompany = companyFactory.create({
+					id: companyId,
+					name: p.Name,
+					lastUpdatedAt: now,
+					createdAt: now,
+				});
+				publishers.set(companyId, newCompany);
+			}
 		});
 
 		if (item.CompletionStatus) {
 			const completionStatusId = CompletionStatusIdParser.fromExternal(item.CompletionStatus.Id);
-			completionStatuses.set(
-				completionStatusId,
-				completionStatusFactory.create({
+
+			if (context.completionStatuses.has(completionStatusId)) {
+				const completionStatus = context.completionStatuses.get(completionStatusId)!;
+				const updated = completionStatus.updateFromPlaynite({ name: item.CompletionStatus.Name });
+				if (updated) completionStatuses.set(completionStatusId, completionStatus);
+			} else {
+				const newCompletionStatus = completionStatusFactory.create({
 					id: completionStatusId,
 					name: item.CompletionStatus.Name,
 					lastUpdatedAt: now,
-				}),
-			);
+					createdAt: now,
+				});
+				completionStatuses.set(completionStatusId, newCompletionStatus);
+			}
 		}
 
 		const playniteSnapshot: PlayniteGameSnapshot = {

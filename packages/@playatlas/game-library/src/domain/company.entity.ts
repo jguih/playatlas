@@ -13,13 +13,14 @@ export type Company = BaseEntity<CompanyId> &
 	EntitySoftDeleteProps &
 	Readonly<{
 		getName: () => CompanyName;
+		updateFromPlaynite: (value: { name: CompanyName }) => boolean;
 	}>;
 
 export const makeCompany = (props: MakeCompanyProps, { clock }: MakeCompanyDeps): Company => {
 	const now = clock.now();
 
 	const _id: CompanyId = props.id;
-	const _name: CompanyName = props.name;
+	let _name: CompanyName = props.name;
 	let _last_updated_at = props.lastUpdatedAt ?? now;
 	const _created_at = props.createdAt ?? now;
 
@@ -45,6 +46,14 @@ export const makeCompany = (props: MakeCompanyProps, { clock }: MakeCompanyDeps)
 		getName: () => _name,
 		getLastUpdatedAt: () => _last_updated_at,
 		getCreatedAt: () => _created_at,
+		updateFromPlaynite: ({ name }) => {
+			if (name === _name) return false;
+
+			_name = name;
+			_touch();
+			_validate();
+			return true;
+		},
 		validate: _validate,
 		...softDelete,
 	};

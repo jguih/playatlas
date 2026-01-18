@@ -7,7 +7,7 @@ export type GenreName = string;
 export type Genre = BaseEntity<GenreId> &
 	Readonly<{
 		getName: () => GenreName;
-		updateFromPlaynite: (value: { name: GenreName }) => void;
+		updateFromPlaynite: (value: { name: GenreName }) => boolean;
 	}>;
 
 export const makeGenre = (props: MakeGenreProps): Genre => {
@@ -34,9 +34,12 @@ export const makeGenre = (props: MakeGenreProps): Genre => {
 		getLastUpdatedAt: () => _last_updated_at,
 		getCreatedAt: () => _created_at,
 		updateFromPlaynite: ({ name }) => {
+			if (name === _name) return false;
+
 			_name = name;
 			_touch();
 			_validate();
+			return true;
 		},
 		validate: _validate,
 	};

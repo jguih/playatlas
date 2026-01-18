@@ -17,6 +17,7 @@ export type CompletionStatus = BaseEntity<CompletionStatusId> &
 	EntitySoftDeleteProps &
 	Readonly<{
 		getName: () => CompletionStatusName;
+		updateFromPlaynite: (value: { name: CompletionStatusName }) => boolean;
 	}>;
 
 export const makeCompletionStatus = (
@@ -26,7 +27,7 @@ export const makeCompletionStatus = (
 	const now = clock.now();
 
 	const _id: CompletionStatusId = props.id;
-	const _name: CompletionStatusName = props.name;
+	let _name: CompletionStatusName = props.name;
 	let _last_updated_at = props.lastUpdatedAt ?? now;
 	const _created_at = props.createdAt ?? now;
 
@@ -52,6 +53,14 @@ export const makeCompletionStatus = (
 		getName: () => _name,
 		getLastUpdatedAt: () => _last_updated_at,
 		getCreatedAt: () => _created_at,
+		updateFromPlaynite: ({ name }) => {
+			if (name === _name) return false;
+
+			_name = name;
+			_touch();
+			_validate();
+			return true;
+		},
 		validate: _validate,
 		...softDelete,
 	};
