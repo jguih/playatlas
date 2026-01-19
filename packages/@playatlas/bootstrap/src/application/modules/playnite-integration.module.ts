@@ -4,20 +4,10 @@ import {
 	type ILogServiceFactoryPort,
 } from "@playatlas/common/application";
 import type { IClockPort, ISystemConfigPort } from "@playatlas/common/infra";
+import type { IGameLibraryUnitOfWorkPort } from "@playatlas/game-library/application";
 import type {
-	ICompanyFactoryPort,
-	ICompletionStatusFactoryPort,
-	IGameFactoryPort,
-	IGenreFactoryPort,
-	IPlatformFactoryPort,
-} from "@playatlas/game-library/application";
-import type {
-	ICompanyRepositoryPort,
-	ICompletionStatusRepositoryPort,
 	IGameAssetsContextFactoryPort,
 	IGameRepositoryPort,
-	IGenreRepositoryPort,
-	IPlatformRepositoryPort,
 } from "@playatlas/game-library/infra";
 import {
 	makeLibraryManifestService,
@@ -35,18 +25,10 @@ export type PlayniteIntegrationModuleDeps = {
 	fileSystemService: IFileSystemServicePort;
 	systemConfig: ISystemConfigPort;
 	gameRepository: IGameRepositoryPort;
-	companyRepository: ICompanyRepositoryPort;
-	platformRepository: IPlatformRepositoryPort;
-	genreRepository: IGenreRepositoryPort;
-	completionStatusRepository: ICompletionStatusRepositoryPort;
 	eventBus: IDomainEventBusPort;
 	gameAssetsContextFactory: IGameAssetsContextFactoryPort;
 	clock: IClockPort;
-	gameFactory: IGameFactoryPort;
-	companyFactory: ICompanyFactoryPort;
-	completionStatusFactory: ICompletionStatusFactoryPort;
-	platformFactory: IPlatformFactoryPort;
-	genreFactory: IGenreFactoryPort;
+	gameLibraryUnitOfWork: IGameLibraryUnitOfWorkPort;
 };
 
 export const makePlayniteIntegrationModule = ({
@@ -54,18 +36,10 @@ export const makePlayniteIntegrationModule = ({
 	fileSystemService,
 	systemConfig,
 	gameRepository,
-	companyRepository,
-	completionStatusRepository,
-	genreRepository,
-	platformRepository,
 	eventBus,
 	gameAssetsContextFactory,
 	clock,
-	gameFactory,
-	companyFactory,
-	completionStatusFactory,
-	platformFactory,
-	genreFactory,
+	gameLibraryUnitOfWork,
 }: PlayniteIntegrationModuleDeps): IPlayniteIntegrationModulePort => {
 	const buildLog = (ctx: string) => logServiceFactory.build(ctx);
 
@@ -94,20 +68,11 @@ export const makePlayniteIntegrationModule = ({
 		playniteMediaFilesHandler,
 	});
 	const syncGamesCommandHandler = makeSyncGamesCommandHandler({
-		companyRepository,
-		completionStatusRepository,
-		gameRepository,
-		genreRepository,
-		platformRepository,
 		logService: buildLog("SyncGamesCommandHandler"),
 		libraryManifestService,
 		eventBus,
 		clock,
-		gameFactory,
-		companyFactory,
-		completionStatusFactory,
-		platformFactory,
-		genreFactory,
+		gameLibraryUnitOfWork,
 	});
 
 	const playniteIntegrationApi: IPlayniteIntegrationModulePort = {

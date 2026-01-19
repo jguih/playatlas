@@ -4,6 +4,7 @@ import { InvalidDataError } from "../domain";
 import type { BaseEntity, BaseEntityId } from "../domain/base-entity";
 import type { BaseRepositoryPort } from "./base-repository.port";
 import type { MakeBaseRepositoryDeps } from "./base-repository.types";
+import * as dbOps from "./db-operations";
 
 const PERFORMANCE_WARN_THRESHOLD_MS = 50;
 
@@ -105,21 +106,10 @@ export const makeBaseRepository = <
 		}
 	};
 
-	const runTransaction: BaseRepositoryPort<TEntityId, TEntity, TPersistence>["runTransaction"] = (
+	const runSavePoint: BaseRepositoryPort<TEntityId, TEntity, TPersistence>["runSavePoint"] = (
 		fn,
 	) => {
-		const db = getDb();
-		const savepoint = `sp_${crypto.randomUUID()}`;
-
-		db.exec(`SAVEPOINT "${savepoint}"`);
-		try {
-			const result = fn({ db });
-			db.exec(`RELEASE SAVEPOINT "${savepoint}"`);
-			return result;
-		} catch (error) {
-			db.exec(`ROLLBACK TO SAVEPOINT "${savepoint}"`);
-			throw error;
-		}
+		return dbOps.runSavePoint({ getDb, fn });
 	};
 
 	const buildInvalidDataError: BaseRepositoryPort<
@@ -150,7 +140,7 @@ export const makeBaseRepository = <
 		const entities = Array.isArray(entity) ? entity : [entity];
 
 		return run(() => {
-			return runTransaction(({ db }) => {
+			return runSavePoint(({ db }) => {
 				const stmt = db.prepare(insertSql);
 				const results: Array<[TEntity, TPersistence, { lastInsertRowid: number | bigint }]> = [];
 
@@ -241,7 +231,7 @@ export const makeBaseRepository = <
 		const entities = Array.isArray(entity) ? entity : [entity];
 
 		return run(() => {
-			return runTransaction(({ db }) => {
+			return runSavePoint(({ db }) => {
 				const stmt = db.prepare(upsertSql);
 				const results: Array<[TEntity, TPersistence, { lastInsertRowid: number | bigint }]> = [];
 
@@ -273,7 +263,7 @@ export const makeBaseRepository = <
 
 	return {
 		run,
-		runTransaction,
+		runSavePoint,
 		buildInvalidDataError,
 		public: {
 			all,

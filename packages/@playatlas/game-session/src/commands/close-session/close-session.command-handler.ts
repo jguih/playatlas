@@ -79,7 +79,7 @@ export const makeCloseGameSessionCommandHandler = ({
 			}
 
 			session.close({
-				endTime: new Date(serverUtcNow),
+				endTime: command.endTime,
 				duration: command.duration,
 			});
 

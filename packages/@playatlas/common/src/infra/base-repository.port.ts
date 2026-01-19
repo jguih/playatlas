@@ -40,7 +40,7 @@ export type BaseRepositoryPort<TEntityId, TEntity, TPersistence> = {
 		options?: ToPersistenceFnOverride<TEntity, TPersistence>,
 	) => Array<[TEntity, TPersistence, { lastInsertRowid: number | bigint }]>;
 	run: <T>(fn: (props: { db: DatabaseSync }) => T, context?: string, shouldLog?: boolean) => T;
-	runTransaction: <T>(fn: (props: { db: DatabaseSync }) => T) => T;
+	runSavePoint: <T>(fn: (props: { db: DatabaseSync }) => T) => T;
 	buildInvalidDataError: (
 		error: z.ZodError,
 		context: { entity: string; operation?: "load" | "save" | "query" },

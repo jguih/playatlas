@@ -19,6 +19,7 @@ import {
 	makeCompanyRepository,
 	makeCompletionStatusRepository,
 	makeGameAssetsContextFactory,
+	makeGameLibraryUnitOfWork,
 	makeGameRepository,
 	makeGenreRepository,
 	makePlatformRepository,
@@ -53,11 +54,11 @@ export const makeGameLibraryModule = ({
 	const gameRepository = makeGameRepository({
 		getDb,
 		logService: buildLog("GameRepository"),
-		gameMapper: gameMapper,
+		gameMapper,
 	});
 	const getAllGamesQueryHandler = makeGetAllGamesQueryHandler({
-		gameRepository: gameRepository,
-		gameMapper: gameMapper,
+		gameRepository,
+		gameMapper,
 	});
 
 	const companyFactory = makeCompanyFactory({ clock });
@@ -65,11 +66,11 @@ export const makeGameLibraryModule = ({
 	const companyRepository = makeCompanyRepository({
 		getDb,
 		logService: buildLog("CompanyRepository"),
-		companyMapper: companyMapper,
+		companyMapper,
 	});
 	const getAllCompaniesQueryHandler = makeGetAllCompaniesQueryHandler({
-		companyRepository: companyRepository,
-		companyMapper: companyMapper,
+		companyRepository,
+		companyMapper,
 	});
 
 	const completionStatusFactory = makeCompletionStatusFactory({ clock });
@@ -88,7 +89,7 @@ export const makeGameLibraryModule = ({
 		platformMapper,
 	});
 	const queryHandlerGetAllPlatforms = makeGetAllPlatformQueryHandler({
-		platformRepository: platformRepository,
+		platformRepository,
 		platformMapper,
 	});
 
@@ -99,15 +100,29 @@ export const makeGameLibraryModule = ({
 		logService: buildLog("GenreRepository"),
 		genreMapper,
 	});
-
-	const _query_handler_get_all_genres = makeGetAllGenresQueryHandler({
-		genreRepository: genreRepository,
+	const queryHandlerGetAllGenres = makeGetAllGenresQueryHandler({
+		genreRepository,
+		genreMapper,
 	});
 
 	const gameAssetsContextFactory = makeGameAssetsContextFactory({
 		fileSystemService,
 		logServiceFactory,
 		systemConfig,
+	});
+
+	const gameLibraryUnitOfWork = makeGameLibraryUnitOfWork({
+		companyFactory,
+		companyRepository,
+		completionStatusFactory,
+		completionStatusRepository,
+		genreFactory,
+		genreRepository,
+		gameFactory,
+		gameRepository,
+		platformFactory,
+		platformRepository,
+		getDb,
 	});
 
 	const gameLibrary: IGameLibraryModulePort = {
@@ -120,7 +135,7 @@ export const makeGameLibraryModule = ({
 			getGetAllGamesQueryHandler: () => getAllGamesQueryHandler,
 			getGetAllCompaniesQueryHandler: () => getAllCompaniesQueryHandler,
 			getGetAllPlatformsQueryHandler: () => queryHandlerGetAllPlatforms,
-			getGetAllGenresQueryHandler: () => _query_handler_get_all_genres,
+			getGetAllGenresQueryHandler: () => queryHandlerGetAllGenres,
 		},
 		getGameAssetsContextFactory: () => gameAssetsContextFactory,
 		getGameFactory: () => gameFactory,
@@ -133,6 +148,7 @@ export const makeGameLibraryModule = ({
 		getPlatformMapper: () => platformMapper,
 		getGenreFactory: () => genreFactory,
 		getGenreMapper: () => genreMapper,
+		getGameLibraryUnitOfWork: () => gameLibraryUnitOfWork,
 	};
 	return Object.freeze(gameLibrary);
 };

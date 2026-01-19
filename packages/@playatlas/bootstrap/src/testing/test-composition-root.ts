@@ -59,6 +59,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		companyFactory: gameLibrary.getCompanyFactory(),
 		completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
 		platformFactory: gameLibrary.getPlatformFactory(),
+		genreFactory: gameLibrary.getGenreFactory(),
 	});
 
 	const setupGameFactoryAsync = async () => {
@@ -107,15 +108,8 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			fileSystemService: infra.getFsService(),
 			systemConfig: system.getSystemConfig(),
 			gameRepository: gameLibrary.getGameRepository(),
-			companyRepository: gameLibrary.getCompanyRepository(),
-			completionStatusRepository: gameLibrary.getCompletionStatusRepository(),
-			genreRepository: gameLibrary.getGenreRepository(),
-			platformRepository: gameLibrary.getPlatformRepository(),
 			gameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory(),
-			gameFactory: gameLibrary.getGameFactory(),
-			companyFactory: gameLibrary.getCompanyFactory(),
-			completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
-			platformFactory: gameLibrary.getPlatformFactory(),
+			gameLibraryUnitOfWork: gameLibrary.getGameLibraryUnitOfWork(),
 		});
 
 		const gameSession = makeGameSessionModule({

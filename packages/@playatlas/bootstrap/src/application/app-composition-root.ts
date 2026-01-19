@@ -59,15 +59,8 @@ export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot
 		fileSystemService: infra.getFsService(),
 		systemConfig: system.getSystemConfig(),
 		gameRepository: gameLibrary.getGameRepository(),
-		companyRepository: gameLibrary.getCompanyRepository(),
-		completionStatusRepository: gameLibrary.getCompletionStatusRepository(),
-		genreRepository: gameLibrary.getGenreRepository(),
-		platformRepository: gameLibrary.getPlatformRepository(),
 		gameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory(),
-		gameFactory: gameLibrary.getGameFactory(),
-		companyFactory: gameLibrary.getCompanyFactory(),
-		completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
-		platformFactory: gameLibrary.getPlatformFactory(),
+		gameLibraryUnitOfWork: gameLibrary.getGameLibraryUnitOfWork(),
 	});
 
 	const initEnvironmentAsync = async () => {

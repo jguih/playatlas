@@ -1,20 +1,7 @@
 import type { IDomainEventBusPort, ILogServicePort } from "@playatlas/common/application";
 import type { IAsyncCommandHandlerPort } from "@playatlas/common/common";
 import type { IClockPort } from "@playatlas/common/infra";
-import type {
-	ICompanyFactoryPort,
-	ICompletionStatusFactoryPort,
-	IGameFactoryPort,
-	IGenreFactoryPort,
-	IPlatformFactoryPort,
-} from "@playatlas/game-library/application";
-import type {
-	ICompanyRepositoryPort,
-	ICompletionStatusRepositoryPort,
-	IGameRepositoryPort,
-	IGenreRepositoryPort,
-	IPlatformRepositoryPort,
-} from "@playatlas/game-library/infra";
+import type { IGameLibraryUnitOfWorkPort } from "@playatlas/game-library/application";
 import type { ILibraryManifestServicePort } from "../../application";
 import type { SyncGamesCommand } from "./sync-games.command";
 
@@ -37,17 +24,8 @@ export type ISyncGamesCommandHandlerPort = IAsyncCommandHandlerPort<
 
 export type SyncGamesServiceDeps = {
 	logService: ILogServicePort;
-	gameRepository: IGameRepositoryPort;
-	genreRepository: IGenreRepositoryPort;
-	platformRepository: IPlatformRepositoryPort;
-	companyRepository: ICompanyRepositoryPort;
-	completionStatusRepository: ICompletionStatusRepositoryPort;
 	libraryManifestService: ILibraryManifestServicePort;
 	eventBus: IDomainEventBusPort;
 	clock: IClockPort;
-	gameFactory: IGameFactoryPort;
-	companyFactory: ICompanyFactoryPort;
-	completionStatusFactory: ICompletionStatusFactoryPort;
-	platformFactory: IPlatformFactoryPort;
-	genreFactory: IGenreFactoryPort;
+	gameLibraryUnitOfWork: IGameLibraryUnitOfWorkPort;
 };

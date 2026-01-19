@@ -5,6 +5,7 @@ export type * from "./completion-status.repository.port";
 export * from "./game-assets-context";
 export * from "./game-assets-context.factory";
 export type * from "./game-assets-context.factory.port";
+export * from "./game-library.uow";
 export * from "./game.repository";
 export type * from "./game.repository.port";
 export * from "./genre.repository";

@@ -146,7 +146,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 		const { table, column } = GAME_RELATIONSHIP_META[relationship];
 		return base.run(
 			({ db }) => {
-				base.runTransaction(() => {
+				base.runSavePoint(() => {
 					db.prepare(`DELETE FROM ${table} WHERE GameId = ?`).run(gameId);
 					if (newRelationshipIds.length > 0) {
 						const stmt = db.prepare(`INSERT INTO ${table} (GameId, ${column}) VALUES (?, ?)`);

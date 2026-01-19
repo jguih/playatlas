@@ -64,27 +64,27 @@ export const makeGameSessionRepository = ({
 				switch (startTimeFilter.op) {
 					case "between": {
 						where.push(`StartTime >= (?) AND StartTime < (?)`);
-						params.push(startTimeFilter.start, startTimeFilter.end);
+						params.push(startTimeFilter.start.toISOString(), startTimeFilter.end.toISOString());
 						break;
 					}
 					case "eq": {
 						where.push(`StartTime = (?)`);
-						params.push(startTimeFilter.value);
+						params.push(startTimeFilter.value.toISOString());
 						break;
 					}
 					case "gte": {
 						where.push(`StartTime >= (?)`);
-						params.push(startTimeFilter.value);
+						params.push(startTimeFilter.value.toISOString());
 						break;
 					}
 					case "lte": {
 						where.push(`StartTime <= (?)`);
-						params.push(startTimeFilter.value);
+						params.push(startTimeFilter.value.toISOString());
 						break;
 					}
 					case "overlaps": {
 						where.push(`StartTime < (?) AND (EndTime >= (?) OR EndTime IS NULL)`);
-						params.push(startTimeFilter.end, startTimeFilter.start);
+						params.push(startTimeFilter.end.toISOString(), startTimeFilter.start.toISOString());
 						break;
 					}
 				}

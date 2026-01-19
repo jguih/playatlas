@@ -4,6 +4,7 @@ import type {
 	ICompletionStatusFactoryPort,
 	ICompletionStatusMapperPort,
 	IGameFactoryPort,
+	IGameLibraryUnitOfWorkPort,
 	IGameMapperPort,
 	IGenreFactoryPort,
 	IGenreMapperPort,
@@ -26,31 +27,34 @@ import type {
 } from "@playatlas/game-library/queries";
 
 export type IGameLibraryModulePort = Readonly<{
-	getCompanyRepository: () => ICompanyRepositoryPort;
-	getGenreRepository: () => IGenreRepositoryPort;
-	getGameRepository: () => IGameRepositoryPort;
-	getPlatformRepository: () => IPlatformRepositoryPort;
-	getCompletionStatusRepository: () => ICompletionStatusRepositoryPort;
 	queries: {
 		getGetAllGamesQueryHandler: () => IGetAllGamesQueryHandlerPort;
 		getGetAllCompaniesQueryHandler: () => IGetAllCompaniesQueryHandlerPort;
 		getGetAllPlatformsQueryHandler: () => IGetAllPlatformsQueryHandlerPort;
 		getGetAllGenresQueryHandler: () => IGetAllGenresQueryHandlerPort;
 	};
+
 	getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
 
 	getGameMapper: () => IGameMapperPort;
 	getGameFactory: () => IGameFactoryPort;
+	getGameRepository: () => IGameRepositoryPort;
 
 	getCompanyMapper: () => ICompanyMapperPort;
 	getCompanyFactory: () => ICompanyFactoryPort;
+	getCompanyRepository: () => ICompanyRepositoryPort;
 
+	getCompletionStatusRepository: () => ICompletionStatusRepositoryPort;
 	getCompletionStatusFactory: () => ICompletionStatusFactoryPort;
 	getCompletionStatusMapper: () => ICompletionStatusMapperPort;
 
 	getPlatformMapper: () => IPlatformMapperPort;
 	getPlatformFactory: () => IPlatformFactoryPort;
+	getPlatformRepository: () => IPlatformRepositoryPort;
 
 	getGenreMapper: () => IGenreMapperPort;
 	getGenreFactory: () => IGenreFactoryPort;
+	getGenreRepository: () => IGenreRepositoryPort;
+
+	getGameLibraryUnitOfWork: () => IGameLibraryUnitOfWorkPort;
 }>;
