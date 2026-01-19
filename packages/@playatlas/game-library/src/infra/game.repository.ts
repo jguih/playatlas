@@ -11,7 +11,7 @@ import {
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
 import type { IGameMapperPort } from "../application";
-import type { GameRelationship, GameRelationshipMap } from "../domain/game.entity";
+import type { GameRelationship, GameRelationshipMap } from "../domain/game.entity.types";
 import { COLUMNS, GAME_RELATIONSHIP_META, TABLE_NAME } from "./game.repository.constants";
 import type { GameRepositoryEagerLoadProps, IGameRepositoryPort } from "./game.repository.port";
 import type {

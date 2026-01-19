@@ -1,3 +1,4 @@
+import { InvalidStateError } from "@playatlas/common/domain";
 import {
 	buildGameLibrarySyncContext,
 	extractSyncData,
@@ -43,12 +44,16 @@ export const makeSyncGamesCommandHandler = ({
 						...factories,
 					});
 				} catch (error) {
-					logService.error(`Failed to parse game library sync payload`, error);
-					return {
-						success: false,
-						reason_code: "failed_to_parse_payload",
-						reason: `Failed to parse payload`,
-					};
+					if (error instanceof InvalidStateError) {
+						logService.error("Game library sync rejected by domain rules", error);
+						return {
+							success: false,
+							reason_code: "domain_rejected_sync",
+							reason: error.message,
+						};
+					}
+
+					throw error;
 				}
 
 				genreRepository.upsert(extracted.genres);

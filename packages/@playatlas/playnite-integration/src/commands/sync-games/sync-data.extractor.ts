@@ -73,28 +73,19 @@ export const extractSyncData = ({
 	const developers = new Map<CompanyId, Company>();
 	const publishers = new Map<CompanyId, Company>();
 	const completionStatuses = new Map<CompletionStatusId, CompletionStatus>();
-	const games: Game[] = [];
+	const games = new Map<PlayniteGameId, Game>();
 	const added: PlayniteGameId[] = [];
 	const updated: PlayniteGameId[] = [];
 	const deleted: PlayniteGameId[] = [];
 
-	const processCommandItem = (item: SyncGamesCommandItem): Game | null => {
-		const itemPlayniteGameId = PlayniteGameIdParser.fromExternal(item.Id);
-		const existingGame = context.games.has(itemPlayniteGameId)
-			? context.games.get(itemPlayniteGameId)!
-			: null;
-
-		if (existingGame && existingGame.getContentHash() === item.ContentHash) {
-			return null;
-		}
-
+	const processCommandItem = (item: SyncGamesCommandItem) => {
 		item.Genres?.forEach((g) => {
 			const genreId = GenreIdParser.fromExternal(g.Id);
+			const existing = context.genres.get(genreId) ?? genres.get(genreId);
 
-			if (context.genres.has(genreId)) {
-				const genre = context.genres.get(genreId)!;
-				const updated = genre.updateFromPlaynite({ name: g.Name });
-				if (updated) genres.set(genreId, genre);
+			if (existing) {
+				const didUpdate = existing.updateFromPlaynite({ name: g.Name });
+				if (didUpdate) genres.set(genreId, existing);
 			} else {
 				const newGenre = genreFactory.create({
 					id: genreId,
@@ -108,17 +99,17 @@ export const extractSyncData = ({
 
 		item.Platforms?.forEach((p) => {
 			const platformId = PlatformIdParser.fromExternal(p.Id);
+			const existing = context.platforms.get(platformId) ?? platforms.get(platformId);
 
-			if (context.platforms.has(platformId)) {
-				const platform = context.platforms.get(platformId)!;
-				const updated = platform.updateFromPlaynite({
+			if (existing) {
+				const didUpdate = existing.updateFromPlaynite({
 					name: p.Name,
 					specificationId: p.SpecificationId,
 					background: p.Background,
 					cover: p.Cover,
 					icon: p.Icon,
 				});
-				if (updated) platforms.set(platformId, platform);
+				if (didUpdate) platforms.set(platformId, existing);
 			} else {
 				const newPlatform = platformFactory.create({
 					id: platformId,
@@ -136,11 +127,11 @@ export const extractSyncData = ({
 
 		item.Developers?.forEach((d) => {
 			const companyId = CompanyIdParser.fromExternal(d.Id);
+			const existing = context.companies.get(companyId) ?? developers.get(companyId);
 
-			if (context.companies.has(companyId)) {
-				const company = context.companies.get(companyId)!;
-				const updated = company.updateFromPlaynite({ name: d.Name });
-				if (updated) developers.set(companyId, company);
+			if (existing) {
+				const didUpdate = existing.updateFromPlaynite({ name: d.Name });
+				if (didUpdate) developers.set(companyId, existing);
 			} else {
 				const newCompany = companyFactory.create({
 					id: companyId,
@@ -154,11 +145,11 @@ export const extractSyncData = ({
 
 		item.Publishers?.forEach((p) => {
 			const companyId = CompanyIdParser.fromExternal(p.Id);
+			const existing = context.companies.get(companyId) ?? publishers.get(companyId);
 
-			if (context.companies.has(companyId)) {
-				const company = context.companies.get(companyId)!;
-				const updated = company.updateFromPlaynite({ name: p.Name });
-				if (updated) publishers.set(companyId, company);
+			if (existing) {
+				const didUpdate = existing.updateFromPlaynite({ name: p.Name });
+				if (didUpdate) publishers.set(companyId, existing);
 			} else {
 				const newCompany = companyFactory.create({
 					id: companyId,
@@ -172,11 +163,13 @@ export const extractSyncData = ({
 
 		if (item.CompletionStatus) {
 			const completionStatusId = CompletionStatusIdParser.fromExternal(item.CompletionStatus.Id);
+			const existing =
+				context.completionStatuses.get(completionStatusId) ??
+				completionStatuses.get(completionStatusId);
 
-			if (context.completionStatuses.has(completionStatusId)) {
-				const completionStatus = context.completionStatuses.get(completionStatusId)!;
-				const updated = completionStatus.updateFromPlaynite({ name: item.CompletionStatus.Name });
-				if (updated) completionStatuses.set(completionStatusId, completionStatus);
+			if (existing) {
+				const didUpdate = existing.updateFromPlaynite({ name: item.CompletionStatus.Name });
+				if (didUpdate) completionStatuses.set(completionStatusId, existing);
 			} else {
 				const newCompletionStatus = completionStatusFactory.create({
 					id: completionStatusId,
@@ -187,6 +180,9 @@ export const extractSyncData = ({
 				completionStatuses.set(completionStatusId, newCompletionStatus);
 			}
 		}
+
+		const itemPlayniteGameId = PlayniteGameIdParser.fromExternal(item.Id);
+		const existingGame = context.games.get(itemPlayniteGameId) ?? games.get(itemPlayniteGameId);
 
 		const playniteSnapshot: PlayniteGameSnapshot = {
 			id: itemPlayniteGameId,
@@ -211,31 +207,26 @@ export const extractSyncData = ({
 		const platformIds = item.Platforms?.map((p) => PlatformIdParser.fromExternal(p.Id)) ?? [];
 
 		if (existingGame) {
-			existingGame.setPlayniteSnapshot(playniteSnapshot);
-			existingGame.setContentHash(item.ContentHash);
-			existingGame.relationships.developers.set(developerIds);
-			existingGame.relationships.genres.set(genreIds);
-			existingGame.relationships.publishers.set(publisherIds);
-			existingGame.relationships.platforms.set(platformIds);
-			games.push(existingGame);
-			return existingGame;
+			const didUpdate = existingGame.updateFromPlaynite({
+				contentHash: item.ContentHash,
+				playniteSnapshot,
+				relationships: { developerIds, genreIds, platformIds, publisherIds },
+			});
+			if (didUpdate) games.set(itemPlayniteGameId, existingGame);
+		} else {
+			const newGame = gameFactory.create({
+				id: GameIdParser.fromTrusted(crypto.randomUUID()),
+				playniteSnapshot,
+				developerIds: developerIds,
+				genreIds: genreIds,
+				publisherIds: publisherIds,
+				platformIds: platformIds,
+				lastUpdatedAt: now,
+				createdAt: now,
+				contentHash: item.ContentHash,
+			});
+			games.set(itemPlayniteGameId, newGame);
 		}
-
-		const newGame = gameFactory.create({
-			id: GameIdParser.fromTrusted(crypto.randomUUID()),
-			playniteSnapshot,
-			developerIds: developerIds,
-			genreIds: genreIds,
-			publisherIds: publisherIds,
-			platformIds: platformIds,
-			lastUpdatedAt: now,
-			createdAt: now,
-			contentHash: item.ContentHash,
-		});
-
-		games.push(newGame);
-
-		return newGame;
 	};
 
 	for (const item of payload.toAdd) {
@@ -255,9 +246,11 @@ export const extractSyncData = ({
 			: null;
 
 		if (existingGame) {
-			existingGame.delete();
-			games.push(existingGame);
-			deleted.push(PlayniteGameIdParser.fromExternal(itemId));
+			const didDelete = existingGame.delete();
+			if (didDelete) {
+				games.set(itemPlayniteGameId, existingGame);
+				deleted.push(PlayniteGameIdParser.fromExternal(itemId));
+			}
 		}
 	}
 
@@ -267,7 +260,7 @@ export const extractSyncData = ({
 		developers: [...developers.values()],
 		publishers: [...publishers.values()],
 		completionStatuses: [...completionStatuses.values()],
-		games,
+		games: [...games.values()],
 		added,
 		updated,
 		deleted,

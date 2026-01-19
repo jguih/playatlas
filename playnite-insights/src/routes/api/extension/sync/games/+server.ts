@@ -4,7 +4,6 @@ import {
 	makeSyncGamesCommand,
 	syncGamesRequestDtoSchema,
 } from "@playatlas/playnite-integration/commands";
-import { defaultSSEManager } from "@playnite-insights/infra";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request, locals: { api } }) =>
@@ -13,7 +12,16 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) =>
 			return json({ error: "Request body cannot be empty" }, { status: 400 });
 		}
 
-		const { success, data, error } = syncGamesRequestDtoSchema.safeParse(JSON.parse(result.body));
+		let parsed;
+		try {
+			parsed = JSON.parse(result.body);
+		} catch {
+			return apiResponse.error({
+				error: { message: "Invalid JSON payload" },
+			});
+		}
+
+		const { success, data, error } = syncGamesRequestDtoSchema.safeParse(parsed);
 		if (!success) {
 			api
 				.getLogService()
@@ -22,7 +30,7 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) =>
 					error.issues.slice(0, 10),
 				);
 			return apiResponse.error({
-				error: { message: "Validation error", details: error.issues },
+				error: { message: "Validation error", details: error.issues.slice(0, 10) },
 			});
 		}
 
@@ -32,9 +40,10 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) =>
 			.executeAsync(command);
 
 		if (commandResult.success) {
-			defaultSSEManager.broadcast({ type: "gameLibraryUpdated", data: true });
 			return json({ status: "OK" }, { status: 200 });
 		}
 
-		return apiResponse.error({ error: { message: "Internal server error" } });
+		return apiResponse.error({
+			error: { message: commandResult.reason, details: { reason_code: commandResult.reason_code } },
+		});
 	});

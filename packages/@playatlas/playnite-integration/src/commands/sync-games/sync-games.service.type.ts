@@ -14,7 +14,7 @@ export type SyncGamesCommandResult =
 	| {
 			success: false;
 			reason: string;
-			reason_code: "failed_to_parse_payload";
+			reason_code: "domain_rejected_sync";
 	  };
 
 export type ISyncGamesCommandHandlerPort = IAsyncCommandHandlerPort<

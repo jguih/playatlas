@@ -1,4 +1,4 @@
-import type { GameRelationship } from "../domain/game.entity";
+import type { GameRelationship } from "../domain/game.entity.types";
 import type { GameModel } from "./game.repository";
 
 export const TABLE_NAME = "game" as const;

@@ -4,7 +4,7 @@ import type { IClockPort } from "../infra";
 export type EntitySoftDeleteProps = {
 	getDeletedAt: () => Date | null;
 	getDeleteAfter: () => Date | null;
-	delete: () => void;
+	delete: () => boolean;
 };
 
 const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
@@ -19,9 +19,10 @@ export const makeSoftDeletable = (
 		touch: () => void;
 		validate: () => void;
 	},
-) => {
+): EntitySoftDeleteProps => {
 	let _deleted_at = props.deletedAt ?? null;
 	let _delete_after = props.deleteAfter ?? null;
+	const deleted = _deleted_at !== null && _delete_after !== null;
 
 	const _validate = () => {
 		if (_deleted_at && !_delete_after)
@@ -32,12 +33,16 @@ export const makeSoftDeletable = (
 
 	_validate();
 
-	const softDelete = () => {
+	const softDelete: EntitySoftDeleteProps["delete"] = () => {
+		if (deleted) return false;
+
 		_deleted_at = deps.clock.now();
 		_delete_after = new Date(_deleted_at.getTime() + THIRTY_DAYS);
+
 		_validate();
 		deps.touch();
 		deps.validate();
+		return true;
 	};
 
 	return {

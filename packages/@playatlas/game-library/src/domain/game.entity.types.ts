@@ -1,3 +1,4 @@
+import type { Relationship } from "@playatlas/common/common";
 import type {
 	CompanyId,
 	GameId,
@@ -6,6 +7,19 @@ import type {
 	PlayniteGameId,
 } from "@playatlas/common/domain";
 import type { IClockPort } from "@playatlas/common/infra";
+
+export type GameRelationshipMap = {
+	developers: CompanyId;
+	publishers: CompanyId;
+	genres: GenreId;
+	platforms: PlatformId;
+};
+
+export type GameRelationship = keyof GameRelationshipMap;
+
+export type GameRelationshipProps = {
+	[K in GameRelationship]: Relationship<GameRelationshipMap[K]>;
+};
 
 export type MakeGameRelationshipProps = {
 	developerIds?: CompanyId[] | null;
@@ -53,4 +67,15 @@ export type RehydrateGameProps = CommonGameProps & BaseGame & MakeGameRelationsh
 
 export type MakeGameDeps = {
 	clock: IClockPort;
+};
+
+export type UpdateGameFromPlayniteProps = {
+	relationships: {
+		developerIds: CompanyId[];
+		publisherIds: CompanyId[];
+		genreIds: GenreId[];
+		platformIds: PlatformId[];
+	};
+	contentHash: string;
+	playniteSnapshot: PlayniteGameSnapshot;
 };
