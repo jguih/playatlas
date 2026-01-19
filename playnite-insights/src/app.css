@@ -2,7 +2,7 @@
 @plugin '@tailwindcss/typography';
 
 @theme {
-	/* Colors Pallet */
+	/* ==== Colors Pallet ==== */
 	--pl-color-primary-50: hsl(198, 100%, 97%);
 	--pl-color-primary-100: hsl(198, 100%, 94%);
 	--pl-color-primary-200: hsl(198, 100%, 87%);
@@ -24,8 +24,9 @@
 
 	--bottom-nav-height: 4.4rem;
 	--header-height: 3.4rem;
+	/* ==== ==== */
 
-	/* BEGIN: Dark Theme */
+	/* ==== Semantic Tokens ==== */
 	--color-background: var(--pl-color-background);
 	--color-background-1: var(--pl-color-background-1);
 	--color-background-2: var(--pl-color-background-2);
@@ -94,7 +95,7 @@
 	/* Info variant */
 	--color-info-bg: var(--pl-color-primary-800);
 	--color-info-fg: var(--color-foreground);
-	/* END: Dark Theme */
+	/* ==== ==== */
 }
 
 [data-theme="dark"] {
