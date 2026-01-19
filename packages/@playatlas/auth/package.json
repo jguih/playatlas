@@ -11,15 +11,7 @@
 		"./commands": "./src/commands/index.ts",
 		"./queries": "./src/queries/index.ts"
 	},
-	"devDependencies": {
-		"@types/node": "^24.0.14"
-	},
 	"dependencies": {
-		"@faker-js/faker": "^9.9.0",
-		"vitest": "^3.2.4",
 		"@playatlas/common": "workspace:*"
-	},
-	"peerDependencies": {
-		"zod": "*"
 	}
 }

@@ -70,22 +70,9 @@ importers:
 
   packages/@playatlas/auth:
     dependencies:
-      '@faker-js/faker':
-        specifier: ^9.9.0
-        version: 9.9.0
       '@playatlas/common':
         specifier: workspace:*
         version: link:../common
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.0.14)(@vitest/browser@3.2.4)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.2)
-      zod:
-        specifier: '*'
-        version: 3.25.76
-    devDependencies:
-      '@types/node':
-        specifier: ^24.0.14
-        version: 24.0.14
 
   packages/@playatlas/bootstrap:
     dependencies:
@@ -107,57 +94,14 @@ importers:
       '@playatlas/system':
         specifier: workspace:*
         version: link:../system
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.0.14)(@vitest/browser@3.2.4)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.2)
-      zod:
-        specifier: '*'
-        version: 3.25.76
-    devDependencies:
-      '@types/node':
-        specifier: ^24.0.14
-        version: 24.0.14
 
-  packages/@playatlas/common:
-    dependencies:
-      '@faker-js/faker':
-        specifier: ^9.9.0
-        version: 9.9.0
-      '@types/busboy':
-        specifier: ^1.5.4
-        version: 1.5.4
-      busboy:
-        specifier: ^1.6.0
-        version: 1.6.0
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.0.14)(@vitest/browser@3.2.4)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.2)
-      zod:
-        specifier: '*'
-        version: 3.25.76
-    devDependencies:
-      '@types/node':
-        specifier: ^24.0.14
-        version: 24.0.14
+  packages/@playatlas/common: {}
 
   packages/@playatlas/game-library:
     dependencies:
       '@playatlas/common':
         specifier: workspace:*
         version: link:../common
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.0.14)(@vitest/browser@3.2.4)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.2)
-      zod:
-        specifier: '*'
-        version: 3.25.76
-    devDependencies:
-      '@faker-js/faker':
-        specifier: ^9.9.0
-        version: 9.9.0
-      '@types/node':
-        specifier: ^24.0.14
-        version: 24.0.14
 
   packages/@playatlas/game-note:
     dependencies:
@@ -189,9 +133,6 @@ importers:
       '@types/busboy':
         specifier: ^1.5.4
         version: 1.5.4
-      '@types/node':
-        specifier: ^24.0.14
-        version: 24.0.14
 
   packages/@playatlas/system:
     dependencies:
@@ -319,13 +260,6 @@ importers:
       '@playatlas/system':
         specifier: workspace:*
         version: link:../@playatlas/system
-    devDependencies:
-      '@types/node':
-        specifier: ^24.0.14
-        version: 24.0.14
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
 
   playnite-insights:
     dependencies:

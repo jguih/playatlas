@@ -9,19 +9,12 @@
 		"./application": "./src/application/index.ts",
 		"./testing": "./src/testing/index.ts"
 	},
-	"devDependencies": {
-		"@types/node": "^24.0.14"
-	},
 	"dependencies": {
-		"vitest": "^3.2.4",
 		"@playatlas/common": "workspace:*",
 		"@playatlas/system": "workspace:*",
 		"@playatlas/game-session": "workspace:*",
 		"@playatlas/game-library": "workspace:*",
 		"@playatlas/auth": "workspace:*",
 		"@playatlas/playnite-integration": "workspace:*"
-	},
-	"peerDependencies": {
-		"zod": "*"
 	}
 }

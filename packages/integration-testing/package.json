@@ -8,10 +8,6 @@
 		"test:integration": "vitest run",
 		"test:watch": "vitest --watch"
 	},
-	"devDependencies": {
-		"@types/node": "^24.0.14",
-		"typescript": "^5.8.3"
-	},
 	"dependencies": {
 		"@playatlas/auth": "workspace:*",
 		"@playatlas/bootstrap": "workspace:*",
