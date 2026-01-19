@@ -1,0 +1,6 @@
+### Get library manifest
+# @name libraryManifest
+# @prompt extensionId
+GET {{protocol}}://{{host}}/api/extension/sync/manifest
+Content-Type: {{contentType}}
+X-ExtensionId: {{extensionId}}

@@ -1,0 +1,19 @@
+### Get all companies
+GET {{protocol}}://{{host}}/api/company
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+### Get all platforms
+GET {{protocol}}://{{host}}/api/platform
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+### Get all genres
+GET {{protocol}}://{{host}}/api/genre
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+### Get all games
+GET {{protocol}}://{{host}}/api/game
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
