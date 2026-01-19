@@ -69,7 +69,7 @@ const buildGameSession = (props: BuildGameSessionProps): GameSession => {
 		getDuration: () => _duration,
 		close: (props) => {
 			if (_status !== "in_progress") throw new GameSessionNotInProgressError();
-			if (props.endTime <= _startTime)
+			if (props.endTime.getTime() <= _startTime.getTime())
 				throw new InvalidStateError(
 					"Game session end time must not be equal or earlier than start time",
 				);

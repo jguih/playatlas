@@ -1,6 +1,6 @@
 import type { IDomainEventBusPort, ILogServiceFactoryPort } from "@playatlas/common/application";
 import { GameIdParser } from "@playatlas/common/domain";
-import type { BaseRepositoryDeps } from "@playatlas/common/infra";
+import type { BaseRepositoryDeps, IClockPort } from "@playatlas/common/infra";
 import type { IGameRepositoryPort } from "@playatlas/game-library/infra";
 import {
 	makeCloseGameSessionCommandHandler,
@@ -16,6 +16,7 @@ export type GameSessionModuleDeps = {
 	logServiceFactory: ILogServiceFactoryPort;
 	gameRepository: IGameRepositoryPort;
 	eventBus: IDomainEventBusPort;
+	clock: IClockPort;
 };
 
 export const makeGameSessionModule = ({
@@ -23,8 +24,9 @@ export const makeGameSessionModule = ({
 	logServiceFactory,
 	gameRepository,
 	eventBus,
+	clock,
 }: GameSessionModuleDeps): IGameSessionModulePort => {
-	const _game_session_repo = makeGameSessionRepository({
+	const gameSessionRepository = makeGameSessionRepository({
 		getDb,
 		logService: logServiceFactory.build("GameSessionRepository"),
 	});
@@ -36,33 +38,36 @@ export const makeGameSessionModule = ({
 		},
 	};
 
-	const _open_game_session_command_handler = makeOpenGameSessionCommandHandler({
-		gameSessionRepository: _game_session_repo,
+	const openGameSessionCommandHandler = makeOpenGameSessionCommandHandler({
+		gameSessionRepository: gameSessionRepository,
 		gameInfoProvider,
 		logService: logServiceFactory.build("OpenGameSessionCommandHandler"),
 		eventBus,
+		clock,
 	});
 
-	const _close_game_session_command_handler = makeCloseGameSessionCommandHandler({
-		gameSessionRepository: _game_session_repo,
+	const closeGameSessionCommandHandler = makeCloseGameSessionCommandHandler({
+		gameSessionRepository: gameSessionRepository,
 		gameInfoProvider,
 		logService: logServiceFactory.build("CloseGameSessionCommandHandler"),
 		eventBus,
+		clock,
 	});
 
-	const _stale_game_session_command_handler = makeStaleGameSessionCommandHandler({
-		gameSessionRepository: _game_session_repo,
+	const staleGameSessionCommandHandler = makeStaleGameSessionCommandHandler({
+		gameSessionRepository: gameSessionRepository,
 		gameInfoProvider,
 		logService: logServiceFactory.build("StaleGameSessionCommandHandler"),
 		eventBus,
+		clock,
 	});
 
 	const gameSession: IGameSessionModulePort = {
-		getGameSessionRepository: () => _game_session_repo,
+		getGameSessionRepository: () => gameSessionRepository,
 		commands: {
-			getCloseGameSessionCommandHandler: () => _close_game_session_command_handler,
-			getOpenGameSessionCommandHandler: () => _open_game_session_command_handler,
-			getStaleGameSessionCommandHandler: () => _stale_game_session_command_handler,
+			getCloseGameSessionCommandHandler: () => closeGameSessionCommandHandler,
+			getOpenGameSessionCommandHandler: () => openGameSessionCommandHandler,
+			getStaleGameSessionCommandHandler: () => staleGameSessionCommandHandler,
 		},
 	};
 	return Object.freeze(gameSession);

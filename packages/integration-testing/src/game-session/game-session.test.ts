@@ -29,7 +29,9 @@ describe("Game Sessions", () => {
 
 	it("opens a game session", () => {
 		// Arrange
-		const now = new Date().toISOString();
+		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const now = root.clock.now().toISOString();
+
 		const gameId = game.getId();
 		const sessionId = faker.string.uuid();
 
@@ -62,12 +64,14 @@ describe("Game Sessions", () => {
 
 	it("fails when game doesn't exist", () => {
 		// Arrange
-		const now = new Date().toISOString();
+		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const now = root.clock.now();
+
 		const gameId = faker.string.uuid();
 		const sessionId = faker.string.uuid();
 
 		const requestDto: OpenGameSessionRequestDto = {
-			ClientUtcNow: now,
+			ClientUtcNow: now.toISOString(),
 			GameId: gameId,
 			SessionId: sessionId,
 		};
@@ -86,7 +90,9 @@ describe("Game Sessions", () => {
 
 	it("closes an in progress game session", () => {
 		// Arrange
-		const now = new Date("2026-01-01T00:00:00Z").toISOString();
+		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const now = root.clock.now().toISOString();
+
 		const gameId = game.getId();
 		const sessionId = faker.string.uuid();
 
@@ -96,29 +102,31 @@ describe("Game Sessions", () => {
 			SessionId: sessionId,
 		};
 		const openCommand = makeOpenGameSessionCommand(openRequestDto);
+		const openResult = api.gameSession.commands
+			.getOpenGameSessionCommandHandler()
+			.execute(openCommand);
+		expect(openResult.success).toBe(true);
+		expect(openResult.reason_code).toBe("opened_game_session_created");
+
+		root.clock.advance(2000);
+		const endTime = root.clock.now().toISOString();
 
 		const closeRequestDto: CloseGameSessionRequestDto = {
 			ClientUtcNow: now,
 			GameId: gameId,
 			SessionId: sessionId,
 			Duration: 30,
-			EndTime: new Date("2026-01-01T00:00:30Z").toISOString(),
+			EndTime: endTime,
 			StartTime: now,
 		};
 		const closeCommand = makeCloseGameSessionCommand(closeRequestDto);
 
 		// Act
-		const openResult = api.gameSession.commands
-			.getOpenGameSessionCommandHandler()
-			.execute(openCommand);
 		const closeResult = api.gameSession.commands
 			.getCloseGameSessionCommandHandler()
 			.execute(closeCommand);
 
 		// Assert
-		expect(openResult.success).toBe(true);
-		expect(openResult.reason_code).toBe("opened_game_session_created");
-
 		expect(closeResult.success).toBe(true);
 		expect(closeResult.reason_code).toBe("closed_in_progress_game_session");
 
@@ -143,7 +151,9 @@ describe("Game Sessions", () => {
 
 	it("creates a new closed session when in progress doesn't exist", () => {
 		// Arrange
-		const now = new Date().toISOString();
+		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const now = root.clock.now().toISOString();
+
 		const gameId = game.getId();
 		const sessionId = faker.string.uuid();
 
@@ -180,7 +190,9 @@ describe("Game Sessions", () => {
 
 	it("gracefully handles closing an already closed session", () => {
 		// Arrange
-		const now = new Date().toISOString();
+		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const now = root.clock.now().toISOString();
+
 		const gameId = game.getId();
 		const sessionId = faker.string.uuid();
 

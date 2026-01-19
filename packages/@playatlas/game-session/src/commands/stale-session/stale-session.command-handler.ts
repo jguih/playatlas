@@ -16,6 +16,7 @@ export const makeStaleGameSessionCommandHandler = ({
 	logService,
 	gameInfoProvider,
 	eventBus,
+	clock,
 }: StaleGameSessionServiceDeps): IStaleGameSessionCommandHandlerPort => {
 	return {
 		execute: (command: StaleGameSessionCommand): StaleGameSessionCommandResult => {
@@ -29,7 +30,7 @@ export const makeStaleGameSessionCommandHandler = ({
 				};
 			}
 
-			const serverUtcNow = Date.now();
+			const serverUtcNow = clock.now().getTime();
 
 			const session = gameSessionRepository.getById(command.sessionId);
 

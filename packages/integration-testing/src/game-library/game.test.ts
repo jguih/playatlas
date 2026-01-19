@@ -134,7 +134,7 @@ describe("Game Library / Game", () => {
 
 	it("returns all games with large list", () => {
 		// Arrange
-		const listLength = 2000;
+		const listLength = 10000;
 		const games = factory.getGameFactory().buildList(listLength);
 		const gameIds = games.map((g) => g.getPlayniteSnapshot().id);
 		const oneGame = faker.helpers.arrayElement(games);

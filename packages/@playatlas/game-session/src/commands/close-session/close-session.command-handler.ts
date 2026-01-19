@@ -16,6 +16,7 @@ export const makeCloseGameSessionCommandHandler = ({
 	logService,
 	gameInfoProvider,
 	eventBus,
+	clock,
 }: CloseGameSessionServiceDeps): ICloseGameSessionCommandHandlerPort => {
 	return {
 		execute: (command: CloseGameSessionCommand): CloseGameSessionCommandResult => {
@@ -30,7 +31,7 @@ export const makeCloseGameSessionCommandHandler = ({
 			}
 
 			const session = gameSessionRepository.getById(command.sessionId);
-			const serverUtcNow = Date.now();
+			const serverUtcNow = clock.now().getTime();
 
 			if (!session) {
 				logService.warning(`Session not found: ${command.sessionId}. Creating closed session...`);
@@ -79,7 +80,7 @@ export const makeCloseGameSessionCommandHandler = ({
 			}
 
 			session.close({
-				endTime: command.endTime,
+				endTime: new Date(serverUtcNow),
 				duration: command.duration,
 			});
 

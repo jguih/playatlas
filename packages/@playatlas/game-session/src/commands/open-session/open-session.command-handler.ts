@@ -16,6 +16,7 @@ export const makeOpenGameSessionCommandHandler = ({
 	gameInfoProvider,
 	logService,
 	eventBus,
+	clock,
 }: OpenGameSessionServiceDeps): IOpenGameSessionCommandHandlerPort => {
 	return {
 		execute: (command) => {
@@ -29,7 +30,7 @@ export const makeOpenGameSessionCommandHandler = ({
 				};
 			}
 
-			const now = new Date();
+			const now = clock.now();
 
 			const session = makeGameSession({
 				sessionId: command.sessionId,
@@ -45,7 +46,7 @@ export const makeOpenGameSessionCommandHandler = ({
 			eventBus.emit({
 				id: crypto.randomUUID(),
 				name: "opened-game-session",
-				occurredAt: new Date(),
+				occurredAt: now,
 				payload: { gameId: command.gameId, sessionId: session.getSessionId() },
 			});
 
