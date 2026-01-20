@@ -6,9 +6,9 @@ describe("GameLibrary / Platforms", () => {
 	let root: TestCompositionRoot;
 	let api: ClientApi;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		root = new TestCompositionRoot();
-		api = root.build();
+		api = await root.buildAsync();
 		vi.resetAllMocks();
 	});
 

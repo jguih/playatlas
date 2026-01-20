@@ -10,8 +10,8 @@ export class GameRepository
 	extends ClientEntityRepository<Game, GameId>
 	implements IGameRepositoryPort
 {
-	constructor({ indexedDbSignal }: GameRepositoryDeps) {
-		super({ indexedDbSignal, storeName: gameRepositoryMeta.storeName });
+	constructor({ dbSignal }: GameRepositoryDeps) {
+		super({ dbSignal, storeName: gameRepositoryMeta.storeName });
 	}
 
 	queryAsync: IGameRepositoryPort["queryAsync"] = async ({

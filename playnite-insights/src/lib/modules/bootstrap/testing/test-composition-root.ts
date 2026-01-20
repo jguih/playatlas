@@ -39,7 +39,7 @@ export class TestCompositionRoot {
 		platform: new PlatformFactory(),
 	};
 
-	build = (): ClientApi => {
+	buildAsync = async (): Promise<ClientApi> => {
 		const infra: IClientInfraModulePort = new ClientInfraModule({
 			logService: this.mocks.logService,
 			schemas: [
@@ -49,10 +49,10 @@ export class TestCompositionRoot {
 				platformRepositorySchema,
 			],
 		});
-		infra.initialize();
+		await infra.initializeAsync();
 
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
-			indexedDbSignal: infra.indexedDbSignal,
+			dbSignal: infra.dbSignal,
 			httpClient: this.mocks.httpClient,
 		});
 

@@ -1,10 +1,9 @@
 import type { ClientEntity } from "../common/client-entity";
-import { IndexedDBNotInitializedError } from "../errors";
 import type { IClientEntityRepository } from "./client-entity.repository.port";
-import type { ClientRepositoryStoreName, IndexedDbSignal } from "./client-entity.repository.types";
+import type { ClientRepositoryStoreName } from "./client-entity.repository.types";
 
 export type ClientEntityRepositoryDeps = {
-	indexedDbSignal: IndexedDbSignal;
+	dbSignal: IDBDatabase;
 };
 
 export class ClientEntityRepository<
@@ -12,27 +11,15 @@ export class ClientEntityRepository<
 	TEntityKey extends IDBValidKey,
 > implements IClientEntityRepository<TEntity, TEntityKey>
 {
-	#indexedDbSignal: ClientEntityRepositoryDeps["indexedDbSignal"];
-	storeName: ClientRepositoryStoreName;
+	private readonly dbSignal: IDBDatabase;
+	protected readonly storeName: ClientRepositoryStoreName;
 
 	constructor({
-		indexedDbSignal,
+		dbSignal,
 		storeName,
 	}: ClientEntityRepositoryDeps & { storeName: ClientRepositoryStoreName }) {
-		this.#indexedDbSignal = indexedDbSignal;
+		this.dbSignal = dbSignal;
 		this.storeName = storeName;
-	}
-
-	/**
-	 * Awaits for indexeddb to be ready before calling the callback
-	 * @param callback the callback function
-	 * @throws {IndexedDBNotInitializedError} if db is not ready after promise is complete
-	 */
-	protected async withDb<T>(callback: (db: IDBDatabase) => Promise<T>): Promise<T> {
-		await this.#indexedDbSignal.dbReady;
-		const db = this.#indexedDbSignal.db;
-		if (!db) throw new IndexedDBNotInitializedError();
-		return callback(db);
 	}
 
 	runTransaction = async <T>(
@@ -40,22 +27,20 @@ export class ClientEntityRepository<
 		mode: IDBTransactionMode,
 		callback: (props: { tx: IDBTransaction }) => Promise<T> | T,
 	): Promise<T> => {
-		return await this.withDb((db) => {
-			return new Promise((resolve, reject) => {
-				const tx = db.transaction(storeName, mode);
+		return new Promise((resolve, reject) => {
+			const tx = this.dbSignal.transaction(storeName, mode);
 
-				tx.oncomplete = () => resolve(result);
-				tx.onerror = () => reject(tx.error);
-				tx.onabort = () => reject(tx.error);
+			tx.oncomplete = () => resolve(result);
+			tx.onerror = () => reject(tx.error);
+			tx.onabort = () => reject(tx.error);
 
-				let result: T;
-				try {
-					result = callback({ tx }) as T;
-				} catch (err) {
-					tx.abort();
-					reject(err);
-				}
-			});
+			let result: T;
+			try {
+				result = callback({ tx }) as T;
+			} catch (err) {
+				tx.abort();
+				reject(err);
+			}
 		});
 	};
 

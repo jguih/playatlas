@@ -9,7 +9,7 @@ export class GenreRepository
 	extends ClientEntityRepository<Genre, GenreId>
 	implements IGenreRepositoryPort
 {
-	constructor({ indexedDbSignal }: ClientEntityRepositoryDeps) {
-		super({ indexedDbSignal, storeName: genreRepositoryMeta.storeName });
+	constructor({ dbSignal }: ClientEntityRepositoryDeps) {
+		super({ dbSignal, storeName: genreRepositoryMeta.storeName });
 	}
 }

@@ -9,7 +9,7 @@ export class PlatformRepository
 	extends ClientEntityRepository<Platform, PlatformId>
 	implements IPlatformRepositoryPort
 {
-	constructor({ indexedDbSignal }: PlatformRepositoryDeps) {
-		super({ indexedDbSignal, storeName: platformRepositoryMeta.storeName });
+	constructor({ dbSignal }: PlatformRepositoryDeps) {
+		super({ dbSignal, storeName: platformRepositoryMeta.storeName });
 	}
 }

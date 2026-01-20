@@ -9,7 +9,7 @@ export class CompanyRepository
 	extends ClientEntityRepository<Company, CompanyId>
 	implements ICompanyRepositoryPort
 {
-	constructor({ indexedDbSignal }: CompanyRepositoryDeps) {
-		super({ indexedDbSignal, storeName: companyRepositoryMeta.storeName });
+	constructor({ dbSignal }: CompanyRepositoryDeps) {
+		super({ dbSignal, storeName: companyRepositoryMeta.storeName });
 	}
 }

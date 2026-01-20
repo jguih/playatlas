@@ -51,10 +51,9 @@ import {
 	type IGetPlatformsByIdsQueryHandlerPort,
 } from "$lib/modules/game-library/queries/get-platforms-by-ids";
 import type { IClientGameLibraryModulePort } from "./game-library.module.port";
-import type { IndexedDbSignal } from "./infra.module.port";
 
 export type ClientGameLibraryModuleDeps = {
-	indexedDbSignal: IndexedDbSignal;
+	dbSignal: IDBDatabase;
 	httpClient: IHttpClientPort;
 };
 
@@ -78,11 +77,11 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 
 	readonly playAtlasClient: IPlayAtlasClientPort;
 
-	constructor({ indexedDbSignal, httpClient }: ClientGameLibraryModuleDeps) {
-		this.gameRepository = new GameRepository({ indexedDbSignal });
-		this.genreRepository = new GenreRepository({ indexedDbSignal });
-		this.companyRepository = new CompanyRepository({ indexedDbSignal });
-		this.platformRepository = new PlatformRepository({ indexedDbSignal });
+	constructor({ dbSignal, httpClient }: ClientGameLibraryModuleDeps) {
+		this.gameRepository = new GameRepository({ dbSignal });
+		this.genreRepository = new GenreRepository({ dbSignal });
+		this.companyRepository = new CompanyRepository({ dbSignal });
+		this.platformRepository = new PlatformRepository({ dbSignal });
 
 		this.getGamesQueryHandler = new GetGamesQueryHandler({ gameRepository: this.gameRepository });
 		this.getGamesByIdsQueryHandler = new GetGamesByIdsQueryHandler({

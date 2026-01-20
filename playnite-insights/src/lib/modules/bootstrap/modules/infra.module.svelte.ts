@@ -1,4 +1,5 @@
 import type { ILogServicePort } from "$lib/modules/common/application";
+import { IndexedDBNotInitializedError } from "$lib/modules/common/errors";
 import {
 	INDEXEDDB_CURRENT_VERSION,
 	INDEXEDDB_NAME,
@@ -12,9 +13,9 @@ export type ClientInfraModuleDeps = {
 };
 
 export class ClientInfraModule implements IClientInfraModulePort {
-	readonly indexedDbSignal: IndexedDbSignal;
-	private logService: ILogServicePort;
-	private schemas: IIndexedDbSchema[];
+	private readonly indexedDbSignal: IndexedDbSignal;
+	private readonly logService: ILogServicePort;
+	private readonly schemas: IIndexedDbSchema[];
 
 	constructor({ logService, schemas }: ClientInfraModuleDeps) {
 		this.logService = logService;
@@ -22,7 +23,7 @@ export class ClientInfraModule implements IClientInfraModulePort {
 
 		this.indexedDbSignal = $state({
 			db: null,
-			dbReady: Promise.resolve(),
+			dbReady: false,
 		});
 	}
 
@@ -59,13 +60,18 @@ export class ClientInfraModule implements IClientInfraModulePort {
 		});
 	};
 
-	public initialize = () => {
-		this.indexedDbSignal.dbReady = this.openIndexedDbAsync({
+	public initializeAsync = async () => {
+		this.indexedDbSignal.db = await this.openIndexedDbAsync({
 			dbName: INDEXEDDB_NAME,
 			version: INDEXEDDB_CURRENT_VERSION,
 			schemas: this.schemas,
-		}).then((db) => {
-			this.indexedDbSignal.db = db;
 		});
+		this.indexedDbSignal.dbReady = true;
 	};
+
+	get dbSignal(): IDBDatabase {
+		if (!this.indexedDbSignal.dbReady || !this.indexedDbSignal.db)
+			throw new IndexedDBNotInitializedError();
+		return this.indexedDbSignal.db;
+	}
 }

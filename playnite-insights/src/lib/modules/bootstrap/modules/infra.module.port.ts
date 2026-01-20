@@ -1,6 +1,6 @@
-export type IndexedDbSignal = { db: IDBDatabase | null; dbReady: Promise<void> | null };
+export type IndexedDbSignal = { db: IDBDatabase | null; dbReady: boolean };
 
 export interface IClientInfraModulePort {
-	get indexedDbSignal(): IndexedDbSignal;
-	initialize: () => void;
+	initializeAsync: () => Promise<void>;
+	get dbSignal(): IDBDatabase;
 }
