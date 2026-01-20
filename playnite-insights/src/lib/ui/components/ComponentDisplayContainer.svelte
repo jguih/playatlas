@@ -8,6 +8,6 @@
 	} = $props();
 </script>
 
-<div class="bg-background-2 p-4">
+<div class="bg-background-2 flex flex-wrap gap-2 p-4">
 	{@render children?.()}
 </div>

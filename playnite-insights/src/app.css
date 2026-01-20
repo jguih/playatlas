@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @plugin '@tailwindcss/typography';
 
+html {
+	font-size: clamp(16px, 1.2vw + 15px, 18px);
+}
+
 @theme {
 	/* ==== Colors Pallet ==== */
 	--pl-color-primary-50: hsl(198, 100%, 97%);
