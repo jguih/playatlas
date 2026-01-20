@@ -2,7 +2,7 @@
 @plugin '@tailwindcss/typography';
 
 html {
-	font-size: clamp(16px, 1.2vw + 15px, 18px);
+	font-size: clamp(15px, 1.2vw + 15px, 17px);
 }
 
 @theme {

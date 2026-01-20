@@ -6,7 +6,7 @@
 		button = $bindable<HTMLButtonElement>(),
 		justify = "center",
 		rounded = false,
-		size = "sm",
+		size = "md",
 		isLoading = false,
 		disabled,
 		selected,
@@ -26,9 +26,9 @@
 	{...props}
 	class={[
 		[
-			size === "sm" && "h-9 gap-1.5 px-3 text-sm",
-			size === "md" && "h-11 gap-2 px-4 text-base",
-			size === "lg" && "h-13 gap-2.5 px-5 text-base",
+			size === "sm" && "h-8 gap-1.5 px-3 text-sm",
+			size === "md" && "h-10 gap-2 px-5 text-base",
+			size === "lg" && "h-12 gap-2.5 px-5 text-lg",
 		],
 		"relative inline-flex select-none items-center whitespace-nowrap",
 		"duration-80 transition-colors ease-out",

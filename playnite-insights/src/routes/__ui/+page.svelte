@@ -6,8 +6,13 @@
 	import ComponentSection from "$lib/ui/components/ComponentSection.svelte";
 	import ComponentSectionText from "$lib/ui/components/ComponentSectionText.svelte";
 	import Header from "$lib/ui/components/header/Header.svelte";
+	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
+	import type { SemanticColors } from "$lib/ui/components/types";
+	import { HomeIcon } from "@lucide/svelte";
+
+	const semanticVariants: SemanticColors[] = ["primary", "error", "neutral", "warning", "success"];
 </script>
 
 <AppLayout>
@@ -21,77 +26,33 @@
 		<ComponentSection title="Solid Buttons">
 			<ComponentSectionText>Static state</ComponentSectionText>
 			<ComponentDisplayContainer>
-				<SolidButton variant="primary">Primary</SolidButton>
-				<SolidButton variant="error">Error</SolidButton>
-				<SolidButton variant="neutral">Neutral</SolidButton>
-				<SolidButton variant="warning">Warning</SolidButton>
-				<SolidButton variant="success">Success</SolidButton>
+				{#each semanticVariants as variant (variant)}
+					<SolidButton {variant}>
+						{variant}
+					</SolidButton>
+				{/each}
 			</ComponentDisplayContainer>
 			<ComponentSectionText>Disabled state</ComponentSectionText>
 			<ComponentDisplayContainer>
-				<SolidButton
-					disabled
-					variant="primary"
-				>
-					Primary
-				</SolidButton>
-				<SolidButton
-					disabled
-					variant="error"
-				>
-					Error
-				</SolidButton>
-				<SolidButton
-					disabled
-					variant="neutral"
-				>
-					Neutral
-				</SolidButton>
-				<SolidButton
-					disabled
-					variant="warning"
-				>
-					Warning
-				</SolidButton>
-				<SolidButton
-					disabled
-					variant="success"
-				>
-					Success
-				</SolidButton>
+				{#each semanticVariants as variant (variant)}
+					<SolidButton
+						disabled
+						{variant}
+					>
+						{variant}
+					</SolidButton>
+				{/each}
 			</ComponentDisplayContainer>
 			<ComponentSectionText>Selected state</ComponentSectionText>
 			<ComponentDisplayContainer>
-				<SolidButton
-					selected
-					variant="primary"
-				>
-					Primary
-				</SolidButton>
-				<SolidButton
-					selected
-					variant="error"
-				>
-					Error
-				</SolidButton>
-				<SolidButton
-					selected
-					variant="neutral"
-				>
-					Neutral
-				</SolidButton>
-				<SolidButton
-					selected
-					variant="warning"
-				>
-					Warning
-				</SolidButton>
-				<SolidButton
-					selected
-					variant="success"
-				>
-					Success
-				</SolidButton>
+				{#each semanticVariants as variant (variant)}
+					<SolidButton
+						selected
+						{variant}
+					>
+						{variant}
+					</SolidButton>
+				{/each}
 			</ComponentDisplayContainer>
 			<ComponentSectionText>Sizes</ComponentSectionText>
 			<ComponentDisplayContainer>
@@ -99,120 +60,94 @@
 					size="sm"
 					variant="primary"
 				>
-					Small
+					small
 				</SolidButton>
 				<SolidButton
 					size="md"
 					variant="primary"
 				>
-					Medium
+					medium
 				</SolidButton>
 				<SolidButton
 					size="lg"
 					variant="primary"
 				>
-					Large
+					large
 				</SolidButton>
 			</ComponentDisplayContainer>
 			<ComponentSectionText>Loading</ComponentSectionText>
 			<ComponentDisplayContainer>
-				<SolidButton
-					isLoading
-					variant="primary"
-				>
-					Primary
-				</SolidButton>
-				<SolidButton
-					isLoading
-					variant="error"
-				>
-					Error
-				</SolidButton>
-				<SolidButton
-					isLoading
-					variant="neutral"
-				>
-					Neutral
-				</SolidButton>
-				<SolidButton
-					isLoading
-					variant="warning"
-				>
-					Warning
-				</SolidButton>
-				<SolidButton
-					isLoading
-					variant="success"
-				>
-					Success
-				</SolidButton>
+				{#each semanticVariants as variant (variant)}
+					<SolidButton
+						isLoading
+						{variant}
+					>
+						{variant.toLocaleUpperCase()}
+					</SolidButton>
+				{/each}
+			</ComponentDisplayContainer>
+
+			<ComponentSectionText>Icons</ComponentSectionText>
+			<ComponentDisplayContainer>
+				{#each semanticVariants as variant (variant)}
+					<SolidButton
+						{variant}
+						size="sm"
+					>
+						<Icon>
+							<HomeIcon />
+						</Icon>
+					</SolidButton>
+					<SolidButton
+						{variant}
+						size="md"
+					>
+						<Icon>
+							<HomeIcon />
+						</Icon>
+					</SolidButton>
+					<SolidButton
+						{variant}
+						size="lg"
+					>
+						<Icon>
+							<HomeIcon />
+						</Icon>
+					</SolidButton>
+				{/each}
 			</ComponentDisplayContainer>
 		</ComponentSection>
 
-		<ComponentSection title="Light buttons">
+		<ComponentSection title="Solid Buttons">
 			<ComponentSectionText>Static state</ComponentSectionText>
 			<ComponentDisplayContainer>
-				<LightButton variant="primary">Primary</LightButton>
-				<LightButton variant="error">Error</LightButton>
-				<LightButton variant="neutral">Neutral</LightButton>
-				<LightButton variant="warning">Warning</LightButton>
-				<LightButton variant="success">Success</LightButton>
+				{#each semanticVariants as variant (variant)}
+					<LightButton {variant}>
+						{variant}
+					</LightButton>
+				{/each}
 			</ComponentDisplayContainer>
 			<ComponentSectionText>Disabled state</ComponentSectionText>
 			<ComponentDisplayContainer>
-				<LightButton
-					disabled
-					variant="primary">Primary</LightButton
-				>
-				<LightButton
-					disabled
-					variant="error">Error</LightButton
-				>
-				<LightButton
-					disabled
-					variant="neutral">Neutral</LightButton
-				>
-				<LightButton
-					disabled
-					variant="warning">Warning</LightButton
-				>
-				<LightButton
-					disabled
-					variant="success">Success</LightButton
-				>
+				{#each semanticVariants as variant (variant)}
+					<LightButton
+						disabled
+						{variant}
+					>
+						{variant}
+					</LightButton>
+				{/each}
 			</ComponentDisplayContainer>
 			<ComponentSectionText>Selected state</ComponentSectionText>
 			<ComponentDisplayContainer>
-				<LightButton
-					selected
-					variant="primary"
-				>
-					Primary
-				</LightButton>
-				<LightButton
-					selected
-					variant="error"
-				>
-					Error
-				</LightButton>
-				<LightButton
-					selected
-					variant="neutral"
-				>
-					Neutral
-				</LightButton>
-				<LightButton
-					selected
-					variant="warning"
-				>
-					Warning
-				</LightButton>
-				<LightButton
-					selected
-					variant="success"
-				>
-					Success
-				</LightButton>
+				{#each semanticVariants as variant (variant)}
+					<LightButton
+						selected
+						{variant}
+					>
+						{variant}
+					</LightButton>
+				{/each}
 			</ComponentDisplayContainer>
 			<ComponentSectionText>Sizes</ComponentSectionText>
 			<ComponentDisplayContainer>
@@ -220,53 +155,61 @@
 					size="sm"
 					variant="primary"
 				>
-					Small
+					small
 				</LightButton>
 				<LightButton
 					size="md"
 					variant="primary"
 				>
-					Medium
+					medium
 				</LightButton>
 				<LightButton
 					size="lg"
 					variant="primary"
 				>
-					Large
+					large
 				</LightButton>
 			</ComponentDisplayContainer>
 			<ComponentSectionText>Loading</ComponentSectionText>
 			<ComponentDisplayContainer>
-				<LightButton
-					isLoading
-					variant="primary"
-				>
-					Primary
-				</LightButton>
-				<LightButton
-					isLoading
-					variant="error"
-				>
-					Error
-				</LightButton>
-				<LightButton
-					isLoading
-					variant="neutral"
-				>
-					Neutral
-				</LightButton>
-				<LightButton
-					isLoading
-					variant="warning"
-				>
-					Warning
-				</LightButton>
-				<LightButton
-					isLoading
-					variant="success"
-				>
-					Success
-				</LightButton>
+				{#each semanticVariants as variant (variant)}
+					<LightButton
+						isLoading
+						{variant}
+					>
+						{variant.toLocaleUpperCase()}
+					</LightButton>
+				{/each}
+			</ComponentDisplayContainer>
+
+			<ComponentSectionText>Icons</ComponentSectionText>
+			<ComponentDisplayContainer>
+				{#each semanticVariants as variant (variant)}
+					<LightButton
+						{variant}
+						size="sm"
+					>
+						<Icon>
+							<HomeIcon />
+						</Icon>
+					</LightButton>
+					<LightButton
+						{variant}
+						size="md"
+					>
+						<Icon>
+							<HomeIcon />
+						</Icon>
+					</LightButton>
+					<LightButton
+						{variant}
+						size="lg"
+					>
+						<Icon>
+							<HomeIcon />
+						</Icon>
+					</LightButton>
+				{/each}
 			</ComponentDisplayContainer>
 		</ComponentSection>
 	</Main>
