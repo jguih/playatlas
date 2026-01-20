@@ -1,7 +1,13 @@
 import type { HTMLAttributes } from "svelte/elements";
 
-export type SidebarProps = HTMLAttributes<HTMLElement> & {
-	width?: number;
+export type SidebarEventHandlers = {
+	onClose?: () => void;
 };
 
-export type BottomSheetProps = HTMLAttributes<HTMLElement> & { height?: number };
+export type SidebarProps = HTMLAttributes<HTMLElement> &
+	SidebarEventHandlers & {
+		width?: number;
+	};
+
+export type BottomSheetProps = HTMLAttributes<HTMLElement> &
+	SidebarEventHandlers & { height?: number };

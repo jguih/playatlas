@@ -12,7 +12,10 @@ declare global {
 			api: PlayAtlasApiV1;
 		}
 		// interface PageData {}
-		// interface PageState {}
+		interface PageState {
+			showFiltersSidebar?: true;
+			showSearchDrawer?: true;
+		}
 		// interface Platform {}
 	}
 }

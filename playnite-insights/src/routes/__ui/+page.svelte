@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { pushState } from "$app/navigation";
+	import { page } from "$app/state";
 	import BottomNav from "$lib/ui/components/BottomNav.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
@@ -9,6 +11,8 @@
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
+	import BottomSheet from "$lib/ui/components/sidebar/BottomSheet.svelte";
+	import Sidebar from "$lib/ui/components/sidebar/Sidebar.svelte";
 	import type { SemanticColors } from "$lib/ui/components/types";
 	import {
 		HomeIcon,
@@ -19,7 +23,35 @@
 	} from "@lucide/svelte";
 
 	const semanticVariants: SemanticColors[] = ["primary", "error", "neutral", "warning", "success"];
+
+	const closeFiltersSidebar = () => {
+		history.back();
+	};
+
+	const showFiltersSidebar = () => {
+		pushState("", {
+			showFiltersSidebar: true,
+		});
+	};
+
+	const closeSearchDrawer = () => {
+		history.back();
+	};
+
+	const showSearchDrawer = () => {
+		pushState("", {
+			showSearchDrawer: true,
+		});
+	};
 </script>
+
+{#if page.state.showFiltersSidebar}
+	<Sidebar onClose={closeFiltersSidebar} />
+{/if}
+
+{#if page.state.showSearchDrawer}
+	<BottomSheet onClose={closeSearchDrawer} />
+{/if}
 
 <AppLayout>
 	{#snippet header()}
@@ -28,6 +60,7 @@
 				<LightButton
 					variant="neutral"
 					iconOnly
+					onclick={showSearchDrawer}
 				>
 					<Icon>
 						<SearchIcon />
@@ -36,6 +69,7 @@
 				<LightButton
 					variant="neutral"
 					iconOnly
+					onclick={showFiltersSidebar}
 				>
 					<Icon>
 						<ListFilter />
