@@ -2,37 +2,99 @@
 	import BaseButton from "./BaseButton.svelte";
 	import type { BaseButtonProps } from "./types";
 
-	let { variant = "primary", selected, ...props }: BaseButtonProps = $props();
+	let props: BaseButtonProps = $props();
+
+	const { variant = "primary" } = $derived(props);
 </script>
 
 <BaseButton
 	{...props}
 	class={[
 		variant === "primary" && [
-			selected ? "text-primary-active-fg" : "text-primary-fg",
-			"bg-primary-bg",
-			"hover:text-primary-hover-fg hover:bg-primary-hover-bg",
-			"active:text-primary-active-fg active:bg-primary-active-bg",
-			"focus:ring-primary-active-bg focus:ring-2",
-			"disabled:bg-primary-disabled-bg disabled:text-primary-disabled-fg",
+			[
+				"focus-visible:ring-primary-selected-bg",
+				"bg-primary-bg",
+				"text-primary-fg",
+				"hover:bg-primary-hover-bg hover:text-primary-hover-fg",
+				"active:bg-primary-active-bg active:text-primary-active-fg",
+			],
+			[
+				"data-[state=selected]:bg-primary-selected-bg",
+				"data-[state=selected]:text-primary-selected-fg",
+			],
+			[
+				"data-[state=disabled]:bg-primary-disabled-bg",
+				"data-[state=disabled]:text-primary-disabled-fg",
+			],
 		],
 		variant === "neutral" && [
-			selected ? "text-neutral-active-fg" : "bg-neutral-active-bg",
-			"bg-neutral-bg",
-			"hover:text-neutral-hover-fg hover:bg-neutral-hover-bg",
-			"active:text-neutral-active-fg active:bg-neutral-active-bg",
-			"focus:ring-neutral-active-bg focus:ring-2",
-			"disabled:bg-neutral-disabled-bg disabled:text-neutral-disabled-fg",
+			[
+				"focus-visible:ring-neutral-selected-bg",
+				"bg-neutral-bg",
+				"text-neutral-fg",
+				"hover:bg-neutral-hover-bg hover:text-neutral-hover-fg",
+				"active:bg-neutral-active-bg active:text-neutral-active-fg",
+			],
+			[
+				"data-[state=selected]:bg-neutral-selected-bg",
+				"data-[state=selected]:text-neutral-selected-fg",
+			],
+			[
+				"data-[state=disabled]:bg-neutral-disabled-bg",
+				"data-[state=disabled]:text-neutral-disabled-fg",
+			],
 		],
 		variant === "error" && [
-			selected ? "text-error-active-fg" : "text-error-fg",
-			"bg-error-bg",
-			"hover:text-error-hover-fg hover:bg-error-hover-bg",
-			"active:text-error-active-fg active:bg-error-active-bg",
-			"focus:ring-error-active-bg focus:ring-2",
-			"disabled:bg-error-disabled-bg disabled:text-error-disabled-fg",
+			[
+				"focus-visible:ring-error-selected-bg",
+				"bg-error-bg",
+				"text-error-fg",
+				"hover:bg-error-hover-bg hover:text-error-hover-fg",
+				"active:bg-error-active-bg active:text-error-active-fg",
+			],
+			[
+				"data-[state=selected]:bg-error-selected-bg",
+				"data-[state=selected]:text-error-selected-fg",
+			],
+			[
+				"data-[state=disabled]:bg-error-disabled-bg",
+				"data-[state=disabled]:text-error-disabled-fg",
+			],
 		],
-		"p-1 disabled:cursor-not-allowed",
+		variant === "warning" && [
+			[
+				"focus-visible:ring-warning-selected-bg",
+				"bg-warning-bg",
+				"text-warning-fg",
+				"hover:bg-warning-hover-bg hover:text-warning-hover-fg",
+				"active:bg-warning-active-bg active:text-warning-active-fg",
+			],
+			[
+				"data-[state=selected]:bg-warning-selected-bg",
+				"data-[state=selected]:text-warning-selected-fg",
+			],
+			[
+				"data-[state=disabled]:bg-warning-disabled-bg",
+				"data-[state=disabled]:text-warning-disabled-fg",
+			],
+		],
+		variant === "success" && [
+			[
+				"focus-visible:ring-success-selected-bg",
+				"bg-success-bg",
+				"text-success-fg",
+				"hover:bg-success-hover-bg hover:text-success-hover-fg",
+				"active:bg-success-active-bg active:text-success-active-fg",
+			],
+			[
+				"data-[state=selected]:bg-success-selected-bg",
+				"data-[state=selected]:text-success-selected-fg",
+			],
+			[
+				"data-[state=disabled]:bg-success-disabled-bg",
+				"data-[state=disabled]:text-success-disabled-fg",
+			],
+		],
 		props.class,
 	]}
 >
