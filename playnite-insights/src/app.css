@@ -219,7 +219,7 @@ html {
 	--color-neutral-fg: var(--color-foreground);
 	--color-neutral-hover-bg: var(--color-neutral-600);
 	--color-neutral-hover-fg: var(--color-neutral-100);
-	--color-neutral-active-bg: var(--color-neutral-700);
+	--color-neutral-active-bg: var(--color-neutral-800);
 	--color-neutral-active-fg: var(--color-foreground);
 	--color-neutral-disabled-bg: var(--color-neutral-800);
 	--color-neutral-disabled-fg: var(--color-neutral-400);
