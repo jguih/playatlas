@@ -7,28 +7,31 @@
 		justify = "center",
 		rounded = false,
 		size = "md",
-		isLoading = false,
-		disabled,
-		selected,
+		iconOnly,
+		state = "default",
 		...props
 	}: BaseButtonProps = $props();
 
-	const dataState = $derived(
-		isLoading ? "loading" : disabled ? "disabled" : selected ? "selected" : "default",
-	);
+	const loading = $derived(state === "loading");
+	const disabled = $derived(state === "disabled");
 </script>
 
 <button
 	type="button"
-	data-state={dataState}
-	aria-busy={isLoading}
-	disabled={disabled || isLoading}
+	data-state={state}
+	aria-busy={loading}
+	disabled={disabled || loading}
 	{...props}
 	class={[
-		[
+		iconOnly && [
+			size === "sm" && "h-9 w-9 text-sm",
+			size === "md" && "h-10 w-10 text-base",
+			size === "lg" && "h-12 w-12 text-lg",
+		],
+		!iconOnly && [
 			size === "sm" && "h-8 gap-1.5 px-3 text-sm",
 			size === "md" && "h-10 gap-2 px-5 text-base",
-			size === "lg" && "h-12 gap-2.5 px-5 text-lg",
+			size === "lg" && "h-12 gap-2.5 px-5 text-base",
 		],
 		"relative inline-flex select-none items-center whitespace-nowrap",
 		"duration-80 transition-colors ease-out",
@@ -39,17 +42,18 @@
 		"hover:shadow-sm active:shadow-none",
 		"data-[state=disabled]:cursor-not-allowed",
 		"data-[state=loading]:cursor-wait",
+		"data-[state=active]:bg-transparent data-[state=active]:hover:bg-transparent",
 		props.class,
 	]}
 	bind:this={button}
 >
-	{#if isLoading}
+	{#if loading}
 		<span class="absolute inset-0 flex items-center justify-center">
 			<Spinner {size} />
 		</span>
 	{/if}
 
-	<span class={["inline-flex items-center gap-2", isLoading && "invisible"]}>
+	<span class={["inline-flex items-center gap-2", loading && "invisible"]}>
 		{#if props.children}
 			{@render props.children()}
 		{/if}

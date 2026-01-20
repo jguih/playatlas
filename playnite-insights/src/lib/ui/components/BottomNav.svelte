@@ -6,12 +6,14 @@
 
 <div
 	class={[
-		"border-t-1 border-solid border-neutral-800/80",
-		"flex flex-row items-center justify-between gap-4",
-		"bg-background-1 h-[var(--bottom-nav-height)] p-4 shadow",
+		"border-t border-neutral-800/80",
+		"flex items-center",
+		"bg-background-1 h-[var(--bottom-nav-height)] shadow",
 	]}
 >
 	{#if children}
-		{@render children()}
+		<div class="flex w-full justify-around">
+			{@render children()}
+		</div>
 	{/if}
 </div>

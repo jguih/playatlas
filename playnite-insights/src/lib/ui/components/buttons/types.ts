@@ -1,12 +1,14 @@
 import type { HTMLButtonAttributes } from "svelte/elements";
 import type { ComponentSize, SemanticColors } from "../types";
 
-export type BaseButtonProps = HTMLButtonAttributes & {
+export type BaseButtonStates = "loading" | "selected" | "active" | "disabled" | "default";
+
+export type BaseButtonProps = Omit<HTMLButtonAttributes, "disabled"> & {
 	button?: HTMLButtonElement;
 	justify?: "center" | "between" | "start";
 	variant?: SemanticColors;
 	rounded?: boolean;
 	size?: ComponentSize;
-	isLoading?: boolean;
-	selected?: boolean;
+	iconOnly?: boolean;
+	state?: BaseButtonStates;
 };

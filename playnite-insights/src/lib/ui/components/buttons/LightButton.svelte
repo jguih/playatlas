@@ -26,6 +26,7 @@
 				"data-[state=disabled]:bg-primary-light-disabled-bg",
 				"data-[state=disabled]:text-primary-light-disabled-fg",
 			],
+			["data-[state=active]:text-primary-light-active-fg"],
 		],
 		variant === "neutral" && [
 			[
@@ -43,6 +44,7 @@
 				"data-[state=disabled]:bg-neutral-light-disabled-bg",
 				"data-[state=disabled]:text-neutral-light-disabled-fg",
 			],
+			["data-[state=active]:text-neutral-light-active-fg"],
 		],
 		variant === "error" && [
 			[
@@ -60,6 +62,7 @@
 				"data-[state=disabled]:bg-error-light-disabled-bg",
 				"data-[state=disabled]:text-error-light-disabled-fg",
 			],
+			["data-[state=active]:text-error-light-active-fg"],
 		],
 		variant === "warning" && [
 			[
@@ -77,6 +80,7 @@
 				"data-[state=disabled]:bg-warning-light-disabled-bg",
 				"data-[state=disabled]:text-warning-light-disabled-fg",
 			],
+			["data-[state=active]:text-warning-light-active-fg"],
 		],
 		variant === "success" && [
 			[
@@ -94,6 +98,7 @@
 				"data-[state=disabled]:bg-success-light-disabled-bg",
 				"data-[state=disabled]:text-success-light-disabled-fg",
 			],
+			["data-[state=active]:text-success-light-active-fg"],
 		],
 		props.class,
 	]}

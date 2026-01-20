@@ -8,12 +8,6 @@
 	}: HTMLAttributes<HTMLDivElement> & {
 		size?: ComponentSize;
 	} = $props();
-
-	const sizeClasses = {
-		sm: "h-4 w-4 border-2",
-		md: "h-5 w-5 border-2",
-		lg: "h-6 w-6 border-[3px]",
-	} as const;
 </script>
 
 <div
@@ -27,7 +21,9 @@
 			"animate-spin",
 			"border-current border-t-transparent",
 			"text-inherit",
-			sizeClasses[size],
+			size === "sm" && "border-3 h-4 w-4",
+			size === "md" && "border-3 h-5 w-5",
+			size === "lg" && "h-6 w-6 border-4",
 		]}
 	></span>
 </div>

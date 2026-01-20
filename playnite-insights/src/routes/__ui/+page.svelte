@@ -10,14 +10,39 @@
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
 	import type { SemanticColors } from "$lib/ui/components/types";
-	import { HomeIcon } from "@lucide/svelte";
+	import {
+		HomeIcon,
+		LayoutDashboardIcon,
+		ListFilter,
+		SearchIcon,
+		SettingsIcon,
+	} from "@lucide/svelte";
 
 	const semanticVariants: SemanticColors[] = ["primary", "error", "neutral", "warning", "success"];
 </script>
 
 <AppLayout>
 	{#snippet header()}
-		<Header />
+		<Header>
+			<div class="ml-auto block w-fit">
+				<LightButton
+					variant="neutral"
+					iconOnly
+				>
+					<Icon>
+						<SearchIcon />
+					</Icon>
+				</LightButton>
+				<LightButton
+					variant="neutral"
+					iconOnly
+				>
+					<Icon>
+						<ListFilter />
+					</Icon>
+				</LightButton>
+			</div>
+		</Header>
 	{/snippet}
 	{#snippet banner()}
 		<div></div>
@@ -36,7 +61,7 @@
 			<ComponentDisplayContainer>
 				{#each semanticVariants as variant (variant)}
 					<SolidButton
-						disabled
+						state="disabled"
 						{variant}
 					>
 						{variant}
@@ -47,7 +72,7 @@
 			<ComponentDisplayContainer>
 				{#each semanticVariants as variant (variant)}
 					<SolidButton
-						selected
+						state="selected"
 						{variant}
 					>
 						{variant}
@@ -79,7 +104,7 @@
 			<ComponentDisplayContainer>
 				{#each semanticVariants as variant (variant)}
 					<SolidButton
-						isLoading
+						state="loading"
 						{variant}
 					>
 						{variant.toLocaleUpperCase()}
@@ -93,6 +118,7 @@
 					<SolidButton
 						{variant}
 						size="sm"
+						iconOnly
 					>
 						<Icon>
 							<HomeIcon />
@@ -101,6 +127,7 @@
 					<SolidButton
 						{variant}
 						size="md"
+						iconOnly
 					>
 						<Icon>
 							<HomeIcon />
@@ -109,6 +136,7 @@
 					<SolidButton
 						{variant}
 						size="lg"
+						iconOnly
 					>
 						<Icon>
 							<HomeIcon />
@@ -131,7 +159,7 @@
 			<ComponentDisplayContainer>
 				{#each semanticVariants as variant (variant)}
 					<LightButton
-						disabled
+						state="disabled"
 						{variant}
 					>
 						{variant}
@@ -142,7 +170,7 @@
 			<ComponentDisplayContainer>
 				{#each semanticVariants as variant (variant)}
 					<LightButton
-						selected
+						state="selected"
 						{variant}
 					>
 						{variant}
@@ -174,7 +202,7 @@
 			<ComponentDisplayContainer>
 				{#each semanticVariants as variant (variant)}
 					<LightButton
-						isLoading
+						state="loading"
 						{variant}
 					>
 						{variant.toLocaleUpperCase()}
@@ -188,6 +216,7 @@
 					<LightButton
 						{variant}
 						size="sm"
+						iconOnly
 					>
 						<Icon>
 							<HomeIcon />
@@ -196,6 +225,7 @@
 					<LightButton
 						{variant}
 						size="md"
+						iconOnly
 					>
 						<Icon>
 							<HomeIcon />
@@ -204,6 +234,7 @@
 					<LightButton
 						{variant}
 						size="lg"
+						iconOnly
 					>
 						<Icon>
 							<HomeIcon />
@@ -214,6 +245,35 @@
 		</ComponentSection>
 	</Main>
 	{#snippet bottomNav()}
-		<BottomNav></BottomNav>
+		<BottomNav>
+			<LightButton
+				size="lg"
+				iconOnly
+				state="active"
+				aria-label="Home"
+			>
+				<Icon>
+					<HomeIcon />
+				</Icon>
+			</LightButton>
+			<LightButton
+				size="lg"
+				iconOnly
+				aria-label="Dashboard"
+			>
+				<Icon>
+					<LayoutDashboardIcon />
+				</Icon>
+			</LightButton>
+			<LightButton
+				size="lg"
+				iconOnly
+				aria-label="Settings"
+			>
+				<Icon>
+					<SettingsIcon />
+				</Icon>
+			</LightButton>
+		</BottomNav>
 	{/snippet}
 </AppLayout>
