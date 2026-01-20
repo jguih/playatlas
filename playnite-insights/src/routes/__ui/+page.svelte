@@ -310,6 +310,7 @@
 			</LightButton>
 			<LightButton
 				size="lg"
+				variant="neutral"
 				iconOnly
 				aria-label="Dashboard"
 			>
@@ -319,6 +320,7 @@
 			</LightButton>
 			<LightButton
 				size="lg"
+				variant="neutral"
 				iconOnly
 				aria-label="Settings"
 			>

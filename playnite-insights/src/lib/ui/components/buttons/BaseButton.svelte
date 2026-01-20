@@ -42,7 +42,6 @@
 		"hover:shadow-sm active:shadow-none",
 		"data-[state=disabled]:cursor-not-allowed",
 		"data-[state=loading]:cursor-wait",
-		"data-[state=active]:bg-transparent data-[state=active]:hover:bg-transparent",
 		props.class,
 	]}
 	bind:this={button}
