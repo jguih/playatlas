@@ -308,3 +308,11 @@ html {
 body {
 	@apply text-foreground bg-background overflow-hidden;
 }
+
+.transition-colors-default {
+	@apply transition-colors duration-100 ease-out;
+}
+
+.shadow-default {
+	@apply shadow-md;
+}

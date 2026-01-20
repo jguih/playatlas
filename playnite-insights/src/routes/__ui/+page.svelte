@@ -7,6 +7,7 @@
 	import ComponentDisplayContainer from "$lib/ui/components/ComponentDisplayContainer.svelte";
 	import ComponentSection from "$lib/ui/components/ComponentSection.svelte";
 	import ComponentSectionText from "$lib/ui/components/ComponentSectionText.svelte";
+	import GameCard from "$lib/ui/components/game-card/GameCard.svelte";
 	import Header from "$lib/ui/components/header/Header.svelte";
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
@@ -276,6 +277,23 @@
 					</LightButton>
 				{/each}
 			</ComponentDisplayContainer>
+		</ComponentSection>
+
+		<ComponentSection title="Game Card">
+			<GameCard
+				game={{
+					name: "Minecraft",
+					coverImagePath: `${window.origin}/placeholder/cover.png`,
+					gamePagePath: "",
+				}}
+			/>
+			<GameCard
+				game={{
+					name: "Batman: Arkhan Asylum",
+					coverImagePath: `${window.origin}/placeholder/cover.png`,
+					gamePagePath: "",
+				}}
+			/>
 		</ComponentSection>
 	</Main>
 	{#snippet bottomNav()}
