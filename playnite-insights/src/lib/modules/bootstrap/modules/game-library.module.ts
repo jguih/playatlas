@@ -1,60 +1,51 @@
 import type { IHttpClientPort } from "$lib/modules/common/application";
-import { PlayAtlasClient, type IPlayAtlasClientPort } from "$lib/modules/game-library/application";
+import type { IClockPort } from "$lib/modules/common/application/clock.port";
 import {
-	SyncCompaniesCommandHandler,
+	type IGameMapperPort,
+	type IPlayAtlasClientPort,
+	GameMapper,
+	PlayAtlasClient,
+} from "$lib/modules/game-library/application";
+import {
 	type ISyncCompaniesCommandHandlerPort,
-} from "$lib/modules/game-library/commands/sync-companies";
-import {
-	SyncGamesCommandHandler,
 	type ISyncGamesCommandHandlerPort,
-} from "$lib/modules/game-library/commands/sync-games";
-import {
-	SyncGenresCommandHandler,
 	type ISyncGenresCommandHandlerPort,
-} from "$lib/modules/game-library/commands/sync-genres";
-import {
-	SyncPlatformsCommandHandler,
 	type ISyncPlatformsCommandHandlerPort,
-} from "$lib/modules/game-library/commands/sync-platforms";
+	SyncCompaniesCommandHandler,
+	SyncGamesCommandHandler,
+	SyncGenresCommandHandler,
+	SyncPlatformsCommandHandler,
+} from "$lib/modules/game-library/commands";
 import {
-	CompanyRepository,
-	GameRepository,
-	GenreRepository,
-	PlatformRepository,
 	type ICompanyRepositoryPort,
 	type IGameRepositoryPort,
 	type IGenreRepositoryPort,
 	type IPlatformRepositoryPort,
+	CompanyRepository,
+	GameRepository,
+	GenreRepository,
+	PlatformRepository,
 } from "$lib/modules/game-library/infra";
 import {
-	GetCompaniesByIdsQueryHandler,
 	type IGetCompaniesByIdsQueryHandlerPort,
-} from "$lib/modules/game-library/queries/get-companies-by-ids";
-import {
-	GetGamesQueryHandler,
-	type IGetGamesQueryHandlerPort,
-} from "$lib/modules/game-library/queries/get-games";
-import {
-	GetGamesByIdsQueryHandler,
 	type IGetGamesByIdsQueryHandlerPort,
-} from "$lib/modules/game-library/queries/get-games-by-ids";
-import {
-	GetGenresByIdQueryHandler,
+	type IGetGamesQueryHandlerPort,
 	type IGetGenreByIdQueryHandlerPort,
-} from "$lib/modules/game-library/queries/get-genre-by-id";
-import {
-	GetGenresByIdsQueryHandler,
 	type IGetGenresByIdsQueryHandlerPort,
-} from "$lib/modules/game-library/queries/get-genres-by-ids";
-import {
-	GetPlatformsByIdsQueryHandler,
 	type IGetPlatformsByIdsQueryHandlerPort,
-} from "$lib/modules/game-library/queries/get-platforms-by-ids";
+	GetCompaniesByIdsQueryHandler,
+	GetGamesByIdsQueryHandler,
+	GetGamesQueryHandler,
+	GetGenresByIdQueryHandler,
+	GetGenresByIdsQueryHandler,
+	GetPlatformsByIdsQueryHandler,
+} from "$lib/modules/game-library/queries";
 import type { IClientGameLibraryModulePort } from "./game-library.module.port";
 
 export type ClientGameLibraryModuleDeps = {
 	dbSignal: IDBDatabase;
 	httpClient: IHttpClientPort;
+	clock: IClockPort;
 };
 
 export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
@@ -77,11 +68,15 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 
 	readonly playAtlasClient: IPlayAtlasClientPort;
 
-	constructor({ dbSignal, httpClient }: ClientGameLibraryModuleDeps) {
+	readonly gameMapper: IGameMapperPort;
+
+	constructor({ dbSignal, httpClient, clock }: ClientGameLibraryModuleDeps) {
 		this.gameRepository = new GameRepository({ dbSignal });
 		this.genreRepository = new GenreRepository({ dbSignal });
 		this.companyRepository = new CompanyRepository({ dbSignal });
 		this.platformRepository = new PlatformRepository({ dbSignal });
+
+		this.gameMapper = new GameMapper({ clock });
 
 		this.getGamesQueryHandler = new GetGamesQueryHandler({ gameRepository: this.gameRepository });
 		this.getGamesByIdsQueryHandler = new GetGamesByIdsQueryHandler({
@@ -113,6 +108,6 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			platformRepository: this.platformRepository,
 		});
 
-		this.playAtlasClient = new PlayAtlasClient({ httpClient });
+		this.playAtlasClient = new PlayAtlasClient({ httpClient, gameMapper: this.gameMapper });
 	}
 }

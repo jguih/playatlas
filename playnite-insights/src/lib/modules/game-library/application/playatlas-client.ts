@@ -7,20 +7,23 @@ import {
 } from "@playatlas/game-library/dtos";
 import z from "zod";
 import { companyMapper } from "../company.mapper";
-import { gameMapper } from "../game.mapper";
 import { genreMapper } from "../genre.mapper";
 import { platformMapper } from "../platform.mapper";
+import type { IGameMapperPort } from "./game.mapper";
 import type { IPlayAtlasClientPort } from "./playatlas-client.port";
 
 export type PlayAtlasClientDeps = {
 	httpClient: IHttpClientPort;
+	gameMapper: IGameMapperPort;
 };
 
 export class PlayAtlasClient implements IPlayAtlasClientPort {
 	private readonly httpClient: IHttpClientPort;
+	private readonly gameMapper: IGameMapperPort;
 
-	constructor({ httpClient }: PlayAtlasClientDeps) {
+	constructor({ httpClient, gameMapper }: PlayAtlasClientDeps) {
 		this.httpClient = httpClient;
+		this.gameMapper = gameMapper;
 	}
 
 	getGamesAsync: IPlayAtlasClientPort["getGamesAsync"] = async ({ sinceLastSync }) => {
@@ -31,7 +34,7 @@ export class PlayAtlasClient implements IPlayAtlasClientPort {
 			},
 		});
 		const gamesDtos = await zodJsonParser(z.array(playniteProjectionResponseDtoSchema))(response);
-		return gamesDtos.map(gameMapper.toDomain);
+		return gamesDtos.map(this.gameMapper.toDomain);
 	};
 
 	getCompaniesAsync: IPlayAtlasClientPort["getCompaniesAsync"] = async ({ sinceLastSync }) => {
