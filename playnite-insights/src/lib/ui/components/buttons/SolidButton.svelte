@@ -1,14 +1,14 @@
 <script lang="ts">
 	import BaseButton from "./BaseButton.svelte";
-	import type { LightButtonProps } from "./types";
+	import type { BaseButtonProps } from "./types";
 
-	let { color = "primary", selected, ...props }: LightButtonProps = $props();
+	let { variant = "primary", selected, ...props }: BaseButtonProps = $props();
 </script>
 
 <BaseButton
 	{...props}
 	class={[
-		color === "primary" && [
+		variant === "primary" && [
 			selected ? "text-primary-active-fg" : "text-primary-fg",
 			"bg-primary-bg",
 			"hover:text-primary-hover-fg hover:bg-primary-hover-bg",
@@ -16,7 +16,7 @@
 			"focus:ring-primary-active-bg focus:ring-2",
 			"disabled:bg-primary-disabled-bg disabled:text-primary-disabled-fg",
 		],
-		color === "neutral" && [
+		variant === "neutral" && [
 			selected ? "text-neutral-active-fg" : "bg-neutral-active-bg",
 			"bg-neutral-bg",
 			"hover:text-neutral-hover-fg hover:bg-neutral-hover-bg",
@@ -24,7 +24,7 @@
 			"focus:ring-neutral-active-bg focus:ring-2",
 			"disabled:bg-neutral-disabled-bg disabled:text-neutral-disabled-fg",
 		],
-		color === "error" && [
+		variant === "error" && [
 			selected ? "text-error-active-fg" : "text-error-fg",
 			"bg-error-bg",
 			"hover:text-error-hover-fg hover:bg-error-hover-bg",

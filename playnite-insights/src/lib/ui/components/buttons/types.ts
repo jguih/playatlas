@@ -4,9 +4,9 @@ import type { ComponentSize, SemanticColors } from "../types";
 export type BaseButtonProps = HTMLButtonAttributes & {
 	button?: HTMLButtonElement;
 	justify?: "center" | "between" | "start";
-	color?: SemanticColors;
+	variant?: SemanticColors;
 	rounded?: boolean;
 	size?: ComponentSize;
 	isLoading?: boolean;
+	selected?: boolean;
 };
-export type LightButtonProps = BaseButtonProps & { selected?: boolean };

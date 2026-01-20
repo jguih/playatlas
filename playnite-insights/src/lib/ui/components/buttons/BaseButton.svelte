@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Loading from "../Loading.svelte";
+	import Spinner from "../Spinner.svelte";
+	import type { ComponentSize } from "../types";
 	import type { BaseButtonProps } from "./types";
 
 	let {
@@ -8,30 +9,52 @@
 		rounded = false,
 		size = "sm",
 		isLoading = false,
+		disabled,
+		selected,
 		...props
 	}: BaseButtonProps = $props();
+
+	const sizeClasses: Record<ComponentSize, string> = {
+		sm: "h-8 px-3 text-sm gap-1.5",
+		md: "h-10 px-4 text-sm gap-2",
+		lg: "h-12 px-5 text-base gap-2.5",
+	} as const;
+
+	const dataState = $derived(
+		isLoading ? "loading" : disabled ? "disabled" : selected ? "selected" : "default",
+	);
 </script>
 
 <button
 	type="button"
+	data-state={dataState}
+	aria-busy={isLoading}
+	disabled={disabled || isLoading}
 	{...props}
 	class={[
-		"m-0 flex cursor-pointer flex-row items-center gap-2 outline-0",
+		"relative inline-flex select-none items-center whitespace-nowrap",
+		"duration-80 transition-colors ease-out",
+		"outline-none focus-visible:ring-2 focus-visible:ring-offset-0",
 		justify === "center" && "justify-center",
 		justify === "between" && "justify-between",
-		rounded && "rounded-full p-2",
-		size === "sm" && "p-1",
-		size === "md" && "px-1 py-2",
-		size === "lg" && "px-3 py-2 text-lg",
+		sizeClasses[size],
+		rounded && "rounded-full",
+		"hover:shadow-sm active:shadow-none",
+		"data-[state=disabled]:cursor-not-allowed",
+		"data-[state=loading]:cursor-wait",
 		props.class,
 	]}
 	bind:this={button}
-	disabled={props.disabled || isLoading}
 >
 	{#if isLoading}
-		<Loading size="sm" />
+		<span class="absolute inset-0 flex items-center justify-center">
+			<Spinner {size} />
+		</span>
 	{/if}
-	{#if props.children}
-		{@render props.children()}
-	{/if}
+
+	<span class={["inline-flex items-center gap-2", isLoading && "invisible"]}>
+		{#if props.children}
+			{@render props.children()}
+		{/if}
+	</span>
 </button>
