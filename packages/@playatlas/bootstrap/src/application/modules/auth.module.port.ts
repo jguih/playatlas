@@ -2,6 +2,8 @@ import type {
 	ICryptographyServicePort,
 	IExtensionAuthServicePort,
 	IInstanceAuthServicePort,
+	IInstanceSessionFactoryPort,
+	IInstanceSessionMapperPort,
 } from "@playatlas/auth/application";
 import type {
 	IApproveExtensionRegistrationCommandHandlerPort,
@@ -12,15 +14,18 @@ import type {
 } from "@playatlas/auth/commands";
 import type {
 	IExtensionRegistrationRepositoryPort,
-	InstanceAuthSettingsRepository,
-	InstanceSessionRepository,
+	IInstanceAuthSettingsRepositoryPort,
+	IInstanceSessionRepositoryPort,
 } from "@playatlas/auth/infra";
 import type { IGetAllExtensionRegistrationsQueryHandlerPort } from "@playatlas/auth/queries";
 
 export type IAuthModulePort = {
+	getInstanceSessionMapper: () => IInstanceSessionMapperPort;
+	getInstanceSessionFactory: () => IInstanceSessionFactoryPort;
+	getInstanceSessionRepository: () => IInstanceSessionRepositoryPort;
+	getInstanceAuthSettingsRepository: () => IInstanceAuthSettingsRepositoryPort;
+
 	getExtensionRegistrationRepository: () => IExtensionRegistrationRepositoryPort;
-	getInstanceAuthSettingsRepository: () => InstanceAuthSettingsRepository;
-	getInstanceSessionRepository: () => InstanceSessionRepository;
 	getExtensionAuthService: () => IExtensionAuthServicePort;
 	getCryptographyService: () => ICryptographyServicePort;
 	getInstanceAuthService: () => IInstanceAuthServicePort;

@@ -1,30 +1,28 @@
 import { validation } from "@playatlas/common/application";
-import { InvalidArgumentError, InvalidStateError, type BaseEntity } from "@playatlas/common/domain";
-import { buildInstanceSessionPropsSchema } from "./instance-session.entity.schemas";
+import { InvalidStateError, type BaseEntity } from "@playatlas/common/domain";
 import type {
 	BuildInstanceSessionProps,
+	MakeInstanceSessionDeps,
 	MakeInstanceSessionProps,
 	RehydrateInstanceSessionProps,
 } from "./instance-session.entity.types";
+import type { SessionId } from "./value-object/session-id";
 
-export type InstanceSessionId = string;
-export type InstanceSession = BaseEntity<InstanceSessionId> &
+export type InstanceSession = BaseEntity<SessionId> &
 	Readonly<{
-		getCreatedAt: () => Date;
 		getLastUsedAt: () => Date;
 	}>;
 
-const buildInstanceSession = (props: BuildInstanceSessionProps): InstanceSession => {
-	const result = buildInstanceSessionPropsSchema.safeParse(props);
-	if (!result.success)
-		throw new InvalidArgumentError(
-			`Invalid props passed to entity factory: ${result.error.message}`,
-		);
+const buildInstanceSession = (
+	props: BuildInstanceSessionProps,
+	{ clock }: MakeInstanceSessionDeps,
+): InstanceSession => {
+	const now = clock.now();
 
-	const now = new Date();
 	const _session_id = props.sessionId;
 	const _created_at = props.createdAt ?? now;
 	const _last_used_at = props.lastUsedAt ?? now;
+	const _last_updated_at = props.lastUpdatedAt ?? now;
 
 	const _validate = () => {
 		if (validation.isNullOrEmptyString(_session_id))
@@ -38,15 +36,22 @@ const buildInstanceSession = (props: BuildInstanceSessionProps): InstanceSession
 		getSafeId: () => "<redacted>",
 		getCreatedAt: () => _created_at,
 		getLastUsedAt: () => _last_used_at,
+		getLastUpdatedAt: () => _last_updated_at,
 		validate: _validate,
 	};
 	return Object.freeze(session);
 };
 
-export const makeInstanceSession = (props: MakeInstanceSessionProps) => {
-	return buildInstanceSession(props);
+export const makeInstanceSession = (
+	props: MakeInstanceSessionProps,
+	deps: MakeInstanceSessionDeps,
+) => {
+	return buildInstanceSession(props, deps);
 };
 
-export const rehydrateInstanceSession = (props: RehydrateInstanceSessionProps) => {
-	return buildInstanceSession(props);
+export const rehydrateInstanceSession = (
+	props: RehydrateInstanceSessionProps,
+	deps: MakeInstanceSessionDeps,
+) => {
+	return buildInstanceSession(props, deps);
 };

@@ -2,6 +2,8 @@ import {
 	makeCryptographyService,
 	makeExtensionAuthService,
 	makeInstanceAuthService,
+	makeInstanceSessionFactory,
+	makeInstanceSessionMapper,
 } from "@playatlas/auth/application";
 import {
 	makeApproveExtensionRegistrationHandler,
@@ -21,7 +23,7 @@ import type {
 	ILogServiceFactoryPort,
 	ISignatureServicePort,
 } from "@playatlas/common/application";
-import type { BaseRepositoryDeps } from "@playatlas/common/infra";
+import type { BaseRepositoryDeps, IClockPort } from "@playatlas/common/infra";
 import type { IAuthModulePort } from "./auth.module.port";
 
 export type AuthModuleDeps = {
@@ -29,6 +31,7 @@ export type AuthModuleDeps = {
 	logServiceFactory: ILogServiceFactoryPort;
 	signatureService: ISignatureServicePort;
 	eventBus: IDomainEventBusPort;
+	clock: IClockPort;
 };
 
 export const makeAuthModule = ({
@@ -36,54 +39,61 @@ export const makeAuthModule = ({
 	logServiceFactory,
 	signatureService,
 	eventBus,
+	clock,
 }: AuthModuleDeps): IAuthModulePort => {
+	const buildLog = (ctx: string) => logServiceFactory.build(ctx);
+
+	const instanceSessionFactory = makeInstanceSessionFactory({ clock });
+	const instanceSessionMapper = makeInstanceSessionMapper({ instanceSessionFactory });
+	const instanceSessionRepository = makeInstanceSessionRepository({
+		getDb,
+		logService: buildLog("InstanceSessionRepository"),
+		instanceSessionMapper,
+	});
+	const instanceAuthSettingsRepository = makeInstanceAuthSettingsRepository({
+		getDb,
+		logService: buildLog("InstanceAuthSettingsRepository"),
+	});
+
 	const _extension_registration_repo = makeExtensionRegistrationRepository({
 		getDb,
-		logService: logServiceFactory.build("ExtensionRegistrationRepository"),
-	});
-	const _instance_auth_settings_repo = makeInstanceAuthSettingsRepository({
-		getDb,
-		logService: logServiceFactory.build("InstanceAuthSettingsRepository"),
-	});
-	const _instance_session_repo = makeInstanceSessionRepository({
-		getDb,
-		logService: logServiceFactory.build("InstanceSessionRepository"),
+		logService: buildLog("ExtensionRegistrationRepository"),
 	});
 	const _extension_auth_service = makeExtensionAuthService({
-		logService: logServiceFactory.build("ExtensionAuthService"),
+		logService: buildLog("ExtensionAuthService"),
 		extensionRegistrationRepository: _extension_registration_repo,
 		signatureService,
 	});
 	const _cryptography_service = makeCryptographyService();
 	const _instance_auth_service = makeInstanceAuthService({
 		cryptographyService: _cryptography_service,
-		instanceAuthSettingsRepository: _instance_auth_settings_repo,
-		instanceSessionRepository: _instance_session_repo,
-		logService: logServiceFactory.build("InstanceAuthService"),
+		instanceAuthSettingsRepository: instanceAuthSettingsRepository,
+		instanceSessionRepository: instanceSessionRepository,
+		logService: buildLog("InstanceAuthService"),
 	});
 	const _approve_extension_registration_command_handler = makeApproveExtensionRegistrationHandler({
-		logService: logServiceFactory.build("ApproveExtensionRegistrationCommandHandler"),
+		logService: buildLog("ApproveExtensionRegistrationCommandHandler"),
 		extensionRegistrationRepository: _extension_registration_repo,
 		eventBus,
 	});
 	const _reject_extension_registration_command_handler = makeRejectExtensionRegistrationHandler({
-		logService: logServiceFactory.build("RejectExtensionRegistrationCommandHandler"),
+		logService: buildLog("RejectExtensionRegistrationCommandHandler"),
 		extensionRegistrationRepository: _extension_registration_repo,
 		eventBus,
 	});
 	const _revoke_extension_registration_command_handler = makeRevokeExtensionRegistrationHandler({
-		logService: logServiceFactory.build("RevokeExtensionRegistrationCommandHandler"),
+		logService: buildLog("RevokeExtensionRegistrationCommandHandler"),
 		extensionRegistrationRepository: _extension_registration_repo,
 		eventBus,
 	});
 	const _remove_extension_registration_command_handler = makeRemoveExtensionRegistrationHandler({
-		logService: logServiceFactory.build("RemoveExtensionRegistrationCommandHandler"),
+		logService: buildLog("RemoveExtensionRegistrationCommandHandler"),
 		extensionRegistrationRepository: _extension_registration_repo,
 		eventBus,
 	});
 	const _register_extension_command_handler = makeRegisterExtensionHandler({
 		extensionRegistrationRepository: _extension_registration_repo,
-		logService: logServiceFactory.build("RegisterExtensionCommandHandler"),
+		logService: buildLog("RegisterExtensionCommandHandler"),
 		eventBus,
 	});
 	const _get_all_extension_registrations_query_handler =
@@ -92,9 +102,12 @@ export const makeAuthModule = ({
 		});
 
 	const authApi: IAuthModulePort = {
+		getInstanceSessionFactory: () => instanceSessionFactory,
+		getInstanceSessionMapper: () => instanceSessionMapper,
+		getInstanceAuthSettingsRepository: () => instanceAuthSettingsRepository,
+		getInstanceSessionRepository: () => instanceSessionRepository,
+
 		getExtensionRegistrationRepository: () => _extension_registration_repo,
-		getInstanceAuthSettingsRepository: () => _instance_auth_settings_repo,
-		getInstanceSessionRepository: () => _instance_session_repo,
 		getExtensionAuthService: () => _extension_auth_service,
 		getCryptographyService: () => _cryptography_service,
 		getInstanceAuthService: () => _instance_auth_service,

@@ -5,5 +5,5 @@ export * from "./instance-auth-settings.entity";
 export * from "./instance-auth-settings.entity.schemas";
 export type * from "./instance-auth-settings.entity.types";
 export * from "./instance-session.entity";
-export * from "./instance-session.entity.schemas";
 export type * from "./instance-session.entity.types";
+export * from "./value-object";

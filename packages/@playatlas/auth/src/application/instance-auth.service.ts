@@ -1,13 +1,14 @@
 import type { ILogServicePort } from "@playatlas/common/application";
-import type { InstanceAuthSettingsRepository, InstanceSessionRepository } from "../infra";
+import { makeInstanceAuthSettings, SessionIdParser } from "../domain";
+import type { IInstanceAuthSettingsRepositoryPort, IInstanceSessionRepositoryPort } from "../infra";
 import type { ICryptographyServicePort } from "./cryptography.service.port";
 import type { IInstanceAuthServicePort } from "./instance-auth.service.port";
 
 export type InstanceAuthServiceDeps = {
 	logService: ILogServicePort;
 	cryptographyService: ICryptographyServicePort;
-	instanceAuthSettingsRepository: InstanceAuthSettingsRepository;
-	instanceSessionRepository: InstanceSessionRepository;
+	instanceAuthSettingsRepository: IInstanceAuthSettingsRepositoryPort;
+	instanceSessionRepository: IInstanceSessionRepositoryPort;
 };
 
 export const makeInstanceAuthService = ({
@@ -39,16 +40,17 @@ export const makeInstanceAuthService = ({
 			return { authorized: false, reason: "Instance is not registered" };
 		}
 
-		const sessionId = authorization.split(" ").at(1);
-		if (!sessionId) {
-			logService.warning(
-				`${requestDescription}: Request rejected due to missing or invalid session id`,
-			);
+		const _sessionId = authorization.split(" ").at(1);
+
+		if (!_sessionId) {
+			logService.warning(`${requestDescription}: Request rejected due to missing session id`);
 			return {
 				authorized: false,
 				reason: "Invalid or missing session id",
 			};
 		}
+
+		const sessionId = SessionIdParser.fromExternal(_sessionId);
 
 		const existingSession = instanceSessionRepository.getById(sessionId);
 		if (!existingSession) {
@@ -70,5 +72,34 @@ export const makeInstanceAuthService = ({
 		return { authorized: true, reason: "Authorized" };
 	};
 
-	return { verify };
+	const registerAsync: IInstanceAuthServicePort["registerAsync"] = async ({ password }) => {
+		const existing = instanceAuthSettingsRepository.get();
+		if (existing)
+			return {
+				success: false,
+				reason_code: "instance_already_registered",
+				reason: "Instance is already registered",
+			};
+
+		const { hash, salt } = await cryptographyService.hashPassword(password);
+
+		const instanceAuth = makeInstanceAuthSettings({
+			passwordHash: hash,
+			salt: salt,
+		});
+
+		instanceAuthSettingsRepository.upsert(instanceAuth);
+
+		logService.info(`Created instance registration`);
+
+		return {
+			success: true,
+			reason_code: "instance_registered",
+			reason: "Instance registered",
+		};
+	};
+
+	const loginAsync: IInstanceAuthServicePort["loginAsync"] = async () => {};
+
+	return { verify, registerAsync, loginAsync };
 };

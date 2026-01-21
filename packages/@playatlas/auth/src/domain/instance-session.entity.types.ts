@@ -1,12 +1,22 @@
-import type z from "zod";
-import type {
-	buildInstanceSessionPropsSchema,
-	makeInstanceSessionPropsSchema,
-	rehydrateInstanceSessionPropsSchema,
-} from "./instance-session.entity.schemas";
+import type { IClockPort } from "@playatlas/common/infra";
+import type { SessionId } from "./value-object/session-id";
 
-export type BuildInstanceSessionProps = z.infer<typeof buildInstanceSessionPropsSchema>;
+type CommonProps = {
+	createdAt: Date;
+	lastUsedAt: Date;
+	lastUpdatedAt: Date;
+};
 
-export type MakeInstanceSessionProps = z.infer<typeof makeInstanceSessionPropsSchema>;
+type BaseProps = {
+	sessionId: SessionId;
+};
 
-export type RehydrateInstanceSessionProps = z.infer<typeof rehydrateInstanceSessionPropsSchema>;
+export type BuildInstanceSessionProps = BaseProps & Partial<CommonProps>;
+
+export type MakeInstanceSessionProps = BaseProps;
+
+export type RehydrateInstanceSessionProps = BaseProps & CommonProps;
+
+export type MakeInstanceSessionDeps = {
+	clock: IClockPort;
+};

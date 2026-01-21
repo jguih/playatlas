@@ -1,21 +1,27 @@
 import { ISODateSchema } from "@playatlas/common/common";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
-import { instanceSessionMapper } from "../instance-session.mapper";
-import type { InstanceSessionRepository } from "./instance-session.repository.port";
+import { type IInstanceSessionMapperPort } from "../application/instance-session.mapper";
+import type { IInstanceSessionRepositoryPort } from "./instance-session.repository.port";
 
 export const instanceSessionSchema = z.object({
 	Id: z.string(),
 	CreatedAt: ISODateSchema,
 	LastUsedAt: ISODateSchema,
+	LastUpdatedAt: ISODateSchema,
 });
 
 export type InstanceSessionModel = z.infer<typeof instanceSessionSchema>;
 
+export type InstanceSessionRepositoryDeps = BaseRepositoryDeps & {
+	instanceSessionMapper: IInstanceSessionMapperPort;
+};
+
 export const makeInstanceSessionRepository = ({
 	getDb,
 	logService,
-}: BaseRepositoryDeps): InstanceSessionRepository => {
+	instanceSessionMapper,
+}: InstanceSessionRepositoryDeps): IInstanceSessionRepositoryPort => {
 	const TABLE_NAME = "instance_sessions";
 	const COLUMNS = Object.keys(instanceSessionSchema.shape) as (keyof InstanceSessionModel)[];
 	const base = makeBaseRepository({
@@ -27,19 +33,19 @@ export const makeInstanceSessionRepository = ({
 			tableName: TABLE_NAME,
 			idColumn: "Id",
 			insertColumns: COLUMNS,
-			updateColumns: ["LastUsedAt"],
+			updateColumns: ["LastUsedAt", "LastUpdatedAt"],
 		},
 	});
 
-	const add: InstanceSessionRepository["add"] = (entity) => {
+	const add: IInstanceSessionRepositoryPort["add"] = (entity) => {
 		base._add(entity);
 	};
 
-	const upsert: InstanceSessionRepository["upsert"] = (entity) => {
+	const upsert: IInstanceSessionRepositoryPort["upsert"] = (entity) => {
 		base._upsert(entity);
 	};
 
-	const update: InstanceSessionRepository["update"] = (entity) => {
+	const update: IInstanceSessionRepositoryPort["update"] = (entity) => {
 		base._update(entity);
 	};
 
