@@ -1,7 +1,7 @@
 import { ISODateSchema } from "@playatlas/common/common";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
-import { instanceAuthSettingsMapper } from "../instance-auth-settings.mapper";
+import type { IInstanceAuthSettingsMapperPort } from "../application/instance-auth-settings.mapper";
 import type { IInstanceAuthSettingsRepositoryPort } from "./instance-auth-settings.repository.port";
 
 export const instanceAuthSettingsSchema = z.object({
@@ -14,10 +14,15 @@ export const instanceAuthSettingsSchema = z.object({
 
 export type InstanceAuthSettingsModel = z.infer<typeof instanceAuthSettingsSchema>;
 
+export type InstanceAuthSettingsRepositoryDeps = BaseRepositoryDeps & {
+	instanceAuthSettingsMapper: IInstanceAuthSettingsMapperPort;
+};
+
 export const makeInstanceAuthSettingsRepository = ({
 	getDb,
 	logService,
-}: BaseRepositoryDeps): IInstanceAuthSettingsRepositoryPort => {
+	instanceAuthSettingsMapper,
+}: InstanceAuthSettingsRepositoryDeps): IInstanceAuthSettingsRepositoryPort => {
 	const TABLE_NAME = "instance_auth_settings";
 	const COLUMNS: (keyof InstanceAuthSettingsModel)[] = [
 		"Id",

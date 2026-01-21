@@ -1,5 +1,5 @@
 import type { IClockPort } from "@playatlas/common/infra";
-import type { SessionId } from "./value-object/session-id";
+import type { InstanceSessionId } from "./value-object/instance-session-id";
 
 type CommonProps = {
 	createdAt: Date;
@@ -8,7 +8,7 @@ type CommonProps = {
 };
 
 type BaseProps = {
-	sessionId: SessionId;
+	sessionId: InstanceSessionId;
 };
 
 export type BuildInstanceSessionProps = BaseProps & Partial<CommonProps>;

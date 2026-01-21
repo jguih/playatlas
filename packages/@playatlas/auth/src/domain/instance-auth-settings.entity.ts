@@ -1,8 +1,8 @@
 import { validation } from "@playatlas/common/application";
 import { InvalidArgumentError, InvalidStateError, type BaseEntity } from "@playatlas/common/domain";
-import { buildInstanceAuthSettingsPropsSchema } from "./instance-auth-settings.entity.schemas";
 import type {
 	BuildInstanceAuthSettingsProps,
+	MakeInstanceAuthSettingsDeps,
 	MakeInstanceAuthSettingsProps,
 	RehydrateInstanceAuthSettingsProps,
 } from "./instance-auth-settings.entity.types";
@@ -13,16 +13,14 @@ export type InstanceAuthSettings = BaseEntity<InstanceAuthSettingsId> &
 		getPasswordHash: () => string;
 		setInstanceCredentials: (props: { hash: string; salt: string }) => void;
 		getSalt: () => string;
-		getCreatedAt: () => Date;
-		getLastUpdatedAt: () => Date;
 	}>;
 
-const buildInstanceAuthSettings = (props: BuildInstanceAuthSettingsProps): InstanceAuthSettings => {
-	const result = buildInstanceAuthSettingsPropsSchema.safeParse(props);
-	if (!result.success)
-		throw new InvalidStateError(`Invalid props passed to entity factory: ${result.error.message}`);
+const buildInstanceAuthSettings = (
+	props: BuildInstanceAuthSettingsProps,
+	{ clock }: MakeInstanceAuthSettingsDeps,
+): InstanceAuthSettings => {
+	const now = clock.now();
 
-	const now = new Date();
 	let _password_hash = props.passwordHash;
 	let _salt = props.salt;
 	const _created_at = props.createdAt ?? now;
@@ -38,7 +36,7 @@ const buildInstanceAuthSettings = (props: BuildInstanceAuthSettingsProps): Insta
 	_validate();
 
 	const _touch = () => {
-		_last_updated_at = new Date();
+		_last_updated_at = clock.now();
 	};
 
 	const authSettings: InstanceAuthSettings = {
@@ -65,12 +63,14 @@ const buildInstanceAuthSettings = (props: BuildInstanceAuthSettingsProps): Insta
 
 export const makeInstanceAuthSettings = (
 	props: MakeInstanceAuthSettingsProps,
+	deps: MakeInstanceAuthSettingsDeps,
 ): InstanceAuthSettings => {
-	return buildInstanceAuthSettings(props);
+	return buildInstanceAuthSettings(props, deps);
 };
 
 export const rehydrateInstanceAuthSettings = (
 	props: RehydrateInstanceAuthSettingsProps,
+	deps: MakeInstanceAuthSettingsDeps,
 ): InstanceAuthSettings => {
-	return buildInstanceAuthSettings(props);
+	return buildInstanceAuthSettings(props, deps);
 };

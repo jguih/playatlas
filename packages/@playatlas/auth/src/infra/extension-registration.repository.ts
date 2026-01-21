@@ -2,9 +2,9 @@ import { ISODateSchema } from "@playatlas/common/common";
 import type { ExtensionRegistrationId } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
+import type { IExtensionRegistrationMapperPort } from "../application/extension-registration.mapper";
 import { extensionRegistrationStatus } from "../domain/extension-registration.constants";
 import type { ExtensionRegistration } from "../domain/extension-registration.entity";
-import { extensionRegistrationMapper } from "../extension-registration.mapper";
 import type { IExtensionRegistrationRepositoryPort } from "./extension-registration.repository.port";
 
 export const extensionRegistrationSchema = z.object({
@@ -21,10 +21,15 @@ export const extensionRegistrationSchema = z.object({
 
 export type ExtensionRegistrationModel = z.infer<typeof extensionRegistrationSchema>;
 
+export type ExtensionRegistrationRepositoryDeps = BaseRepositoryDeps & {
+	extensionRegistrationMapper: IExtensionRegistrationMapperPort;
+};
+
 export const makeExtensionRegistrationRepository = ({
 	getDb,
 	logService,
-}: BaseRepositoryDeps): IExtensionRegistrationRepositoryPort => {
+	extensionRegistrationMapper,
+}: ExtensionRegistrationRepositoryDeps): IExtensionRegistrationRepositoryPort => {
 	const TABLE_NAME = `extension_registration`;
 	const COLUMNS: (keyof ExtensionRegistrationModel)[] = [
 		"Id",

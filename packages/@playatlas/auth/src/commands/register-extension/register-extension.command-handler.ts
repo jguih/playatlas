@@ -1,4 +1,3 @@
-import { makeExtensionRegistration } from "../../domain/extension-registration.entity";
 import type { IRegisterExtensionCommandHandlerPort } from "./register-extension.command-handler.port";
 import type { RegisterExtensionCommandHandlerDeps } from "./register-extension.command-handler.types";
 
@@ -6,6 +5,7 @@ export const makeRegisterExtensionHandler = ({
 	extensionRegistrationRepository: repository,
 	logService,
 	eventBus,
+	extensionRegistrationFactory,
 }: RegisterExtensionCommandHandlerDeps): IRegisterExtensionCommandHandlerPort => {
 	return {
 		execute: (command) => {
@@ -31,7 +31,7 @@ export const makeRegisterExtensionHandler = ({
 				};
 			}
 
-			const registration = makeExtensionRegistration({
+			const registration = extensionRegistrationFactory.create({
 				extensionId: command.extensionId,
 				extensionVersion: command.extensionVersion ?? null,
 				hostname: command.hostname ?? null,

@@ -1,5 +1,6 @@
 import type { IDomainEventBusPort, ILogServicePort } from "@playatlas/common/application";
 import type { ExtensionRegistrationId } from "@playatlas/common/domain";
+import type { IExtensionRegistrationFactoryPort } from "../../application/extension-registration.factory";
 import type { IExtensionRegistrationRepositoryPort } from "../../infra/extension-registration.repository.port";
 
 export type RegisterExtensionCommandResult =
@@ -19,4 +20,5 @@ export type RegisterExtensionCommandHandlerDeps = {
 	extensionRegistrationRepository: IExtensionRegistrationRepositoryPort;
 	logService: ILogServicePort;
 	eventBus: IDomainEventBusPort;
+	extensionRegistrationFactory: IExtensionRegistrationFactoryPort;
 };

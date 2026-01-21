@@ -1,12 +1,19 @@
-import type z from "zod";
-import type {
-	buildInstanceAuthSettingsPropsSchema,
-	makeInstanceAuthSettingsPropsSchema,
-	rehydrateInstanceAuthSettingsPropsSchema,
-} from "./instance-auth-settings.entity.schemas";
+import type { IClockPort } from "@playatlas/common/infra";
 
-export type BuildInstanceAuthSettingsProps = z.infer<typeof buildInstanceAuthSettingsPropsSchema>;
-export type MakeInstanceAuthSettingsProps = z.infer<typeof makeInstanceAuthSettingsPropsSchema>;
-export type RehydrateInstanceAuthSettingsProps = z.infer<
-	typeof rehydrateInstanceAuthSettingsPropsSchema
->;
+type CommonProps = {
+	createdAt: Date;
+	lastUpdatedAt: Date;
+};
+
+type BaseProps = {
+	passwordHash: string;
+	salt: string;
+};
+
+export type BuildInstanceAuthSettingsProps = BaseProps & Partial<CommonProps>;
+export type MakeInstanceAuthSettingsProps = BaseProps;
+export type RehydrateInstanceAuthSettingsProps = BaseProps & CommonProps;
+
+export type MakeInstanceAuthSettingsDeps = {
+	clock: IClockPort;
+};

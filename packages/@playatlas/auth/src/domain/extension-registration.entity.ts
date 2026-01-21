@@ -8,6 +8,7 @@ import {
 import { extensionRegistrationStatus } from "./extension-registration.constants";
 import type {
 	BuildExtensionRegistrationProps,
+	MakeExtensionRegistrationDeps,
 	MakeExtensionRegistrationProps,
 	RehydrateExtensionRegistrationProps,
 } from "./extension-registration.entity.types";
@@ -25,8 +26,6 @@ export type ExtensionRegistration = BaseEntity<ExtensionRegistrationId> &
 		getOs: () => string | null;
 		getExtensionVersion: () => string | null;
 		getStatus: () => ExtensionRegistrationStatus;
-		getCreatedAt: () => Date;
-		getLastUpdatedAt: () => Date;
 		isTrusted: () => boolean;
 		isPending: () => boolean;
 		isRejected: () => boolean;
@@ -37,8 +36,10 @@ export type ExtensionRegistration = BaseEntity<ExtensionRegistrationId> &
 
 const buildExtensionRegistration = (
 	props: BuildExtensionRegistrationProps,
+	{ clock }: MakeExtensionRegistrationDeps,
 ): ExtensionRegistration => {
-	const now = new Date();
+	const now = clock.now();
+
 	let _id: ExtensionRegistrationId | null = props.id ?? null;
 	const _extension_id = props.extensionId;
 	const _public_key = props.publicKey;
@@ -74,7 +75,7 @@ const buildExtensionRegistration = (
 	});
 
 	const _touch = () => {
-		_lastUpdatedAt = new Date();
+		_lastUpdatedAt = clock.now();
 	};
 
 	_validate();
@@ -123,10 +124,16 @@ const buildExtensionRegistration = (
 	return Object.freeze(extensionRegistration);
 };
 
-export const makeExtensionRegistration = (props: MakeExtensionRegistrationProps) => {
-	return buildExtensionRegistration({ ...props, status: "pending" });
+export const makeExtensionRegistration = (
+	props: MakeExtensionRegistrationProps,
+	deps: MakeExtensionRegistrationDeps,
+) => {
+	return buildExtensionRegistration({ ...props, status: "pending" }, deps);
 };
 
-export const rehydrateExtensionRegistration = (props: RehydrateExtensionRegistrationProps) => {
-	return buildExtensionRegistration(props);
+export const rehydrateExtensionRegistration = (
+	props: RehydrateExtensionRegistrationProps,
+	deps: MakeExtensionRegistrationDeps,
+) => {
+	return buildExtensionRegistration(props, deps);
 };

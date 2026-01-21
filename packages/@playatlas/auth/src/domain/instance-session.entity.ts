@@ -6,9 +6,9 @@ import type {
 	MakeInstanceSessionProps,
 	RehydrateInstanceSessionProps,
 } from "./instance-session.entity.types";
-import type { SessionId } from "./value-object/session-id";
+import type { InstanceSessionId } from "./value-object/instance-session-id";
 
-export type InstanceSession = BaseEntity<SessionId> &
+export type InstanceSession = BaseEntity<InstanceSessionId> &
 	Readonly<{
 		getLastUsedAt: () => Date;
 	}>;

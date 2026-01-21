@@ -1,5 +1,5 @@
 import type { ILogServicePort } from "@playatlas/common/application";
-import { makeInstanceAuthSettings, SessionIdParser } from "../domain";
+import { InstanceSessionIdParser, makeInstanceAuthSettings } from "../domain";
 import type { IInstanceAuthSettingsRepositoryPort, IInstanceSessionRepositoryPort } from "../infra";
 import type { ICryptographyServicePort } from "./cryptography.service.port";
 import type { IInstanceAuthServicePort } from "./instance-auth.service.port";
@@ -50,7 +50,7 @@ export const makeInstanceAuthService = ({
 			};
 		}
 
-		const sessionId = SessionIdParser.fromExternal(_sessionId);
+		const sessionId = InstanceSessionIdParser.fromExternal(_sessionId);
 
 		const existingSession = instanceSessionRepository.getById(sessionId);
 		if (!existingSession) {

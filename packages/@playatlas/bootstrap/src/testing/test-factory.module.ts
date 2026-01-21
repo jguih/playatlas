@@ -1,3 +1,4 @@
+import type { IExtensionRegistrationFactoryPort } from "@playatlas/auth/application";
 import {
 	makeExtensionRegistrationFactory,
 	type ExtensionRegistrationFactory,
@@ -40,6 +41,7 @@ export type TestFactoryModuleDeps = {
 	completionStatusFactory: ICompletionStatusFactoryPort;
 	platformFactory: IPlatformFactoryPort;
 	genreFactory: IGenreFactoryPort;
+	extensionRegistrationFactory: IExtensionRegistrationFactoryPort;
 };
 
 export const makeTestFactoryModule = (deps: TestFactoryModuleDeps): ITestFactoryModulePort => {
@@ -48,7 +50,7 @@ export const makeTestFactoryModule = (deps: TestFactoryModuleDeps): ITestFactory
 	const _company = makeCompanyFactory(deps);
 	let _game_factory: GameFactory | null = null;
 	const _platform = makePlatformFactory(deps);
-	const _extension_registration_factory = makeExtensionRegistrationFactory();
+	const _extension_registration_factory = makeExtensionRegistrationFactory(deps);
 	const _sync_game_dto_factory = makeSyncGamesRequestDtoFactory();
 
 	return {

@@ -1,6 +1,5 @@
 import type { QueryHandler } from "@playatlas/common/common";
 import { createHashForObject } from "@playatlas/common/infra";
-import { extensionRegistrationMapper } from "../../extension-registration.mapper";
 import type { GetAllExtensionRegistrationQuery } from "./get-all-extension-registration.query";
 import type {
 	GetAllExtensionRegistrationsQueryHandlerDeps,
@@ -14,6 +13,7 @@ export type IGetAllExtensionRegistrationsQueryHandlerPort = QueryHandler<
 
 export const makeGetAllExtensionRegistrationsQueryHandler = ({
 	extensionRegistrationRepository,
+	extensionRegistrationMapper,
 }: GetAllExtensionRegistrationsQueryHandlerDeps): IGetAllExtensionRegistrationsQueryHandlerPort => {
 	return {
 		execute: ({ ifNoneMatch } = {}) => {

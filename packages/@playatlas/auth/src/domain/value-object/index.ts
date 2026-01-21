@@ -1,1 +1,1 @@
-export * from "./session-id";
+export * from "./instance-session-id";

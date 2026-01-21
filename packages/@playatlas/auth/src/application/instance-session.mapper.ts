@@ -1,5 +1,5 @@
 import type { EntityMapper } from "@playatlas/common/application";
-import { SessionIdParser } from "../domain";
+import { InstanceSessionIdParser } from "../domain";
 import { type InstanceSession } from "../domain/instance-session.entity";
 import type { InstanceSessionModel } from "../infra/instance-session.repository";
 import type { IInstanceSessionFactoryPort } from "./instance-session.factory";
@@ -16,7 +16,7 @@ export const makeInstanceSessionMapper = ({
 	return {
 		toDomain: (model) => {
 			const entity: InstanceSession = instanceSessionFactory.rehydrate({
-				sessionId: SessionIdParser.fromTrusted(model.Id),
+				sessionId: InstanceSessionIdParser.fromTrusted(model.Id),
 				createdAt: new Date(model.CreatedAt),
 				lastUsedAt: new Date(model.LastUsedAt),
 				lastUpdatedAt: new Date(model.LastUpdatedAt),

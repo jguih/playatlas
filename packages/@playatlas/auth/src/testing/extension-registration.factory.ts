@@ -1,9 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { type TestEntityFactory } from "@playatlas/common/testing";
-import {
-	type ExtensionRegistration,
-	makeExtensionRegistration,
-} from "../domain/extension-registration.entity";
+import type { IExtensionRegistrationFactoryPort } from "../application";
+import { type ExtensionRegistration } from "../domain/extension-registration.entity";
 import type { MakeExtensionRegistrationProps } from "../domain/extension-registration.entity.types";
 
 export type ExtensionRegistrationFactory = TestEntityFactory<
@@ -11,14 +9,20 @@ export type ExtensionRegistrationFactory = TestEntityFactory<
 	ExtensionRegistration
 >;
 
-export const makeExtensionRegistrationFactory = (): ExtensionRegistrationFactory => {
+type ExtensionRegistrationFactoryDeps = {
+	extensionRegistrationFactory: IExtensionRegistrationFactoryPort;
+};
+
+export const makeExtensionRegistrationFactory = ({
+	extensionRegistrationFactory,
+}: ExtensionRegistrationFactoryDeps): ExtensionRegistrationFactory => {
 	const propOrDefault = <T, V>(prop: T | undefined, value: V) => {
 		if (prop === undefined) return value;
 		return prop;
 	};
 
 	const build: ExtensionRegistrationFactory["build"] = (props = {}) => {
-		return makeExtensionRegistration({
+		return extensionRegistrationFactory.create({
 			extensionId: propOrDefault(props.extensionId, faker.string.uuid()),
 			extensionVersion: propOrDefault(props.extensionVersion, faker.string.uuid()),
 			hostname: propOrDefault(props.hostname, faker.internet.domainName()),

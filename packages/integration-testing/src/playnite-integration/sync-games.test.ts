@@ -24,7 +24,7 @@ describe("Game Library Sync", () => {
 
 	it("adds games", async () => {
 		// Arrange
-		const addedItems = factory.getSyncGameRequestDtoFactory().buildList(2000);
+		const addedItems = factory.getSyncGameRequestDtoFactory().buildList(5000);
 		const addedItemIds = addedItems.map((i) => i.Id);
 		const sampleItem = faker.helpers.arrayElement(addedItems);
 		const requestDto: SyncGamesRequestDto = {
@@ -46,7 +46,7 @@ describe("Game Library Sync", () => {
 		expect(commandResult.success).toBe(true);
 		expect(commandResult.reason_code).toBe("game_library_synchronized");
 
-		expect(new Set(games.map((g) => g.Id)).size).toBe(2000);
+		expect(new Set(games.map((g) => g.Id)).size).toBe(5000);
 		expect(games.every((g) => addedItemIds.includes(g.Id))).toBe(true);
 
 		expect(persistedGame).toBeDefined();

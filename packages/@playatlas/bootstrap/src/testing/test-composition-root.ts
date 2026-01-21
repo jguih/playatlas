@@ -55,11 +55,17 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		systemConfig: system.getSystemConfig(),
 	});
 
+	const auth = makeAuthModule({
+		...baseDeps,
+		signatureService: infra.getSignatureService(),
+	});
+
 	const factory = makeTestFactoryModule({
 		companyFactory: gameLibrary.getCompanyFactory(),
 		completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
 		platformFactory: gameLibrary.getPlatformFactory(),
 		genreFactory: gameLibrary.getGenreFactory(),
+		extensionRegistrationFactory: auth.getExtensionRegistrationFactory(),
 	});
 
 	const setupGameFactoryAsync = async () => {
@@ -97,11 +103,6 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		await infra.initEnvironment();
 		backendLogService.info("Initializing database");
 		await infra.initDb();
-
-		const auth = makeAuthModule({
-			...baseDeps,
-			signatureService: infra.getSignatureService(),
-		});
 
 		const playniteIntegration = makePlayniteIntegrationModule({
 			...baseDeps,
