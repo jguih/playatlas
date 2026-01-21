@@ -41,6 +41,12 @@ export type DomainEvent = { id: string; occurredAt: Date } & (
 			name: "game-library-synchronized";
 			payload: { added: PlayniteGameId[]; updated: PlayniteGameId[]; deleted: PlayniteGameId[] };
 	  }
+	| {
+			name: "instance-registered";
+	  }
+	| {
+			name: "instance-login";
+	  }
 );
 
 export type Listener<T extends DomainEvent = DomainEvent> = (event: T) => void;

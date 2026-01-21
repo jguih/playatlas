@@ -8,8 +8,9 @@ import type {
 import type { ExtensionRegistration } from "@playatlas/auth/domain";
 import type { DomainEvent } from "@playatlas/common/application";
 import { ExtensionRegistrationIdParser } from "@playatlas/common/domain";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { ExtensionRegistrationResponseDto } from "../../../@playatlas/auth/src/dtos/extension-registration.response";
+import { recordDomainEvents } from "../test.lib";
 import { api, factory } from "../vitest.global.setup";
 
 const buildRegisterCommand = (): {
@@ -27,27 +28,31 @@ const buildRegisterCommand = (): {
 	return { registration, command };
 };
 
-const recordDomainEvents = () => {
-	const events: DomainEvent[] = [];
-	api.getEventBus().subscribe((event) => events.push(event));
-	return events;
-};
-
 describe("Auth / Extension Registration", () => {
+	let unsubscribe: () => void;
+	let events: DomainEvent[];
+
+	beforeEach(() => {
+		({ events, unsubscribe } = recordDomainEvents());
+	});
+
+	afterEach(() => {
+		unsubscribe();
+	});
+
 	it("register an extension", () => {
 		// Arrange
-		const recordedEvents = recordDomainEvents();
-
 		const { command } = buildRegisterCommand();
-		const registerResult = api.auth.commands.getRegisterExtensionCommandHandler().execute(command);
-		const registrationId = registerResult.success ? registerResult.registrationId : null;
-		expect(registrationId).toBeDefined();
 
 		// Act
+		const registerResult = api.auth.commands.getRegisterExtensionCommandHandler().execute(command);
+		const registrationId = registerResult.success ? registerResult.registrationId : null;
 		const queryResult = api.auth.queries.getGetAllExtensionRegistrationsQueryHandler().execute();
 		const registrations = queryResult.type === "ok" ? queryResult.data : [];
 
 		// Assert
+		expect(registrationId).toBeDefined();
+
 		expect(registrations).toHaveLength(1);
 		expect(registrations).toEqual([
 			expect.objectContaining({
@@ -56,8 +61,8 @@ describe("Auth / Extension Registration", () => {
 			} satisfies Partial<ExtensionRegistrationResponseDto>),
 		]);
 
-		expect(recordedEvents).toHaveLength(1);
-		expect(recordedEvents).toEqual([
+		expect(events).toHaveLength(1);
+		expect(events).toEqual([
 			expect.objectContaining({
 				name: "extension-registration-created",
 				payload: { registrationId: registrationId! },
@@ -72,7 +77,7 @@ describe("Auth / Extension Registration", () => {
 		const registrationId = registerResult.success ? registerResult.registrationId : null;
 		expect(registrationId).toBeDefined();
 
-		const recordedEvents = recordDomainEvents();
+		events.length = 0;
 
 		// Act
 		const approveResult = api.auth.commands
@@ -92,8 +97,8 @@ describe("Auth / Extension Registration", () => {
 		expect(approveResult.success).toBe(true);
 		expect(approveResult.reason_code).toBe("extension_registration_approved");
 
-		expect(recordedEvents).toHaveLength(1);
-		expect(recordedEvents).toEqual([
+		expect(events).toHaveLength(1);
+		expect(events).toEqual([
 			expect.objectContaining({
 				name: "extension-registration-approved",
 				payload: { registrationId: registrationId! },
@@ -103,7 +108,6 @@ describe("Auth / Extension Registration", () => {
 
 	it("gracefully handles rejecting a registration that doesn't exist", () => {
 		// Arrange
-		const recordedEvents = recordDomainEvents();
 
 		// Act
 		const rejectResult = api.auth.commands.getRejectExtensionRegistrationCommandHandler().execute({
@@ -119,12 +123,11 @@ describe("Auth / Extension Registration", () => {
 		expect(queryResult.type).toBe("ok");
 		expect(registrations).toHaveLength(0);
 
-		expect(recordedEvents).toHaveLength(0);
+		expect(events).toHaveLength(0);
 	});
 
 	it("gracefully handles approving a registration that doesn't exist", () => {
 		// Arrange
-		const recordedEvents = recordDomainEvents();
 
 		// Act
 		const approveResult = api.auth.commands
@@ -142,12 +145,11 @@ describe("Auth / Extension Registration", () => {
 		expect(queryResult.type).toBe("ok");
 		expect(registrations).toHaveLength(0);
 
-		expect(recordedEvents).toHaveLength(0);
+		expect(events).toHaveLength(0);
 	});
 
 	it("gracefully handles revoking a registration that doesn't exist", () => {
 		// Arrange
-		const recordedEvents = recordDomainEvents();
 
 		// Act
 		const revokeResult = api.auth.commands.getRevokeExtensionRegistrationCommandHandler().execute({
@@ -163,7 +165,7 @@ describe("Auth / Extension Registration", () => {
 		expect(queryResult.type).toBe("ok");
 		expect(registrations).toHaveLength(0);
 
-		expect(recordedEvents).toHaveLength(0);
+		expect(events).toHaveLength(0);
 	});
 
 	it("gracefully handles approving an already approved registration", () => {
@@ -173,7 +175,7 @@ describe("Auth / Extension Registration", () => {
 		const registrationId = registerResult.success ? registerResult.registrationId : null;
 		expect(registrationId).toBeDefined();
 
-		const recordedEvents = recordDomainEvents();
+		events.length = 0;
 
 		const approveCommand: ApproveExtensionRegistrationCommand = {
 			registrationId: registrationId!,
@@ -200,8 +202,8 @@ describe("Auth / Extension Registration", () => {
 		expect(registrations).toHaveLength(1);
 		expect(registrations[0].Status).toBe("trusted");
 
-		expect(recordedEvents).toHaveLength(1);
-		expect(recordedEvents).toEqual([
+		expect(events).toHaveLength(1);
+		expect(events).toEqual([
 			expect.objectContaining({
 				name: "extension-registration-approved",
 				payload: { registrationId: registrationId! },
@@ -216,7 +218,7 @@ describe("Auth / Extension Registration", () => {
 		const registrationId = registerResult.success ? registerResult.registrationId : null;
 		expect(registrationId).toBeDefined();
 
-		const recordedEvents = recordDomainEvents();
+		events.length = 0;
 
 		const rejectCommand: RejectExtensionRegistrationCommand = {
 			registrationId: registrationId!,
@@ -246,8 +248,8 @@ describe("Auth / Extension Registration", () => {
 		expect(registrations).toHaveLength(1);
 		expect(registrations[0].Status).toBe("rejected");
 
-		expect(recordedEvents).toHaveLength(1);
-		expect(recordedEvents).toEqual([
+		expect(events).toHaveLength(1);
+		expect(events).toEqual([
 			expect.objectContaining({
 				name: "extension-registration-rejected",
 				payload: { registrationId: registrationId! },
@@ -262,7 +264,7 @@ describe("Auth / Extension Registration", () => {
 		const registrationId = registerResult.success ? registerResult.registrationId : null;
 		expect(registrationId).toBeDefined();
 
-		const recordedEvents = recordDomainEvents();
+		events.length = 0;
 
 		const approveCommand: ApproveExtensionRegistrationCommand = {
 			registrationId: registrationId!,
@@ -292,8 +294,8 @@ describe("Auth / Extension Registration", () => {
 		expect(registrations).toHaveLength(1);
 		expect(registrations[0].Status).toBe("rejected");
 
-		expect(recordedEvents).toHaveLength(2);
-		expect(recordedEvents).toEqual([
+		expect(events).toHaveLength(2);
+		expect(events).toEqual([
 			expect.objectContaining({
 				name: "extension-registration-approved",
 				payload: { registrationId: registrationId! },

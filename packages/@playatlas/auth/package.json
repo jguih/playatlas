@@ -9,7 +9,8 @@
 		"./infra": "./src/infra/index.ts",
 		"./testing": "./src/testing/index.ts",
 		"./commands": "./src/commands/index.ts",
-		"./queries": "./src/queries/index.ts"
+		"./queries": "./src/queries/index.ts",
+		"./dtos": "./src/dtos/index.ts"
 	},
 	"dependencies": {
 		"@playatlas/common": "workspace:*"

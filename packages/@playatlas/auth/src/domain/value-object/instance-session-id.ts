@@ -1,7 +1,7 @@
 import { InvalidStateError } from "@playatlas/common/domain";
 import z from "zod";
 
-export const instanceSessionIdSchema = z.string().min(1).uuid();
+export const instanceSessionIdSchema = z.string().min(1);
 
 export type InstanceSessionId = string & {
 	readonly __brand: "SessionId";
@@ -9,9 +9,9 @@ export type InstanceSessionId = string & {
 
 export const InstanceSessionIdParser = {
 	fromExternal: (value: string): InstanceSessionId => {
-		const { success, data } = instanceSessionIdSchema.safeParse(value);
-		if (!success) throw new InvalidStateError("Instance SessionId must be a valid UUID");
-		return data as InstanceSessionId;
+		if (!value || value.trim() === "")
+			throw new InvalidStateError("Instance SessionId must be a valid UUID");
+		return value as InstanceSessionId;
 	},
 
 	fromTrusted: (value: string): InstanceSessionId => {

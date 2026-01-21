@@ -1,4 +1,5 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
+import { InstanceSessionIdParser } from "../domain";
 import type { ICryptographyServicePort } from "./cryptography.service.port";
 
 export const makeCryptographyService = (): ICryptographyServicePort => {
@@ -16,7 +17,8 @@ export const makeCryptographyService = (): ICryptographyServicePort => {
 	};
 
 	const createSessionId: ICryptographyServicePort["createSessionId"] = () => {
-		return randomBytes(SESSION_ID_LENGTH).toString("hex");
+		const sessionId = randomBytes(SESSION_ID_LENGTH).toString("hex");
+		return InstanceSessionIdParser.fromTrusted(sessionId);
 	};
 
 	const compareSessionIds: ICryptographyServicePort["compareSessionIds"] = (id1, id2) => {

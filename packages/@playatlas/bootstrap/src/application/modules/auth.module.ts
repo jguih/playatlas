@@ -71,6 +71,10 @@ export const makeAuthModule = ({
 		instanceAuthSettingsRepository,
 		instanceSessionRepository,
 		logService: buildLog("InstanceAuthService"),
+		instanceAuthSettingsFactory,
+		instanceSessionFactory,
+		eventBus,
+		clock,
 	});
 
 	const extensionRegistrationFactory = makeExtensionRegistrationFactory({ clock });

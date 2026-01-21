@@ -1,14 +1,21 @@
-import type { ILogServicePort } from "@playatlas/common/application";
-import { InstanceSessionIdParser, makeInstanceAuthSettings } from "../domain";
+import type { IDomainEventBusPort, ILogServicePort } from "@playatlas/common/application";
+import type { IClockPort } from "@playatlas/common/infra";
+import { InstanceSessionIdParser } from "../domain";
 import type { IInstanceAuthSettingsRepositoryPort, IInstanceSessionRepositoryPort } from "../infra";
 import type { ICryptographyServicePort } from "./cryptography.service.port";
+import type { IInstanceAuthSettingsFactoryPort } from "./instance-auth-settings.factory";
 import type { IInstanceAuthServicePort } from "./instance-auth.service.port";
+import type { IInstanceSessionFactoryPort } from "./instance-session.factory";
 
 export type InstanceAuthServiceDeps = {
 	logService: ILogServicePort;
 	cryptographyService: ICryptographyServicePort;
 	instanceAuthSettingsRepository: IInstanceAuthSettingsRepositoryPort;
+	instanceAuthSettingsFactory: IInstanceAuthSettingsFactoryPort;
 	instanceSessionRepository: IInstanceSessionRepositoryPort;
+	instanceSessionFactory: IInstanceSessionFactoryPort;
+	eventBus: IDomainEventBusPort;
+	clock: IClockPort;
 };
 
 export const makeInstanceAuthService = ({
@@ -16,6 +23,10 @@ export const makeInstanceAuthService = ({
 	cryptographyService,
 	instanceAuthSettingsRepository,
 	instanceSessionRepository,
+	instanceAuthSettingsFactory,
+	instanceSessionFactory,
+	eventBus,
+	clock,
 }: InstanceAuthServiceDeps): IInstanceAuthServicePort => {
 	const verify: IInstanceAuthServicePort["verify"] = ({ request }) => {
 		const url = new URL(request.url);
@@ -81,16 +92,22 @@ export const makeInstanceAuthService = ({
 				reason: "Instance is already registered",
 			};
 
-		const { hash, salt } = await cryptographyService.hashPassword(password);
+		const { hash: passwordHash, salt } = await cryptographyService.hashPassword(password);
 
-		const instanceAuth = makeInstanceAuthSettings({
-			passwordHash: hash,
-			salt: salt,
+		const instanceAuth = instanceAuthSettingsFactory.create({
+			passwordHash,
+			salt,
 		});
 
 		instanceAuthSettingsRepository.upsert(instanceAuth);
 
 		logService.info(`Created instance registration`);
+
+		eventBus.emit({
+			id: crypto.randomUUID(),
+			name: "instance-registered",
+			occurredAt: clock.now(),
+		});
 
 		return {
 			success: true,
@@ -99,7 +116,45 @@ export const makeInstanceAuthService = ({
 		};
 	};
 
-	const loginAsync: IInstanceAuthServicePort["loginAsync"] = async () => {};
+	const loginAsync: IInstanceAuthServicePort["loginAsync"] = async ({ password }) => {
+		const existing = instanceAuthSettingsRepository.get();
+		if (!existing)
+			return {
+				success: false,
+				reason_code: "instance_not_registered",
+				reason: "Instance is not registered",
+			};
+
+		const isValid = cryptographyService.verifyPassword(password, {
+			hash: existing.getPasswordHash(),
+			salt: existing.getSalt(),
+		});
+		if (!isValid)
+			return {
+				success: false,
+				reason_code: "not_authorized",
+				reason: "Not authorized",
+			};
+
+		const sessionId = cryptographyService.createSessionId();
+		const session = instanceSessionFactory.create({ sessionId });
+		instanceSessionRepository.add(session);
+
+		logService.info(`Instance login successfully`);
+
+		eventBus.emit({
+			id: crypto.randomUUID(),
+			name: "instance-login",
+			occurredAt: clock.now(),
+		});
+
+		return {
+			success: true,
+			reason_code: "created_session_id",
+			reason: "Created a new session",
+			sessionId,
+		};
+	};
 
 	return { verify, registerAsync, loginAsync };
 };

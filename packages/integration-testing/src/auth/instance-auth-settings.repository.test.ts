@@ -1,57 +1,75 @@
-import { describe, expect, it } from "vitest";
+import { faker } from "@faker-js/faker";
+import type { InstanceSessionId } from "@playatlas/auth/domain";
+import type { DomainEvent } from "@playatlas/common/application";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { recordDomainEvents } from "../test.lib";
+import { api } from "../vitest.global.setup";
 
-describe("Instance Auth Settings Repository", () => {
-	it("placeholder", () => {
-		expect(true).toBeTruthy();
+const buildRequest = (sessionId: InstanceSessionId): Request => {
+	const request = new Request("https://playatlas-test.com/api/games", {
+		method: "GET",
+	});
+	request.headers.set("Authorization", `Bearer ${sessionId}`);
+	return request;
+};
+
+describe("Auth / Instance authentication lifecycle", () => {
+	let unsubscribe: () => void;
+	let events: DomainEvent[];
+
+	beforeEach(() => {
+		({ events, unsubscribe } = recordDomainEvents());
 	});
 
-	// it("adds and gets the instance auth settings", async () => {
-	//   // Arrange
-	//   const { hash, salt } = await api.auth
-	//     .getCryptographyService()
-	//     .hashPassword(faker.internet.password());
-	//   const instanceAuth: InstanceAuthSettings = makeInstanceAuthSettings({
-	//     passwordHash: hash,
-	//     salt: salt,
-	//   });
-	//   // Act
-	//   api.auth.getInstanceAuthSettingsRepository().upsert(instanceAuth);
-	//   const added = api.auth.getInstanceAuthSettingsRepository().get();
-	//   // Assert
-	//   expect(added).toBeTruthy();
-	//   expect(added?.getPasswordHash()).toBe(instanceAuth.getPasswordHash());
-	//   expect(added?.getSalt()).toBe(instanceAuth.getSalt());
-	//   expect(added?.getCreatedAt().getTime()).toBe(
-	//     instanceAuth.getCreatedAt().getTime()
-	//   );
-	// });
+	afterEach(() => {
+		unsubscribe();
+	});
 
-	// it("updates the instance auth setting", async () => {
-	//   // Arrange
-	//   const { hash, salt } = await api.auth
-	//     .getCryptographyService()
-	//     .hashPassword(faker.internet.password());
-	//   const instanceAuth: InstanceAuthSettings = makeInstanceAuthSettings({
-	//     passwordHash: hash,
-	//     salt: salt,
-	//   });
-	//   api.auth.getInstanceAuthSettingsRepository().upsert(instanceAuth);
-	//   const newCredentials = await api.auth
-	//     .getCryptographyService()
-	//     .hashPassword(faker.internet.password());
-	//   // Act
-	//   instanceAuth.setInstanceCredentials(newCredentials);
-	//   api.auth.getInstanceAuthSettingsRepository().upsert(instanceAuth);
-	//   const updated = api.auth.getInstanceAuthSettingsRepository().get();
-	//   // Assert
-	//   expect(updated).toBeTruthy();
-	//   expect(updated?.getPasswordHash()).toBe(newCredentials.hash);
-	//   expect(updated?.getSalt()).toBe(newCredentials.salt);
-	//   expect(updated?.getCreatedAt().getTime()).toBe(
-	//     instanceAuth.getCreatedAt().getTime()
-	//   );
-	//   expect(updated?.getLastUpdatedAt().getTime()).toBeGreaterThan(
-	//     instanceAuth.getCreatedAt().getTime()
-	//   );
-	// });
+	it("does not register instance more than once", async () => {
+		// Arrange
+		const password = faker.internet.password();
+
+		// Act
+		const result1 = await api.auth.getInstanceAuthService().registerAsync({ password });
+		const result2 = await api.auth.getInstanceAuthService().registerAsync({ password });
+
+		// Assert
+		expect(result1.success).toBe(true);
+		expect(result1.reason_code).toBe("instance_registered");
+
+		expect(result2.success).toBe(false);
+		expect(result2.reason_code).toBe("instance_already_registered");
+
+		expect(events).toHaveLength(1);
+		expect(events).toEqual([
+			expect.objectContaining({
+				name: "instance-registered",
+			} satisfies Partial<DomainEvent>),
+		]);
+	});
+
+	it("returns a valid session id on login", async () => {
+		// Arrange
+		const password = faker.internet.password();
+		const registerResult = await api.auth.getInstanceAuthService().registerAsync({ password });
+		expect(registerResult.success).toBe(true);
+
+		events.length = 0;
+
+		// Act
+		const loginResult = await api.auth.getInstanceAuthService().loginAsync({ password });
+		const sessionId = loginResult.success ? loginResult.sessionId : null;
+		expect(sessionId).not.toBe(null);
+		const verify = api.auth.getInstanceAuthService().verify({ request: buildRequest(sessionId!) });
+
+		// Assert
+		expect(verify.authorized).toBe(true);
+
+		expect(events).toHaveLength(1);
+		expect(events).toEqual([
+			expect.objectContaining({
+				name: "instance-login",
+			} satisfies Partial<DomainEvent>),
+		]);
+	});
 });

@@ -1,3 +1,5 @@
+import type { InstanceSessionId } from "../domain/value-object/instance-session-id";
+
 export type InstanceAuthServiceVerifyResult = {
 	reason: string;
 	authorized: boolean;
@@ -19,13 +21,13 @@ type LoginResult =
 	| {
 			success: false;
 			reason: string;
-			reason_code: "";
+			reason_code: "instance_not_registered" | "not_authorized";
 	  }
 	| {
 			success: true;
 			reason: string;
 			reason_code: "created_session_id";
-			sessionId: string;
+			sessionId: InstanceSessionId;
 	  };
 
 export type IInstanceAuthServicePort = {
