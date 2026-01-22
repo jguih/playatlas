@@ -8,8 +8,10 @@ import {
 import { GameFactory, GenreFactory } from "$lib/modules/game-library/testing";
 import { CompanyFactory } from "$lib/modules/game-library/testing/company-factory";
 import { PlatformFactory } from "$lib/modules/game-library/testing/platform-factory";
-import { type ClientApi } from "../application/client-api.svelte";
+import { type ClientApi } from "../application/client-api";
 import { ClientBootstrapper } from "../application/client-bootstrapper";
+import { AuthModule } from "../modules/auth.module";
+import type { IAuthModulePort } from "../modules/auth.module.port";
 import { ClientGameLibraryModule } from "../modules/game-library.module";
 import type { IClientGameLibraryModulePort } from "../modules/game-library.module.port";
 import type { IClientInfraModulePort } from "../modules/infra.module.port";
@@ -57,7 +59,9 @@ export class TestCompositionRoot {
 			clock: infra.clock,
 		});
 
-		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary } });
+		const auth: IAuthModulePort = new AuthModule({ httpClient: this.mocks.httpClient });
+
+		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary, auth } });
 		return bootstrapper.bootstrap();
 	};
 

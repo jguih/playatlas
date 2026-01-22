@@ -16,7 +16,9 @@ import {
 	type IClientGameLibraryModulePort,
 	type IClientInfraModulePort,
 } from "../modules";
-import type { ClientApi } from "./client-api.svelte";
+import { AuthModule } from "../modules/auth.module";
+import type { IAuthModulePort } from "../modules/auth.module.port";
+import type { ClientApi } from "./client-api";
 import { ClientBootstrapper } from "./client-bootstrapper";
 
 export class ClientCompositionRoot {
@@ -41,14 +43,16 @@ export class ClientCompositionRoot {
 		const playAtlasHttpClient = new AuthenticatedHttpClient({
 			httpClient: new HttpClient({ url: window.origin }),
 		});
-
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			dbSignal: infra.dbSignal,
 			httpClient: playAtlasHttpClient,
 			clock: infra.clock,
 		});
 
-		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary } });
+		const authHttpClient = new HttpClient({ url: window.origin });
+		const auth: IAuthModulePort = new AuthModule({ httpClient: authHttpClient });
+
+		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary, auth } });
 		return bootstrapper.bootstrap();
 	};
 }

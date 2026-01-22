@@ -18,9 +18,6 @@ const CacheKeys = {
 	COMPANY: cacheKey("company"),
 	GENRE: cacheKey("genre"),
 	PLATFORM: cacheKey("platform"),
-	RECENT_SESSION: cacheKey("recent-session"),
-	LIBRARY_METRICS: cacheKey("library-metrics"),
-	SCREENSHOT_METADATA: cacheKey("screenshot_metadata"),
 };
 
 const cacheKeysArr = Object.values(CacheKeys);
@@ -44,28 +41,10 @@ const cacheKeysArr = Object.values(CacheKeys);
  *  @type {ApiRoute[]}
  */
 const apiRoutes = [
-	["/api/game", CacheKeys.GAMES, { type: "GAMES_UPDATE" }, staleWhileRevalidate],
-	["/api/company", CacheKeys.COMPANY, { type: "COMPANY_UPDATE" }, staleWhileRevalidate],
-	["/api/genre", CacheKeys.GENRE, { type: "GENRE_UPDATE" }, staleWhileRevalidate],
-	["/api/platform", CacheKeys.PLATFORM, { type: "PLATFORM_UPDATE" }, staleWhileRevalidate],
-	[
-		"/api/session/recent",
-		CacheKeys.RECENT_SESSION,
-		{ type: "RECENT_SESSION_UPDATE" },
-		networkFirst,
-	],
-	[
-		"/api/library/metrics",
-		CacheKeys.LIBRARY_METRICS,
-		{ type: "LIBRARY_METRICS_UPDATE" },
-		staleWhileRevalidate,
-	],
-	[
-		"/api/assets/image/screenshot/all",
-		CacheKeys.SCREENSHOT_METADATA,
-		{ type: "ALL_SCREENSHOT_UPDATE" },
-		staleWhileRevalidate,
-	],
+	["/api/game", CacheKeys.GAMES, { type: "GAMES_UPDATE" }, networkFirst],
+	["/api/company", CacheKeys.COMPANY, { type: "COMPANY_UPDATE" }, networkFirst],
+	["/api/genre", CacheKeys.GENRE, { type: "GENRE_UPDATE" }, networkFirst],
+	["/api/platform", CacheKeys.PLATFORM, { type: "PLATFORM_UPDATE" }, networkFirst],
 ];
 
 /**
@@ -117,7 +96,7 @@ sw.addEventListener("message", (event) => {
 
 	switch (event.data.action) {
 		case "skipWaiting": {
-			sw.skipWaiting();
+			void sw.skipWaiting();
 			break;
 		}
 	}
@@ -128,7 +107,7 @@ sw.addEventListener("message", (event) => {
  * @param {UpdateMessage} message
  */
 function notifyClients(message) {
-	sw.clients.matchAll().then((clients) => {
+	void sw.clients.matchAll().then((clients) => {
 		clients.forEach((client) => {
 			client.postMessage(message);
 		});
@@ -149,6 +128,7 @@ function shouldCache(response) {
  * @param {string} cacheName
  * @param {UpdateMessage} updateMessage
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function staleWhileRevalidate(request, cacheName, updateMessage = { type: "UNKNOWN" }) {
 	const cache = await caches.open(cacheName);
 	const cachedResponse = await cache.match(request);
@@ -157,7 +137,7 @@ async function staleWhileRevalidate(request, cacheName, updateMessage = { type: 
 	const fetchAndUpdate = fetch(request)
 		.then((networkResponse) => {
 			if (shouldCache(networkResponse)) {
-				cache.put(request, networkResponse.clone());
+				void cache.put(request, networkResponse.clone());
 			}
 			const networkETag = networkResponse.headers.get("ETag");
 			if (networkResponse.ok && cachedETag && networkETag && cachedETag !== networkETag) {
@@ -188,7 +168,7 @@ async function networkFirst(request, cacheName) {
 			throw new Error("Invalid response from fetch");
 		}
 		if (shouldCache(networkResponse)) {
-			cache.put(request, networkResponse.clone());
+			void cache.put(request, networkResponse.clone());
 		}
 		return networkResponse;
 	} catch {
@@ -216,7 +196,7 @@ async function shellRouteStrategy(pathname, cacheName, request) {
 			throw new Error("Invalid response from fetch");
 		}
 		if (shouldCache(networkResponse)) {
-			cache.put(pathname, networkResponse.clone());
+			void cache.put(pathname, networkResponse.clone());
 		}
 		return networkResponse;
 	} catch {
@@ -265,5 +245,6 @@ sw.addEventListener("fetch", async (event) => {
 		}
 	}
 
+	event.respondWith(networkFirst(event.request, CacheKeys.APP));
 	return;
 });

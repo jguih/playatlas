@@ -287,13 +287,6 @@
 					gamePagePath: "",
 				}}
 			/>
-			<GameCard
-				game={{
-					name: "Batman: Arkhan Asylum",
-					coverImagePath: `${window.origin}/placeholder/cover.png`,
-					gamePagePath: "",
-				}}
-			/>
 		</ComponentSection>
 	</Main>
 	{#snippet bottomNav()}

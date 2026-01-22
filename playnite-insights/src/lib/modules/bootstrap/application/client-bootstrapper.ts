@@ -1,10 +1,12 @@
+import type { IAuthModulePort } from "../modules/auth.module.port";
 import type { IClientGameLibraryModulePort } from "../modules/game-library.module.port";
 import type { IClientInfraModulePort } from "../modules/infra.module.port";
-import type { ClientApi } from "./client-api.svelte";
+import type { ClientApi } from "./client-api";
 
 export type ClientModules = {
 	infra: IClientInfraModulePort;
 	gameLibrary: IClientGameLibraryModulePort;
+	auth: IAuthModulePort;
 };
 
 export type ClientBootstrapperDeps = {
@@ -14,10 +16,12 @@ export type ClientBootstrapperDeps = {
 export class ClientBootstrapper {
 	private readonly infra: IClientInfraModulePort;
 	private readonly gameLibrary: IClientGameLibraryModulePort;
+	private readonly auth: IAuthModulePort;
 
 	constructor({ modules }: ClientBootstrapperDeps) {
 		this.infra = modules.infra;
 		this.gameLibrary = modules.gameLibrary;
+		this.auth = modules.auth;
 	}
 
 	bootstrap(): ClientApi {
@@ -38,6 +42,9 @@ export class ClientBootstrapper {
 					SyncPlatforms: this.gameLibrary.syncPlatformsCommandHandler,
 				},
 				PlayAtlasClient: this.gameLibrary.playAtlasClient,
+			},
+			Auth: {
+				AuthService: this.auth.authService,
 			},
 		};
 

@@ -1,6 +1,6 @@
 import type { SQLInputValue } from "node:sqlite";
 import z from "zod";
-import { InvalidDataError } from "../domain";
+import { RepositoryError, RepositoryOperationError, RepositoryValidationError } from "../domain";
 import type { BaseEntity, BaseEntityId } from "../domain/base-entity";
 import type { BaseRepositoryPort } from "./base-repository.port";
 import type { MakeBaseRepositoryDeps } from "./base-repository.types";
@@ -90,19 +90,19 @@ export const makeBaseRepository = <
 			return result;
 		} catch (error) {
 			const duration = performance.now() - start;
+			const message = `Repository call ${context ?? ""} threw after ${duration.toFixed(1)}ms`;
 
-			if (error instanceof InvalidDataError) {
-				logService.debug(
-					`Repository call ${context ?? ""} threw InvalidDataError after ${duration.toFixed(1)}ms`,
-				);
+			if (duration >= PERFORMANCE_WARN_THRESHOLD_MS) logService.warning(message);
+			else logService.debug(message);
+
+			if (error instanceof RepositoryError) {
+				throw error;
 			} else {
-				logService.error(
+				throw new RepositoryOperationError(
 					`Repository call ${context ?? ""} failed after ${duration.toFixed(1)}ms`,
 					error,
 				);
 			}
-
-			throw error;
 		}
 	};
 
@@ -112,14 +112,14 @@ export const makeBaseRepository = <
 		return dbOps.runSavePoint({ getDb, fn });
 	};
 
-	const buildInvalidDataError: BaseRepositoryPort<
+	const buildValidationError: BaseRepositoryPort<
 		TEntityId,
 		TEntity,
 		TPersistence
-	>["buildInvalidDataError"] = (error, context) => {
+	>["buildValidationError"] = (error, context) => {
 		const first = error.issues.at(0);
 
-		return new InvalidDataError({
+		return new RepositoryValidationError({
 			entity: context.entity,
 			operation: context.operation,
 			issueCount: error.issues.length,
@@ -180,7 +180,7 @@ export const makeBaseRepository = <
 			const { success, data: models, error } = z.array(modelSchema).safeParse(result);
 
 			if (!success) {
-				throw buildInvalidDataError(error, { entity: tableName, operation: "load" });
+				throw buildValidationError(error, { entity: tableName, operation: "load" });
 			}
 
 			const entities: TEntity[] = [];
@@ -215,7 +215,7 @@ export const makeBaseRepository = <
 			const { success, data: model, error } = modelSchema.safeParse(result);
 
 			if (!success) {
-				throw buildInvalidDataError(error, { entity: tableName, operation: "load" });
+				throw buildValidationError(error, { entity: tableName, operation: "load" });
 			}
 
 			const entity = mapper.toDomain(model);
@@ -264,7 +264,7 @@ export const makeBaseRepository = <
 	return {
 		run,
 		runSavePoint,
-		buildInvalidDataError,
+		buildValidationError: buildValidationError,
 		public: {
 			all,
 			remove,

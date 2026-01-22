@@ -27,7 +27,7 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) => {
 		if (!success) {
 			api
 				.getLogService()
-				.error(`${requestDescription}: Validation error while handling request`, error.issues);
+				.warning(`${requestDescription}: Validation error while handling request`, error.issues);
 			return json(
 				{
 					success: false,

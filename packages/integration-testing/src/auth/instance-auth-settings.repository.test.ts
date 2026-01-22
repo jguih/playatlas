@@ -63,7 +63,7 @@ describe("Auth / Instance authentication lifecycle", () => {
 		const verify = api.auth.getInstanceAuthService().verify({ request: buildRequest(sessionId!) });
 
 		// Assert
-		expect(verify.authorized).toBe(true);
+		expect(verify.authenticated).toBe(true);
 
 		expect(events).toHaveLength(1);
 		expect(events).toEqual([

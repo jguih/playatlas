@@ -26,7 +26,14 @@ export class InvalidFileTypeError extends Error {
 	}
 }
 
-export class InvalidDataError extends Error {
+export class RepositoryError extends Error {
+	constructor(message: string, cause?: unknown) {
+		super(message, { cause });
+		this.name = "RepositoryError";
+	}
+}
+
+export class RepositoryValidationError extends RepositoryError {
 	constructor(
 		public readonly details: {
 			entity: string;
@@ -40,6 +47,8 @@ export class InvalidDataError extends Error {
 		},
 	) {
 		super(`Invalid data for entity "${details.entity}"`);
-		this.name = "InvalidDataError";
+		this.name = "RepositoryValidationError";
 	}
 }
+
+export class RepositoryOperationError extends RepositoryError {}

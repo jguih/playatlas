@@ -16,11 +16,11 @@
 	} = $props();
 
 	onMount(() => {
-		handleOnMount?.();
+		void handleOnMount?.();
 	});
 
 	onDestroy(() => {
-		handleOnDetroy?.();
+		void handleOnDetroy?.();
 	});
 </script>
 
@@ -29,7 +29,7 @@
 	class={[
 		"z-21 absolute bottom-0 left-0 right-0 w-full overflow-y-auto p-4",
 		bottomNav ? "bottom-[3.4rem]" : "bottom-0",
-		header ? "top-[var(--header-height)]" : "top-0",
+		header ? "top-(--header-height)" : "top-0",
 		props.class,
 	]}
 >

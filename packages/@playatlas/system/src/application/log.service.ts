@@ -1,5 +1,4 @@
 import { logLevel, type ILogServicePort, type LogLevelNumber } from "@playatlas/common/application";
-import { ZodError } from "zod/v4";
 
 export const DEFAULT_SOURCE = "PlayAtlasServer";
 
@@ -16,22 +15,16 @@ export const makeLogService = (
 		if (getCurrentLogLevel() > logLevel.error) {
 			return;
 		}
-		console.error(`[${getDateTimeString()}] [ERROR] [${source}] ${message}`);
-		if (error && error instanceof ZodError) {
-			console.error(
-				`[${getDateTimeString()}] [ERROR] [${source}] `,
-				JSON.stringify(error.issues, null, 2),
-			);
-		} else if (error) {
-			console.error(`[${getDateTimeString()}] [ERROR] [${source}] `, error);
-		}
+		if (error) console.error(`[${getDateTimeString()}] [ERROR] [${source}] ${message}`, error);
+		else console.error(`[${getDateTimeString()}] [ERROR] [${source}] ${message}`);
 	};
 
-	const logWarning = (message: string): void => {
+	const logWarning = (message: string, details?: unknown): void => {
 		if (getCurrentLogLevel() > logLevel.warning) {
 			return;
 		}
-		console.warn(`[${getDateTimeString()}] [WARNING] [${source}] ${message}`);
+		if (details) console.warn(`[${getDateTimeString()}] [WARNING] [${source}] ${message}`, details);
+		else console.warn(`[${getDateTimeString()}] [WARNING] [${source}] ${message}`);
 	};
 
 	const logDebug = (message: string): void => {
