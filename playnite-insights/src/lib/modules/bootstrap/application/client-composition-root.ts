@@ -1,3 +1,4 @@
+import { sessionIdRepositorySchema } from "$lib/modules/auth/infra";
 import {
 	AuthenticatedHttpClient,
 	HttpClient,
@@ -36,21 +37,28 @@ export class ClientCompositionRoot {
 				genreRepositorySchema,
 				companyRepositorySchema,
 				platformRepositorySchema,
+				sessionIdRepositorySchema,
 			],
 		});
 		await infra.initializeAsync();
 
+		const authHttpClient = new HttpClient({ url: window.origin });
+		const auth: IAuthModulePort = new AuthModule({
+			httpClient: authHttpClient,
+			dbSignal: infra.dbSignal,
+			clock: infra.clock,
+		});
+		await auth.initializeAsync();
+
 		const playAtlasHttpClient = new AuthenticatedHttpClient({
 			httpClient: new HttpClient({ url: window.origin }),
+			sessionIdProvider: auth.sessionIdProvider,
 		});
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			dbSignal: infra.dbSignal,
 			httpClient: playAtlasHttpClient,
 			clock: infra.clock,
 		});
-
-		const authHttpClient = new HttpClient({ url: window.origin });
-		const auth: IAuthModulePort = new AuthModule({ httpClient: authHttpClient });
 
 		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary, auth } });
 		return bootstrapper.bootstrap();

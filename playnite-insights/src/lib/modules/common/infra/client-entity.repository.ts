@@ -9,8 +9,7 @@ export type ClientEntityRepositoryDeps = {
 export class ClientEntityRepository<
 	TEntity extends ClientEntity<TEntityKey>,
 	TEntityKey extends IDBValidKey,
-> implements IClientEntityRepository<TEntity, TEntityKey>
-{
+> implements IClientEntityRepository<TEntity, TEntityKey> {
 	private readonly dbSignal: IDBDatabase;
 	protected readonly storeName: ClientRepositoryStoreName;
 
@@ -58,10 +57,10 @@ export class ClientEntityRepository<
 		});
 	};
 
-	putAsync: IClientEntityRepository<TEntity, TEntityKey>["putAsync"] = async (game) => {
+	putAsync: IClientEntityRepository<TEntity, TEntityKey>["putAsync"] = async (entity) => {
 		await this.runTransaction([this.storeName], "readwrite", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
-			await this.runRequest(store.put(game));
+			await this.runRequest(store.put(entity));
 		});
 	};
 

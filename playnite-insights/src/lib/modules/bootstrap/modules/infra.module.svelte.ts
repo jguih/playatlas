@@ -6,7 +6,9 @@ import {
 	INDEXEDDB_NAME,
 	type IIndexedDbSchema,
 } from "$lib/modules/common/infra";
-import type { IClientInfraModulePort, IndexedDbSignal } from "./infra.module.port";
+import type { IClientInfraModulePort } from "./infra.module.port";
+
+export type IndexedDbSignal = { db: IDBDatabase | null; dbReady: boolean };
 
 export type ClientInfraModuleDeps = {
 	logService: ILogServicePort;

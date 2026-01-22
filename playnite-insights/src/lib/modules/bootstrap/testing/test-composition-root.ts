@@ -1,3 +1,4 @@
+import { sessionIdRepositorySchema } from "$lib/modules/auth/infra";
 import type { IHttpClientPort, ILogServicePort } from "$lib/modules/common/application";
 import {
 	companyRepositorySchema,
@@ -49,6 +50,7 @@ export class TestCompositionRoot {
 				genreRepositorySchema,
 				companyRepositorySchema,
 				platformRepositorySchema,
+				sessionIdRepositorySchema,
 			],
 		});
 		await infra.initializeAsync();
@@ -59,7 +61,11 @@ export class TestCompositionRoot {
 			clock: infra.clock,
 		});
 
-		const auth: IAuthModulePort = new AuthModule({ httpClient: this.mocks.httpClient });
+		const auth: IAuthModulePort = new AuthModule({
+			httpClient: this.mocks.httpClient,
+			dbSignal: infra.dbSignal,
+			clock: infra.clock,
+		});
 
 		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary, auth } });
 		return bootstrapper.bootstrap();

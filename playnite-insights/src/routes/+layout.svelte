@@ -5,15 +5,15 @@
 	import "../app.css";
 
 	const { children } = $props();
+	const root = new ClientCompositionRoot();
+	const apiPromise: Promise<ClientApi> = root.buildAsync();
 
 	let api: ClientApi;
+	const getApi = (): ClientApi => api;
 
-	const root = new ClientCompositionRoot();
-	const apiPromise = root.buildAsync().then((clientApi) => {
+	void apiPromise.then((clientApi) => {
 		api = clientApi;
 	});
-
-	const getApi = () => api;
 
 	setClientApiContext(getApi);
 </script>
@@ -22,4 +22,6 @@
 	<Spinner />
 {:then}
 	{@render children()}
+{:catch}
+	<p class="text-error">Failed to initialize application</p>
 {/await}

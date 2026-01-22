@@ -13,7 +13,9 @@
 
 	const loginAsync = async () => {
 		const result = await api.Auth.AuthService.loginAsync({ password: "test123" });
-		console.log(result);
+		if (result.success) {
+			await api.Auth.SessionIdProvider.setAsync(result.sessionId);
+		}
 	};
 </script>
 

@@ -45,6 +45,7 @@ export class ClientBootstrapper {
 			},
 			Auth: {
 				AuthService: this.auth.authService,
+				SessionIdProvider: this.auth.sessionIdProvider,
 			},
 		};
 

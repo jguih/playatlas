@@ -1,4 +1,4 @@
-import type { IAuthServicePort } from "$lib/modules/auth/application";
+import type { IAuthServicePort, ISessionIdProvider } from "$lib/modules/auth/application";
 import type { IPlayAtlasClientPort } from "$lib/modules/game-library/application";
 import type { ISyncCompaniesCommandHandlerPort } from "$lib/modules/game-library/commands/sync-companies";
 import type { ISyncGamesCommandHandlerPort } from "$lib/modules/game-library/commands/sync-games";
@@ -31,5 +31,6 @@ export interface ClientApi {
 	};
 	Auth: {
 		AuthService: IAuthServicePort;
+		SessionIdProvider: ISessionIdProvider;
 	};
 }
