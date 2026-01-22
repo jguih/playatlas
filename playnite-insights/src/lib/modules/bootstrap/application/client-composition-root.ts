@@ -1,7 +1,7 @@
 import {
+	AuthenticatedHttpClient,
 	HttpClient,
 	LogService,
-	type IHttpClientPort,
 	type ILogServicePort,
 } from "$lib/modules/common/application";
 import {
@@ -21,14 +21,9 @@ import { ClientBootstrapper } from "./client-bootstrapper";
 
 export class ClientCompositionRoot {
 	private readonly logService: ILogServicePort;
-	private readonly playAtlasHttpClient: IHttpClientPort;
 
 	constructor() {
 		this.logService = new LogService();
-		this.playAtlasHttpClient = new HttpClient({
-			getHeaders: () => new Headers(),
-			url: window.origin,
-		});
 	}
 
 	buildAsync = async (): Promise<ClientApi> => {
@@ -43,9 +38,13 @@ export class ClientCompositionRoot {
 		});
 		await infra.initializeAsync();
 
+		const playAtlasHttpClient = new AuthenticatedHttpClient({
+			httpClient: new HttpClient({ url: window.origin }),
+		});
+
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			dbSignal: infra.dbSignal,
-			httpClient: this.playAtlasHttpClient,
+			httpClient: playAtlasHttpClient,
 			clock: infra.clock,
 		});
 

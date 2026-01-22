@@ -1,5 +1,4 @@
-import { apiResponse } from "$lib/server/api/responses";
-import { loginInstanceRequestDtoSchema } from "@playatlas/auth/dtos";
+import { loginInstanceRequestDtoSchema, type LoginInstanceResponseDto } from "@playatlas/auth/dtos";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request, locals: { api } }) => {
@@ -12,7 +11,14 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) => {
 		api
 			.getLogService()
 			.error(`${requestDescription}: Login failed due to invalid JSON body`, error);
-		return apiResponse.error({ error: { message: "Invalid JSON payload" } }, { status: 400 });
+		return json(
+			{
+				success: false,
+				reason: "Invalid JSON payload",
+				reason_code: "invalid_json",
+			} satisfies LoginInstanceResponseDto,
+			{ status: 400 },
+		);
 	}
 
 	try {
@@ -22,9 +28,15 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) => {
 			api
 				.getLogService()
 				.error(`${requestDescription}: Validation error while handling request`, error.issues);
-			return apiResponse.error({
-				error: { message: "Validation error", details: error.issues },
-			});
+			return json(
+				{
+					success: false,
+					reason: "Validation error",
+					reason_code: "validation_error",
+					details: error.issues,
+				} satisfies LoginInstanceResponseDto,
+				{ status: 400 },
+			);
 		}
 
 		const loginResult = await api.auth
@@ -32,15 +44,26 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) => {
 			.loginAsync({ password: requestDto.password });
 
 		if (!loginResult.success)
-			return apiResponse.error({
-				error: { message: loginResult.reason, details: { reason_code: loginResult.reason_code } },
-			});
+			return json(
+				{
+					success: false,
+					reason: loginResult.reason,
+					reason_code: loginResult.reason_code,
+				} satisfies LoginInstanceResponseDto,
+				{ status: 401 },
+			);
 
-		return json({ sessionId: loginResult.sessionId });
+		return json({
+			success: true,
+			sessionId: loginResult.sessionId,
+		} satisfies LoginInstanceResponseDto);
 	} catch (error) {
 		api.getLogService().error(`${requestDescription}: Login failed`, error);
-		if (error instanceof Error)
-			return apiResponse.error({ error: { message: error.message } }, { status: 500 });
-		return apiResponse.error({ error: { message: "Internal server error" } }, { status: 500 });
+		return json(
+			{ success: false, reason: "Internal server error" } satisfies LoginInstanceResponseDto,
+			{
+				status: 500,
+			},
+		);
 	}
 };

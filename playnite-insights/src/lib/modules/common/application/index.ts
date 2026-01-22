@@ -1,3 +1,4 @@
+export * from "./authenticated-http-client";
 export type * from "./clock.port";
 export * from "./http";
 export * from "./http-client";

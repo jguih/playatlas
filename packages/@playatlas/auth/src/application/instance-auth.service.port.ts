@@ -2,7 +2,7 @@ import type { InstanceSessionId } from "../domain/value-object/instance-session-
 
 export type InstanceAuthServiceVerifyResult = {
 	reason: string;
-	authorized: boolean;
+	authenticated: boolean;
 };
 
 type RegisterResult =

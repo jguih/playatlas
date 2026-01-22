@@ -1,5 +1,7 @@
-import { apiResponse } from "$lib/server/api/responses";
-import { registerInstanceRequestDtoSchema } from "@playatlas/auth/dtos";
+import {
+	registerInstanceRequestDtoSchema,
+	type RegisterInstanceResponseDto,
+} from "@playatlas/auth/dtos";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request, locals: { api } }) => {
@@ -12,7 +14,14 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) => {
 		api
 			.getLogService()
 			.error(`${requestDescription}: Login failed due to invalid JSON body`, error);
-		return apiResponse.error({ error: { message: "Invalid JSON payload" } }, { status: 400 });
+		return json(
+			{
+				success: false,
+				reason: "Invalid JSON payload",
+				reason_code: "invalid_json",
+			} satisfies RegisterInstanceResponseDto,
+			{ status: 400 },
+		);
 	}
 
 	try {
@@ -26,9 +35,15 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) => {
 			api
 				.getLogService()
 				.error(`${requestDescription}: Validation error while handling request`, error.issues);
-			return apiResponse.error({
-				error: { message: "Validation error", details: error.issues },
-			});
+			return json(
+				{
+					success: false,
+					reason: "Validation error",
+					reason_code: "validation_error",
+					details: error.issues,
+				} satisfies RegisterInstanceResponseDto,
+				{ status: 400 },
+			);
 		}
 
 		const registerResult = await api.auth
@@ -36,20 +51,25 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) => {
 			.registerAsync({ password: requestDto.password });
 
 		if (!registerResult.success)
-			return apiResponse.error({
-				error: {
-					message: registerResult.reason,
-					details: { ...registerResult },
-				},
-			});
+			return json(
+				{
+					success: false,
+					reason: registerResult.reason,
+					reason_code: registerResult.reason_code,
+				} satisfies RegisterInstanceResponseDto,
+				{ status: 400 },
+			);
 
 		return json({
-			...registerResult,
-		});
+			success: true,
+		} satisfies RegisterInstanceResponseDto);
 	} catch (error) {
-		api.getLogService().error(`${requestDescription}: Instance registration failed`, error);
-		if (error instanceof Error)
-			return apiResponse.error({ error: { message: error.message } }, { status: 500 });
-		return apiResponse.error({ error: { message: "Internal server error" } }, { status: 500 });
+		api.getLogService().error(`${requestDescription}: Login failed`, error);
+		return json(
+			{ success: false, reason: "Internal server error" } satisfies RegisterInstanceResponseDto,
+			{
+				status: 500,
+			},
+		);
 	}
 };

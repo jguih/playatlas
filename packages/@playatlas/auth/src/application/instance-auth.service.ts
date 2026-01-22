@@ -40,7 +40,7 @@ export const makeInstanceAuthService = ({
 			logService.warning(
 				`${requestDescription}: Request rejected due to missing Authorization param`,
 			);
-			return { authorized: false, reason: "Missing Authorization header" };
+			return { authenticated: false, reason: "Missing Authorization header" };
 		}
 
 		const instanceAuth = instanceAuthSettingsRepository.get();
@@ -48,7 +48,7 @@ export const makeInstanceAuthService = ({
 			logService.warning(
 				`${requestDescription}: Request rejected due to missing instance registration`,
 			);
-			return { authorized: false, reason: "Instance is not registered" };
+			return { authenticated: false, reason: "Instance is not registered" };
 		}
 
 		const _sessionId = authorization.split(" ").at(1);
@@ -56,7 +56,7 @@ export const makeInstanceAuthService = ({
 		if (!_sessionId) {
 			logService.warning(`${requestDescription}: Request rejected due to missing session id`);
 			return {
-				authorized: false,
+				authenticated: false,
 				reason: "Invalid or missing session id",
 			};
 		}
@@ -67,20 +67,20 @@ export const makeInstanceAuthService = ({
 		if (!existingSession) {
 			logService.warning(`${requestDescription}: Request rejected due to missing session`);
 			return {
-				authorized: false,
+				authenticated: false,
 				reason: "Missing instance session",
 			};
 		}
 		if (!cryptographyService.compareSessionIds(existingSession.getId(), sessionId)) {
 			logService.warning(`${requestDescription}: Request rejected due to invalid session`);
 			return {
-				authorized: false,
+				authenticated: false,
 				reason: "Provided session id is invalid",
 			};
 		}
 
-		logService.info(`${requestDescription}: Request authorized`);
-		return { authorized: true, reason: "Authorized" };
+		logService.info(`${requestDescription}: Request authenticated`);
+		return { authenticated: true, reason: "Authenticated" };
 	};
 
 	const registerAsync: IInstanceAuthServicePort["registerAsync"] = async ({ password }) => {

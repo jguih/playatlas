@@ -2,12 +2,12 @@ import type { IHttpClientPort } from "./http-client.port";
 import type { HttpClientSearchParams } from "./http-client.types";
 
 export type HttpClientDeps = {
-	getHeaders: () => Headers | Promise<Headers>;
+	getHeaders?: () => Headers | Promise<Headers>;
 	url: string;
 };
 
 export class HttpClient implements IHttpClientPort {
-	private readonly getHeaders: HttpClientDeps["getHeaders"];
+	private readonly getHeaders?: HttpClientDeps["getHeaders"];
 	private readonly url: string;
 
 	constructor({ getHeaders, url }: HttpClientDeps) {
@@ -40,7 +40,7 @@ export class HttpClient implements IHttpClientPort {
 
 	getAsync: IHttpClientPort["getAsync"] = async ({ endpoint, searchParams }, props = {}) => {
 		const url = this.parseUrl(endpoint, searchParams);
-		const headers = await this.getHeaders();
+		const headers = await this.getHeaders?.();
 		return await fetch(url, {
 			...props,
 			method: "GET",
@@ -50,7 +50,7 @@ export class HttpClient implements IHttpClientPort {
 
 	postAsync: IHttpClientPort["postAsync"] = async ({ endpoint, searchParams }, props = {}) => {
 		const url = this.parseUrl(endpoint, searchParams);
-		const headers = await this.getHeaders();
+		const headers = await this.getHeaders?.();
 		return await fetch(url, {
 			...props,
 			method: "POST",
@@ -60,7 +60,7 @@ export class HttpClient implements IHttpClientPort {
 
 	putAsync: IHttpClientPort["putAsync"] = async ({ endpoint, searchParams }, props = {}) => {
 		const url = this.parseUrl(endpoint, searchParams);
-		const headers = await this.getHeaders();
+		const headers = await this.getHeaders?.();
 		return await fetch(url, {
 			...props,
 			method: "PUT",
@@ -70,7 +70,7 @@ export class HttpClient implements IHttpClientPort {
 
 	deleteAsync: IHttpClientPort["deleteAsync"] = async ({ endpoint, searchParams }, props = {}) => {
 		const url = this.parseUrl(endpoint, searchParams);
-		const headers = await this.getHeaders();
+		const headers = await this.getHeaders?.();
 		return await fetch(url, {
 			...props,
 			method: "DELETE",
