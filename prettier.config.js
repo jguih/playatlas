@@ -4,7 +4,7 @@ export default {
 	trailingComma: "all",
 	printWidth: 100,
 	singleAttributePerLine: true,
-	plugins: ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
+	plugins: ["prettier-plugin-tailwindcss", "prettier-plugin-svelte"],
 	overrides: [
 		{
 			files: "*.svelte",

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import type { GameCardProps } from "./game-card.projection";
 
 	const { game }: GameCardProps = $props();
@@ -16,11 +17,14 @@
 	]}
 >
 	<a
-		href={game.gamePagePath}
+		href={resolve("/__ui")}
 		class="outline-none"
 	>
 		<img
-			src={game.coverImagePath}
+			src={resolve(`/api/assets/image/[playniteGameId]/[playniteImageFileName]`, {
+				playniteGameId: game.id,
+				playniteImageFileName: game.coverImageFileName,
+			})}
 			width="300"
 			height="480"
 			alt={`Cover of ${game.name}`}
