@@ -3,12 +3,14 @@ import type {
 	HTMLSelectAttributes,
 	HTMLTextareaAttributes,
 } from "svelte/elements";
-import type { SemanticColors } from "../types";
+import type { ComponentSize, ComponentVariant } from "../types";
 
 export type BaseInputProps = {
 	value?: string | number | null;
 	input?: HTMLInputElement | null;
-} & HTMLInputAttributes;
+	variant?: ComponentVariant;
+	size?: ComponentSize;
+} & Omit<HTMLInputAttributes, "size" | "input" | "value">;
 
 export type BaseTextareaProps = {
 	value?: string | number | null;
@@ -18,7 +20,7 @@ export type BaseTextareaProps = {
 
 export type BaseCheckboxProps = {
 	checked: boolean;
-	color?: SemanticColors;
+	color?: ComponentVariant;
 } & Omit<BaseInputProps, "size">;
 
 export type BaseSelectProps = { value?: string | number | null } & Omit<

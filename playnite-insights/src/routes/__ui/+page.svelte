@@ -15,7 +15,7 @@
 	import Main from "$lib/ui/components/Main.svelte";
 	import BottomSheet from "$lib/ui/components/sidebar/BottomSheet.svelte";
 	import Sidebar from "$lib/ui/components/sidebar/Sidebar.svelte";
-	import type { SemanticColors } from "$lib/ui/components/types";
+	import type { ComponentSize, ComponentVariant } from "$lib/ui/components/types";
 	import {
 		HomeIcon,
 		LayoutDashboardIcon,
@@ -24,7 +24,15 @@
 		SettingsIcon,
 	} from "@lucide/svelte";
 
-	const semanticVariants: SemanticColors[] = ["primary", "error", "neutral", "warning", "success"];
+	const semanticVariants: ComponentVariant[] = [
+		"primary",
+		"error",
+		"neutral",
+		"warning",
+		"success",
+	];
+
+	const componentSizes: ComponentSize[] = ["sm", "md", "lg"];
 
 	const closeFiltersSidebar = () => {
 		history.back();
@@ -291,7 +299,24 @@
 		</ComponentSection>
 
 		<ComponentSection title="Form">
-			<Input placeholder="type here..." />
+			<ComponentSectionText>Variants</ComponentSectionText>
+			<div class="flex gap-2 flex-wrap items-center">
+				{#each semanticVariants as variant (variant)}
+					<Input
+						{variant}
+						placeholder="type here..."
+					/>
+				{/each}
+			</div>
+			<ComponentSectionText>Sizes</ComponentSectionText>
+			<div class="flex gap-2 flex-wrap items-center">
+				{#each componentSizes as size (size)}
+					<Input
+						{size}
+						placeholder="type here..."
+					/>
+				{/each}
+			</div>
 		</ComponentSection>
 	</Main>
 	{#snippet bottomNav()}

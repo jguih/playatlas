@@ -1,2 +1,2 @@
-export type SemanticColors = "primary" | "neutral" | "warning" | "error" | "success";
+export type ComponentVariant = "primary" | "neutral" | "warning" | "error" | "success";
 export type ComponentSize = "sm" | "md" | "lg";
