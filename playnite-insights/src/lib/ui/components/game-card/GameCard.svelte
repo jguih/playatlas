@@ -21,10 +21,7 @@
 		class="outline-none"
 	>
 		<img
-			src={resolve(`/api/assets/image/[playniteGameId]/[playniteImageFileName]`, {
-				playniteGameId: game.id,
-				playniteImageFileName: game.coverImageFileName,
-			})}
+			src={`${window.origin}/placeholder/cover.png`}
 			width="300"
 			height="480"
 			alt={`Cover of ${game.name}`}

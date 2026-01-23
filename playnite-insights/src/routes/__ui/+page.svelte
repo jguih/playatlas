@@ -7,6 +7,7 @@
 	import ComponentDisplayContainer from "$lib/ui/components/ComponentDisplayContainer.svelte";
 	import ComponentSection from "$lib/ui/components/ComponentSection.svelte";
 	import ComponentSectionText from "$lib/ui/components/ComponentSectionText.svelte";
+	import Input from "$lib/ui/components/forms/Input.svelte";
 	import GameCard from "$lib/ui/components/game-card/GameCard.svelte";
 	import Header from "$lib/ui/components/header/Header.svelte";
 	import Icon from "$lib/ui/components/Icon.svelte";
@@ -282,11 +283,15 @@
 		<ComponentSection title="Game Card">
 			<GameCard
 				game={{
+					id: "",
 					name: "Minecraft",
-					coverImagePath: `${window.origin}/placeholder/cover.png`,
-					gamePagePath: "",
+					coverImageFilePath: `123/cover.png`,
 				}}
 			/>
+		</ComponentSection>
+
+		<ComponentSection title="Form">
+			<Input placeholder="type here..." />
 		</ComponentSection>
 	</Main>
 	{#snippet bottomNav()}

@@ -8,7 +8,6 @@ import type { SemanticColors } from "../types";
 export type BaseInputProps = {
 	value?: string | number | null;
 	input?: HTMLInputElement | null;
-	onMount?: (props: { input?: HTMLInputElement | null }) => void;
 } & HTMLInputAttributes;
 
 export type BaseTextareaProps = {
