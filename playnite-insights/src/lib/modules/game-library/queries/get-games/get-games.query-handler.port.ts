@@ -1,5 +1,5 @@
 import type { IAsyncQueryHandlerPort } from "$lib/modules/common/common";
-import type { GameQueryResult } from "../../infra/game.repository.types";
+import type { Game } from "../../domain/game.entity";
 
 export type GetGamesQuery = {
 	sort: "recent" | "name";
@@ -11,6 +11,9 @@ export type GetGamesQuery = {
 	limit: number;
 };
 
-export type GetGamesQueryResult = GameQueryResult;
+export type GetGamesQueryResult = {
+	items: Game[];
+	nextKey: IDBValidKey | null;
+};
 
-export type IGetGamesQueryHandlerPort = IAsyncQueryHandlerPort<GetGamesQuery, GameQueryResult>;
+export type IGetGamesQueryHandlerPort = IAsyncQueryHandlerPort<GetGamesQuery, GetGamesQueryResult>;

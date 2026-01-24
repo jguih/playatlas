@@ -25,9 +25,10 @@ export class GameRepository
 			const idx = store.index(index);
 
 			const items: Game[] = [];
-			let nextKey: IDBValidKey | null = null;
+			const keys: Map<GameId, IDBValidKey> = new Map();
+			let lastKey: IDBValidKey | null = null;
 
-			const range = afterKey ? IDBKeyRange.lowerBound(afterKey, true) : null;
+			const range = afterKey ? IDBKeyRange.upperBound(afterKey, true) : null;
 
 			return await new Promise<GameQueryResult>((resolve, reject) => {
 				const request = idx.openCursor(range, direction);
@@ -38,19 +39,17 @@ export class GameRepository
 					const cursor = request.result;
 
 					if (!cursor) {
-						resolve({ items, nextKey: null });
+						resolve({ items, keys, nextKey: lastKey });
 						return;
 					}
 
 					const game: Game = cursor.value;
-
-					if (!game.DeletedAt) {
-						nextKey = cursor.key;
-						items.push(cursor.value);
-					}
+					items.push(game);
+					keys.set(game.Id, cursor.key);
+					lastKey = cursor.key;
 
 					if (items.length === limit) {
-						resolve({ items, nextKey });
+						resolve({ items, keys, nextKey: lastKey });
 						return;
 					}
 

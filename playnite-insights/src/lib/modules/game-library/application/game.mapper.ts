@@ -39,6 +39,7 @@ export class GameMapper implements IGameMapperPort {
 			Playtime: dto.Playtime,
 			ReleaseDate: dto.ReleaseDate ? new Date(dto.ReleaseDate) : null,
 			SourceUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
+			SourceUpdatedAtMs: new Date(dto.Sync.LastUpdatedAt).getTime(),
 			DeletedAt: dto.Sync.DeletedAt ? new Date(dto.Sync.DeletedAt) : null,
 			DeleteAfter: dto.Sync.DeleteAfter ? new Date(dto.Sync.DeleteAfter) : null,
 			Sync: {

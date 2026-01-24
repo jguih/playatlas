@@ -10,7 +10,7 @@ export const platformRepositorySchema: IIndexedDbSchema = {
 	define({ db }) {
 		if (!db.objectStoreNames.contains(platformRepositoryMeta.storeName)) {
 			const store = db.createObjectStore(platformRepositoryMeta.storeName, { keyPath: "Id" });
-			store.createIndex(platformRepositoryMeta.index.bySourceUpdatedAt, "SourceUpdatedAt");
+			store.createIndex(platformRepositoryMeta.index.bySourceUpdatedAt, ["SourceUpdatedAt", "Id"]);
 		}
 	},
 };

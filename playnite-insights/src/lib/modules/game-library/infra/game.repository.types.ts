@@ -1,5 +1,5 @@
 import type { ClientRepositoryStoreName } from "$lib/modules/common/infra";
-import type { Game } from "../domain/game.entity";
+import type { Game, GameId } from "../domain/game.entity";
 
 export type GameRepositoryIndex = "bySourceUpdatedAt" | "byDeletedAt";
 
@@ -17,5 +17,6 @@ export type GameQuery = {
 
 export type GameQueryResult = {
 	items: Game[];
+	keys: Map<GameId, IDBValidKey>;
 	nextKey: IDBValidKey | null;
 };

@@ -1,3 +1,4 @@
+import type { GameQueryResult } from "../../infra";
 import type { IGameRepositoryPort } from "../../infra/game.repository.port";
 import type { IGetGamesQueryHandlerPort } from "./get-games.query-handler.port";
 
@@ -13,8 +14,10 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 	}
 
 	executeAsync: IGetGamesQueryHandlerPort["executeAsync"] = async (query) => {
+		let result: GameQueryResult | null = null;
+
 		if (query.sort === "recent") {
-			return this.#gameRepository.queryAsync({
+			result = await this.#gameRepository.queryAsync({
 				index: "bySourceUpdatedAt",
 				direction: "prev",
 				afterKey: query.cursor,
@@ -22,6 +25,14 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 			});
 		}
 
-		throw new Error("Unsupported query");
+		if (!result) throw new Error("Unsupported query");
+
+		const filtered = result.items.filter((g) => !g.DeletedAt);
+		const lastReturnedGame = filtered[filtered.length - 1];
+		const adjustedNextKey = lastReturnedGame
+			? (result.keys.get(lastReturnedGame.Id) ?? null)
+			: null;
+
+		return { items: filtered, nextKey: adjustedNextKey };
 	};
 }

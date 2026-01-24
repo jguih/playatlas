@@ -3,7 +3,7 @@ import type { GameId } from "$lib/modules/game-library/domain";
 export type GameCardProjection = {
 	id: GameId;
 	name: string;
-	coverImageFilePath: string;
+	coverImageFilePath?: string | null;
 };
 
 export type GameCardProps = {

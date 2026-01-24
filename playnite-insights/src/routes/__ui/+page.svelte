@@ -291,7 +291,7 @@
 		<ComponentSection title="Game Card">
 			<GameCard
 				game={{
-					id: "",
+					id: "123",
 					name: "Minecraft",
 					coverImageFilePath: `123/cover.png`,
 				}}

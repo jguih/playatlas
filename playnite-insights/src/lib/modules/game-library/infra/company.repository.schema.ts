@@ -10,7 +10,7 @@ export const companyRepositorySchema: IIndexedDbSchema = {
 	define({ db }) {
 		if (!db.objectStoreNames.contains(companyRepositoryMeta.storeName)) {
 			const store = db.createObjectStore(companyRepositoryMeta.storeName, { keyPath: "Id" });
-			store.createIndex(companyRepositoryMeta.index.bySourceUpdatedAt, "SourceUpdatedAt");
+			store.createIndex(companyRepositoryMeta.index.bySourceUpdatedAt, ["SourceUpdatedAt", "Id"]);
 		}
 	},
 };
