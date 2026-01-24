@@ -10,8 +10,8 @@ export type GameRepositoryMeta = {
 
 export type GameQuery = {
 	index: GameRepositoryIndex;
-	direction?: "next" | "prev";
-	afterKey?: IDBValidKey | null;
+	direction: IDBCursorDirection;
+	range: IDBKeyRange | null;
 	limit: number;
 };
 

@@ -20,7 +20,7 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 			result = await this.#gameRepository.queryAsync({
 				index: "bySourceUpdatedAt",
 				direction: "prev",
-				afterKey: query.cursor,
+				range: query.cursor ? IDBKeyRange.upperBound(query.cursor, true) : null,
 				limit: query.limit,
 			});
 		}

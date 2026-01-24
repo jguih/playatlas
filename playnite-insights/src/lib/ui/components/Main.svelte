@@ -1,11 +1,15 @@
 <script lang="ts">
 	import type { HTMLAttributes } from "svelte/elements";
 
-	const props: HTMLAttributes<HTMLElement> = $props();
+	let {
+		main = $bindable(),
+		...props
+	}: HTMLAttributes<HTMLElement> & { main?: HTMLElement | null } = $props();
 </script>
 
 <main
 	{...props}
+	bind:this={main}
 	class={["overflow-y-auto overflow-x-hidden p-4", props.class]}
 >
 	{#if props.children}

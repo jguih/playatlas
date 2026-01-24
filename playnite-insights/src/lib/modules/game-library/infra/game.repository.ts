@@ -14,12 +14,7 @@ export class GameRepository
 		super({ dbSignal, storeName: gameRepositoryMeta.storeName });
 	}
 
-	queryAsync: IGameRepositoryPort["queryAsync"] = async ({
-		index,
-		direction = "prev",
-		afterKey = null,
-		limit,
-	}) => {
+	queryAsync: IGameRepositoryPort["queryAsync"] = async ({ index, direction, range, limit }) => {
 		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
 			const idx = store.index(index);
@@ -27,8 +22,6 @@ export class GameRepository
 			const items: Game[] = [];
 			const keys: Map<GameId, IDBValidKey> = new Map();
 			let lastKey: IDBValidKey | null = null;
-
-			const range = afterKey ? IDBKeyRange.upperBound(afterKey, true) : null;
 
 			return await new Promise<GameQueryResult>((resolve, reject) => {
 				const request = idx.openCursor(range, direction);

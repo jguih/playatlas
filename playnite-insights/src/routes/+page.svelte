@@ -8,20 +8,22 @@
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
+	import Spinner from "$lib/ui/components/Spinner.svelte";
 	import { HomeIcon, LayoutDashboardIcon, SettingsIcon } from "@lucide/svelte";
 	import { onMount } from "svelte";
 
 	type PageState = {
 		games: Game[];
+		nextKey: IDBValidKey | null;
 		loading: boolean;
 		exhausted: boolean;
 	};
 
 	const api = getClientApiContext();
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);
-	let nextKey: IDBValidKey | null = null;
 	const pageState = $state<PageState>({
 		games: [],
+		nextKey: null,
 		loading: false,
 		exhausted: false,
 	});
@@ -32,14 +34,16 @@
 		pageState.loading = true;
 
 		try {
+			const snapshot = $state.snapshot(pageState) as unknown as PageState;
+
 			const result = await api().GameLibrary.Query.GetGames.executeAsync({
 				limit: 50,
 				sort: "recent",
-				cursor: nextKey,
+				cursor: snapshot.nextKey,
 			});
 
 			pageState.games.push(...result.items);
-			nextKey = result.nextKey;
+			pageState.nextKey = result.nextKey;
 			pageState.exhausted = result.nextKey === null;
 		} finally {
 			pageState.loading = false;
@@ -47,6 +51,8 @@
 	};
 
 	onMount(() => {
+		void api().GameLibrary.SyncGamesFlow.executeAsync();
+
 		const observer = new IntersectionObserver(
 			async ([entry]) => {
 				if (entry.isIntersecting) {
@@ -77,8 +83,8 @@
 	<Main>
 		<ul
 			class={[
-				"mb-6 grid list-none gap-2 p-0",
-				["grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"],
+				"mb-6 grid list-none gap-2 p-0 justify-center",
+				["grid-cols-[repeat(auto-fill,minmax(9rem,1fr))]"],
 			]}
 		>
 			{#each pageState.games as game (game.Id)}
@@ -93,7 +99,9 @@
 		</ul>
 
 		{#if pageState.loading}
-			<p class="text-center text-sm text-neutral-light-fg mt-4">Loading...</p>
+			<div class="w-fit block mx-auto">
+				<Spinner />
+			</div>
 		{/if}
 		<div bind:this={sentinel}></div>
 	</Main>

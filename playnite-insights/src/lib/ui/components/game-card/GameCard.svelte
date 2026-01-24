@@ -13,8 +13,8 @@
 
 <li
 	class={[
-		"list-none",
-		"bg-background-1 shadow-default m-0 w-40 aspect-[1/1.6] h-64 p-0",
+		"list-none w-full aspect-[1/1.6] [content-visibility:auto] [contain-intrinsic-size:auto_240px] contain-paint",
+		"bg-background-1 shadow-default m-0 p-0",
 		"border-3 border-black/20",
 		"hover:border-primary-light-hover-fg",
 		"active:border-primary-light-active-fg",
@@ -35,6 +35,8 @@
 			height="480"
 			alt={`Cover of ${game.name}`}
 			loading="lazy"
+			decoding="async"
+			fetchpriority="low"
 			class="h-7/8 w-full object-cover"
 		/>
 		<div class="h-1/8 bottom-0 flex w-full flex-row items-center justify-center p-2">
