@@ -6,6 +6,8 @@ export type IGameFactoryPort = IClientEntityFactoryPort<Game>;
 
 export class GameFactory implements IGameFactoryPort {
 	private buildGame = (): Game => {
+		const sourceUpdatedAt = faker.date.recent();
+
 		return {
 			Id: faker.string.uuid(),
 			Name: faker.lorem.words({ min: 1, max: 4 }),
@@ -26,7 +28,8 @@ export class GameFactory implements IGameFactoryPort {
 			Publishers: [],
 			Genres: [],
 			Platforms: [],
-			SourceUpdatedAt: faker.date.recent(),
+			SourceUpdatedAt: sourceUpdatedAt,
+			SourceUpdatedAtMs: sourceUpdatedAt.getTime(),
 			DeleteAfter: null,
 			DeletedAt: null,
 			Sync: {
