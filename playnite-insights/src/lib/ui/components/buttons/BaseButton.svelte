@@ -9,18 +9,17 @@
 		size = "md",
 		iconOnly,
 		state = "default",
+		type = "button",
 		...props
 	}: BaseButtonProps = $props();
 
 	const loading = $derived(state === "loading");
-	const disabled = $derived(state === "disabled");
 </script>
 
 <button
-	type="button"
+	{type}
 	data-state={state}
 	aria-busy={loading}
-	disabled={disabled || loading}
 	{...props}
 	class={[
 		iconOnly && [

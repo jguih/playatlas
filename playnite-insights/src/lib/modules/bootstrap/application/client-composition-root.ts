@@ -47,6 +47,7 @@ export class ClientCompositionRoot {
 			httpClient: authHttpClient,
 			dbSignal: infra.dbSignal,
 			clock: infra.clock,
+			logService: this.logService,
 		});
 		await auth.initializeAsync();
 

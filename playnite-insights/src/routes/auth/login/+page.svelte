@@ -1,78 +1,88 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
+	import type { AuthFlowLoginResult } from "$lib/modules/auth/application";
 	import { getClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
-	import BottomNav from "$lib/ui/components/BottomNav.svelte";
-	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
+	import { m } from "$lib/paraglide/messages";
 	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
-	import Header from "$lib/ui/components/header/Header.svelte";
-	import Icon from "$lib/ui/components/Icon.svelte";
-	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
+	import Input from "$lib/ui/components/forms/Input.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
-	import { ArrowLeftIcon, HomeIcon, LayoutDashboardIcon, SettingsIcon } from "@lucide/svelte";
+	import type { EventHandler } from "svelte/elements";
 
-	const api = getClientApiContext()();
+	const getApi = getClientApiContext();
+	const loginState = $state<{
+		loading: boolean;
+		result: AuthFlowLoginResult | null;
+		password: string;
+	}>({
+		loading: false,
+		result: null,
+		password: "",
+	});
 
 	const loginAsync = async () => {
-		const result = await api.Auth.AuthService.loginAsync({ password: "test123" });
-		if (result.success) {
-			await api.Auth.SessionIdProvider.setAsync(result.sessionId);
+		try {
+			loginState.loading = true;
+			loginState.result = null;
+
+			const result = await getApi().Auth.Flow.loginAsync({ password: loginState.password });
+
+			loginState.result = result;
+
+			if (result.success) await goto(resolve("/__ui"));
+		} finally {
+			loginState.loading = false;
 		}
+	};
+
+	const handleSubmit: EventHandler<SubmitEvent, HTMLFormElement> = async (event) => {
+		event.preventDefault();
+		if (loginState.loading) return;
+		await loginAsync();
 	};
 </script>
 
-<AppLayout>
-	{#snippet header()}
-		<Header>
-			<div class="mr-auto block w-fit">
-				<LightButton
-					variant="neutral"
-					iconOnly
-					onclick={() => history.back()}
-				>
-					<Icon>
-						<ArrowLeftIcon />
-					</Icon>
-				</LightButton>
-			</div>
-		</Header>
-	{/snippet}
-	{#snippet banner()}
-		<div></div>
-	{/snippet}
-
-	<Main><SolidButton onclick={loginAsync}>Login</SolidButton></Main>
-
-	{#snippet bottomNav()}
-		<BottomNav>
-			<LightButton
-				size="lg"
-				iconOnly
-				state="active"
-				aria-label="Home"
-			>
-				<Icon>
-					<HomeIcon />
-				</Icon>
-			</LightButton>
-			<LightButton
-				size="lg"
-				variant="neutral"
-				iconOnly
-				aria-label="Dashboard"
-			>
-				<Icon>
-					<LayoutDashboardIcon />
-				</Icon>
-			</LightButton>
-			<LightButton
-				size="lg"
-				variant="neutral"
-				iconOnly
-				aria-label="Settings"
-			>
-				<Icon>
-					<SettingsIcon />
-				</Icon>
-			</LightButton>
-		</BottomNav>
-	{/snippet}
-</AppLayout>
+<Main class="h-dvh w-dvw flex items-center justify-center">
+	<form
+		class="flex flex-col gap-4 w-64"
+		onsubmit={handleSubmit}
+	>
+		<label
+			class="text-3xl"
+			for="instance-password"
+		>
+			{m["login_page.title.prefix"]()}
+			<span class="text-primary-light-active-fg">
+				{m["login_page.title.product"]()}
+			</span>
+			{m["login_page.title.suffix"]()}
+		</label>
+		<Input
+			placeholder={m["login_page.placeholder_instance_password"]()}
+			id="instance-password"
+			type="password"
+			variant={loginState.result?.success === false ? "error" : "primary"}
+			required
+			autofocus
+			enterkeyhint="done"
+			autocomplete="current-password"
+			oninput={() => (loginState.result = null)}
+			bind:value={loginState.password}
+		/>
+		{#if loginState.result && !loginState.result.success}
+			<p class="text-sm text-error-light-fg">
+				{loginState.result.reason_code === "instance_not_registered"
+					? m["login_page.validation.instance_not_registered"]()
+					: m["login_page.error_generic"]()}
+			</p>
+		{/if}
+		<SolidButton
+			class="self-end w-fit block"
+			type="submit"
+			disabled={loginState.loading || !loginState.password}
+			state={loginState.loading ? "loading" : !loginState.password ? "disabled" : "default"}
+		>
+			Login
+		</SolidButton>
+	</form>
+</Main>

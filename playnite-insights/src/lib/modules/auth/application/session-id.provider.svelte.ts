@@ -1,14 +1,14 @@
 import type { IClockPort } from "$lib/modules/common/application";
 import type { SessionId, SessionIdObject } from "../domain";
 import type { ISessionIdRepositoryPort } from "../infra";
-import type { ISessionIdProvider } from "./session-id.provider.port";
+import type { ISessionIdProviderPort } from "./session-id.provider.port";
 
 export type SessionIdProviderDeps = {
 	sessionIdRepository: ISessionIdRepositoryPort;
 	clock: IClockPort;
 };
 
-export class SessionIdProvider implements ISessionIdProvider {
+export class SessionIdProvider implements ISessionIdProviderPort {
 	private readonly sessionIdRepository: ISessionIdRepositoryPort;
 	private readonly clock: IClockPort;
 	private sessionIdSignal: SessionId | null;

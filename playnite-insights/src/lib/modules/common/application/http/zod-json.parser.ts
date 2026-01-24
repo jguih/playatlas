@@ -1,4 +1,5 @@
 import type { ZodSchema } from "zod";
+import { ValidationError } from "../../errors";
 import type { HttpResponseParser } from "./http-response.parser";
 
 export const zodJsonParser =
@@ -10,5 +11,5 @@ export const zodJsonParser =
 
 		if (success) return data;
 
-		throw new Error(`Validation error: ${error.message}`);
+		throw new ValidationError(`Validation error: ${error.issues}`, error);
 	};

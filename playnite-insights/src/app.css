@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@plugin '@tailwindcss/typography';
+@plugin "@tailwindcss/typography";
 
 html {
 	font-size: clamp(15px, 1.2vw + 15px, 17px);
@@ -310,7 +310,7 @@ body {
 }
 
 .transition-colors-default {
-	@apply transition-colors duration-100 ease-out;
+	@apply transition-colors duration-150 ease-out;
 }
 
 .shadow-default {

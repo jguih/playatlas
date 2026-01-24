@@ -1,15 +1,15 @@
-import type { ISessionIdProvider } from "$lib/modules/auth/application";
+import type { ISessionIdProviderPort } from "$lib/modules/auth/application";
 import { NotAuthenticatedError } from "../errors";
 import type { IHttpClientPort } from "./http-client.port";
 
 export type AuthenticatedHttpClientDeps = {
 	httpClient: IHttpClientPort;
-	sessionIdProvider: ISessionIdProvider;
+	sessionIdProvider: ISessionIdProviderPort;
 };
 
 export class AuthenticatedHttpClient implements IHttpClientPort {
 	private readonly inner: IHttpClientPort;
-	private readonly sessionIdProvider: ISessionIdProvider;
+	private readonly sessionIdProvider: ISessionIdProviderPort;
 
 	constructor({ httpClient, sessionIdProvider }: AuthenticatedHttpClientDeps) {
 		this.inner = httpClient;

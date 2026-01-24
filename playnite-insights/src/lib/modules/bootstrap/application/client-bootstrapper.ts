@@ -44,8 +44,7 @@ export class ClientBootstrapper {
 				PlayAtlasClient: this.gameLibrary.playAtlasClient,
 			},
 			Auth: {
-				AuthService: this.auth.authService,
-				SessionIdProvider: this.auth.sessionIdProvider,
+				Flow: this.auth.authFlow,
 			},
 		};
 

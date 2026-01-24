@@ -1,6 +1,6 @@
 import type { SessionId } from "../domain";
 
-export interface ISessionIdProvider {
+export interface ISessionIdProviderPort {
 	getAsync: () => Promise<SessionId | null>;
 	setAsync: (sessionId: SessionId) => Promise<void>;
 	loadFromDbAsync: () => Promise<void>;

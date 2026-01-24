@@ -1,6 +1,14 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"language_name": "English",
+	"login_page": {
+		"title": { "prefix": "Login into this ", "product": "PlayAtlas", "suffix": " instance" },
+		"validation": {
+			"instance_not_registered": "This instance is not registered"
+		},
+		"error_generic": "Incorrect password",
+		"placeholder_instance_password": "Instance password..."
+	},
 	"home_title": "My Games",
 	"home_showing_games_counter": "Showing games {count1}-{count2} of {totalCount}",
 	"home_no_games_found": "No games found",
@@ -141,6 +149,5 @@
 	"label_save": "Save",
 	"label_login": "Login",
 	"register_label_create_password": "Register a password for this {begin_span}PlayAtlas{end_span} instance",
-	"auth_placeholder_instance_password": "Instance password",
 	"login_label_enter_password": "Login into this {begin_span}PlayAtlas{end_span} instance"
 }

@@ -2,12 +2,19 @@
 	import BaseInput from "./BaseInput.svelte";
 	import type { BaseInputProps } from "./types";
 
-	let { variant = "primary", ...props }: BaseInputProps = $props();
+	let {
+		value = $bindable<BaseInputProps["value"]>(),
+		input = $bindable(),
+		variant = "primary",
+		...props
+	}: BaseInputProps = $props();
 </script>
 
 <BaseInput
 	{variant}
 	{...props}
+	bind:value
+	bind:input
 	class={[
 		"border",
 		["focus-visible:ring-2", "focus-visible:ring-opacity-50"],

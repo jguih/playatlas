@@ -11,6 +11,8 @@
 
 <input
 	{...props}
+	bind:value
+	bind:this={input}
 	class={[
 		size === "sm" && ["h-8", "px-2", "text-sm", "leading-none"],
 		size === "md" && ["h-11", "px-3", "text-base", "leading-none"],
@@ -24,6 +26,4 @@
 		],
 		props.class,
 	]}
-	bind:value
-	bind:this={input}
 />
