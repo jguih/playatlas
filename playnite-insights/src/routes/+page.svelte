@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { getClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
-	import type { Game } from "$lib/modules/game-library/domain";
 	import BottomNav from "$lib/ui/components/BottomNav.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import GameCard from "$lib/ui/components/game-card/GameCard.svelte";
@@ -9,54 +8,19 @@
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
+	import { GameLibraryPager } from "$lib/ui/pager";
 	import { HomeIcon, LayoutDashboardIcon, SettingsIcon } from "@lucide/svelte";
 	import { onMount } from "svelte";
 
-	type PageState = {
-		games: Game[];
-		nextKey: IDBValidKey | null;
-		loading: boolean;
-		exhausted: boolean;
-	};
-
 	const api = getClientApiContext();
+	const gamePager = new GameLibraryPager({ api });
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);
-	const pageState = $state<PageState>({
-		games: [],
-		nextKey: null,
-		loading: false,
-		exhausted: false,
-	});
-
-	const loadMore = async () => {
-		if (pageState.loading || pageState.exhausted) return;
-
-		pageState.loading = true;
-
-		try {
-			const snapshot = $state.snapshot(pageState) as unknown as PageState;
-
-			const result = await api().GameLibrary.Query.GetGames.executeAsync({
-				limit: 50,
-				sort: "recent",
-				cursor: snapshot.nextKey,
-			});
-
-			pageState.games.push(...result.items);
-			pageState.nextKey = result.nextKey;
-			pageState.exhausted = result.nextKey === null;
-		} finally {
-			pageState.loading = false;
-		}
-	};
 
 	onMount(() => {
-		void api().GameLibrary.SyncGamesFlow.executeAsync();
-
 		const observer = new IntersectionObserver(
 			async ([entry]) => {
 				if (entry.isIntersecting) {
-					await loadMore();
+					await gamePager.loadMore();
 				}
 			},
 			{
@@ -87,18 +51,12 @@
 				["grid-cols-[repeat(auto-fill,minmax(9rem,1fr))]"],
 			]}
 		>
-			{#each pageState.games as game (game.Id)}
-				<GameCard
-					game={{
-						id: game.Id,
-						name: game.Name ?? "Unknown",
-						coverImageFilePath: game.CoverImagePath,
-					}}
-				/>
+			{#each gamePager.pagerStateSignal.games as game (game.id)}
+				<GameCard {game} />
 			{/each}
 		</ul>
 
-		{#if pageState.loading}
+		{#if gamePager.pagerStateSignal.loading}
 			<div class="w-fit block mx-auto">
 				<Spinner />
 			</div>

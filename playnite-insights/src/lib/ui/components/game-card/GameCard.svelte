@@ -4,10 +4,9 @@
 
 	const { game }: GameCardProps = $props();
 
-	const getCoverImageFileName = (coverImagePath: GameCardProps["game"]["coverImageFilePath"]) => {
-		if (!coverImagePath) return "placeholder.webp";
-		const [, imageFileName] = coverImagePath.split("/");
-		return imageFileName;
+	const buildCoverParams = (imagePath?: string | null): string => {
+		if (!imagePath) return "";
+		return `cover/${imagePath.replace(/^\/+|\/+$/g, "")}`;
 	};
 </script>
 
@@ -27,9 +26,8 @@
 		class="outline-none"
 	>
 		<img
-			src={resolve(`/api/assets/image/[playniteGameId]/[playniteImageFileName]`, {
-				playniteGameId: game.id ?? "unknown",
-				playniteImageFileName: getCoverImageFileName(game.coverImageFilePath),
+			src={resolve(`/api/assets/image/[...params]`, {
+				params: buildCoverParams(game.coverImageFilePath),
 			})}
 			width="300"
 			height="480"

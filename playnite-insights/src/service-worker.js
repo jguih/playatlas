@@ -208,6 +208,34 @@ async function shellRouteStrategy(pathname, cacheName, request) {
 	}
 }
 
+/**
+ *
+ * @param {Request} request
+ */
+async function handleImageRequest(request) {
+	try {
+		const response = await fetch(request);
+		if (!response.ok) {
+			throw new Error("Image fetch failed");
+		}
+		return response;
+	} catch {
+		if (request.url.includes("/cover/")) {
+			return fetch("/placeholder/cover.png");
+		}
+
+		if (request.url.includes("/icon/")) {
+			return fetch("/placeholder/icon.png");
+		}
+
+		if (request.url.includes("/background/")) {
+			return fetch("/placeholder/background.png");
+		}
+
+		return fetch("/placeholder/default.png");
+	}
+}
+
 sw.addEventListener("fetch", async (event) => {
 	if (event.request.method !== "GET") return;
 	if (event.request.headers.get("Accept")?.includes("text/event-stream")) return;
@@ -228,6 +256,12 @@ sw.addEventListener("fetch", async (event) => {
 
 	if (shellRoutes.includes(url.pathname)) {
 		event.respondWith(shellRouteStrategy(url.pathname, CacheKeys.APP, event.request));
+		return;
+	}
+
+	// Handle images
+	if (event.request.destination === "image" && event.request.url.includes("/api/assets/image/")) {
+		event.respondWith(handleImageRequest(event.request));
 		return;
 	}
 

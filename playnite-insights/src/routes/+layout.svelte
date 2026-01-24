@@ -2,6 +2,7 @@
 	import { ClientCompositionRoot, type ClientApi } from "$lib/modules/bootstrap/application";
 	import { setClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
+	import { onMount } from "svelte";
 	import "../app.css";
 
 	const { children } = $props();
@@ -16,6 +17,12 @@
 	});
 
 	setClientApiContext(getApi);
+
+	onMount(() => {
+		void apiPromise.then(async (api) => {
+			await api.GameLibrary.SyncGamesFlow.executeAsync();
+		});
+	});
 </script>
 
 {#await apiPromise}

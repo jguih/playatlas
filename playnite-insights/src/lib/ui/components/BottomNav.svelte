@@ -8,7 +8,7 @@
 	class={[
 		"border-t border-neutral-800/80",
 		"flex items-center",
-		"bg-background-1 h-[var(--bottom-nav-height)] shadow",
+		"bg-background-1 h-(--bottom-nav-height) shadow",
 	]}
 >
 	{#if children}
