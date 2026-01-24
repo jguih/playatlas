@@ -12,6 +12,8 @@ export type IGetAllGamesQueryHandlerPort = QueryHandler<GetAllGamesQuery, GetAll
 export const makeGetAllGamesQueryHandler = ({
 	gameRepository,
 	gameMapper,
+	logService,
+	clock,
 }: GetAllGamesQueryHandlerDeps): IGetAllGamesQueryHandlerPort => {
 	return {
 		execute: ({ ifNoneMatch, since } = {}) => {
@@ -22,6 +24,16 @@ export const makeGetAllGamesQueryHandler = ({
 				: undefined;
 
 			const games = gameRepository.all({ load: true }, filters);
+
+			if (since) {
+				const elapsedMs = clock.now().getTime() - since.getTime();
+				const elapsedSeconds = Math.floor(elapsedMs / 1000);
+				logService.debug(
+					`Found ${games.length} games (updated since last sync: ${elapsedSeconds}s ago)`,
+				);
+			} else {
+				logService.debug(`Found ${games.length} games (no filters)`);
+			}
 
 			if (!games || games.length === 0) {
 				return { type: "ok", data: [], etag: '"empty"' };

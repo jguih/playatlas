@@ -41,10 +41,11 @@ export class SyncGameLibraryService implements ISyncGameLibraryServicePort {
 			sinceLastSync: lastSync ?? new Date(0),
 		});
 
-		if (response.success) {
-			const games = response.games.map((g) => this.gameMapper.toDomain(g, lastSync));
-			await this.syncGamesCommandHandler.executeAsync({ games });
-		}
+		if (!response.success) return;
+
+		const games = response.games.map((g) => this.gameMapper.toDomain(g, lastSync));
+
+		await this.syncGamesCommandHandler.executeAsync({ games });
 
 		this.gameLibrarySyncState.setLastServerSync(this.clock.now());
 	};

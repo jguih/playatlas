@@ -14,6 +14,6 @@ Content-Type: {{contentType}}
 Authorization: {{authorization}}
 
 ### Get all games
-GET {{protocol}}://{{host}}/api/game?sinceLastSync=2026-01-24T03:26:05.163Z
+GET {{protocol}}://{{host}}/api/game
 Content-Type: {{contentType}}
 Authorization: {{authorization}}

@@ -185,7 +185,9 @@ export const makeBaseRepository = <
 
 			const entities: TEntity[] = [];
 			for (const model of models) entities.push(mapper.toDomain(model));
-			logService.debug(`Found ${entities.length} records`);
+
+			logService.debug(`Query returned ${entities.length} records`);
+
 			return entities;
 		}, `all()`);
 	};

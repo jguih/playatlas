@@ -244,6 +244,9 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 			const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
 			query += where;
 			const total = (db.prepare(query).get(...params)?.Total as number) ?? 0;
+
+			logService.debug(`Query returned total amount of games: ${total}`);
+
 			return total;
 		}, `getTotal()`);
 	};
@@ -257,7 +260,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 			const { success, data: gameModel, error } = z.optional(gameSchema).safeParse(result);
 
 			if (!success) {
-				throw base.buildInvalidDataError(error, { entity: "game", operation: "load" });
+				throw base.buildValidationError(error, { entity: "game", operation: "load" });
 			}
 
 			if (!gameModel) return null;
@@ -269,7 +272,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 				props.load,
 			);
 
-			logService.debug(`Found game ${gameModel?.PlayniteName}`);
+			logService.debug(`Query returned game ${gameModel?.PlayniteName}`);
 			return gameMapper.toDomain(gameModel, {
 				developerIds: developerIds?.get(modelId),
 				publisherIds: publisherIds?.get(modelId),
@@ -288,7 +291,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 			const { success, data: gameModel, error } = z.optional(gameSchema).safeParse(result);
 
 			if (!success) {
-				throw base.buildInvalidDataError(error, { entity: "game", operation: "load" });
+				throw base.buildValidationError(error, { entity: "game", operation: "load" });
 			}
 
 			if (!gameModel) return null;
@@ -300,7 +303,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 				props.load,
 			);
 
-			logService.debug(`Found game ${gameModel?.PlayniteName}`);
+			logService.debug(`Query returned game ${gameModel?.PlayniteName}`);
 			return gameMapper.toDomain(gameModel, {
 				developerIds: developerIds?.get(modelId),
 				publisherIds: publisherIds?.get(modelId),
@@ -351,7 +354,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 			const { success, data, error } = gameManifestDataSchema.safeParse(result);
 
 			if (!success) {
-				throw base.buildInvalidDataError(error, { entity: "game", operation: "load" });
+				throw base.buildValidationError(error, { entity: "game", operation: "load" });
 			}
 
 			logService.debug(`Fetched manifest game data, total games in library: ${data.length}`);
@@ -385,7 +388,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 			const { success, data: gameModels, error } = z.array(gameSchema).safeParse(rows);
 
 			if (!success) {
-				throw base.buildInvalidDataError(error, { entity: "game", operation: "load" });
+				throw base.buildValidationError(error, { entity: "game", operation: "load" });
 			}
 
 			const gameModelsIds = gameModels.map((m) => m.Id).map(GameIdParser.fromTrusted);
@@ -440,7 +443,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 				});
 			});
 
-			logService.debug(`Found ${games?.length ?? 0} games`);
+			logService.debug(`Query returned ${games?.length ?? 0} games`);
 			return games;
 		}, `all()`);
 	};

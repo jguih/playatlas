@@ -59,6 +59,8 @@ export const makeGameLibraryModule = ({
 	const getAllGamesQueryHandler = makeGetAllGamesQueryHandler({
 		gameRepository,
 		gameMapper,
+		clock,
+		logService: buildLog("GetAllGamesQueryHandler"),
 	});
 
 	const companyFactory = makeCompanyFactory({ clock });

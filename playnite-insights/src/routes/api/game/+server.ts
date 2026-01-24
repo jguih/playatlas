@@ -8,7 +8,7 @@ export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
 		const sinceLastSync = url.searchParams.get("sinceLastSync");
 		const ifNoneMatch = request.headers.get("if-none-match");
 
-		if (!sinceLastSync || Number.isNaN(Date.parse(sinceLastSync))) {
+		if (sinceLastSync && Number.isNaN(Date.parse(sinceLastSync))) {
 			return json({
 				success: false,
 				reason_code: "validation_error",
@@ -18,7 +18,7 @@ export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
 
 		const result = api.gameLibrary.queries
 			.getGetAllGamesQueryHandler()
-			.execute({ ifNoneMatch, since: new Date(sinceLastSync) });
+			.execute({ ifNoneMatch, since: sinceLastSync ? new Date(sinceLastSync) : null });
 
 		if (result.type === "not_modified") return apiResponse.notModified();
 		else
