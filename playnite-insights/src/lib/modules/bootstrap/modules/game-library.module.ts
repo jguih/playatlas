@@ -1,10 +1,13 @@
 import type { IHttpClientPort } from "$lib/modules/common/application";
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
 import {
+	type IGameLibrarySyncStatePort,
 	type IGameMapperPort,
 	type IPlayAtlasClientPort,
+	type ISyncGameLibraryServicePort,
 	GameMapper,
 	PlayAtlasClient,
+	SyncGameLibraryService,
 } from "$lib/modules/game-library/application";
 import {
 	type ISyncCompaniesCommandHandlerPort,
@@ -26,6 +29,7 @@ import {
 	GenreRepository,
 	PlatformRepository,
 } from "$lib/modules/game-library/infra";
+import { GameLibrarySyncState } from "$lib/modules/game-library/infra/game-library-sync-state";
 import {
 	type IGetCompaniesByIdsQueryHandlerPort,
 	type IGetGamesByIdsQueryHandlerPort,
@@ -70,6 +74,9 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 
 	readonly gameMapper: IGameMapperPort;
 
+	readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
+	readonly syncGameLibraryService: ISyncGameLibraryServicePort;
+
 	constructor({ dbSignal, httpClient, clock }: ClientGameLibraryModuleDeps) {
 		this.gameRepository = new GameRepository({ dbSignal });
 		this.genreRepository = new GenreRepository({ dbSignal });
@@ -109,5 +116,14 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 
 		this.playAtlasClient = new PlayAtlasClient({ httpClient, gameMapper: this.gameMapper });
+
+		this.gameLibrarySyncState = new GameLibrarySyncState();
+		this.syncGameLibraryService = new SyncGameLibraryService({
+			clock,
+			gameLibrarySyncState: this.gameLibrarySyncState,
+			gameMapper: this.gameMapper,
+			playAtlasClient: this.playAtlasClient,
+			syncGamesCommandHandler: this.syncGamesCommandHandler,
+		});
 	}
 }

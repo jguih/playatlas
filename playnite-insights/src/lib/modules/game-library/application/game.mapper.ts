@@ -1,9 +1,10 @@
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
 import type { PlayniteProjectionResponseDto } from "@playatlas/game-library/dtos";
-import type { IClientEntityMapper } from "../../common/common/client-entity.mapper";
 import type { Game } from "../domain/game.entity";
 
-export type IGameMapperPort = IClientEntityMapper<Game, PlayniteProjectionResponseDto>;
+export type IGameMapperPort = {
+	toDomain: (dto: PlayniteProjectionResponseDto, lastSync?: Date | null) => Game;
+};
 
 export type GameMapperDeps = {
 	clock: IClockPort;
@@ -16,9 +17,7 @@ export class GameMapper implements IGameMapperPort {
 		this.clock = clock;
 	}
 
-	toDomain: IGameMapperPort["toDomain"] = (dto) => {
-		const now = this.clock.now();
-
+	toDomain: IGameMapperPort["toDomain"] = (dto, lastSync) => {
 		return {
 			Id: dto.Id,
 			Name: dto.Name,
@@ -40,11 +39,11 @@ export class GameMapper implements IGameMapperPort {
 			Playtime: dto.Playtime,
 			ReleaseDate: dto.ReleaseDate ? new Date(dto.ReleaseDate) : null,
 			SourceUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
-			DeletedAt: null,
-			DeleteAfter: null,
+			DeletedAt: dto.Sync.DeletedAt ? new Date(dto.Sync.DeletedAt) : null,
+			DeleteAfter: dto.Sync.DeleteAfter ? new Date(dto.Sync.DeleteAfter) : null,
 			Sync: {
 				Status: "synced",
-				LastSyncedAt: now,
+				LastSyncedAt: lastSync ?? this.clock.now(),
 				ErrorMessage: null,
 			},
 		};

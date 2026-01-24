@@ -4,8 +4,4 @@ export class Clock implements IClockPort {
 	now: IClockPort["now"] = () => {
 		return new Date();
 	};
-
-	lastServerSync: IClockPort["lastServerSync"] = () => {
-		return new Date();
-	};
 }

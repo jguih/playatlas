@@ -1,4 +1,9 @@
-import type { IGameMapperPort, IPlayAtlasClientPort } from "$lib/modules/game-library/application";
+import type {
+	IGameLibrarySyncStatePort,
+	IGameMapperPort,
+	IPlayAtlasClientPort,
+	ISyncGameLibraryServicePort,
+} from "$lib/modules/game-library/application";
 import type {
 	ISyncCompaniesCommandHandlerPort,
 	ISyncGamesCommandHandlerPort,
@@ -41,4 +46,7 @@ export interface IClientGameLibraryModulePort {
 	get playAtlasClient(): IPlayAtlasClientPort;
 
 	get gameMapper(): IGameMapperPort;
+
+	get gameLibrarySyncState(): IGameLibrarySyncStatePort;
+	get syncGameLibraryService(): ISyncGameLibraryServicePort;
 }

@@ -2,8 +2,8 @@ import { type IHttpClientPort, zodJsonParser } from "$lib/modules/common/applica
 import {
 	companyResponseDtoSchema,
 	genreResponseDtoSchema,
+	getGamesResponseDtoSchema,
 	platformResponseDtoSchema,
-	playniteProjectionResponseDtoSchema,
 } from "@playatlas/game-library/dtos";
 import z from "zod";
 import { companyMapper } from "../company.mapper";
@@ -33,8 +33,7 @@ export class PlayAtlasClient implements IPlayAtlasClientPort {
 				sinceLastSync: sinceLastSync.toISOString(),
 			},
 		});
-		const gamesDtos = await zodJsonParser(z.array(playniteProjectionResponseDtoSchema))(response);
-		return gamesDtos.map(this.gameMapper.toDomain);
+		return await zodJsonParser(getGamesResponseDtoSchema)(response);
 	};
 
 	getCompaniesAsync: IPlayAtlasClientPort["getCompaniesAsync"] = async ({ sinceLastSync }) => {

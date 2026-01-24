@@ -1,5 +1,9 @@
 import { ISODateSchema } from "@playatlas/common/common";
 import { playniteGameIdSchema } from "@playatlas/common/domain";
+import {
+	defaultFailedResponseDtoSchema,
+	defaultSuccessResponseDtoSchema,
+} from "@playatlas/common/dtos";
 import z from "zod";
 
 export const playniteProjectionResponseDtoSchema = z.object({
@@ -31,4 +35,22 @@ export const playniteProjectionResponseDtoSchema = z.object({
 	}),
 });
 
+const successResponse = z.object({
+	...defaultSuccessResponseDtoSchema.shape,
+	games: z.array(playniteProjectionResponseDtoSchema),
+	reason_code: z.literal("games_fetched_successfully"),
+});
+
+const failedResponse = z.object({
+	...defaultFailedResponseDtoSchema.shape,
+	reason_code: z.enum(["validation_error"]),
+});
+
+export const getGamesResponseDtoSchema = z.discriminatedUnion("success", [
+	successResponse,
+	failedResponse,
+]);
+
 export type PlayniteProjectionResponseDto = z.infer<typeof playniteProjectionResponseDtoSchema>;
+
+export type GetGamesResponseDto = z.infer<typeof getGamesResponseDtoSchema>;

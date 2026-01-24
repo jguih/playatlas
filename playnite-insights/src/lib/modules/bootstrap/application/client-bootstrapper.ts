@@ -41,6 +41,7 @@ export class ClientBootstrapper {
 					SyncCompanies: this.gameLibrary.syncCompaniesCommandHandler,
 					SyncPlatforms: this.gameLibrary.syncPlatformsCommandHandler,
 				},
+				SyncService: this.gameLibrary.syncGameLibraryService,
 				PlayAtlasClient: this.gameLibrary.playAtlasClient,
 			},
 			Auth: {
