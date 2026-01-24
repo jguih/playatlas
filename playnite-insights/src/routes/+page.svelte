@@ -12,7 +12,7 @@
 	const api = getClientApiContext();
 
 	const fetchGames = async () => {
-		await api().GameLibrary.SyncService.syncGamesAsync();
+		await api().GameLibrary.SyncGamesFlow.executeAsync();
 	};
 </script>
 

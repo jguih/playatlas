@@ -4,10 +4,10 @@ import {
 	type IGameLibrarySyncStatePort,
 	type IGameMapperPort,
 	type IPlayAtlasClientPort,
-	type ISyncGameLibraryServicePort,
+	type ISyncGamesFlowPort,
 	GameMapper,
 	PlayAtlasClient,
-	SyncGameLibraryService,
+	SyncGamesFlow,
 } from "$lib/modules/game-library/application";
 import {
 	type ISyncCompaniesCommandHandlerPort,
@@ -75,7 +75,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameMapper: IGameMapperPort;
 
 	readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
-	readonly syncGameLibraryService: ISyncGameLibraryServicePort;
+	readonly syncGamesFlow: ISyncGamesFlowPort;
 
 	constructor({ dbSignal, httpClient, clock }: ClientGameLibraryModuleDeps) {
 		this.gameRepository = new GameRepository({ dbSignal });
@@ -118,7 +118,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.playAtlasClient = new PlayAtlasClient({ httpClient, gameMapper: this.gameMapper });
 
 		this.gameLibrarySyncState = new GameLibrarySyncState();
-		this.syncGameLibraryService = new SyncGameLibraryService({
+		this.syncGamesFlow = new SyncGamesFlow({
 			clock,
 			gameLibrarySyncState: this.gameLibrarySyncState,
 			gameMapper: this.gameMapper,

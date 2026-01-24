@@ -3,7 +3,7 @@ import type { ISyncGamesCommandHandlerPort } from "../commands/sync-games/sync-g
 import type { IGameLibrarySyncStatePort } from "./game-library-sync-state.port";
 import type { IGameMapperPort } from "./game.mapper";
 import type { IPlayAtlasClientPort } from "./playatlas-client.port";
-import type { ISyncGameLibraryServicePort } from "./sync-game-library.service.port";
+import type { ISyncGamesFlowPort } from "./sync-games-flow.port";
 
 export type SyncGameLibraryServiceDeps = {
 	gameLibrarySyncState: IGameLibrarySyncStatePort;
@@ -13,7 +13,7 @@ export type SyncGameLibraryServiceDeps = {
 	gameMapper: IGameMapperPort;
 };
 
-export class SyncGameLibraryService implements ISyncGameLibraryServicePort {
+export class SyncGamesFlow implements ISyncGamesFlowPort {
 	private readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
 	private readonly playAtlasClient: IPlayAtlasClientPort;
 	private readonly syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
@@ -34,7 +34,7 @@ export class SyncGameLibraryService implements ISyncGameLibraryServicePort {
 		this.gameMapper = gameMapper;
 	}
 
-	syncGamesAsync: ISyncGameLibraryServicePort["syncGamesAsync"] = async () => {
+	executeAsync: ISyncGamesFlowPort["executeAsync"] = async () => {
 		const lastSync = this.gameLibrarySyncState.getLastServerSync();
 
 		const response = await this.playAtlasClient.getGamesAsync({
