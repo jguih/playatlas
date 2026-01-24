@@ -15,18 +15,24 @@ export const makePlayniteSyncService = ({
 			return await handler.withMediaFilesContext(
 				request,
 				async (context): Promise<PlayniteSynchronizationResult> => {
+					const requestDescription = logService.getRequestDescription(request);
 					const { gameContext } = context;
 
-					if (!(await handler.verifyIntegrity(context)))
+					if (!(await handler.verifyIntegrity(context))) {
+						logService.warning(
+							`${requestDescription}: Request rejected due to failure in integrity check validation`,
+						);
 						return {
 							success: false,
 							reason: "Integrity check validation failed",
 							reason_code: "integrity_check_failed",
 						};
-
+					}
 					const game = gameRepository.getByPlayniteId(gameContext.getPlayniteGameId());
 					if (!game) {
-						logService.debug(`Game not found with Playnite id: ${gameContext.getPlayniteGameId()}`);
+						logService.debug(
+							`${requestDescription}: Game not found with Playnite id: ${gameContext.getPlayniteGameId()}`,
+						);
 
 						return {
 							reason: "Game not found",

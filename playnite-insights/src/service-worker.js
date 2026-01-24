@@ -50,7 +50,7 @@ const apiRoutes = [
 /**
  * @type {string[]}
  */
-const shellRoutes = ["/", "/game", "/game/journal", "/dash", "/settings"];
+const shellRoutes = ["/"];
 
 const ASSETS = [
 	...build, // the app itself

@@ -16,7 +16,9 @@ export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
 			} satisfies GetGamesResponseDto);
 		}
 
-		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute({ ifNoneMatch });
+		const result = api.gameLibrary.queries
+			.getGetAllGamesQueryHandler()
+			.execute({ ifNoneMatch, since: new Date(sinceLastSync) });
 
 		if (result.type === "not_modified") return apiResponse.notModified();
 		else
