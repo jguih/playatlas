@@ -7,6 +7,7 @@ import {
 } from "$lib/modules/common/application";
 import {
 	companyRepositorySchema,
+	completionStatusRepositorySchema,
 	gameRepositorySchema,
 	genreRepositorySchema,
 	platformRepositorySchema,
@@ -19,7 +20,7 @@ import {
 } from "../modules";
 import { AuthModule } from "../modules/auth.module";
 import type { IAuthModulePort } from "../modules/auth.module.port";
-import type { ClientApi } from "./client-api";
+import type { ClientApiV1 } from "./client-api.v1";
 import { ClientBootstrapper } from "./client-bootstrapper";
 
 export class ClientCompositionRoot {
@@ -29,7 +30,7 @@ export class ClientCompositionRoot {
 		this.logService = new LogService();
 	}
 
-	buildAsync = async (): Promise<ClientApi> => {
+	buildAsync = async (): Promise<ClientApiV1> => {
 		const infra: IClientInfraModulePort = new ClientInfraModule({
 			logService: this.logService,
 			schemas: [
@@ -38,6 +39,7 @@ export class ClientCompositionRoot {
 				companyRepositorySchema,
 				platformRepositorySchema,
 				sessionIdRepositorySchema,
+				completionStatusRepositorySchema,
 			],
 		});
 		await infra.initializeAsync();

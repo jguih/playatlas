@@ -6,10 +6,12 @@ export type ICompanyFactoryPort = IClientEntityFactoryPort<Company>;
 
 export class CompanyFactory implements ICompanyFactoryPort {
 	private buildCompany = (): Company => {
+		const SourceUpdatedAt = faker.date.recent();
 		return {
 			Id: faker.string.uuid(),
 			Name: faker.word.noun(),
-			SourceUpdatedAt: faker.date.recent(),
+			SourceUpdatedAt,
+			SourceUpdatedAtMs: SourceUpdatedAt.getTime(),
 		};
 	};
 

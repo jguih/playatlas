@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ClientCompositionRoot, type ClientApi } from "$lib/modules/bootstrap/application";
+	import { ClientCompositionRoot, type ClientApiV1 } from "$lib/modules/bootstrap/application";
 	import { setClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
 	import { onMount } from "svelte";
@@ -7,10 +7,10 @@
 
 	const { children } = $props();
 	const root = new ClientCompositionRoot();
-	const apiPromise: Promise<ClientApi> = root.buildAsync();
+	const apiPromise: Promise<ClientApiV1> = root.buildAsync();
 
-	let api: ClientApi;
-	const getApi = (): ClientApi => api;
+	let api: ClientApiV1;
+	const getApi = (): ClientApiV1 => api;
 
 	void apiPromise.then((clientApi) => {
 		api = clientApi;

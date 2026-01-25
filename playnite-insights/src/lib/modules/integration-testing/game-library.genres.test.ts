@@ -1,4 +1,4 @@
-import { type ClientApi } from "$lib/modules/bootstrap/application";
+import { type ClientApiV1 } from "$lib/modules/bootstrap/application";
 import { TestCompositionRoot } from "$lib/modules/bootstrap/testing";
 import { faker } from "@faker-js/faker";
 import "fake-indexeddb/auto";
@@ -6,7 +6,7 @@ import type { Genre } from "../game-library/domain";
 
 describe("GameLibrary / Genres", () => {
 	let root: TestCompositionRoot;
-	let api: ClientApi;
+	let api: ClientApiV1;
 
 	beforeEach(async () => {
 		root = new TestCompositionRoot();

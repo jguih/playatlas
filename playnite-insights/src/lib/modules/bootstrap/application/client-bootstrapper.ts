@@ -1,7 +1,7 @@
 import type { IAuthModulePort } from "../modules/auth.module.port";
 import type { IClientGameLibraryModulePort } from "../modules/game-library.module.port";
 import type { IClientInfraModulePort } from "../modules/infra.module.port";
-import type { ClientApi } from "./client-api";
+import type { ClientApiV1 } from "./client-api.v1";
 
 export type ClientModules = {
 	infra: IClientInfraModulePort;
@@ -24,8 +24,8 @@ export class ClientBootstrapper {
 		this.auth = modules.auth;
 	}
 
-	bootstrap(): ClientApi {
-		const api: ClientApi = {
+	bootstrap(): ClientApiV1 {
+		const api: ClientApiV1 = {
 			GameLibrary: {
 				Query: {
 					GetGames: this.gameLibrary.getGamesQueryHandler,
@@ -34,14 +34,16 @@ export class ClientBootstrapper {
 					GetGenresByIds: this.gameLibrary.getGenresByIdsQueryHandler,
 					GetCompaniesByIds: this.gameLibrary.getCompaniesByIdsQueryHandler,
 					GetPlatformsByIds: this.gameLibrary.getPlatformsByIdsQueryHandler,
+					GetCompletionStatusesByIds: this.gameLibrary.getCompletionStatusesByIdsQueryHandler,
 				},
 				Command: {
 					SyncGames: this.gameLibrary.syncGamesCommandHandler,
 					SyncGenres: this.gameLibrary.syncGenresCommandHandler,
 					SyncCompanies: this.gameLibrary.syncCompaniesCommandHandler,
 					SyncPlatforms: this.gameLibrary.syncPlatformsCommandHandler,
+					SyncCompletionStatuses: this.gameLibrary.syncCompletionStatusesCommandHandler,
 				},
-				SyncGamesFlow: this.gameLibrary.syncGamesFlow,
+				SyncManager: this.gameLibrary.gameLibrarySyncManager,
 			},
 			Auth: {
 				Flow: this.auth.authFlow,

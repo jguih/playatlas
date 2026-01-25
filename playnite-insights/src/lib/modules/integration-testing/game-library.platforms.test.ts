@@ -1,10 +1,10 @@
 import "fake-indexeddb/auto";
-import type { ClientApi } from "../bootstrap/application";
+import type { ClientApiV1 } from "../bootstrap/application";
 import { TestCompositionRoot } from "../bootstrap/testing";
 
 describe("GameLibrary / Platforms", () => {
 	let root: TestCompositionRoot;
-	let api: ClientApi;
+	let api: ClientApiV1;
 
 	beforeEach(async () => {
 		root = new TestCompositionRoot();

@@ -27,10 +27,13 @@ export class SessionIdProvider implements ISessionIdProviderPort {
 	}
 
 	async setAsync(sessionId: SessionId): Promise<void> {
+		const now = this.clock.now();
+
 		const sessionIdObject: SessionIdObject = {
 			Id: sessionId,
 			SessionId: sessionId,
-			SourceUpdatedAt: this.clock.now(),
+			SourceUpdatedAt: now,
+			SourceUpdatedAtMs: now.getTime(),
 		};
 
 		await this.sessionIdRepository.setAsync(sessionIdObject);

@@ -6,39 +6,39 @@ import type { IPlayAtlasClientPort } from "./playatlas-client.port";
 import type { ISyncGamesFlowPort } from "./sync-games-flow.port";
 
 export type SyncGameLibraryServiceDeps = {
+	clock: IClockPort;
 	gameLibrarySyncState: IGameLibrarySyncStatePort;
 	playAtlasClient: IPlayAtlasClientPort;
 	syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
-	clock: IClockPort;
 	gameMapper: IGameMapperPort;
 };
 
 export class SyncGamesFlow implements ISyncGamesFlowPort {
+	private readonly clock: IClockPort;
 	private readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
 	private readonly playAtlasClient: IPlayAtlasClientPort;
 	private readonly syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
-	private readonly clock: IClockPort;
 	private readonly gameMapper: IGameMapperPort;
 
 	constructor({
+		clock,
 		gameLibrarySyncState,
 		playAtlasClient,
 		syncGamesCommandHandler,
-		clock,
 		gameMapper,
 	}: SyncGameLibraryServiceDeps) {
+		this.clock = clock;
 		this.gameLibrarySyncState = gameLibrarySyncState;
 		this.playAtlasClient = playAtlasClient;
 		this.syncGamesCommandHandler = syncGamesCommandHandler;
-		this.clock = clock;
 		this.gameMapper = gameMapper;
 	}
 
 	executeAsync: ISyncGamesFlowPort["executeAsync"] = async () => {
-		const lastSync = this.gameLibrarySyncState.getLastServerSync();
+		const lastSync = this.gameLibrarySyncState.getLastServerSync("games");
 
 		const response = await this.playAtlasClient.getGamesAsync({
-			sinceLastSync: lastSync ?? new Date(0),
+			sinceLastSync: lastSync,
 		});
 
 		if (!response.success) return;
@@ -47,6 +47,6 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 
 		await this.syncGamesCommandHandler.executeAsync({ games });
 
-		this.gameLibrarySyncState.setLastServerSync(this.clock.now());
+		this.gameLibrarySyncState.setLastServerSync("games", this.clock.now());
 	};
 }

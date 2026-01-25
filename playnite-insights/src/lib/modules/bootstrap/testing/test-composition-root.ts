@@ -2,14 +2,19 @@ import { sessionIdRepositorySchema } from "$lib/modules/auth/infra";
 import type { IHttpClientPort, ILogServicePort } from "$lib/modules/common/application";
 import {
 	companyRepositorySchema,
+	completionStatusRepositorySchema,
 	gameRepositorySchema,
 	genreRepositorySchema,
 	platformRepositorySchema,
 } from "$lib/modules/game-library/infra";
-import { GameFactory, GenreFactory } from "$lib/modules/game-library/testing";
-import { CompanyFactory } from "$lib/modules/game-library/testing/company-factory";
-import { PlatformFactory } from "$lib/modules/game-library/testing/platform-factory";
-import { type ClientApi } from "../application/client-api";
+import {
+	CompanyFactory,
+	CompletionStatusFactory,
+	GameFactory,
+	GenreFactory,
+	PlatformFactory,
+} from "$lib/modules/game-library/testing";
+import { type ClientApiV1 } from "../application/client-api.v1";
 import { ClientBootstrapper } from "../application/client-bootstrapper";
 import { AuthModule } from "../modules/auth.module";
 import type { IAuthModulePort } from "../modules/auth.module.port";
@@ -40,9 +45,10 @@ export class TestCompositionRoot {
 		genre: new GenreFactory(),
 		company: new CompanyFactory(),
 		platform: new PlatformFactory(),
+		completionStatus: new CompletionStatusFactory(),
 	};
 
-	buildAsync = async (): Promise<ClientApi> => {
+	buildAsync = async (): Promise<ClientApiV1> => {
 		const infra: IClientInfraModulePort = new ClientInfraModule({
 			logService: this.mocks.logService,
 			schemas: [
@@ -51,6 +57,7 @@ export class TestCompositionRoot {
 				companyRepositorySchema,
 				platformRepositorySchema,
 				sessionIdRepositorySchema,
+				completionStatusRepositorySchema,
 			],
 		});
 		await infra.initializeAsync();
@@ -65,6 +72,7 @@ export class TestCompositionRoot {
 			httpClient: this.mocks.httpClient,
 			dbSignal: infra.dbSignal,
 			clock: infra.clock,
+			logService: this.mocks.logService,
 		});
 
 		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary, auth } });

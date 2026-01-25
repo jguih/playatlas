@@ -1,19 +1,26 @@
-import type { IGameLibrarySyncStatePort } from "../application/game-library-sync-state.port";
+import type {
+	IGameLibrarySyncStatePort,
+	SyncTarget,
+} from "../application/game-library-sync-state.port";
 
-const LAST_SERVER_SYNC_KEY = "playatlas.gameLibrary.lastServerSync";
+const LAST_SERVER_SYNC_KEY_PREFIX = "playatlas.gameLibrary.lastServerSync";
 
 export class GameLibrarySyncState implements IGameLibrarySyncStatePort {
-	getLastServerSync(): Date | null {
-		const raw = localStorage.getItem(LAST_SERVER_SYNC_KEY);
+	private getKey = (target: SyncTarget) => {
+		return `${LAST_SERVER_SYNC_KEY_PREFIX}.${target}`;
+	};
 
-		if (!raw) return null;
+	getLastServerSync: IGameLibrarySyncStatePort["getLastServerSync"] = (target) => {
+		const raw = localStorage.getItem(this.getKey(target));
+
+		if (!raw) return new Date(0);
 
 		const date = new Date(raw);
 
-		return Number.isNaN(date.getTime()) ? null : date;
-	}
+		return Number.isNaN(date.getTime()) ? new Date(0) : date;
+	};
 
-	setLastServerSync(date: Date): void {
-		localStorage.setItem(LAST_SERVER_SYNC_KEY, date.toISOString());
-	}
+	setLastServerSync: IGameLibrarySyncStatePort["setLastServerSync"] = (target, date) => {
+		localStorage.setItem(this.getKey(target), date.toISOString());
+	};
 }
