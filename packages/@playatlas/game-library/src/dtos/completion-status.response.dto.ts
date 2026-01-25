@@ -22,6 +22,7 @@ const successResponse = z.object({
 	...defaultSuccessResponseDtoSchema.shape,
 	completionStatuses: z.array(completionStatusResponseDtoSchema),
 	reason_code: z.literal("completion_statuses_fetched_successfully"),
+	nextCursor: ISODateSchema,
 });
 
 const failedResponse = z.object({

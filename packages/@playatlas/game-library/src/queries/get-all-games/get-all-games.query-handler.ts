@@ -1,5 +1,6 @@
 import type { QueryHandler } from "@playatlas/common/common";
 import { createHashForObject } from "@playatlas/common/infra";
+import type { PlayniteProjectionResponseDto } from "../../dtos";
 import type { GameFilters } from "../../infra/game.repository.types";
 import type { GetAllGamesQuery } from "./get-all-games.query";
 import type {
@@ -15,6 +16,22 @@ export const makeGetAllGamesQueryHandler = ({
 	logService,
 	clock,
 }: GetAllGamesQueryHandlerDeps): IGetAllGamesQueryHandlerPort => {
+	const computeNextCursor = (
+		gameDtos: PlayniteProjectionResponseDto[],
+		since?: Date | null,
+	): Date => {
+		const baseCursor = since ?? new Date(0);
+
+		if (gameDtos.length === 0) {
+			return baseCursor;
+		}
+
+		return gameDtos.reduce<Date>((latest, game) => {
+			const updatedAt = new Date(game.Sync.LastUpdatedAt);
+			return updatedAt > latest ? updatedAt : latest;
+		}, baseCursor);
+	};
+
 	return {
 		execute: ({ ifNoneMatch, since } = {}) => {
 			const filters: GameFilters | undefined = since
@@ -35,19 +52,16 @@ export const makeGetAllGamesQueryHandler = ({
 				logService.debug(`Found ${games.length} games (no filters)`);
 			}
 
-			if (!games || games.length === 0) {
-				return { type: "ok", data: [], etag: '"empty"' };
-			}
-
 			const gameDtos = gameMapper.toDtoList(games);
+			const nextCursor = computeNextCursor(gameDtos, since).toISOString();
 			const hash = createHashForObject(gameDtos);
 			const etag = `"${hash}"`;
 
 			if (ifNoneMatch === etag) {
-				return { type: "not_modified" };
+				return { type: "not_modified", nextCursor };
 			}
 
-			return { type: "ok", data: gameDtos, etag };
+			return { type: "ok", data: gameDtos, etag, nextCursor };
 		},
 	};
 };

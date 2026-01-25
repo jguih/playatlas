@@ -8,5 +8,5 @@ export type GetAllCompletionStatusesQueryHandlerDeps = {
 };
 
 export type GetAllCompletionStatusesQueryResult =
-	| { type: "not_modified" }
-	| { type: "ok"; data: CompletionStatusResponseDto[]; etag: string };
+	| { type: "not_modified"; nextCursor: string }
+	| { type: "ok"; data: CompletionStatusResponseDto[]; etag: string; nextCursor: string };

@@ -20,14 +20,16 @@ export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
 			.getGetAllGamesQueryHandler()
 			.execute({ ifNoneMatch, since: sinceLastSync ? new Date(sinceLastSync) : null });
 
-		if (result.type === "not_modified") return apiResponse.notModified();
-		else
+		if (result.type === "not_modified") {
+			return apiResponse.notModified();
+		} else
 			return json(
 				{
 					success: true,
 					games: result.data,
 					reason_code: "games_fetched_successfully",
 					reason: "Games fetched successfully",
+					nextCursor: result.nextCursor,
 				} satisfies GetGamesResponseDto,
 				{ headers: { "Cache-Control": "no-cache", ETag: result.etag } },
 			);

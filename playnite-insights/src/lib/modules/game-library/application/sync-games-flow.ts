@@ -47,6 +47,6 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 
 		await this.syncGamesCommandHandler.executeAsync({ games });
 
-		this.gameLibrarySyncState.setLastServerSync("games", this.clock.now());
+		this.gameLibrarySyncState.setLastServerSync("games", new Date(response.nextCursor));
 	};
 }

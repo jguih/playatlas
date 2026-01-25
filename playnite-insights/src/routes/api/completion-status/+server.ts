@@ -28,6 +28,7 @@ export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
 					completionStatuses: result.data,
 					reason_code: "completion_statuses_fetched_successfully",
 					reason: "CompletionStatuses fetched successfully",
+					nextCursor: result.nextCursor,
 				} satisfies GetCompletionStatusesResponseDto,
 				{ headers: { "Cache-Control": "no-cache", ETag: result.etag } },
 			);

@@ -12,5 +12,5 @@ export type GetAllGamesQueryHandlerDeps = {
 };
 
 export type GetAllGamesQueryResult =
-	| { type: "not_modified" }
-	| { type: "ok"; data: PlayniteProjectionResponseDto[]; etag: string };
+	| { type: "not_modified"; nextCursor: string }
+	| { type: "ok"; data: PlayniteProjectionResponseDto[]; etag: string; nextCursor: string };

@@ -20,7 +20,7 @@
 
 	onMount(() => {
 		void apiPromise.then(async (api) => {
-			await api.GameLibrary.SyncGamesFlow.executeAsync();
+			await api.GameLibrary.SyncManager.executeAsync();
 		});
 	});
 </script>

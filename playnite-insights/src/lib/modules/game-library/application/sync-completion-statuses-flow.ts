@@ -49,6 +49,9 @@ export class SyncCompletionStatusesFlow implements ISyncCompletionStatusesFlowPo
 
 		await this.syncCompletionStatusesCommandHandler.executeAsync({ completionStatuses });
 
-		this.gameLibrarySyncState.setLastServerSync("completionStatuses", this.clock.now());
+		this.gameLibrarySyncState.setLastServerSync(
+			"completionStatuses",
+			new Date(response.nextCursor),
+		);
 	};
 }

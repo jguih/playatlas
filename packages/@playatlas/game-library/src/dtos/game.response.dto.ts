@@ -39,6 +39,7 @@ const successResponse = z.object({
 	...defaultSuccessResponseDtoSchema.shape,
 	games: z.array(playniteProjectionResponseDtoSchema),
 	reason_code: z.literal("games_fetched_successfully"),
+	nextCursor: ISODateSchema,
 });
 
 const failedResponse = z.object({
