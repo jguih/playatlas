@@ -26,6 +26,7 @@
 			size === "sm" && "h-9 w-9 text-sm",
 			size === "md" && "h-10 w-10 text-base",
 			size === "lg" && "h-12 w-12 text-lg",
+			size === "xl" && "h-20 w-20 text-xl",
 		],
 		!iconOnly && [
 			size === "sm" && "h-8 gap-1.5 px-3 text-sm",
