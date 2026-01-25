@@ -5,15 +5,17 @@
 	let props: HTMLAttributes<HTMLDivElement> & {
 		header: Snippet;
 		banner: Snippet;
-		bottomNav: Snippet;
+		bottomNav?: Snippet;
 	} = $props();
 </script>
 
 <div
 	{...props}
 	class={[
-		"grid grid-rows-[var(--header-height)_auto_1fr_var(--bottom-nav-height)]",
-		" h-dvh w-full overflow-hidden",
+		"grid",
+		props.bottomNav && "grid-rows-[var(--header-height)_auto_1fr_var(--bottom-nav-height)]",
+		!props.bottomNav && "grid-rows-[var(--header-height)_auto_1fr]",
+		"h-dvh w-full overflow-hidden",
 		props.class,
 	]}
 >
@@ -22,5 +24,5 @@
 	{#if props.children}
 		{@render props.children()}
 	{/if}
-	{@render props.bottomNav()}
+	{@render props.bottomNav?.()}
 </div>

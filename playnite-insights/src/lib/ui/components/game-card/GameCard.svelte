@@ -5,7 +5,7 @@
 	const { game }: GameCardProps = $props();
 
 	const buildCoverParams = (imagePath?: string | null): string => {
-		if (!imagePath) return "";
+		if (!imagePath) return "cover";
 		return `cover/${imagePath.replace(/^\/+|\/+$/g, "")}`;
 	};
 </script>
@@ -22,7 +22,7 @@
 	]}
 >
 	<a
-		href={resolve("/")}
+		href={resolve("/game/[gameId]", { gameId: game.id })}
 		class="outline-none"
 	>
 		<img

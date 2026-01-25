@@ -9,7 +9,7 @@
 	import Main from "$lib/ui/components/Main.svelte";
 	import type { EventHandler } from "svelte/elements";
 
-	const getApi = getClientApiContext();
+	const api = getClientApiContext();
 	const loginState = $state<{
 		loading: boolean;
 		result: AuthFlowLoginResult | null;
@@ -25,11 +25,11 @@
 			loginState.loading = true;
 			loginState.result = null;
 
-			const result = await getApi().Auth.Flow.loginAsync({ password: loginState.password });
+			const result = await api().Auth.Flow.loginAsync({ password: loginState.password });
 
 			loginState.result = result;
 
-			if (result.success) await goto(resolve("/__ui"));
+			if (result.success) await goto(resolve("/"));
 		} finally {
 			loginState.loading = false;
 		}

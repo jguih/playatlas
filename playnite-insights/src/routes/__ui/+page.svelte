@@ -40,7 +40,7 @@
 
 	const showFiltersSidebar = () => {
 		pushState("", {
-			showFiltersSidebar: true,
+			showHomePageFiltersSidebar: true,
 		});
 	};
 
@@ -50,16 +50,16 @@
 
 	const showSearchDrawer = () => {
 		pushState("", {
-			showSearchDrawer: true,
+			showHomePageSearchDrawer: true,
 		});
 	};
 </script>
 
-{#if page.state.showFiltersSidebar}
+{#if page.state.showHomePageFiltersSidebar}
 	<Sidebar onClose={closeFiltersSidebar} />
 {/if}
 
-{#if page.state.showSearchDrawer}
+{#if page.state.showHomePageSearchDrawer}
 	<BottomSheet onClose={closeSearchDrawer} />
 {/if}
 

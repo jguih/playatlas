@@ -231,7 +231,7 @@ html {
 	--color-neutral-light-hover-bg: rgba(255, 255, 255, 0.04);
 	--color-neutral-light-hover-fg: var(--color-neutral-50);
 	--color-neutral-light-active-bg: rgba(255, 255, 255, 0.06);
-	--color-neutral-light-active-fg: var(--color-neutral-200);
+	--color-neutral-light-active-fg: var(--color-neutral-300);
 	--color-neutral-light-selected-bg: rgba(255, 255, 255, 0.08);
 	--color-neutral-light-selected-fg: var(--color-neutral-50);
 	--color-neutral-light-disabled-bg: transparent;

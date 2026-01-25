@@ -13,8 +13,8 @@ declare global {
 		}
 		// interface PageData {}
 		interface PageState {
-			showFiltersSidebar?: true;
-			showSearchDrawer?: true;
+			showHomePageFiltersSidebar?: true;
+			showHomePageSearchDrawer?: true;
 		}
 		// interface Platform {}
 	}

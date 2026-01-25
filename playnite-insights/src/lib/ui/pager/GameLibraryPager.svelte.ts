@@ -12,17 +12,19 @@ export type GameLibraryPagerDeps = {
 	api: ClientApiGetter;
 };
 
+export const pagerStateSignal = $state<GameLibraryPagerState>({
+	games: [],
+	nextKey: null,
+	loading: false,
+	exhausted: false,
+});
+
 export class GameLibraryPager {
 	readonly pagerStateSignal: GameLibraryPagerState;
 	private readonly api: ClientApiGetter;
 
 	constructor({ api }: GameLibraryPagerDeps) {
-		this.pagerStateSignal = $state({
-			games: [],
-			nextKey: null,
-			loading: false,
-			exhausted: false,
-		});
+		this.pagerStateSignal = pagerStateSignal;
 		this.api = api;
 	}
 

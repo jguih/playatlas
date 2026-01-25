@@ -220,15 +220,15 @@ async function handleImageRequest(request) {
 		}
 		return response;
 	} catch {
-		if (request.url.includes("/cover/")) {
+		if (request.url.includes("/cover")) {
 			return fetch("/placeholder/cover.png");
 		}
 
-		if (request.url.includes("/icon/")) {
+		if (request.url.includes("/icon")) {
 			return fetch("/placeholder/icon.png");
 		}
 
-		if (request.url.includes("/background/")) {
+		if (request.url.includes("/background")) {
 			return fetch("/placeholder/background.png");
 		}
 
