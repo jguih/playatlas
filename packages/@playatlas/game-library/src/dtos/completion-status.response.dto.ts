@@ -1,5 +1,9 @@
 import { ISODateSchema } from "@playatlas/common/common";
 import { completionStatusIdSchema } from "@playatlas/common/domain";
+import {
+	defaultFailedResponseDtoSchema,
+	defaultSuccessResponseDtoSchema,
+} from "@playatlas/common/dtos";
 import z from "zod";
 
 export const completionStatusResponseDtoSchema = z.object({
@@ -13,3 +17,23 @@ export const completionStatusResponseDtoSchema = z.object({
 });
 
 export type CompletionStatusResponseDto = z.infer<typeof completionStatusResponseDtoSchema>;
+
+const successResponse = z.object({
+	...defaultSuccessResponseDtoSchema.shape,
+	completionStatuses: z.array(completionStatusResponseDtoSchema),
+	reason_code: z.literal("completion_statuses_fetched_successfully"),
+});
+
+const failedResponse = z.object({
+	...defaultFailedResponseDtoSchema.shape,
+	reason_code: z.enum(["validation_error"]),
+});
+
+export const getCompletionStatusesResponseDtoSchema = z.discriminatedUnion("success", [
+	successResponse,
+	failedResponse,
+]);
+
+export type GetCompletionStatusesResponseDto = z.infer<
+	typeof getCompletionStatusesResponseDtoSchema
+>;

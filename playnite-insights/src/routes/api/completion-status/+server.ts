@@ -1,6 +1,6 @@
 import { instanceAuthMiddleware } from "$lib/server/api/middleware/auth.middleware";
 import { apiResponse } from "$lib/server/api/responses";
-import type { GetGamesResponseDto } from "@playatlas/game-library/dtos";
+import type { GetCompletionStatusesResponseDto } from "@playatlas/game-library/dtos";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
@@ -13,11 +13,11 @@ export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
 				success: false,
 				reason_code: "validation_error",
 				reason: "Invalid 'sinceLastSync' param, it must be a valid ISO date string",
-			} satisfies GetGamesResponseDto);
+			} satisfies GetCompletionStatusesResponseDto);
 		}
 
 		const result = api.gameLibrary.queries
-			.getGetAllGamesQueryHandler()
+			.getGetAllCompletionStatusesQueryHandler()
 			.execute({ ifNoneMatch, since: sinceLastSync ? new Date(sinceLastSync) : null });
 
 		if (result.type === "not_modified") return apiResponse.notModified();
@@ -25,10 +25,10 @@ export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
 			return json(
 				{
 					success: true,
-					games: result.data,
-					reason_code: "games_fetched_successfully",
-					reason: "Games fetched successfully",
-				} satisfies GetGamesResponseDto,
+					completionStatuses: result.data,
+					reason_code: "completion_statuses_fetched_successfully",
+					reason: "CompletionStatuses fetched successfully",
+				} satisfies GetCompletionStatusesResponseDto,
 				{ headers: { "Cache-Control": "no-cache", ETag: result.etag } },
 			);
 	});
