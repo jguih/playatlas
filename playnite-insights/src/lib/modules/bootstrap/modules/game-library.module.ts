@@ -115,7 +115,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			platformRepository: this.platformRepository,
 		});
 
-		this.playAtlasClient = new PlayAtlasClient({ httpClient, gameMapper: this.gameMapper });
+		this.playAtlasClient = new PlayAtlasClient({ httpClient });
 
 		this.gameLibrarySyncState = new GameLibrarySyncState();
 		this.syncGamesFlow = new SyncGamesFlow({

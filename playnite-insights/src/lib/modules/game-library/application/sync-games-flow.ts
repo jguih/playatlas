@@ -1,7 +1,7 @@
 import type { IClockPort } from "$lib/modules/common/application";
 import type { ISyncGamesCommandHandlerPort } from "../commands/sync-games/sync-games.command-handler";
 import type { IGameLibrarySyncStatePort } from "./game-library-sync-state.port";
-import type { IGameMapperPort } from "./game.mapper";
+import type { IGameMapperPort } from "./game.mapper.port";
 import type { IPlayAtlasClientPort } from "./playatlas-client.port";
 import type { ISyncGamesFlowPort } from "./sync-games-flow.port";
 

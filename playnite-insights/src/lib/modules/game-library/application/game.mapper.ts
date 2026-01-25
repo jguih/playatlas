@@ -1,10 +1,5 @@
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
-import type { PlayniteProjectionResponseDto } from "@playatlas/game-library/dtos";
-import type { Game } from "../domain/game.entity";
-
-export type IGameMapperPort = {
-	toDomain: (dto: PlayniteProjectionResponseDto, lastSync?: Date | null) => Game;
-};
+import type { IGameMapperPort } from "./game.mapper.port";
 
 export type GameMapperDeps = {
 	clock: IClockPort;

@@ -5,4 +5,5 @@ export type ClientRepositoryStoreName =
 	| "genres"
 	| "companies"
 	| "platforms"
+	| "completion-status"
 	| "session-id";

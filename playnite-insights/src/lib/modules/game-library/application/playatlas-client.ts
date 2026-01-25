@@ -1,29 +1,19 @@
-import { type IHttpClientPort, zodJsonParser } from "$lib/modules/common/application";
+import { zodJsonParser, type IHttpClientPort } from "$lib/modules/common/application";
 import {
-	companyResponseDtoSchema,
-	genreResponseDtoSchema,
+	getCompletionStatusesResponseDtoSchema,
 	getGamesResponseDtoSchema,
-	platformResponseDtoSchema,
 } from "@playatlas/game-library/dtos";
-import z from "zod";
-import { companyMapper } from "../company.mapper";
-import { genreMapper } from "../genre.mapper";
-import { platformMapper } from "../platform.mapper";
-import type { IGameMapperPort } from "./game.mapper";
 import type { IPlayAtlasClientPort } from "./playatlas-client.port";
 
 export type PlayAtlasClientDeps = {
 	httpClient: IHttpClientPort;
-	gameMapper: IGameMapperPort;
 };
 
 export class PlayAtlasClient implements IPlayAtlasClientPort {
 	private readonly httpClient: IHttpClientPort;
-	private readonly gameMapper: IGameMapperPort;
 
-	constructor({ httpClient, gameMapper }: PlayAtlasClientDeps) {
+	constructor({ httpClient }: PlayAtlasClientDeps) {
 		this.httpClient = httpClient;
-		this.gameMapper = gameMapper;
 	}
 
 	getGamesAsync: IPlayAtlasClientPort["getGamesAsync"] = async ({ sinceLastSync }) => {
@@ -36,36 +26,27 @@ export class PlayAtlasClient implements IPlayAtlasClientPort {
 		return await zodJsonParser(getGamesResponseDtoSchema)(response);
 	};
 
-	getCompaniesAsync: IPlayAtlasClientPort["getCompaniesAsync"] = async ({ sinceLastSync }) => {
+	getCompletionStatusesAsync: IPlayAtlasClientPort["getCompletionStatusesAsync"] = async ({
+		sinceLastSync,
+	}) => {
 		const response = await this.httpClient.getAsync({
-			endpoint: `/api/company`,
+			endpoint: `/api/completion-status`,
 			searchParams: {
 				sinceLastSync: sinceLastSync.toISOString(),
 			},
 		});
-		const companyDtos = await zodJsonParser(z.array(companyResponseDtoSchema))(response);
-		return companyDtos.map(companyMapper.toDomain);
+		return await zodJsonParser(getCompletionStatusesResponseDtoSchema)(response);
 	};
 
-	getGenresAsync: IPlayAtlasClientPort["getGenresAsync"] = async ({ sinceLastSync }) => {
-		const response = await this.httpClient.getAsync({
-			endpoint: `/api/genre`,
-			searchParams: {
-				sinceLastSync: sinceLastSync.toISOString(),
-			},
-		});
-		const genreDtos = await zodJsonParser(z.array(genreResponseDtoSchema))(response);
-		return genreDtos.map(genreMapper.toDomain);
+	getCompaniesAsync: IPlayAtlasClientPort["getCompaniesAsync"] = async () => {
+		throw new Error("Not Implemented");
 	};
 
-	getPlatformsAsync: IPlayAtlasClientPort["getPlatformsAsync"] = async ({ sinceLastSync }) => {
-		const response = await this.httpClient.getAsync({
-			endpoint: `/api/platform`,
-			searchParams: {
-				sinceLastSync: sinceLastSync.toISOString(),
-			},
-		});
-		const platformDtos = await zodJsonParser(z.array(platformResponseDtoSchema))(response);
-		return platformDtos.map(platformMapper.toDomain);
+	getGenresAsync: IPlayAtlasClientPort["getGenresAsync"] = async () => {
+		throw new Error("Not Implemented");
+	};
+
+	getPlatformsAsync: IPlayAtlasClientPort["getPlatformsAsync"] = async () => {
+		throw new Error("Not Implemented");
 	};
 }
