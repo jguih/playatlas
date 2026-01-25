@@ -49,7 +49,7 @@
 			<Spinner size="lg" />
 		{:then}
 			{#if !game}
-				<p>Game not found</p>
+				<p class="text-error-light-fg">Game not found</p>
 			{:else}
 				<div class="relative">
 					<div class="h-[40dvh] w-full overflow-hidden">

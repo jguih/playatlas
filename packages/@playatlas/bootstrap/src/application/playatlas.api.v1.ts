@@ -16,6 +16,7 @@ import type { ISystemConfigPort } from "@playatlas/common/infra";
 import type { IGameAssetsContextFactoryPort } from "@playatlas/game-library/infra";
 import type {
 	IGetAllCompaniesQueryHandlerPort,
+	IGetAllCompletionStatusesQueryHandlerPort,
 	IGetAllGamesQueryHandlerPort,
 	IGetAllGenresQueryHandlerPort,
 	IGetAllPlatformsQueryHandlerPort,
@@ -42,6 +43,7 @@ export type PlayAtlasApiV1 = {
 			getGetAllCompaniesQueryHandler: () => IGetAllCompaniesQueryHandlerPort;
 			getGetAllPlatformsQueryHandler: () => IGetAllPlatformsQueryHandlerPort;
 			getGetAllGenresQueryHandler: () => IGetAllGenresQueryHandlerPort;
+			getGetAllCompletionStatusesQueryHandler: () => IGetAllCompletionStatusesQueryHandlerPort;
 		};
 		getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
 	};

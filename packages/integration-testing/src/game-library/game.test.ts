@@ -4,10 +4,14 @@ import {
 	makeSyncGamesCommand,
 	type SyncGamesRequestDtoItem,
 } from "@playatlas/playnite-integration/commands";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { api, factory, root } from "../vitest.global.setup";
 
 describe("Game Library / Game", () => {
+	beforeEach(() => {
+		root.seedGameRelationships();
+	});
+
 	it("persists games", () => {
 		// Arrange
 		const games = factory.getGameFactory().buildList(10);

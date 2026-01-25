@@ -45,9 +45,7 @@ export const makeGenreMapper = ({ genreFactory }: GenreMapperDeps): IGenreMapper
 		},
 		toDto: _toDto,
 		toDtoList: (entities) => {
-			const dtos: GenreResponseDto[] = [];
-			for (const entity of entities) dtos.push(_toDto(entity));
-			return dtos;
+			return entities.map(_toDto);
 		},
 	};
 };

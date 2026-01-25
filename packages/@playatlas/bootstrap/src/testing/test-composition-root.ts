@@ -1,6 +1,12 @@
 import { makeEventBus } from "@playatlas/common/application";
 import type { AppEnvironmentVariables } from "@playatlas/common/common";
-import type { Company, Game, Genre, Platform } from "@playatlas/game-library/domain";
+import type {
+	Company,
+	CompletionStatus,
+	Game,
+	Genre,
+	Platform,
+} from "@playatlas/game-library/domain";
 import { makeGameFactory } from "@playatlas/game-library/testing";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapV1, type PlayAtlasApiV1 } from "../application";
@@ -23,6 +29,14 @@ export type TestRoot = {
 	seedGame: (game: Game | Game[]) => void;
 	seedGenre: (genre: Genre | Genre[]) => void;
 	seedPlatform: (platform: Platform | Platform[]) => void;
+	seedCompletionStatus: (completionStatus: CompletionStatus | CompletionStatus[]) => void;
+	seedGameRelationships: () => void;
+	gameRelationshipOptions: {
+		completionStatusList: CompletionStatus[];
+		companyList: Company[];
+		genreList: Genre[];
+		platformList: Platform[];
+	};
 	resetDbAsync: () => Promise<void>;
 	clock: TestClock;
 };
@@ -68,18 +82,15 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		extensionRegistrationFactory: auth.getExtensionRegistrationFactory(),
 	});
 
-	const setupGameFactoryAsync = async () => {
-		const completionStatusList = factory
-			.getCompletionStatusFactory()
-			.buildDefaultCompletionStatusList();
-		const companyList = factory.getCompanyFactory().buildList(200);
-		const genreList = factory.getGenreFactory().buildList(200);
-		const platformList = factory.getPlatformFactory().buildList(30);
+	const gameRelationshipOptions = {
+		completionStatusList: factory.getCompletionStatusFactory().buildDefaultList(),
+		companyList: factory.getCompanyFactory().buildList(200),
+		genreList: factory.getGenreFactory().buildList(200),
+		platformList: factory.getPlatformFactory().buildList(30),
+	};
 
-		gameLibrary.getCompletionStatusRepository().upsert(completionStatusList);
-		gameLibrary.getCompanyRepository().upsert(companyList);
-		gameLibrary.getGenreRepository().upsert(genreList);
-		gameLibrary.getPlatformRepository().upsert(platformList);
+	const setupGameFactory = () => {
+		const { companyList, completionStatusList, genreList, platformList } = gameRelationshipOptions;
 
 		const completionStatusOptions = completionStatusList.map((c) => c.getId());
 		const companyOptions = companyList.map((c) => c.getId());
@@ -118,7 +129,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			gameRepository: gameLibrary.getGameRepository(),
 		});
 
-		await setupGameFactoryAsync();
+		setupGameFactory();
 
 		return bootstrapV1({
 			backendLogService,
@@ -156,10 +167,22 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		gameLibrary.getPlatformRepository().upsert(platform);
 	};
 
+	const seedCompletionStatus = (completionStatus: CompletionStatus | CompletionStatus[]) => {
+		gameLibrary.getCompletionStatusRepository().upsert(completionStatus);
+	};
+
+	const seedGameRelationships = () => {
+		const { companyList, completionStatusList, genreList, platformList } = gameRelationshipOptions;
+
+		gameLibrary.getCompletionStatusRepository().upsert(completionStatusList);
+		gameLibrary.getCompanyRepository().upsert(companyList);
+		gameLibrary.getGenreRepository().upsert(genreList);
+		gameLibrary.getPlatformRepository().upsert(platformList);
+	};
+
 	const resetDbAsync = async () => {
 		infra.getDb().close();
 		await infra.initDb();
-		await setupGameFactoryAsync();
 	};
 
 	return {
@@ -170,6 +193,9 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		seedGame,
 		seedGenre,
 		seedPlatform,
+		seedCompletionStatus,
+		seedGameRelationships,
+		gameRelationshipOptions,
 		resetDbAsync,
 		clock,
 	};

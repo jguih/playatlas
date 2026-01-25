@@ -59,9 +59,7 @@ export const makePlatformMapper = ({
 		},
 		toDto: _toDto,
 		toDtoList: (entities) => {
-			const dtos: PlatformResponseDto[] = [];
-			for (const entity of entities) dtos.push(_toDto(entity));
-			return dtos;
+			return entities.map(_toDto);
 		},
 	};
 };

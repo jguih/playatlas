@@ -7,8 +7,11 @@ type ToPersistenceFnOverride<TEntity, TPersistence> = {
 	toPersistence?: (entity: TEntity) => TPersistence;
 };
 
-export type BaseRepositoryPort<TEntityId, TEntity, TPersistence> = {
-	public: Pick<IEntityRepositoryPort<TEntityId, TEntity>, "all" | "remove" | "getById" | "exists">;
+export type BaseRepositoryPort<TEntityId, TEntity, TPersistence, TFilters = undefined> = {
+	public: Pick<
+		IEntityRepositoryPort<TEntityId, TEntity, TFilters>,
+		"all" | "remove" | "getById" | "exists"
+	>;
 	/**
 	 * Persists a new entity
 	 * @param entity The entity to persist

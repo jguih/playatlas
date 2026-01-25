@@ -2,9 +2,14 @@ import { type EntityMapper } from "@playatlas/common/application";
 import { CompletionStatusIdParser } from "@playatlas/common/domain";
 import type { ICompletionStatusFactoryPort } from ".";
 import { type CompletionStatus } from "../domain/completion-status.entity";
+import type { CompletionStatusResponseDto } from "../dtos/completion-status.response.dto";
 import type { CompletionStatusModel } from "../infra/completion-status.repository";
 
-export type ICompletionStatusMapperPort = EntityMapper<CompletionStatus, CompletionStatusModel>;
+export type ICompletionStatusMapperPort = EntityMapper<
+	CompletionStatus,
+	CompletionStatusModel,
+	CompletionStatusResponseDto
+>;
 
 export type CompletionStatusMapperDeps = {
 	completionStatusFactory: ICompletionStatusFactoryPort;
@@ -13,6 +18,18 @@ export type CompletionStatusMapperDeps = {
 export const makeCompletionStatusMapper = ({
 	completionStatusFactory,
 }: CompletionStatusMapperDeps): ICompletionStatusMapperPort => {
+	const _toDto: ICompletionStatusMapperPort["toDto"] = (entity) => {
+		return {
+			Id: entity.getId(),
+			Name: entity.getName(),
+			Sync: {
+				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
+				DeletedAt: entity.getDeletedAt()?.toISOString() ?? null,
+				DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,
+			},
+		};
+	};
+
 	return {
 		toPersistence: (completionStatus: CompletionStatus): CompletionStatusModel => {
 			const record: CompletionStatusModel = {
@@ -37,6 +54,10 @@ export const makeCompletionStatusMapper = ({
 					: undefined,
 			});
 			return entity;
+		},
+		toDto: _toDto,
+		toDtoList: (entities) => {
+			return entities.map(_toDto);
 		},
 	};
 };

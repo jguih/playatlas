@@ -125,9 +125,7 @@ export const makeGameMapper = ({ gameFactory }: GameMapperDeps): IGameMapperPort
 		},
 		toDto: _toDto,
 		toDtoList: (games: Game[]): PlayniteProjectionResponseDto[] => {
-			const dtos: PlayniteProjectionResponseDto[] = [];
-			for (const game of games) dtos.push(_toDto(game));
-			return dtos;
+			return games.map(_toDto);
 		},
 	};
 };

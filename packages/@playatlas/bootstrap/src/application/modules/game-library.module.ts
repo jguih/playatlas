@@ -26,6 +26,7 @@ import {
 } from "@playatlas/game-library/infra";
 import {
 	makeGetAllCompaniesQueryHandler,
+	makeGetAllCompletionStatusesQueryHandler,
 	makeGetAllGamesQueryHandler,
 	makeGetAllGenresQueryHandler,
 	makeGetAllPlatformQueryHandler,
@@ -56,7 +57,7 @@ export const makeGameLibraryModule = ({
 		logService: buildLog("GameRepository"),
 		gameMapper,
 	});
-	const getAllGamesQueryHandler = makeGetAllGamesQueryHandler({
+	const queryHandlerGetAllGames = makeGetAllGamesQueryHandler({
 		gameRepository,
 		gameMapper,
 		clock,
@@ -70,7 +71,7 @@ export const makeGameLibraryModule = ({
 		logService: buildLog("CompanyRepository"),
 		companyMapper,
 	});
-	const getAllCompaniesQueryHandler = makeGetAllCompaniesQueryHandler({
+	const queryHandlerGetAllCompanies = makeGetAllCompaniesQueryHandler({
 		companyRepository,
 		companyMapper,
 	});
@@ -81,6 +82,10 @@ export const makeGameLibraryModule = ({
 		getDb,
 		logService: buildLog("CompletionStatusRepository"),
 		completionStatusMapper,
+	});
+	const queryHandlerGetAllCompletionStatuses = makeGetAllCompletionStatusesQueryHandler({
+		completionStatusMapper,
+		completionStatusRepository,
 	});
 
 	const platformFactory = makePlatformFactory({ clock });
@@ -133,12 +138,15 @@ export const makeGameLibraryModule = ({
 		getGenreRepository: () => genreRepository,
 		getPlatformRepository: () => platformRepository,
 		getCompletionStatusRepository: () => completionStatusRepository,
+
 		queries: {
-			getGetAllGamesQueryHandler: () => getAllGamesQueryHandler,
-			getGetAllCompaniesQueryHandler: () => getAllCompaniesQueryHandler,
+			getGetAllGamesQueryHandler: () => queryHandlerGetAllGames,
+			getGetAllCompaniesQueryHandler: () => queryHandlerGetAllCompanies,
 			getGetAllPlatformsQueryHandler: () => queryHandlerGetAllPlatforms,
 			getGetAllGenresQueryHandler: () => queryHandlerGetAllGenres,
+			getGetAllCompletionStatusesQueryHandler: () => queryHandlerGetAllCompletionStatuses,
 		},
+
 		getGameAssetsContextFactory: () => gameAssetsContextFactory,
 		getGameFactory: () => gameFactory,
 		getGameMapper: () => gameMapper,

@@ -23,31 +23,43 @@ describe("Game Library / Company", () => {
 
 	it("return 'not_modified' when provided a matching etag", () => {
 		// Arrange
+		const companies = factory.getCompanyFactory().buildList(500);
+		root.seedCompany(companies);
+
 		// Act
 		const firstResult = api.gameLibrary.queries.getGetAllCompaniesQueryHandler().execute();
-		if (firstResult.type !== "ok") throw new Error("Invalid result");
+		const firstEtag = firstResult.type === "ok" ? firstResult.etag : null;
+
 		const secondResult = api.gameLibrary.queries
 			.getGetAllCompaniesQueryHandler()
-			.execute({ ifNoneMatch: firstResult.etag });
+			.execute({ ifNoneMatch: firstEtag });
+
 		// Assert
 		expect(secondResult.type === "not_modified").toBeTruthy();
 	});
 
 	it("does not return 'not_modified' when company list changes after first call", () => {
 		// Arrange
-		const newCompany = factory.getCompanyFactory().build();
+		const companies = factory.getCompanyFactory().buildList(500);
+		root.seedCompany(companies);
+
 		// Act
 		const firstResult = api.gameLibrary.queries.getGetAllCompaniesQueryHandler().execute();
-		if (firstResult.type !== "ok") throw new Error("Invalid result");
-		root.seedCompany(newCompany);
+		const firstEtag = firstResult.type === "ok" ? firstResult.etag : null;
+		const firstData = firstResult.type === "ok" ? firstResult.data : [];
+
+		const newCompanies = factory.getCompanyFactory().buildList(500);
+		root.seedCompany(newCompanies);
+
 		const secondResult = api.gameLibrary.queries
 			.getGetAllCompaniesQueryHandler()
-			.execute({ ifNoneMatch: firstResult.etag });
+			.execute({ ifNoneMatch: firstEtag });
+		const secondEtag = secondResult.type === "ok" ? secondResult.etag : null;
+		const secondData = secondResult.type === "ok" ? secondResult.data : [];
+
 		// Assert
-		expect(secondResult.type === "not_modified").toBeFalsy();
-		expect(
-			secondResult.type === "ok" && secondResult.data.length === firstResult.data.length + 1,
-		).toBeTruthy();
-		expect(secondResult.type === "ok" && secondResult.etag !== firstResult.etag).toBeTruthy();
+		expect(secondResult.type).not.toBe("not_modified");
+		expect(secondData).toHaveLength(firstData.length + 500);
+		expect(secondEtag).not.toBe(firstEtag);
 	});
 });

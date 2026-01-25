@@ -18,6 +18,7 @@ describe("Game Sessions", () => {
 	let events: DomainEvent[];
 
 	beforeEach(() => {
+		root.seedGameRelationships();
 		game = factory.getGameFactory().build();
 		root.seedGame(game);
 		({ events, unsubscribe } = recordDomainEvents());

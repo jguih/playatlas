@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { CompletionStatusIdParser } from "@playatlas/common/domain";
+import type { TestEntityFactory } from "@playatlas/common/testing";
 import type { ICompletionStatusFactoryPort } from "../application/completion-status.factory";
 import { type CompletionStatus } from "../domain/completion-status.entity";
 import type { MakeCompletionStatusProps } from "../domain/completion-status.entity.types";
@@ -12,9 +13,11 @@ const completionStatusName = {
 	toPlay: "to play",
 } as const;
 
-export type CompletionStatusFactory = {
-	buildCompletionStatus: (props?: Partial<MakeCompletionStatusProps>) => CompletionStatus;
-	buildDefaultCompletionStatusList: () => CompletionStatus[];
+export type CompletionStatusFactory = TestEntityFactory<
+	MakeCompletionStatusProps,
+	CompletionStatus
+> & {
+	buildDefaultList: () => CompletionStatus[];
 };
 
 export type CompletionStatusFactoryDeps = {
@@ -24,7 +27,7 @@ export type CompletionStatusFactoryDeps = {
 export const makeCompletionStatusFactory = ({
 	completionStatusFactory,
 }: CompletionStatusFactoryDeps): CompletionStatusFactory => {
-	const buildCompletionStatus: CompletionStatusFactory["buildCompletionStatus"] = (props = {}) => {
+	const build: CompletionStatusFactory["build"] = (props = {}) => {
 		return completionStatusFactory.create({
 			id: CompletionStatusIdParser.fromExternal(props.id ?? faker.string.uuid()),
 			name:
@@ -36,20 +39,22 @@ export const makeCompletionStatusFactory = ({
 					completionStatusName.abandoned,
 					completionStatusName.toPlay,
 				]),
-			lastUpdatedAt: props.lastUpdatedAt ?? faker.date.recent(),
 		});
 	};
 
-	const buildDefaultCompletionStatusList: CompletionStatusFactory["buildDefaultCompletionStatusList"] =
-		() => {
-			const list: CompletionStatus[] = [];
-			for (const value of Object.values(completionStatusName))
-				list.push(buildCompletionStatus({ name: value }));
-			return list;
-		};
+	const buildDefaultCompletionStatusList: CompletionStatusFactory["buildDefaultList"] = () => {
+		const list: CompletionStatus[] = [];
+		for (const value of Object.values(completionStatusName)) list.push(build({ name: value }));
+		return list;
+	};
+
+	const buildList: CompletionStatusFactory["buildList"] = (n, props) => {
+		return Array.from({ length: n }, () => build(props));
+	};
 
 	return {
-		buildCompletionStatus,
-		buildDefaultCompletionStatusList,
+		build,
+		buildList,
+		buildDefaultList: buildDefaultCompletionStatusList,
 	};
 };

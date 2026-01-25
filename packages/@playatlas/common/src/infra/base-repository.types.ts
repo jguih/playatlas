@@ -3,7 +3,7 @@ import type { ZodSchema } from "zod";
 import type { EntityMapper } from "../application";
 import type { ILogServicePort } from "../application/log-service.port";
 
-export type BaseRepositoryConfig<TEntity, TPersistence> = {
+export type BaseRepositoryConfig<TEntity, TPersistence, TFilters = undefined> = {
 	tableName: string;
 	idColumn: keyof TPersistence;
 	insertColumns: (keyof TPersistence)[];
@@ -11,6 +11,10 @@ export type BaseRepositoryConfig<TEntity, TPersistence> = {
 	modelSchema: ZodSchema<TPersistence>;
 	mapper: EntityMapper<TEntity, TPersistence>;
 	autoIncrementId?: boolean;
+	getWhereClauseAndParamsFromFilters?: (filters?: TFilters) => {
+		where: string;
+		params: Array<string | number>;
+	};
 };
 
 export type BaseRepositoryDeps = {
@@ -18,6 +22,10 @@ export type BaseRepositoryDeps = {
 	getDb: () => DatabaseSync;
 };
 
-export type MakeBaseRepositoryDeps<TEntity, TPersistence> = BaseRepositoryDeps & {
-	config: BaseRepositoryConfig<TEntity, TPersistence>;
+export type MakeBaseRepositoryDeps<
+	TEntity,
+	TPersistence,
+	TFilters = undefined,
+> = BaseRepositoryDeps & {
+	config: BaseRepositoryConfig<TEntity, TPersistence, TFilters>;
 };

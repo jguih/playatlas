@@ -4,6 +4,7 @@ import { type BaseRepositoryDeps, makeBaseRepository } from "@playatlas/common/i
 import z from "zod";
 import type { ICompletionStatusMapperPort } from "../application/completion-status.mapper";
 import type { ICompletionStatusRepositoryPort } from "./completion-status.repository.port";
+import type { CompletionStatusRepositoryFilters } from "./completion-status.repository.types";
 
 export const completionStatusSchema = z.object({
 	Id: completionStatusIdSchema,
@@ -34,6 +35,53 @@ export const makeCompletionStatusRepository = ({
 		"DeletedAt",
 		"DeleteAfter",
 	];
+
+	const getWhereClauseAndParamsFromFilters = (filters?: CompletionStatusRepositoryFilters) => {
+		const where: string[] = [];
+		const params: (string | number)[] = [];
+
+		if (!filters) {
+			return { where: "", params };
+		}
+
+		if (filters.lastUpdatedAt !== undefined) {
+			for (const startTimeFilter of filters.lastUpdatedAt) {
+				switch (startTimeFilter.op) {
+					case "between": {
+						where.push(`LastUpdatedAt >= (?) AND LastUpdatedAt < (?)`);
+						params.push(startTimeFilter.start.toISOString(), startTimeFilter.end.toISOString());
+						break;
+					}
+					case "eq": {
+						where.push(`LastUpdatedAt = (?)`);
+						params.push(startTimeFilter.value.toISOString());
+						break;
+					}
+					case "gte": {
+						where.push(`LastUpdatedAt > (?)`);
+						params.push(startTimeFilter.value.toISOString());
+						break;
+					}
+					case "lte": {
+						where.push(`LastUpdatedAt < (?)`);
+						params.push(startTimeFilter.value.toISOString());
+						break;
+					}
+					case "overlaps": {
+						where.push(`LastUpdatedAt < (?) AND LastUpdatedAt >= (?)`);
+						params.push(startTimeFilter.end.toISOString(), startTimeFilter.start.toISOString());
+						break;
+					}
+				}
+			}
+		}
+
+		return {
+			where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
+			params,
+		};
+	};
+
 	const base = makeBaseRepository({
 		getDb,
 		logService,
@@ -44,6 +92,7 @@ export const makeCompletionStatusRepository = ({
 			updateColumns: COLUMNS.filter((c) => c !== "Id"),
 			mapper: completionStatusMapper,
 			modelSchema: completionStatusSchema,
+			getWhereClauseAndParamsFromFilters,
 		},
 	});
 

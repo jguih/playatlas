@@ -1,6 +1,6 @@
 import type { DateFilter } from "@playatlas/common/common";
 import type { GameId } from "@playatlas/common/domain";
-import { type GameRelationship, type GameRelationshipMap } from "../domain/game.entity";
+import type { GameRelationship, GameRelationshipMap } from "../domain/game.entity.types";
 
 export type GetRelationshipsForFn = {
 	<R extends GameRelationship>(props: {

@@ -11,6 +11,7 @@ describe("Game Library / Genre", () => {
 		const result = api.gameLibrary.queries.getGetAllGenresQueryHandler().execute();
 		const genres = result.type === "ok" ? result.data : [];
 		const addedGenre = genres.find((g) => g.Id === genre.getId());
+
 		// Assert
 		expect(addedGenre).toBeTruthy();
 		expect(addedGenre).toMatchObject({
@@ -35,31 +36,43 @@ describe("Game Library / Genre", () => {
 
 	it("return 'not_modified' when provided a matching etag", () => {
 		// Arrange
+		const genres = factory.getGenreFactory().buildList(500);
+		root.seedGenre(genres);
+
 		// Act
 		const firstResult = api.gameLibrary.queries.getGetAllGenresQueryHandler().execute();
-		if (firstResult.type !== "ok") throw new Error("Invalid result");
+		const firstEtag = firstResult.type === "ok" ? firstResult.etag : null;
+
 		const secondResult = api.gameLibrary.queries
 			.getGetAllGenresQueryHandler()
-			.execute({ ifNoneMatch: firstResult.etag });
+			.execute({ ifNoneMatch: firstEtag });
+
 		// Assert
 		expect(secondResult.type === "not_modified").toBeTruthy();
 	});
 
 	it("does not return 'not_modified' when genre list changes after first call", () => {
 		// Arrange
-		const newGenre = factory.getGenreFactory().build();
+		const genres = factory.getGenreFactory().buildList(500);
+		root.seedGenre(genres);
+
 		// Act
 		const firstResult = api.gameLibrary.queries.getGetAllGenresQueryHandler().execute();
-		if (firstResult.type !== "ok") throw new Error("Invalid result");
-		root.seedGenre(newGenre);
+		const firstEtag = firstResult.type === "ok" ? firstResult.etag : null;
+		const firstData = firstResult.type === "ok" ? firstResult.data : [];
+
+		const newGenres = factory.getGenreFactory().buildList(500);
+		root.seedGenre(newGenres);
+
 		const secondResult = api.gameLibrary.queries
 			.getGetAllGenresQueryHandler()
-			.execute({ ifNoneMatch: firstResult.etag });
+			.execute({ ifNoneMatch: firstEtag });
+		const secondEtag = secondResult.type === "ok" ? secondResult.etag : null;
+		const secondData = secondResult.type === "ok" ? secondResult.data : [];
+
 		// Assert
-		expect(secondResult.type === "not_modified").toBeFalsy();
-		expect(
-			secondResult.type === "ok" && secondResult.data.length === firstResult.data.length + 1,
-		).toBeTruthy();
-		expect(secondResult.type === "ok" && secondResult.etag !== firstResult.etag).toBeTruthy();
+		expect(secondResult.type).not.toBe("not_modified");
+		expect(secondData).toHaveLength(firstData.length + 500);
+		expect(secondEtag).not.toBe(firstEtag);
 	});
 });

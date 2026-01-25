@@ -21,6 +21,7 @@ import type {
 } from "@playatlas/game-library/infra";
 import type {
 	IGetAllCompaniesQueryHandlerPort,
+	IGetAllCompletionStatusesQueryHandlerPort,
 	IGetAllGamesQueryHandlerPort,
 	IGetAllGenresQueryHandlerPort,
 	IGetAllPlatformsQueryHandlerPort,
@@ -32,6 +33,7 @@ export type IGameLibraryModulePort = Readonly<{
 		getGetAllCompaniesQueryHandler: () => IGetAllCompaniesQueryHandlerPort;
 		getGetAllPlatformsQueryHandler: () => IGetAllPlatformsQueryHandlerPort;
 		getGetAllGenresQueryHandler: () => IGetAllGenresQueryHandlerPort;
+		getGetAllCompletionStatusesQueryHandler: () => IGetAllCompletionStatusesQueryHandlerPort;
 	};
 
 	getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;

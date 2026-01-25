@@ -7,13 +7,14 @@ import {
 	MediaFilesSyncTestEnvironmentBuilder,
 	type MediaFilesSyncTestEnvironment,
 } from "../test-lib/environments/media-files-sync.test-env";
-import { api } from "../vitest.global.setup";
+import { api, root } from "../vitest.global.setup";
 
 describe("Playnite Integration / Media Files Handler", () => {
 	const envBuilder = new MediaFilesSyncTestEnvironmentBuilder();
 	let env: MediaFilesSyncTestEnvironment;
 
 	beforeEach(async () => {
+		root.seedGameRelationships();
 		env = await envBuilder.buildAsync();
 	});
 

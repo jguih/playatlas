@@ -12,14 +12,16 @@ export const makeBaseRepository = <
 	TEntityId extends BaseEntityId,
 	TEntity extends BaseEntity<TEntityId>,
 	TPersistence,
+	TFilters = undefined,
 >({
 	getDb,
 	logService,
 	config,
-}: MakeBaseRepositoryDeps<TEntity, TPersistence>): BaseRepositoryPort<
+}: MakeBaseRepositoryDeps<TEntity, TPersistence, TFilters>): BaseRepositoryPort<
 	TEntityId,
 	TEntity,
-	TPersistence
+	TPersistence,
+	TFilters
 > => {
 	const {
 		tableName,
@@ -29,6 +31,7 @@ export const makeBaseRepository = <
 		mapper,
 		modelSchema,
 		autoIncrementId = false,
+		getWhereClauseAndParamsFromFilters,
 	} = config;
 
 	const insertSql = `
@@ -50,11 +53,7 @@ export const makeBaseRepository = <
     SET ${updateColumns.map((s) => `${String(s)} = ?`).join(", ")}
     WHERE ${String(idColumn)} = ?;
   `;
-	const getAllSql = `
-    SELECT * 
-    FROM ${tableName} 
-    ORDER BY ${String(idColumn)} DESC;
-  `;
+	const getAllSql = `SELECT * FROM ${tableName} `;
 	const removeSql = `
     DELETE FROM ${tableName} WHERE ${String(idColumn)} = ?;
   `;
@@ -172,10 +171,16 @@ export const makeBaseRepository = <
 		}, `update(${entity.getSafeId()})`);
 	};
 
-	const all: BaseRepositoryPort<TEntityId, TEntity, TPersistence>["public"]["all"] = () => {
+	const all: BaseRepositoryPort<TEntityId, TEntity, TPersistence, TFilters>["public"]["all"] = (
+		filters,
+	) => {
 		return run(({ db }) => {
-			const stmt = db.prepare(getAllSql);
-			const result = stmt.all();
+			let query = getAllSql;
+			const params = getWhereClauseAndParamsFromFilters?.(filters);
+			query += params?.where ?? "";
+			query += ` ORDER BY ${String(idColumn)} DESC;`;
+			const stmt = db.prepare(query);
+			const result = stmt.all(...(params?.params ?? []));
 
 			const { success, data: models, error } = z.array(modelSchema).safeParse(result);
 
@@ -183,8 +188,7 @@ export const makeBaseRepository = <
 				throw buildValidationError(error, { entity: tableName, operation: "load" });
 			}
 
-			const entities: TEntity[] = [];
-			for (const model of models) entities.push(mapper.toDomain(model));
+			const entities: TEntity[] = models.map(mapper.toDomain);
 
 			logService.debug(`Query returned ${entities.length} records`);
 

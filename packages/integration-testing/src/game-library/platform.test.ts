@@ -39,48 +39,45 @@ describe("Game Library / Platform", () => {
 		expect(platforms.length).toBeGreaterThanOrEqual(newPlatformsCount);
 	});
 
-	it("query returns null values as 'null' and not empty string", () => {
-		// Arrange
-		const onePlatform = factory
-			.getPlatformFactory()
-			.build({ background: null, cover: null, icon: null });
-		root.seedPlatform(onePlatform);
-		// Act
-		const result = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute();
-		if (result.type !== "ok") throw new Error("Result type must be 'ok'");
-		// Assert
-		expect(onePlatform.getBackground()).toBe(null);
-		expect(onePlatform.getCover()).toBe(null);
-		expect(onePlatform.getIcon()).toBe(null);
-	});
-
 	it("query returns 'not_modified' when provided a matching etag", () => {
 		// Arrange
+		const platforms = factory.getPlatformFactory().buildList(500);
+		root.seedPlatform(platforms);
+
 		// Act
 		const firstResult = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute();
-		if (firstResult.type !== "ok") throw new Error("Result type must be 'ok'");
+		const firstEtag = firstResult.type === "ok" ? firstResult.etag : null;
+
 		const secondResult = api.gameLibrary.queries
 			.getGetAllPlatformsQueryHandler()
-			.execute({ ifNoneMatch: firstResult.etag });
+			.execute({ ifNoneMatch: firstEtag });
+
 		// Assert
 		expect(secondResult.type === "not_modified").toBeTruthy();
 	});
 
 	it("query does not return 'not_modified' when platform list changes after first call", () => {
 		// Arrange
-		const newPlatform = factory.getPlatformFactory().build();
+		const platforms = factory.getPlatformFactory().buildList(500);
+		root.seedPlatform(platforms);
+
 		// Act
 		const firstResult = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute();
-		if (firstResult.type !== "ok") throw new Error("Result type must be 'ok'");
-		root.seedPlatform(newPlatform);
+		const firstEtag = firstResult.type === "ok" ? firstResult.etag : null;
+		const firstData = firstResult.type === "ok" ? firstResult.data : [];
+
+		const newPlatforms = factory.getPlatformFactory().buildList(500);
+		root.seedPlatform(newPlatforms);
+
 		const secondResult = api.gameLibrary.queries
 			.getGetAllPlatformsQueryHandler()
-			.execute({ ifNoneMatch: firstResult.etag });
+			.execute({ ifNoneMatch: firstEtag });
+		const secondEtag = secondResult.type === "ok" ? secondResult.etag : null;
+		const secondData = secondResult.type === "ok" ? secondResult.data : [];
+
 		// Assert
-		expect(secondResult.type === "not_modified").toBeFalsy();
-		expect(
-			secondResult.type === "ok" && secondResult.data.length === firstResult.data.length + 1,
-		).toBeTruthy();
-		expect(secondResult.type === "ok" && secondResult.etag !== firstResult.etag).toBeTruthy();
+		expect(secondResult.type).not.toBe("not_modified");
+		expect(secondData).toHaveLength(firstData.length + 500);
+		expect(secondEtag).not.toBe(firstEtag);
 	});
 });
