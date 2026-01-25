@@ -2,25 +2,39 @@
 	import type { Snippet } from "svelte";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	let props: HTMLAttributes<HTMLDivElement> & {
-		header: Snippet;
-		banner: Snippet;
-		bottomNav?: Snippet;
-	} = $props();
+	type Props = HTMLAttributes<HTMLDivElement> & { bottomNav?: Snippet } & (
+			| {
+					header?: null;
+					banner?: null;
+			  }
+			| {
+					header: Snippet;
+					banner: Snippet;
+			  }
+		);
+
+	let props: Props = $props();
 </script>
 
 <div
 	{...props}
 	class={[
-		"grid",
-		props.bottomNav && "grid-rows-[var(--header-height)_auto_1fr_var(--bottom-nav-height)]",
-		!props.bottomNav && "grid-rows-[var(--header-height)_auto_1fr]",
-		"h-dvh w-full overflow-hidden",
+		"grid h-dvh w-full overflow-hidden",
+		props.header &&
+			props.bottomNav &&
+			"grid-rows-[var(--header-height)_1fr_var(--bottom-nav-height)]",
+		props.header && !props.bottomNav && "grid-rows-[var(--header-height)_1fr]",
+		!props.header && props.bottomNav && "grid-rows-[1fr_var(--bottom-nav-height)]",
+		!props.header && !props.bottomNav && "grid-rows-[1fr]",
 		props.class,
 	]}
 >
-	{@render props.header()}
-	{@render props.banner()}
+	{#if props.header}
+		<div>
+			{@render props.header()}
+			{@render props.banner()}
+		</div>
+	{/if}
 	{#if props.children}
 		{@render props.children()}
 	{/if}
