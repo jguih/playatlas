@@ -13,6 +13,7 @@
 	} & HTMLAttributes<HTMLElement> = $props();
 </script>
 
+<!-- Must be used in a flex or inline-flex container for size scaling to work correctly -->
 <span
 	{...props}
 	class={[

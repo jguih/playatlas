@@ -7,12 +7,12 @@
 <span
 	{...props}
 	class={[
-		"inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium",
-		variant === "success" && ["bg-success-bg/20 text-success-fg"],
-		variant === "neutral" && ["bg-neutral-bg/20 text-neutral-fg"],
-		variant === "primary" && ["bg-primary-bg/20 text-primary-fg"],
-		variant === "warning" && ["bg-warning-bg/20 text-warning-fg"],
-		variant === "error" && ["bg-error-bg/20 text-error-fg"],
+		"inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium",
+		variant === "success" && ["bg-success-active-bg text-success-active-fg"],
+		variant === "neutral" && ["bg-neutral-active-bg text-neutral-active-fg"],
+		variant === "primary" && ["bg-primary-active-bg text-primary-active-fg"],
+		variant === "warning" && ["bg-warning-active-bg text-warning-active-fg"],
+		variant === "error" && ["bg-error-active-bg text-error-active-fg"],
 		props.class,
 	]}
 >

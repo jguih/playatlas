@@ -5,6 +5,7 @@
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
 	import SolidChip from "$lib/ui/components/chip/SolidChip.svelte";
+	import SyncStateChip from "$lib/ui/components/chip/SyncStateChip.svelte";
 	import Header from "$lib/ui/components/header/Header.svelte";
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
@@ -110,22 +111,31 @@
 					</div>
 
 					<div class="absolute left-6 bottom-12 translate-y-1/2 flex gap-4 items-end z-3">
-						<img
-							src={resolve(`/api/assets/image/[...params]`, {
-								params: GameAssets.parseCoverImageParams(gameStore.game.CoverImagePath),
-							})}
-							alt={`Cover of ${gameStore.game.Name}`}
-							loading="eager"
-							decoding="sync"
-							fetchpriority="high"
-							class="w-40 aspect-2/3 object-cover shadow-2xl"
-						/>
+						<div class="relative min-w-40 max-w-40 aspect-2/3">
+							<img
+								src={resolve(`/api/assets/image/[...params]`, {
+									params: GameAssets.parseCoverImageParams(gameStore.game.CoverImagePath),
+								})}
+								alt={`Cover of ${gameStore.game.Name}`}
+								loading="eager"
+								decoding="sync"
+								fetchpriority="high"
+								class="w-full h-full object-cover shadow-2xl"
+							/>
+
+							<div class="absolute right-2 bottom-2">
+								<SyncStateChip
+									{...gameStore.game.Sync}
+									class="text-xs!"
+								/>
+							</div>
+						</div>
 
 						<div
-							class="pb-4 pr-2"
+							class="pb-2 pr-2"
 							bind:this={heroTitleEl}
 						>
-							<h1 class="text-2xl font-semibold leading-tight drop-shadow-md">
+							<h1 class="text-2xl font-semibold leading-tight drop-shadow-md mb-1">
 								{gameStore.game.Name}
 							</h1>
 
@@ -145,7 +155,8 @@
 						</div>
 					</div>
 				</div>
-				<div class="px-6 pt-24 pb-120 flex flex-col gap-4 z-3">
+
+				<div class="px-6 pt-24 pb-8 flex flex-col gap-4 z-3">
 					<div class="flex items-start">
 						{#if gameStore.completionStatus}
 							<CompletionStatusButton completionStatus={gameStore.completionStatus} />
@@ -154,7 +165,10 @@
 
 					<SolidButton>Journal</SolidButton>
 
-					<GameInfoSection title="Play State">
+					<GameInfoSection
+						title="Play State"
+						class="flex gap-2 flex-col"
+					>
 						<div class="flex items-center gap-2 flex-nowrap min-w-0">
 							<SolidChip variant={gameStore.game.IsInstalled ? "success" : "neutral"}>
 								<span
