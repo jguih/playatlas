@@ -7,7 +7,7 @@
 <span
 	{...props}
 	class={[
-		"inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium",
+		"inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition-colors-default",
 		variant === "success" && ["bg-success-active-bg text-success-active-fg"],
 		variant === "neutral" && ["bg-neutral-active-bg text-neutral-active-fg"],
 		variant === "primary" && ["bg-primary-active-bg text-primary-active-fg"],

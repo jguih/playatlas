@@ -1,10 +1,12 @@
 <script lang="ts">
 	import type { CompletionStatus } from "$lib/modules/game-library/domain";
+	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
+	import type { BaseButtonProps } from "$lib/ui/components/buttons/types";
+	import Icon from "$lib/ui/components/Icon.svelte";
+	import type { ComponentVariant } from "$lib/ui/components/types";
 	import { Gamepad2Icon } from "@lucide/svelte";
-	import Icon from "../Icon.svelte";
-	import type { ComponentVariant } from "../types";
-	import SolidButton from "./SolidButton.svelte";
-	import type { BaseButtonProps } from "./types";
+	import ActionButtonContainer from "./ActionButtonContainer.svelte";
+	import ActionButtonLabel from "./ActionButtonLabel.svelte";
 
 	let { completionStatus, ...props }: BaseButtonProps & { completionStatus: CompletionStatus } =
 		$props();
@@ -18,7 +20,7 @@
 	);
 </script>
 
-<div class="flex flex-col items-center justify-center gap-1">
+<ActionButtonContainer>
 	<SolidButton
 		{variant}
 		iconOnly
@@ -30,7 +32,7 @@
 			<Gamepad2Icon />
 		</Icon>
 	</SolidButton>
-	<p class="text-sm text-center font-medium whitespace-nowrap w-18 grow-0 truncate">
+	<ActionButtonLabel>
 		{completionStatus.Name}
-	</p>
-</div>
+	</ActionButtonLabel>
+</ActionButtonContainer>

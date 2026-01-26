@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import { getClientApiContext } from "$lib/modules/bootstrap/application";
-	import CompletionStatusButton from "$lib/ui/components/buttons/CompletionStatusButton.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
 	import SolidChip from "$lib/ui/components/chip/SolidChip.svelte";
@@ -12,10 +11,13 @@
 	import Main from "$lib/ui/components/Main.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
 	import { GameAssets } from "$lib/ui/state";
-	import { ArrowLeftIcon } from "@lucide/svelte";
+	import { ArrowLeftIcon, ClockIcon, NotebookPenIcon } from "@lucide/svelte";
 	import { onMount, tick } from "svelte";
 	import { cubicInOut } from "svelte/easing";
 	import { fade } from "svelte/transition";
+	import ActionButtonContainer from "./page/components/ActionButtonContainer.svelte";
+	import ActionButtonLabel from "./page/components/ActionButtonLabel.svelte";
+	import CompletionStatusButton from "./page/components/CompletionStatusButton.svelte";
 	import GameInfoSection from "./page/components/GameInfoSection.svelte";
 	import { GameAggregateStore } from "./page/game-aggregate-store.svelte.js";
 
@@ -110,7 +112,7 @@
 						></div>
 					</div>
 
-					<div class="absolute left-6 bottom-12 translate-y-1/2 flex gap-4 items-end z-3">
+					<div class="absolute left-0 px-6 bottom-12 translate-y-1/2 flex gap-4 items-end z-3">
 						<div class="relative min-w-40 max-w-40 aspect-2/3">
 							<img
 								src={resolve(`/api/assets/image/[...params]`, {
@@ -132,7 +134,7 @@
 						</div>
 
 						<div
-							class="pb-2 pr-2"
+							class="pb-2"
 							bind:this={heroTitleEl}
 						>
 							<h1 class="text-2xl font-semibold leading-tight drop-shadow-md mb-1">
@@ -156,17 +158,35 @@
 					</div>
 				</div>
 
-				<div class="px-6 pt-24 pb-8 flex flex-col gap-4 z-3">
-					<div class="flex items-start">
+				<div class="px-6 pt-24 pb-6 flex flex-col gap-4 z-3">
+					<div class="flex justify-between">
 						{#if gameStore.completionStatus}
 							<CompletionStatusButton completionStatus={gameStore.completionStatus} />
 						{/if}
+						<ActionButtonContainer>
+							<SolidButton
+								iconOnly
+								size="xl"
+								class="text-4xl!"
+							>
+								<Icon><ClockIcon /></Icon>
+							</SolidButton>
+							<ActionButtonLabel>Activity</ActionButtonLabel>
+						</ActionButtonContainer>
+						<ActionButtonContainer>
+							<SolidButton
+								iconOnly
+								size="xl"
+								class="text-4xl!"
+							>
+								<Icon><NotebookPenIcon /></Icon>
+							</SolidButton>
+							<ActionButtonLabel>Journal</ActionButtonLabel>
+						</ActionButtonContainer>
 					</div>
 
-					<SolidButton>Journal</SolidButton>
-
 					<GameInfoSection
-						title="Play State"
+						title="Installation"
 						class="flex gap-2 flex-col"
 					>
 						<div class="flex items-center gap-2 flex-nowrap min-w-0">
