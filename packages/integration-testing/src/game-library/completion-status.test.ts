@@ -21,7 +21,7 @@ describe("Game Library / Completion Status", () => {
 		const queryResult = api.gameLibrary.queries
 			.getGetAllCompletionStatusesQueryHandler()
 			.execute({ since });
-		const queryCompletionStatuses = queryResult.type === "ok" ? queryResult.data : [];
+		const queryCompletionStatuses = queryResult.data;
 
 		// Assert
 		expect(queryCompletionStatuses).toHaveLength(20);

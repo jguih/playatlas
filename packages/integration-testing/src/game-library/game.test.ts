@@ -20,7 +20,7 @@ describe("Game Library / Game", () => {
 		// Act
 		root.seedGame(games);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const added = queryResult.type === "ok" ? queryResult.data : [];
+		const added = queryResult.data;
 		const addedRandomGame = added.find((g) => g.Id === randomGame.getPlayniteSnapshot().id);
 
 		// Assert
@@ -43,7 +43,7 @@ describe("Game Library / Game", () => {
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = result.type === "ok" ? result.data : null;
+		const games = result.data;
 		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
 		// Assert
@@ -63,7 +63,7 @@ describe("Game Library / Game", () => {
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = result.type === "ok" ? result.data : null;
+		const games = result.data;
 		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
 		// Assert
@@ -83,7 +83,7 @@ describe("Game Library / Game", () => {
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = result.type === "ok" ? result.data : null;
+		const games = result.data;
 		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
 		// Assert
@@ -103,7 +103,7 @@ describe("Game Library / Game", () => {
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = result.type === "ok" ? result.data : null;
+		const games = result.data;
 		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
 		// Assert
@@ -130,7 +130,7 @@ describe("Game Library / Game", () => {
 	it("returns empty games array", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = result.type === "ok" ? result.data : [];
+		const games = result.data;
 
 		// Assert
 		expect(games).toHaveLength(0);
@@ -147,7 +147,7 @@ describe("Game Library / Game", () => {
 
 		// Act
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const queryGames = queryResult.type === "ok" ? queryResult.data : [];
+		const queryGames = queryResult.data;
 		const oneResult = queryGames.find((g) => g.Id === oneGame.getPlayniteSnapshot().id);
 
 		// Assert
@@ -196,7 +196,7 @@ describe("Game Library / Game", () => {
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = result.type === "ok" ? result.data : [];
+		const games = result.data;
 		const oneResult = games.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
 		// Assert
@@ -231,7 +231,7 @@ describe("Game Library / Game", () => {
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = result.type === "ok" ? result.data : [];
+		const games = result.data;
 		const oneResult = games.find((g) => g.Id === game.getPlayniteSnapshot().id);
 
 		// Assert
@@ -243,20 +243,6 @@ describe("Game Library / Game", () => {
 		expect(oneResult!.Added).toBeNull();
 		expect(oneResult!.InstallDirectory).toBeNull();
 		expect(oneResult!.CompletionStatusId).toBeNull();
-	});
-
-	it("returns 'not_modified' when provided a valid etag", () => {
-		// Arrange
-		const games = factory.getGameFactory().buildList(200);
-		root.seedGame(games);
-		// Act
-		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		if (result.type !== "ok") throw new Error("Invalid result type");
-		const afterResult = api.gameLibrary.queries
-			.getGetAllGamesQueryHandler()
-			.execute({ ifNoneMatch: result.etag });
-		// Assert
-		expect(afterResult.type === "not_modified").toBeTruthy();
 	});
 
 	it("update games and returns only those updated after a certain date", async () => {
@@ -297,7 +283,7 @@ describe("Game Library / Game", () => {
 
 		// Act
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute({ since });
-		const games = queryResult.type === "ok" ? queryResult.data : [];
+		const games = queryResult.data;
 
 		// Assert
 		expect(updateResult.success).toBe(true);
@@ -340,7 +326,7 @@ describe("Game Library / Game", () => {
 
 		// Act
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = queryResult.type === "ok" ? queryResult.data : [];
+		const games = queryResult.data;
 		const deletedGames = games.filter((g) => g.Sync.DeletedAt !== null);
 
 		// Assert

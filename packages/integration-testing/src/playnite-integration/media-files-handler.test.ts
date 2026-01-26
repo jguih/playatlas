@@ -170,7 +170,7 @@ describe("Playnite Integration / Media Files Handler", () => {
 			.getPlayniteSyncService()
 			.handleMediaFilesSynchronizationRequest(request);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = queryResult.type === "ok" ? queryResult.data : [];
+		const games = queryResult.data;
 		const updatedGame = games.find((g) => g.Id === gameContext.getPlayniteGameId());
 
 		const fileEntries = await fsAsync.readdir(gameContext.getMediaFilesDirPath(), {

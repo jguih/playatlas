@@ -39,7 +39,7 @@ describe("Game Library Sync", () => {
 			.getSyncGamesCommandHandler()
 			.executeAsync(command);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = queryResult.type === "ok" ? queryResult.data : [];
+		const games = queryResult.data;
 		const persistedGame = games.find((g) => g.Id === sampleItem.Id);
 
 		// Assert
@@ -100,7 +100,7 @@ describe("Game Library Sync", () => {
 			.getSyncGamesCommandHandler()
 			.executeAsync(removeCommand);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = queryResult.type === "ok" ? queryResult.data : [];
+		const games = queryResult.data;
 		const visibleGames = games.filter((g) => g.Sync.DeletedAt === null);
 
 		// Assert
@@ -165,7 +165,7 @@ describe("Game Library Sync", () => {
 			.executeAsync(updateCommand);
 
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		const games = queryResult.type === "ok" ? queryResult.data : [];
+		const games = queryResult.data;
 
 		// Assert
 		expect(commandResult.success).toBe(true);
