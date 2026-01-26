@@ -1,9 +1,9 @@
 <script lang="ts">
-	 
 	import { resolve } from "$app/paths";
 	import { getClientApiContext } from "$lib/modules/bootstrap/application";
 	import CompletionStatusButton from "$lib/ui/components/buttons/CompletionStatusButton.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
+	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
 	import Header from "$lib/ui/components/header/Header.svelte";
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
@@ -76,15 +76,29 @@
 							<h1 class="text-2xl font-semibold leading-tight">
 								{gameStore.game.Name}
 							</h1>
+
+							<span class="text-sm">
+								<span class="text-foreground/60">
+									{gameStore.game.ReleaseDate?.getFullYear()}
+								</span>
+								{#if gameStore.developers.length > 0}
+									•
+									<span class="font-bold text-foreground/60">
+										{gameStore.developers.map((d) => d.Name).join(", ")}
+									</span>
+								{/if}
+							</span>
 						</div>
 					</div>
 				</div>
-				<div class="px-6 pt-36 pb-8">
+				<div class="px-6 pt-36 pb-8 flex flex-col gap-4">
 					<div class="flex items-start">
 						{#if gameStore.completionStatus}
 							<CompletionStatusButton completionStatus={gameStore.completionStatus} />
 						{/if}
 					</div>
+
+					<SolidButton>Journal</SolidButton>
 				</div>
 			{/if}
 		{/await}

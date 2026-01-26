@@ -1,4 +1,3 @@
-import type { IClockPort } from "$lib/modules/common/application";
 import type { ISyncGamesCommandHandlerPort } from "../commands/sync-games/sync-games.command-handler";
 import type { IGameLibrarySyncStatePort } from "./game-library-sync-state.port";
 import type { IGameMapperPort } from "./game.mapper.port";
@@ -6,7 +5,6 @@ import type { IPlayAtlasClientPort } from "./playatlas-client.port";
 import type { ISyncGamesFlowPort } from "./sync-games-flow.port";
 
 export type SyncGameLibraryServiceDeps = {
-	clock: IClockPort;
 	gameLibrarySyncState: IGameLibrarySyncStatePort;
 	playAtlasClient: IPlayAtlasClientPort;
 	syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
@@ -14,20 +12,17 @@ export type SyncGameLibraryServiceDeps = {
 };
 
 export class SyncGamesFlow implements ISyncGamesFlowPort {
-	private readonly clock: IClockPort;
 	private readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
 	private readonly playAtlasClient: IPlayAtlasClientPort;
 	private readonly syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
 	private readonly gameMapper: IGameMapperPort;
 
 	constructor({
-		clock,
 		gameLibrarySyncState,
 		playAtlasClient,
 		syncGamesCommandHandler,
 		gameMapper,
 	}: SyncGameLibraryServiceDeps) {
-		this.clock = clock;
 		this.gameLibrarySyncState = gameLibrarySyncState;
 		this.playAtlasClient = playAtlasClient;
 		this.syncGamesCommandHandler = syncGamesCommandHandler;

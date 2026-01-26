@@ -1,5 +1,6 @@
 import type { QueryHandler } from "@playatlas/common/common";
-import { createHashForObject } from "@playatlas/common/infra";
+import type { CompanyResponseDto } from "../../dtos/company.response.dto";
+import type { CompanyRepositoryFilters } from "../../infra/company.repository.types";
 import type { GetAllCompaniesQuery } from "./get-all-companies.query";
 import type {
 	GetAllCompaniesQueryHandlerDeps,
@@ -14,24 +15,46 @@ export type IGetAllCompaniesQueryHandlerPort = QueryHandler<
 export const makeGetAllCompaniesQueryHandler = ({
 	companyRepository,
 	companyMapper,
+	logService,
+	clock,
 }: GetAllCompaniesQueryHandlerDeps): IGetAllCompaniesQueryHandlerPort => {
-	return {
-		execute: ({ ifNoneMatch } = {}) => {
-			const companies = companyRepository.all();
+	const computeNextCursor = (dtos: CompanyResponseDto[], since?: Date | null): Date => {
+		const baseCursor = since ?? new Date(0);
 
-			if (!companies || companies.length === 0) {
-				return { type: "ok", data: [], etag: '"empty"' };
+		if (dtos.length === 0) {
+			return baseCursor;
+		}
+
+		return dtos.reduce<Date>((latest, completionStatus) => {
+			const updatedAt = new Date(completionStatus.Sync.LastUpdatedAt);
+			return updatedAt > latest ? updatedAt : latest;
+		}, baseCursor);
+	};
+
+	return {
+		execute: ({ since } = {}) => {
+			const filters: CompanyRepositoryFilters | undefined = since
+				? {
+						lastUpdatedAt: [{ op: "gte", value: since }],
+					}
+				: undefined;
+
+			const companies = companyRepository.all(filters);
+
+			if (since) {
+				const elapsedMs = clock.now().getTime() - since.getTime();
+				const elapsedSeconds = Math.floor(elapsedMs / 1000);
+				logService.debug(
+					`Found ${companies.length} companies (updated since last sync: ${elapsedSeconds}s ago)`,
+				);
+			} else {
+				logService.debug(`Found ${companies.length} companies (no filters)`);
 			}
 
 			const companyDtos = companyMapper.toDtoList(companies);
-			const hash = createHashForObject(companyDtos);
-			const etag = `"${hash}"`;
+			const nextCursor = computeNextCursor(companyDtos, since).toISOString();
 
-			if (ifNoneMatch === etag) {
-				return { type: "not_modified" };
-			}
-
-			return { type: "ok", data: companyDtos, etag };
+			return { data: companyDtos, nextCursor };
 		},
 	};
 };

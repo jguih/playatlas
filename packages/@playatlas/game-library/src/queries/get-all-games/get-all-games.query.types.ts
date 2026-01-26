@@ -11,6 +11,7 @@ export type GetAllGamesQueryHandlerDeps = {
 	clock: IClockPort;
 };
 
-export type GetAllGamesQueryResult =
-	| { type: "not_modified"; nextCursor: string }
-	| { type: "ok"; data: PlayniteProjectionResponseDto[]; etag: string; nextCursor: string };
+export type GetAllGamesQueryResult = {
+	data: PlayniteProjectionResponseDto[];
+	nextCursor: string;
+};

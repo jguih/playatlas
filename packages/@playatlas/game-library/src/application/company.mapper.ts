@@ -16,6 +16,11 @@ export const makeCompanyMapper = ({ companyFactory }: CompanyMapperDeps): ICompa
 		const dto: CompanyResponseDto = {
 			Id: entity.getId(),
 			Name: entity.getName(),
+			Sync: {
+				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
+				DeletedAt: entity.getDeletedAt()?.toISOString() ?? null,
+				DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,
+			},
 		};
 		return dto;
 	};

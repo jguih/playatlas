@@ -1,17 +1,21 @@
 import type { IHttpClientPort } from "$lib/modules/common/application";
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
 import {
+	type ICompanyMapperPort,
 	type ICompletionStatusMapperPort,
 	type IGameLibrarySyncManagerPort,
 	type IGameLibrarySyncStatePort,
 	type IGameMapperPort,
 	type IPlayAtlasClientPort,
+	type ISyncCompaniesFlowPort,
 	type ISyncCompletionStatusesFlowPort,
 	type ISyncGamesFlowPort,
+	CompanyMapper,
 	CompletionStatusMapper,
 	GameLibrarySyncManager,
 	GameMapper,
 	PlayAtlasClient,
+	SyncCompaniesFlow,
 	SyncCompletionStatusesFlow,
 	SyncGamesFlow,
 } from "$lib/modules/game-library/application";
@@ -77,9 +81,11 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly getGenresByIdsQueryHandler: IGetGenresByIdsQueryHandlerPort;
 	readonly syncGenresCommandHandler: ISyncGenresCommandHandlerPort;
 
+	readonly companyMapper: ICompanyMapperPort;
 	readonly companyRepository: ICompanyRepositoryPort;
 	readonly getCompaniesByIdsQueryHandler: IGetCompaniesByIdsQueryHandlerPort;
 	readonly syncCompaniesCommandHandler: ISyncCompaniesCommandHandlerPort;
+	readonly syncCompaniesFlow: ISyncCompaniesFlowPort;
 
 	readonly platformRepository: IPlatformRepositoryPort;
 	readonly getPlatformsByIdsQueryHandler: IGetPlatformsByIdsQueryHandlerPort;
@@ -109,7 +115,6 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			gameRepository: this.gameRepository,
 		});
 		this.syncGamesFlow = new SyncGamesFlow({
-			clock,
 			gameLibrarySyncState: this.gameLibrarySyncState,
 			gameMapper: this.gameMapper,
 			playAtlasClient: this.playAtlasClient,
@@ -127,12 +132,19 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			genreRepository: this.genreRepository,
 		});
 
+		this.companyMapper = new CompanyMapper({ clock });
 		this.companyRepository = new CompanyRepository({ dbSignal });
 		this.getCompaniesByIdsQueryHandler = new GetCompaniesByIdsQueryHandler({
 			companyRepository: this.companyRepository,
 		});
 		this.syncCompaniesCommandHandler = new SyncCompaniesCommandHandler({
 			companyRepository: this.companyRepository,
+		});
+		this.syncCompaniesFlow = new SyncCompaniesFlow({
+			companyMapper: this.companyMapper,
+			gameLibrarySyncState: this.gameLibrarySyncState,
+			playAtlasClient: this.playAtlasClient,
+			syncCompaniesCommandHandler: this.syncCompaniesCommandHandler,
 		});
 
 		this.platformRepository = new PlatformRepository({ dbSignal });
@@ -152,7 +164,6 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			completionStatusRepository: this.completionStatusRepository,
 		});
 		this.syncCompletionStatusesFlow = new SyncCompletionStatusesFlow({
-			clock,
 			gameLibrarySyncState: this.gameLibrarySyncState,
 			completionStatusMapper: this.completionStatusMapper,
 			playAtlasClient: this.playAtlasClient,
@@ -162,7 +173,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.gameLibrarySyncManager = new GameLibrarySyncManager({
 			syncCompletionStatusesFlow: this.syncCompletionStatusesFlow,
 			syncGamesFlow: this.syncGamesFlow,
-			clock,
+			syncCompaniesFlow: this.syncCompaniesFlow,
 		});
 	}
 }

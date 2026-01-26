@@ -1,10 +1,10 @@
 import { ISODateSchema } from "@playatlas/common/common";
-import { companyIdSchema, type CompanyId } from "@playatlas/common/domain";
+import { companyIdSchema } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
 import type { ICompanyMapperPort } from "../application";
-import type { Company } from "../domain/company.entity";
 import type { ICompanyRepositoryPort } from "./company.repository.port";
+import type { CompanyRepositoryFilters } from "./company.repository.types";
 
 export const companySchema = z.object({
 	Id: companyIdSchema,
@@ -35,7 +35,54 @@ export const makeCompanyRepository = ({
 		"DeletedAt",
 		"DeleteAfter",
 	];
-	const base = makeBaseRepository<CompanyId, Company, CompanyModel>({
+
+	const getWhereClauseAndParamsFromFilters = (filters?: CompanyRepositoryFilters) => {
+		const where: string[] = [];
+		const params: (string | number)[] = [];
+
+		if (!filters) {
+			return { where: "", params };
+		}
+
+		if (filters.lastUpdatedAt !== undefined) {
+			for (const startTimeFilter of filters.lastUpdatedAt) {
+				switch (startTimeFilter.op) {
+					case "between": {
+						where.push(`LastUpdatedAt >= (?) AND LastUpdatedAt < (?)`);
+						params.push(startTimeFilter.start.toISOString(), startTimeFilter.end.toISOString());
+						break;
+					}
+					case "eq": {
+						where.push(`LastUpdatedAt = (?)`);
+						params.push(startTimeFilter.value.toISOString());
+						break;
+					}
+					case "gte": {
+						where.push(`LastUpdatedAt > (?)`);
+						params.push(startTimeFilter.value.toISOString());
+						break;
+					}
+					case "lte": {
+						where.push(`LastUpdatedAt < (?)`);
+						params.push(startTimeFilter.value.toISOString());
+						break;
+					}
+					case "overlaps": {
+						where.push(`LastUpdatedAt < (?) AND LastUpdatedAt >= (?)`);
+						params.push(startTimeFilter.end.toISOString(), startTimeFilter.start.toISOString());
+						break;
+					}
+				}
+			}
+		}
+
+		return {
+			where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
+			params,
+		};
+	};
+
+	const base = makeBaseRepository({
 		getDb,
 		logService,
 		config: {
@@ -45,6 +92,7 @@ export const makeCompanyRepository = ({
 			updateColumns: COLUMNS.filter((c) => c !== "Id"),
 			mapper: companyMapper,
 			modelSchema: companySchema,
+			getWhereClauseAndParamsFromFilters,
 		},
 	});
 

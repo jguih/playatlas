@@ -21,7 +21,7 @@ export type CompletionStatusResponseDto = z.infer<typeof completionStatusRespons
 const successResponse = z.object({
 	...defaultSuccessResponseDtoSchema.shape,
 	completionStatuses: z.array(completionStatusResponseDtoSchema),
-	reason_code: z.literal("completion_statuses_fetched_successfully"),
+	reason_code: z.enum(["completion_statuses_fetched_successfully"]),
 	nextCursor: ISODateSchema,
 });
 

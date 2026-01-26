@@ -1,5 +1,6 @@
 import { zodJsonParser, type IHttpClientPort } from "$lib/modules/common/application";
 import {
+	getCompaniesResponseDtoSchema,
 	getCompletionStatusesResponseDtoSchema,
 	getGamesResponseDtoSchema,
 } from "@playatlas/game-library/dtos";
@@ -38,8 +39,14 @@ export class PlayAtlasClient implements IPlayAtlasClientPort {
 		return await zodJsonParser(getCompletionStatusesResponseDtoSchema)(response);
 	};
 
-	getCompaniesAsync: IPlayAtlasClientPort["getCompaniesAsync"] = async () => {
-		throw new Error("Not Implemented");
+	getCompaniesAsync: IPlayAtlasClientPort["getCompaniesAsync"] = async ({ sinceLastSync }) => {
+		const response = await this.httpClient.getAsync({
+			endpoint: `/api/company`,
+			searchParams: {
+				sinceLastSync: sinceLastSync.toISOString(),
+			},
+		});
+		return await zodJsonParser(getCompaniesResponseDtoSchema)(response);
 	};
 
 	getGenresAsync: IPlayAtlasClientPort["getGenresAsync"] = async () => {

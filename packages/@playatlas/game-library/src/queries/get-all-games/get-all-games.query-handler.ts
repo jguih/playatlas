@@ -1,5 +1,4 @@
 import type { QueryHandler } from "@playatlas/common/common";
-import { createHashForObject } from "@playatlas/common/infra";
 import type { PlayniteProjectionResponseDto } from "../../dtos";
 import type { GameFilters } from "../../infra/game.repository.types";
 import type { GetAllGamesQuery } from "./get-all-games.query";
@@ -33,7 +32,7 @@ export const makeGetAllGamesQueryHandler = ({
 	};
 
 	return {
-		execute: ({ ifNoneMatch, since } = {}) => {
+		execute: ({ since } = {}) => {
 			const filters: GameFilters | undefined = since
 				? {
 						lastUpdatedAt: [{ op: "gte", value: since }],
@@ -54,14 +53,8 @@ export const makeGetAllGamesQueryHandler = ({
 
 			const gameDtos = gameMapper.toDtoList(games);
 			const nextCursor = computeNextCursor(gameDtos, since).toISOString();
-			const hash = createHashForObject(gameDtos);
-			const etag = `"${hash}"`;
 
-			if (ifNoneMatch === etag) {
-				return { type: "not_modified", nextCursor };
-			}
-
-			return { type: "ok", data: gameDtos, etag, nextCursor };
+			return { data: gameDtos, nextCursor };
 		},
 	};
 };

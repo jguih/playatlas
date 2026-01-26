@@ -1,3 +1,3 @@
 export type IClientEntityMapper<TEntity, TDto> = {
-	toDomain: (dto: TDto) => TEntity;
+	toDomain: (dto: TDto, lastSync?: Date | null) => TEntity;
 };

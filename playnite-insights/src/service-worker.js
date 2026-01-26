@@ -40,6 +40,7 @@ const cacheKeysArr = Object.values(CacheKeys);
 /**
  *  @type {ApiRoute[]}
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const apiRoutes = [
 	["/api/game", CacheKeys.GAMES, { type: "GAMES_UPDATE" }, networkFirst],
 	["/api/company", CacheKeys.COMPANY, { type: "COMPANY_UPDATE" }, networkFirst],
@@ -271,14 +272,5 @@ sw.addEventListener("fetch", async (event) => {
 		return;
 	}
 
-	// Handle api caching
-	for (const [prefix, cacheKey, updateMessage, strategy] of apiRoutes) {
-		if (url.pathname.startsWith(prefix)) {
-			event.respondWith(strategy(event.request, cacheKey, updateMessage));
-			return;
-		}
-	}
-
-	event.respondWith(networkFirst(event.request, CacheKeys.APP));
 	return;
 });

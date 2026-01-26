@@ -74,6 +74,8 @@ export const makeGameLibraryModule = ({
 	const queryHandlerGetAllCompanies = makeGetAllCompaniesQueryHandler({
 		companyRepository,
 		companyMapper,
+		clock,
+		logService: buildLog("GetAllCompaniesQueryHandler"),
 	});
 
 	const completionStatusFactory = makeCompletionStatusFactory({ clock });
@@ -86,6 +88,8 @@ export const makeGameLibraryModule = ({
 	const queryHandlerGetAllCompletionStatuses = makeGetAllCompletionStatusesQueryHandler({
 		completionStatusMapper,
 		completionStatusRepository,
+		clock,
+		logService: buildLog("GetAllCompletionStatusesQueryHandler"),
 	});
 
 	const platformFactory = makePlatformFactory({ clock });

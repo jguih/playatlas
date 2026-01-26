@@ -1,5 +1,6 @@
 export * from "./company.repository";
 export type * from "./company.repository.port";
+export type * from "./company.repository.types";
 export * from "./completion-status.repository";
 export type * from "./completion-status.repository.port";
 export type * from "./completion-status.repository.types";

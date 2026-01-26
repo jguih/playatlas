@@ -1,3 +1,5 @@
+export * from "./company.mapper";
+export type * from "./company.mapper.port";
 export * from "./completion-status.mapper";
 export type * from "./completion-status.mapper.port";
 export * from "./game-library-sync-manager";
@@ -7,6 +9,8 @@ export * from "./game.mapper";
 export type * from "./game.mapper.port";
 export * from "./playatlas-client";
 export type * from "./playatlas-client.port";
+export * from "./sync-companies-flow";
+export type * from "./sync-companies-flow.port";
 export * from "./sync-completion-statuses-flow";
 export type * from "./sync-completion-statuses-flow.port";
 export * from "./sync-games-flow";

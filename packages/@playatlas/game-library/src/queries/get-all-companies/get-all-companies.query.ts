@@ -1,3 +1,3 @@
 export type GetAllCompaniesQuery = {
-	ifNoneMatch?: string | null;
+	since?: Date | null;
 };

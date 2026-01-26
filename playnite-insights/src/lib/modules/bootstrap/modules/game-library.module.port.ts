@@ -1,8 +1,10 @@
 import type {
+	ICompanyMapperPort,
 	IGameLibrarySyncManagerPort,
 	IGameLibrarySyncStatePort,
 	IGameMapperPort,
 	IPlayAtlasClientPort,
+	ISyncCompaniesFlowPort,
 	ISyncGamesFlowPort,
 } from "$lib/modules/game-library/application";
 import type {
@@ -42,9 +44,11 @@ export interface IClientGameLibraryModulePort {
 	get getGenresByIdsQueryHandler(): IGetGenresByIdsQueryHandlerPort;
 	get syncGenresCommandHandler(): ISyncGenresCommandHandlerPort;
 
+	get companyMapper(): ICompanyMapperPort;
 	get companyRepository(): ICompanyRepositoryPort;
 	get getCompaniesByIdsQueryHandler(): IGetCompaniesByIdsQueryHandlerPort;
 	get syncCompaniesCommandHandler(): ISyncCompaniesCommandHandlerPort;
+	get syncCompaniesFlow(): ISyncCompaniesFlowPort;
 
 	get platformRepository(): IPlatformRepositoryPort;
 	get getPlatformsByIdsQueryHandler(): IGetPlatformsByIdsQueryHandlerPort;
