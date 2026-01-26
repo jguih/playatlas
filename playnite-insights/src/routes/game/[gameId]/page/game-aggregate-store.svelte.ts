@@ -70,4 +70,17 @@ export class GameAggregateStore {
 			this.loadPublishersAsync(),
 		]);
 	};
+
+	getCompaniesSummary = (): string => {
+		const firstDev = this.developers.at(0);
+		const firstPublisher = this.publishers.at(0);
+
+		if (firstDev?.Id === firstPublisher?.Id) return firstDev?.Name ?? "";
+
+		if (firstDev && firstPublisher) return [firstDev.Name, firstPublisher.Name].join(", ");
+
+		if (firstDev) return firstDev.Name;
+
+		return firstPublisher?.Name ?? "";
+	};
 }

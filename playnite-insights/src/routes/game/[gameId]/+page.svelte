@@ -4,6 +4,7 @@
 	import CompletionStatusButton from "$lib/ui/components/buttons/CompletionStatusButton.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
+	import SolidChip from "$lib/ui/components/chip/SolidChip.svelte";
 	import Header from "$lib/ui/components/header/Header.svelte";
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
@@ -14,6 +15,7 @@
 	import { onMount, tick } from "svelte";
 	import { cubicInOut } from "svelte/easing";
 	import { fade } from "svelte/transition";
+	import GameInfoSection from "./page/components/GameInfoSection.svelte";
 	import { GameAggregateStore } from "./page/game-aggregate-store.svelte.js";
 
 	const { params } = $props();
@@ -46,7 +48,14 @@
 	});
 </script>
 
-<Header class="bg-transparent shadow-none fixed inset-x-0 top-0 z-20">
+<Header
+	class={[
+		"transition-colors-default fixed inset-x-0 top-0 z-20 border-b",
+		showHeaderTitle
+			? "bg-background-1 shadow border-b-neutral-700/60"
+			: "bg-transparent shadow-none border-b-transparent",
+	]}
+>
 	<div class="absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/60 to-transparent"></div>
 	<div class="relative mr-auto w-fit pointer-events-auto flex items-center gap-1">
 		<LightButton
@@ -60,7 +69,7 @@
 		</LightButton>
 		{#if showHeaderTitle}
 			<p
-				class={["font-semibold leading-tight text-lg truncate max-w-[50dvw]"]}
+				class={["font-semibold leading-tight text-lg truncate max-w-[70dvw]"]}
 				transition:fade={{ duration: 150, easing: cubicInOut }}
 			>
 				{gameStore.game?.Name}
@@ -120,23 +129,23 @@
 								{gameStore.game.Name}
 							</h1>
 
-							<span class="text-sm">
-								<span class="text-foreground/60">
-									{gameStore.game.ReleaseDate?.getFullYear()}
-								</span>
-								{#if gameStore.developers.length > 0 || gameStore.publishers.length > 0}
-									•
-									<span class="font-bold text-foreground/60">
-										{[gameStore.developers.at(0)?.Name, gameStore.publishers.at(0)?.Name].join(
-											", ",
-										)}
+							{#if gameStore.game.ReleaseDate || gameStore.getCompaniesSummary().length > 0}
+								<span class="text-sm">
+									<span class="text-foreground/60">
+										{gameStore.game.ReleaseDate?.getFullYear()}
 									</span>
-								{/if}
-							</span>
+									{#if gameStore.game.ReleaseDate && gameStore.getCompaniesSummary().length > 0}
+										•
+									{/if}
+									<span class="font-bold text-foreground/60">
+										{gameStore.getCompaniesSummary()}
+									</span>
+								</span>
+							{/if}
 						</div>
 					</div>
 				</div>
-				<div class="px-6 pt-24 pb-8 flex flex-col gap-4 z-3">
+				<div class="px-6 pt-24 pb-120 flex flex-col gap-4 z-3">
 					<div class="flex items-start">
 						{#if gameStore.completionStatus}
 							<CompletionStatusButton completionStatus={gameStore.completionStatus} />
@@ -144,6 +153,42 @@
 					</div>
 
 					<SolidButton>Journal</SolidButton>
+
+					<GameInfoSection title="Play State">
+						<div class="flex items-center gap-2 flex-nowrap min-w-0">
+							<SolidChip variant={gameStore.game.IsInstalled ? "success" : "neutral"}>
+								<span
+									class={[
+										"size-2 rounded-full",
+										gameStore.game.IsInstalled ? "bg-success-bg" : "bg-foreground/40",
+									]}
+								></span>
+
+								{gameStore.game.IsInstalled ? "Installed" : "Not installed"}
+							</SolidChip>
+
+							{#if gameStore.game.IsInstalled}
+								{#if gameStore.game.InstallDirectory}
+									<SolidChip
+										class="bg-background-1! text-foreground/80! min-w-0 flex-1"
+										title={gameStore.game.InstallDirectory}
+									>
+										📂
+										<span class="truncate">
+											{gameStore.game.InstallDirectory}
+										</span>
+									</SolidChip>
+								{:else}
+									<SolidChip
+										variant="warning"
+										class="min-w-0 flex-1"
+									>
+										<span class="truncate">⚠ Install path unavailable</span>
+									</SolidChip>
+								{/if}
+							{/if}
+						</div>
+					</GameInfoSection>
 				</div>
 			{/if}
 		{/await}
