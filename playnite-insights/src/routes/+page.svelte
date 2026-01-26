@@ -20,7 +20,7 @@
 		SearchIcon,
 		SettingsIcon,
 	} from "@lucide/svelte";
-	import { onMount } from "svelte";
+	import { onMount, tick } from "svelte";
 
 	const api = getClientApiContext();
 	const gamePager = new GameLibraryPager({ api });
@@ -43,7 +43,10 @@
 			},
 		);
 
-		if (sentinel) observer.observe(sentinel);
+		void (async () => {
+			await tick();
+			if (sentinel) observer.observe(sentinel);
+		})();
 
 		return () => observer.disconnect();
 	});

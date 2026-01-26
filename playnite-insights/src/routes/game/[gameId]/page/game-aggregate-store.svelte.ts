@@ -26,7 +26,7 @@ export class GameAggregateStore {
 	}
 
 	private loadPublishersAsync = async () => {
-		if (!this.game) return;
+		if (!this.game || this.game.Publishers.length === 0) return;
 
 		const { companies } = await this.api().GameLibrary.Query.GetCompaniesByIds.executeAsync({
 			companyIds: this.game.Publishers,
@@ -35,29 +35,29 @@ export class GameAggregateStore {
 	};
 
 	private loadDevelopersAsync = async () => {
-		if (!this.game) return;
+		if (!this.game || this.game.Developers.length === 0) return;
 
 		const { companies } = await this.api().GameLibrary.Query.GetCompaniesByIds.executeAsync({
-			companyIds: this.game.Publishers,
+			companyIds: this.game.Developers,
 		});
 		this.developers = companies;
 	};
 
 	private loadCompletionStatusAsync = async () => {
-		if (!this.game) return;
+		if (!this.game || !this.game.CompletionStatusId) return;
 
-		if (this.game.CompletionStatusId) {
-			const { completionStatuses } =
-				await this.api().GameLibrary.Query.GetCompletionStatusesByIds.executeAsync({
-					completionStatusesIds: [this.game.CompletionStatusId],
-				});
-			this.completionStatus = completionStatuses.at(0) ?? null;
-		}
+		const { completionStatuses } =
+			await this.api().GameLibrary.Query.GetCompletionStatusesByIds.executeAsync({
+				completionStatusesIds: [this.game.CompletionStatusId],
+			});
+		this.completionStatus = completionStatuses.at(0) ?? null;
 	};
 
 	initAsync = async () => {
+		const gameId = this.gameId();
+
 		const { games } = await this.api().GameLibrary.Query.GetGamesByIds.executeAsync({
-			gameIds: [this.gameId()],
+			gameIds: [gameId],
 		});
 
 		this.game = games.at(0) ?? null;
