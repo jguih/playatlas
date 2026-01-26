@@ -11,6 +11,7 @@
 	import Main from "$lib/ui/components/Main.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
 	import { GameAssets } from "$lib/ui/state";
+	import { PlaytimeFormatter } from "$lib/ui/utils";
 	import { ArrowLeftIcon, ClockIcon, NotebookPenIcon } from "@lucide/svelte";
 	import { onMount, tick } from "svelte";
 	import { cubicInOut } from "svelte/easing";
@@ -19,14 +20,16 @@
 	import ActionButtonLabel from "./page/components/ActionButtonLabel.svelte";
 	import CompletionStatusButton from "./page/components/CompletionStatusButton.svelte";
 	import GameInfoSection from "./page/components/GameInfoSection.svelte";
-	import { GameAggregateStore } from "./page/game-aggregate-store.svelte.js";
+	import { GameAggregateStore } from "./page/game-aggregate-store.svelte";
+	import { GameViewModel } from "./page/game-view-model.svelte";
 
 	const { params } = $props();
-	const gameId = () => params.gameId;
+	const getGameId = () => params.gameId;
 
 	const api = getClientApiContext();
-	const gameStore = new GameAggregateStore({ api, gameId });
-	const initPromise = gameStore.initAsync();
+	const store = new GameAggregateStore({ api, getGameId });
+	const vm = new GameViewModel({ gameAggregateStore: store });
+	const initPromise = store.initAsync();
 	let heroTitleEl: HTMLElement | undefined = $state();
 	let showHeaderTitle = $state(false);
 
@@ -75,7 +78,7 @@
 				class={["font-semibold leading-tight text-lg truncate max-w-[70dvw]"]}
 				transition:fade={{ duration: 150, easing: cubicInOut }}
 			>
-				{gameStore.game?.Name}
+				{store.game?.Name}
 			</p>
 		{/if}
 	</div>
@@ -86,16 +89,16 @@
 		{#await initPromise}
 			<Spinner size="lg" />
 		{:then}
-			{#if !gameStore.game}
+			{#if !store.game}
 				<p class="text-error-light-fg">Game not found</p>
 			{:else}
 				<div class="relative">
 					<div class="h-[50dvh] w-full overflow-hidden">
 						<img
 							src={resolve(`/api/assets/image/[...params]`, {
-								params: GameAssets.parseBackgroundImageParams(gameStore.game.BackgroundImagePath),
+								params: GameAssets.parseBackgroundImageParams(store.game.BackgroundImagePath),
 							})}
-							alt={`Background of ${gameStore.game.Name}`}
+							alt={`Background of ${store.game.Name}`}
 							loading="eager"
 							decoding="sync"
 							fetchpriority="high"
@@ -116,9 +119,9 @@
 						<div class="relative min-w-40 max-w-40 aspect-2/3">
 							<img
 								src={resolve(`/api/assets/image/[...params]`, {
-									params: GameAssets.parseCoverImageParams(gameStore.game.CoverImagePath),
+									params: GameAssets.parseCoverImageParams(store.game.CoverImagePath),
 								})}
-								alt={`Cover of ${gameStore.game.Name}`}
+								alt={`Cover of ${store.game.Name}`}
 								loading="eager"
 								decoding="sync"
 								fetchpriority="high"
@@ -127,7 +130,7 @@
 
 							<div class="absolute right-2 bottom-2">
 								<SyncStateChip
-									{...gameStore.game.Sync}
+									{...store.game.Sync}
 									class="text-xs!"
 								/>
 							</div>
@@ -138,19 +141,19 @@
 							bind:this={heroTitleEl}
 						>
 							<h1 class="text-2xl font-semibold leading-tight drop-shadow-md mb-1">
-								{gameStore.game.Name}
+								{store.game.Name}
 							</h1>
 
-							{#if gameStore.game.ReleaseDate || gameStore.getCompaniesSummary().length > 0}
+							{#if store.game.ReleaseDate || vm.getCompaniesSummary().length > 0}
 								<span class="text-sm">
 									<span class="text-foreground/60">
-										{gameStore.game.ReleaseDate?.getFullYear()}
+										{store.game.ReleaseDate?.getFullYear()}
 									</span>
-									{#if gameStore.game.ReleaseDate && gameStore.getCompaniesSummary().length > 0}
+									{#if store.game.ReleaseDate && vm.getCompaniesSummary().length > 0}
 										•
 									{/if}
 									<span class="font-bold text-foreground/60">
-										{gameStore.getCompaniesSummary()}
+										{vm.getCompaniesSummary()}
 									</span>
 								</span>
 							{/if}
@@ -158,10 +161,10 @@
 					</div>
 				</div>
 
-				<div class="px-6 pt-24 pb-6 flex flex-col gap-4 z-3">
+				<div class="px-6 pt-24 pb-6 flex flex-col gap-6 z-3">
 					<div class="flex justify-between">
-						{#if gameStore.completionStatus}
-							<CompletionStatusButton completionStatus={gameStore.completionStatus} />
+						{#if store.completionStatus}
+							<CompletionStatusButton completionStatus={store.completionStatus} />
 						{/if}
 						<ActionButtonContainer>
 							<SolidButton
@@ -190,26 +193,26 @@
 						class="flex gap-2 flex-col"
 					>
 						<div class="flex items-center gap-2 flex-nowrap min-w-0">
-							<SolidChip variant={gameStore.game.IsInstalled ? "success" : "neutral"}>
+							<SolidChip variant={store.game.IsInstalled ? "success" : "neutral"}>
 								<span
 									class={[
 										"size-2 rounded-full",
-										gameStore.game.IsInstalled ? "bg-success-bg" : "bg-foreground/40",
+										store.game.IsInstalled ? "bg-success-bg" : "bg-foreground/40",
 									]}
 								></span>
 
-								{gameStore.game.IsInstalled ? "Installed" : "Not installed"}
+								{store.game.IsInstalled ? "Installed" : "Not installed"}
 							</SolidChip>
 
-							{#if gameStore.game.IsInstalled}
-								{#if gameStore.game.InstallDirectory}
+							{#if store.game.IsInstalled}
+								{#if store.game.InstallDirectory}
 									<SolidChip
 										class="bg-background-1! text-foreground/80! min-w-0 flex-1"
-										title={gameStore.game.InstallDirectory}
+										title={store.game.InstallDirectory}
 									>
 										📂
 										<span class="truncate">
-											{gameStore.game.InstallDirectory}
+											{store.game.InstallDirectory}
 										</span>
 									</SolidChip>
 								{:else}
@@ -222,6 +225,52 @@
 								{/if}
 							{/if}
 						</div>
+					</GameInfoSection>
+
+					{#snippet detailSection(label: string, value?: string)}
+						<div class="flex justify-between gap-4">
+							<span class="text-foreground/80 font-medium">{label}</span>
+							<span class="font-medium text-end">{value}</span>
+						</div>
+					{/snippet}
+
+					<GameInfoSection
+						title="Activity"
+						class="flex gap-2 flex-col"
+					>
+						{@render detailSection("Last Played", store.game.LastActivity?.toLocaleDateString())}
+						{@render detailSection(
+							"Playtime",
+							PlaytimeFormatter.toHoursMinutesSeconds(store.game.Playtime),
+						)}
+					</GameInfoSection>
+
+					<GameInfoSection
+						title="Details"
+						class="flex gap-2 flex-col"
+					>
+						{@render detailSection("Released", store.game.ReleaseDate?.toLocaleDateString())}
+						{@render detailSection("Added", store.game.Added?.toLocaleDateString())}
+						{@render detailSection("Hidden", store.game.Hidden ? "Yes" : "No")}
+						{@render detailSection("Developers", vm.getDevelopersString())}
+						{@render detailSection("Publishers", vm.getPublishersString())}
+					</GameInfoSection>
+
+					<GameInfoSection
+						title="Synchronization"
+						class="flex gap-2 flex-col"
+					>
+						<div class="flex justify-between gap-2">
+							<span class="text-foreground/80 font-medium">Status</span>
+							<SyncStateChip
+								{...store.game.Sync}
+								collapseText={false}
+							/>
+						</div>
+						{#if store.game.Sync.Status === "error"}
+							{@render detailSection("Error Message", store.game.Sync.ErrorMessage ?? "")}
+						{/if}
+						{@render detailSection("Last Sync", store.game.Sync.LastSyncedAt.toLocaleString())}
 					</GameInfoSection>
 				</div>
 			{/if}

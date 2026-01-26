@@ -3,21 +3,21 @@ import type { Company, CompletionStatus, Game, GameId } from "$lib/modules/game-
 
 type GameAggregateStoreDeps = {
 	api: ClientApiGetter;
-	gameId: () => GameId;
+	getGameId: () => GameId;
 };
 
 export class GameAggregateStore {
 	private readonly api: ClientApiGetter;
-	private readonly gameId: () => GameId;
+	private readonly getGameId: () => GameId;
 
 	game: Game | null;
 	completionStatus: CompletionStatus | null;
 	developers: Company[];
 	publishers: Company[];
 
-	constructor({ api, gameId }: GameAggregateStoreDeps) {
+	constructor({ api, getGameId }: GameAggregateStoreDeps) {
 		this.api = api;
-		this.gameId = gameId;
+		this.getGameId = getGameId;
 
 		this.game = $state(null);
 		this.completionStatus = $state(null);
@@ -54,7 +54,7 @@ export class GameAggregateStore {
 	};
 
 	initAsync = async () => {
-		const gameId = this.gameId();
+		const gameId = this.getGameId();
 
 		const { games } = await this.api().GameLibrary.Query.GetGamesByIds.executeAsync({
 			gameIds: [gameId],
@@ -69,18 +69,5 @@ export class GameAggregateStore {
 			this.loadDevelopersAsync(),
 			this.loadPublishersAsync(),
 		]);
-	};
-
-	getCompaniesSummary = (): string => {
-		const firstDev = this.developers.at(0);
-		const firstPublisher = this.publishers.at(0);
-
-		if (firstDev?.Id === firstPublisher?.Id) return firstDev?.Name ?? "";
-
-		if (firstDev && firstPublisher) return [firstDev.Name, firstPublisher.Name].join(", ");
-
-		if (firstDev) return firstDev.Name;
-
-		return firstPublisher?.Name ?? "";
 	};
 }

@@ -8,7 +8,11 @@
 	import SolidChip from "./SolidChip.svelte";
 	import type { ChipProps } from "./chip.types";
 
-	const { Status, ...props }: EntitySyncStateProps & ChipProps = $props();
+	const {
+		Status,
+		collapseText = true,
+		...props
+	}: EntitySyncStateProps & ChipProps & { collapseText?: boolean } = $props();
 
 	let showText: boolean = $state(true);
 	let textEl: HTMLElement | undefined = $state();
@@ -21,6 +25,8 @@
 	};
 
 	onMount(() => {
+		if (!collapseText) return;
+
 		const observer = new IntersectionObserver(
 			([entry]) => {
 				if (entry.isIntersecting) {
