@@ -7,4 +7,4 @@ export type ICompletionStatusRepositoryPort = IEntityRepositoryPort<
 	CompletionStatusId,
 	CompletionStatus,
 	CompletionStatusRepositoryFilters
-> & {};
+>;

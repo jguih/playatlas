@@ -1,3 +1,6 @@
+import type { ILogServicePort } from "@playatlas/common/application";
+import type { SyncCursor } from "@playatlas/common/common";
+import type { IClockPort } from "@playatlas/common/infra";
 import type { IGenreMapperPort } from "../../application";
 import type { GenreResponseDto } from "../../dtos/genre.response.dto";
 import type { IGenreRepositoryPort } from "../../infra/genre.repository.port";
@@ -5,8 +8,8 @@ import type { IGenreRepositoryPort } from "../../infra/genre.repository.port";
 export type GetAllGenresQueryHandlerDeps = {
 	genreRepository: IGenreRepositoryPort;
 	genreMapper: IGenreMapperPort;
+	logService: ILogServicePort;
+	clock: IClockPort;
 };
 
-export type GetAllGenresQueryResult =
-	| { type: "not_modified" }
-	| { type: "ok"; data: GenreResponseDto[]; etag: string };
+export type GetAllGenresQueryResult = { data: GenreResponseDto[]; nextCursor: SyncCursor };

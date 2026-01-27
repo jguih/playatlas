@@ -1,3 +1,5 @@
+import type { SyncCursor } from "@playatlas/common/common";
+
 export type GetAllGenresQuery = {
-	ifNoneMatch?: string | null;
+	lastCursor?: SyncCursor | null;
 };

@@ -16,6 +16,11 @@ export const makeGenreMapper = ({ genreFactory }: GenreMapperDeps): IGenreMapper
 		const dto: GenreResponseDto = {
 			Id: entity.getId(),
 			Name: entity.getName(),
+			Sync: {
+				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
+				DeletedAt: entity.getDeletedAt()?.toISOString() ?? null,
+				DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,
+			},
 		};
 		return dto;
 	};

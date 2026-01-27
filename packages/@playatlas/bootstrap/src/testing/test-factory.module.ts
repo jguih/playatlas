@@ -3,6 +3,7 @@ import {
 	makeExtensionRegistrationFactory,
 	type ExtensionRegistrationFactory,
 } from "@playatlas/auth/testing";
+import type { IClockPort } from "@playatlas/common/infra";
 import type {
 	ICompanyFactoryPort,
 	ICompletionStatusFactoryPort,
@@ -42,6 +43,7 @@ export type TestFactoryModuleDeps = {
 	platformFactory: IPlatformFactoryPort;
 	genreFactory: IGenreFactoryPort;
 	extensionRegistrationFactory: IExtensionRegistrationFactoryPort;
+	clock: IClockPort;
 };
 
 export const makeTestFactoryModule = (deps: TestFactoryModuleDeps): ITestFactoryModulePort => {

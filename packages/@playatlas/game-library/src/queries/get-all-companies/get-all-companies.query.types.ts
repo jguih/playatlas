@@ -1,4 +1,5 @@
 import type { ILogServicePort } from "@playatlas/common/application";
+import type { SyncCursor } from "@playatlas/common/common";
 import type { IClockPort } from "@playatlas/common/infra";
 import type { ICompanyMapperPort } from "../../application";
 import type { CompanyResponseDto } from "../../dtos/company.response.dto";
@@ -12,6 +13,6 @@ export type GetAllCompaniesQueryHandlerDeps = {
 };
 
 export type GetAllCompaniesQueryResult = {
-	nextCursor: string;
+	nextCursor: SyncCursor;
 	data: CompanyResponseDto[];
 };

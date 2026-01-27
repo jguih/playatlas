@@ -114,6 +114,8 @@ export const makeGameLibraryModule = ({
 	const queryHandlerGetAllGenres = makeGetAllGenresQueryHandler({
 		genreRepository,
 		genreMapper,
+		logService: buildLog("GetAllGenresQueryHandler"),
+		clock,
 	});
 
 	const gameAssetsContextFactory = makeGameAssetsContextFactory({

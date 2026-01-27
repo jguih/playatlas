@@ -10,17 +10,14 @@ export class GameLibrarySyncState implements IGameLibrarySyncStatePort {
 		return `${LAST_SERVER_SYNC_KEY_PREFIX}.${target}`;
 	};
 
-	getLastServerSync: IGameLibrarySyncStatePort["getLastServerSync"] = (target) => {
-		const raw = localStorage.getItem(this.getKey(target));
-
-		if (!raw) return new Date(0);
-
-		const date = new Date(raw);
-
-		return Number.isNaN(date.getTime()) ? new Date(0) : date;
+	getLastServerSyncCursor: IGameLibrarySyncStatePort["getLastServerSyncCursor"] = (target) => {
+		return localStorage.getItem(this.getKey(target));
 	};
 
-	setLastServerSync: IGameLibrarySyncStatePort["setLastServerSync"] = (target, date) => {
-		localStorage.setItem(this.getKey(target), date.toISOString());
+	setLastServerSyncCursor: IGameLibrarySyncStatePort["setLastServerSyncCursor"] = (
+		target,
+		cursor,
+	) => {
+		localStorage.setItem(this.getKey(target), cursor);
 	};
 }

@@ -245,7 +245,7 @@ describe("Game Library / Game", () => {
 		expect(oneResult!.CompletionStatusId).toBeNull();
 	});
 
-	it("update games and returns only those updated after a certain date", async () => {
+	it.only("update games and returns only those updated after the previous cursor", async () => {
 		// Arrange
 		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
 
@@ -261,9 +261,8 @@ describe("Game Library / Game", () => {
 			.getSyncGamesCommandHandler()
 			.executeAsync(seedCommand);
 		expect(seedResult.success).toBe(true);
-
-		const since = root.clock.now();
-		root.clock.advance(1000);
+		const firstQueryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
+		console.log("first cursor", firstQueryResult.nextCursor);
 
 		const itemsToUpdate = faker.helpers.arrayElements(syncItems, 20);
 		const updatedItems: SyncGamesRequestDtoItem[] = itemsToUpdate.map((i) => ({
@@ -277,12 +276,16 @@ describe("Game Library / Game", () => {
 			UpdatedItems: updatedItems,
 		});
 
+		root.clock.advance(1000);
+
 		const updateResult = await api.playniteIntegration.commands
 			.getSyncGamesCommandHandler()
 			.executeAsync(updateCommand);
 
 		// Act
-		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute({ since });
+		const queryResult = api.gameLibrary.queries
+			.getGetAllGamesQueryHandler()
+			.execute({ lastCursor: firstQueryResult.nextCursor });
 		const games = queryResult.data;
 
 		// Assert

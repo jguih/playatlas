@@ -1,3 +1,5 @@
+import type { SyncCursor } from "@playatlas/common/common";
+
 export type GetAllCompaniesQuery = {
-	since?: Date | null;
+	lastCursor?: SyncCursor | null;
 };

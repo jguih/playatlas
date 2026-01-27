@@ -15,6 +15,7 @@ export type BaseRepositoryConfig<TEntity, TPersistence, TFilters = undefined> = 
 		where: string;
 		params: Array<string | number>;
 	};
+	getOrderBy?: () => string;
 };
 
 export type BaseRepositoryDeps = {

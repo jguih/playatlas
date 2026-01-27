@@ -1,3 +1,5 @@
+import type { SyncCursor } from "@playatlas/common/common";
+
 export type GetAllCompletionStatusesQuery = {
-	since?: Date | null;
+	lastCursor?: SyncCursor | null;
 };

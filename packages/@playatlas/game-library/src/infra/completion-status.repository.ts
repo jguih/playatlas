@@ -44,36 +44,15 @@ export const makeCompletionStatusRepository = ({
 			return { where: "", params };
 		}
 
-		if (filters.lastUpdatedAt !== undefined) {
-			for (const startTimeFilter of filters.lastUpdatedAt) {
-				switch (startTimeFilter.op) {
-					case "between": {
-						where.push(`LastUpdatedAt >= (?) AND LastUpdatedAt < (?)`);
-						params.push(startTimeFilter.start.toISOString(), startTimeFilter.end.toISOString());
-						break;
-					}
-					case "eq": {
-						where.push(`LastUpdatedAt = (?)`);
-						params.push(startTimeFilter.value.toISOString());
-						break;
-					}
-					case "gte": {
-						where.push(`LastUpdatedAt > (?)`);
-						params.push(startTimeFilter.value.toISOString());
-						break;
-					}
-					case "lte": {
-						where.push(`LastUpdatedAt < (?)`);
-						params.push(startTimeFilter.value.toISOString());
-						break;
-					}
-					case "overlaps": {
-						where.push(`LastUpdatedAt < (?) AND LastUpdatedAt >= (?)`);
-						params.push(startTimeFilter.end.toISOString(), startTimeFilter.start.toISOString());
-						break;
-					}
-				}
-			}
+		if (filters.syncCursor) {
+			const syncCursor = filters.syncCursor;
+
+			where.push(`(LastUpdatedAt > ? OR (LastUpdatedAt = ? AND Id > ?))`);
+			params.push(
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.id,
+			);
 		}
 
 		return {
@@ -93,6 +72,7 @@ export const makeCompletionStatusRepository = ({
 			mapper: completionStatusMapper,
 			modelSchema: completionStatusSchema,
 			getWhereClauseAndParamsFromFilters,
+			getOrderBy: () => `ORDER BY LastUpdatedAt ASC, Id ASC`,
 		},
 	});
 

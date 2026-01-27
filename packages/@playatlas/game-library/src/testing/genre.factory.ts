@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { GenreIdParser } from "@playatlas/common/domain";
+import type { IClockPort } from "@playatlas/common/infra";
 import type { TestEntityFactory } from "@playatlas/common/testing";
 import type { IGenreFactoryPort } from "../application";
 import { type Genre } from "../domain/genre.entity";
@@ -9,11 +10,12 @@ export type GenreFactory = TestEntityFactory<MakeGenreProps, Genre>;
 
 export type GenreFactoryDeps = {
 	genreFactory: IGenreFactoryPort;
+	clock: IClockPort;
 };
 
-export const makeGenreFactory = ({ genreFactory }: GenreFactoryDeps): GenreFactory => {
+export const makeGenreFactory = ({ genreFactory, clock }: GenreFactoryDeps): GenreFactory => {
 	const build: GenreFactory["build"] = (props = {}) => {
-		const recent = faker.date.recent();
+		const recent = clock.now();
 
 		return genreFactory.create({
 			id: GenreIdParser.fromExternal(props.id ?? faker.string.uuid()),

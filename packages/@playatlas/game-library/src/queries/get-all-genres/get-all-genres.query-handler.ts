@@ -1,5 +1,5 @@
-import type { QueryHandler } from "@playatlas/common/common";
-import { createHashForObject } from "@playatlas/common/infra";
+import { computeNextSyncCursor, type QueryHandler } from "@playatlas/common/common";
+import type { GenreRepositoryFilters } from "../../infra/genre.repository.types";
 import type { GetAllGenresQuery } from "./get-all-genres.query";
 import type {
 	GetAllGenresQueryHandlerDeps,
@@ -14,24 +14,33 @@ export type IGetAllGenresQueryHandlerPort = QueryHandler<
 export const makeGetAllGenresQueryHandler = ({
 	genreRepository,
 	genreMapper,
+	logService,
+	clock,
 }: GetAllGenresQueryHandlerDeps): IGetAllGenresQueryHandlerPort => {
 	return {
-		execute: ({ ifNoneMatch } = {}) => {
-			const genres = genreRepository.all();
+		execute: ({ lastCursor } = {}) => {
+			const filters: GenreRepositoryFilters | undefined = lastCursor
+				? {
+						syncCursor: lastCursor,
+					}
+				: undefined;
 
-			if (!genres || genres.length === 0) {
-				return { type: "ok", data: [], etag: '"empty"' };
+			const genres = genreRepository.all(filters);
+
+			if (lastCursor) {
+				const elapsedMs = clock.now().getTime() - lastCursor.lastUpdatedAt.getTime();
+				const elapsedSeconds = Math.floor(elapsedMs / 1000);
+				logService.debug(
+					`Found ${genres.length} genres (updated since last sync: ${elapsedSeconds}s ago)`,
+				);
+			} else {
+				logService.debug(`Found ${genres.length} genres (no filters)`);
 			}
 
 			const genreDtos = genreMapper.toDtoList(genres);
-			const hash = createHashForObject(genreDtos);
-			const etag = `"${hash}"`;
+			const nextCursor = computeNextSyncCursor(genres, lastCursor);
 
-			if (ifNoneMatch === etag) {
-				return { type: "not_modified" };
-			}
-
-			return { type: "ok", data: genreDtos, etag };
+			return { data: genreDtos, nextCursor };
 		},
 	};
 };

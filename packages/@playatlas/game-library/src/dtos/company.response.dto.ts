@@ -21,7 +21,7 @@ const successResponse = z.object({
 	...defaultSuccessResponseDtoSchema.shape,
 	companies: z.array(companyResponseDtoSchema),
 	reason_code: z.enum(["companies_fetched_successfully"]),
-	nextCursor: ISODateSchema,
+	nextCursor: z.string(),
 });
 
 const failedResponse = z.object({

@@ -17,33 +17,33 @@ export class PlayAtlasClient implements IPlayAtlasClientPort {
 		this.httpClient = httpClient;
 	}
 
-	getGamesAsync: IPlayAtlasClientPort["getGamesAsync"] = async ({ sinceLastSync }) => {
+	getGamesAsync: IPlayAtlasClientPort["getGamesAsync"] = async ({ lastCursor }) => {
 		const response = await this.httpClient.getAsync({
 			endpoint: `/api/game`,
 			searchParams: {
-				sinceLastSync: sinceLastSync.toISOString(),
+				sinceLastSync: lastCursor,
 			},
 		});
 		return await zodJsonParser(getGamesResponseDtoSchema)(response);
 	};
 
 	getCompletionStatusesAsync: IPlayAtlasClientPort["getCompletionStatusesAsync"] = async ({
-		sinceLastSync,
+		lastCursor,
 	}) => {
 		const response = await this.httpClient.getAsync({
 			endpoint: `/api/completion-status`,
 			searchParams: {
-				sinceLastSync: sinceLastSync.toISOString(),
+				sinceLastSync: lastCursor,
 			},
 		});
 		return await zodJsonParser(getCompletionStatusesResponseDtoSchema)(response);
 	};
 
-	getCompaniesAsync: IPlayAtlasClientPort["getCompaniesAsync"] = async ({ sinceLastSync }) => {
+	getCompaniesAsync: IPlayAtlasClientPort["getCompaniesAsync"] = async ({ lastCursor }) => {
 		const response = await this.httpClient.getAsync({
 			endpoint: `/api/company`,
 			searchParams: {
-				sinceLastSync: sinceLastSync.toISOString(),
+				sinceLastSync: lastCursor,
 			},
 		});
 		return await zodJsonParser(getCompaniesResponseDtoSchema)(response);

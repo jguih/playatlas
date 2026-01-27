@@ -1,4 +1,5 @@
 import type { ILogServicePort } from "@playatlas/common/application";
+import type { SyncCursor } from "@playatlas/common/common";
 import type { IClockPort } from "@playatlas/common/infra";
 import type { ICompletionStatusMapperPort } from "../../application/completion-status.mapper";
 import type { CompletionStatusResponseDto } from "../../dtos/completion-status.response.dto";
@@ -13,5 +14,5 @@ export type GetAllCompletionStatusesQueryHandlerDeps = {
 
 export type GetAllCompletionStatusesQueryResult = {
 	data: CompletionStatusResponseDto[];
-	nextCursor: string;
+	nextCursor: SyncCursor;
 };

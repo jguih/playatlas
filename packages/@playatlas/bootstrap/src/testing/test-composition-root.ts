@@ -80,6 +80,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		platformFactory: gameLibrary.getPlatformFactory(),
 		genreFactory: gameLibrary.getGenreFactory(),
 		extensionRegistrationFactory: auth.getExtensionRegistrationFactory(),
+		clock,
 	});
 
 	const gameRelationshipOptions = {

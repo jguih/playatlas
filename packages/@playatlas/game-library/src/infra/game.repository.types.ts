@@ -1,4 +1,4 @@
-import type { DateFilter } from "@playatlas/common/common";
+import type { SyncCursor } from "@playatlas/common/common";
 import type { GameId } from "@playatlas/common/domain";
 import type { GameRelationship, GameRelationshipMap } from "../domain/game.entity.types";
 
@@ -18,8 +18,6 @@ export type UpdateRelationshipsForFn = {
 };
 
 export type GameFilters = {
-	query?: string;
-	installed?: boolean;
 	hidden?: boolean;
-	lastUpdatedAt?: DateFilter[];
+	syncCursor?: SyncCursor | null;
 };

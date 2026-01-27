@@ -1,5 +1,5 @@
-import type { DateFilter } from "@playatlas/common/common";
+import type { SyncCursor } from "@playatlas/common/common";
 
 export type CompanyRepositoryFilters = {
-	lastUpdatedAt?: DateFilter[];
+	syncCursor?: SyncCursor | null;
 };

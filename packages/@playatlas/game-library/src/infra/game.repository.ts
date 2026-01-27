@@ -61,8 +61,42 @@ export type GameManifestData = z.infer<typeof gameManifestDataSchema>;
 
 type GameRepositoryDeps = BaseRepositoryDeps & { gameMapper: IGameMapperPort };
 
-export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPort => {
-	const { getDb, logService, gameMapper } = deps;
+export const makeGameRepository = ({
+	getDb,
+	logService,
+	gameMapper,
+}: GameRepositoryDeps): IGameRepositoryPort => {
+	const getWhereClauseAndParamsFromFilters = (filters?: GameFilters) => {
+		const where: string[] = [];
+		const params: (string | number)[] = [];
+
+		if (!filters) {
+			return { where: "", params };
+		}
+
+		if (filters.hidden !== undefined && filters.hidden !== null) {
+			where.push(`Hidden = ?`);
+			params.push(+filters.hidden);
+		}
+
+		if (filters.syncCursor) {
+			const syncCursor = filters.syncCursor;
+
+			where.push(`(LastUpdatedAt > ? OR (LastUpdatedAt = ? AND Id > ?))`);
+			params.push(
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.id,
+			);
+		}
+
+		return {
+			where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
+			params,
+		};
+	};
+
+	const getOrderBy = () => `ORDER BY LastUpdatedAt ASC, Id ASC`;
 
 	const base = makeBaseRepository({
 		getDb,
@@ -74,69 +108,10 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 			updateColumns: COLUMNS.filter((c) => c !== "Id"),
 			mapper: gameMapper,
 			modelSchema: gameSchema,
+			getWhereClauseAndParamsFromFilters,
+			getOrderBy,
 		},
 	});
-
-	const _getWhereClauseAndParamsFromFilters = (filters?: GameFilters) => {
-		const where: string[] = [];
-		const params: (string | number)[] = [];
-
-		if (!filters) {
-			return { where: "", params };
-		}
-
-		if (filters.query !== undefined) {
-			where.push(`LOWER(Name) LIKE ?`);
-			params.push(`%${filters.query.toLowerCase()}%`);
-		}
-
-		if (filters.installed !== undefined) {
-			where.push(`IsInstalled = ?`);
-			params.push(+filters.installed);
-		}
-
-		if (filters.hidden !== undefined) {
-			where.push(`Hidden = ?`);
-			params.push(+filters.hidden);
-		}
-
-		if (filters.lastUpdatedAt !== undefined) {
-			for (const startTimeFilter of filters.lastUpdatedAt) {
-				switch (startTimeFilter.op) {
-					case "between": {
-						where.push(`LastUpdatedAt >= (?) AND LastUpdatedAt < (?)`);
-						params.push(startTimeFilter.start.toISOString(), startTimeFilter.end.toISOString());
-						break;
-					}
-					case "eq": {
-						where.push(`LastUpdatedAt = (?)`);
-						params.push(startTimeFilter.value.toISOString());
-						break;
-					}
-					case "gte": {
-						where.push(`LastUpdatedAt > (?)`);
-						params.push(startTimeFilter.value.toISOString());
-						break;
-					}
-					case "lte": {
-						where.push(`LastUpdatedAt < (?)`);
-						params.push(startTimeFilter.value.toISOString());
-						break;
-					}
-					case "overlaps": {
-						where.push(`LastUpdatedAt < (?) AND LastUpdatedAt >= (?)`);
-						params.push(startTimeFilter.end.toISOString(), startTimeFilter.start.toISOString());
-						break;
-					}
-				}
-			}
-		}
-
-		return {
-			where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
-			params,
-		};
-	};
 
 	const _updateRelationshipFor: UpdateRelationshipsForFn = ({
 		gameId,
@@ -241,7 +216,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
             COUNT(*) AS Total
           FROM ${TABLE_NAME} pg
         `;
-			const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
+			const { where, params } = getWhereClauseAndParamsFromFilters(filters);
 			query += where;
 			const total = (db.prepare(query).get(...params)?.Total as number) ?? 0;
 
@@ -365,7 +340,7 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 	const getTotalPlaytimeSeconds: IGameRepositoryPort["getTotalPlaytimeSeconds"] = (filters) => {
 		return base.run(({ db }) => {
 			let query = `SELECT SUM(Playtime) as totalPlaytimeSeconds FROM ${TABLE_NAME} `;
-			const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
+			const { where, params } = getWhereClauseAndParamsFromFilters(filters);
 			query += where;
 			const stmt = db.prepare(query);
 			const result = stmt.get(...params);
@@ -378,10 +353,10 @@ export const makeGameRepository = (deps: GameRepositoryDeps): IGameRepositoryPor
 
 	const all: IGameRepositoryPort["all"] = (props = {}, filters = {}) => {
 		return base.run(({ db }) => {
-			let query = `SELECT g.* FROM ${TABLE_NAME} g `;
-			const { where, params } = _getWhereClauseAndParamsFromFilters(filters);
+			let query = `SELECT * FROM ${TABLE_NAME} `;
+			const { where, params } = getWhereClauseAndParamsFromFilters(filters);
 			query += where;
-			query += `ORDER BY g.Id ASC;`;
+			query += ` ${getOrderBy()}`;
 			const stmt = db.prepare(query);
 			const rows = stmt.all(...params);
 

@@ -32,6 +32,7 @@ export const makeBaseRepository = <
 		modelSchema,
 		autoIncrementId = false,
 		getWhereClauseAndParamsFromFilters,
+		getOrderBy,
 	} = config;
 
 	const insertSql = `
@@ -178,7 +179,7 @@ export const makeBaseRepository = <
 			let query = getAllSql;
 			const params = getWhereClauseAndParamsFromFilters?.(filters);
 			query += params?.where ?? "";
-			query += ` ORDER BY ${String(idColumn)} DESC;`;
+			query += getOrderBy ? ` ${getOrderBy()}` : ` ORDER BY ${String(idColumn)} ASC;`;
 			const stmt = db.prepare(query);
 			const result = stmt.all(...(params?.params ?? []));
 

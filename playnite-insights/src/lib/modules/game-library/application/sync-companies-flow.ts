@@ -1,3 +1,4 @@
+import type { IClockPort } from "$lib/modules/common/application";
 import type { ISyncCompaniesCommandHandlerPort } from "../commands";
 import type { ICompanyMapperPort } from "./company.mapper.port";
 import type { IGameLibrarySyncStatePort } from "./game-library-sync-state.port";
@@ -9,6 +10,7 @@ export type SyncCompaniesFlowDeps = {
 	playAtlasClient: IPlayAtlasClientPort;
 	syncCompaniesCommandHandler: ISyncCompaniesCommandHandlerPort;
 	companyMapper: ICompanyMapperPort;
+	clock: IClockPort;
 };
 
 export class SyncCompaniesFlow implements ISyncCompaniesFlowPort {
@@ -16,32 +18,36 @@ export class SyncCompaniesFlow implements ISyncCompaniesFlowPort {
 	private readonly playAtlasClient: IPlayAtlasClientPort;
 	private readonly syncCompaniesCommandHandler: ISyncCompaniesCommandHandlerPort;
 	private readonly companyMapper: ICompanyMapperPort;
+	private readonly clock: IClockPort;
 
 	constructor({
 		companyMapper,
 		gameLibrarySyncState,
 		playAtlasClient,
 		syncCompaniesCommandHandler,
+		clock,
 	}: SyncCompaniesFlowDeps) {
 		this.gameLibrarySyncState = gameLibrarySyncState;
 		this.playAtlasClient = playAtlasClient;
 		this.syncCompaniesCommandHandler = syncCompaniesCommandHandler;
 		this.companyMapper = companyMapper;
+		this.clock = clock;
 	}
 
 	executeAsync: ISyncCompaniesFlowPort["executeAsync"] = async () => {
-		const lastSync = this.gameLibrarySyncState.getLastServerSync("companies");
+		const now = this.clock.now();
+		const lastCursor = this.gameLibrarySyncState.getLastServerSyncCursor("companies");
 
 		const response = await this.playAtlasClient.getCompaniesAsync({
-			sinceLastSync: lastSync,
+			lastCursor,
 		});
 
 		if (!response.success) return;
 
-		const companies = response.companies.map((g) => this.companyMapper.toDomain(g, lastSync));
+		const companies = response.companies.map((g) => this.companyMapper.toDomain(g, now));
 
 		await this.syncCompaniesCommandHandler.executeAsync({ companies });
 
-		this.gameLibrarySyncState.setLastServerSync("companies", new Date(response.nextCursor));
+		this.gameLibrarySyncState.setLastServerSyncCursor("companies", response.nextCursor);
 	};
 }

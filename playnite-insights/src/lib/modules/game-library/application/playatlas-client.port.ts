@@ -7,7 +7,7 @@ import type { Genre } from "../domain/genre.entity";
 import type { Platform } from "../domain/platform.entity";
 
 export type CommonProps = {
-	sinceLastSync: Date;
+	lastCursor: string | null;
 };
 
 export interface IPlayAtlasClientPort {

@@ -1,5 +1,4 @@
-import type { QueryHandler } from "@playatlas/common/common";
-import type { CompanyResponseDto } from "../../dtos/company.response.dto";
+import { computeNextSyncCursor, type QueryHandler } from "@playatlas/common/common";
 import type { CompanyRepositoryFilters } from "../../infra/company.repository.types";
 import type { GetAllCompaniesQuery } from "./get-all-companies.query";
 import type {
@@ -18,31 +17,18 @@ export const makeGetAllCompaniesQueryHandler = ({
 	logService,
 	clock,
 }: GetAllCompaniesQueryHandlerDeps): IGetAllCompaniesQueryHandlerPort => {
-	const computeNextCursor = (dtos: CompanyResponseDto[], since?: Date | null): Date => {
-		const baseCursor = since ?? new Date(0);
-
-		if (dtos.length === 0) {
-			return baseCursor;
-		}
-
-		return dtos.reduce<Date>((latest, completionStatus) => {
-			const updatedAt = new Date(completionStatus.Sync.LastUpdatedAt);
-			return updatedAt > latest ? updatedAt : latest;
-		}, baseCursor);
-	};
-
 	return {
-		execute: ({ since } = {}) => {
-			const filters: CompanyRepositoryFilters | undefined = since
+		execute: ({ lastCursor } = {}) => {
+			const filters: CompanyRepositoryFilters | undefined = lastCursor
 				? {
-						lastUpdatedAt: [{ op: "gte", value: since }],
+						syncCursor: lastCursor,
 					}
 				: undefined;
 
 			const companies = companyRepository.all(filters);
 
-			if (since) {
-				const elapsedMs = clock.now().getTime() - since.getTime();
+			if (lastCursor) {
+				const elapsedMs = clock.now().getTime() - lastCursor.lastUpdatedAt.getTime();
 				const elapsedSeconds = Math.floor(elapsedMs / 1000);
 				logService.debug(
 					`Found ${companies.length} companies (updated since last sync: ${elapsedSeconds}s ago)`,
@@ -52,7 +38,7 @@ export const makeGetAllCompaniesQueryHandler = ({
 			}
 
 			const companyDtos = companyMapper.toDtoList(companies);
-			const nextCursor = computeNextCursor(companyDtos, since).toISOString();
+			const nextCursor = computeNextSyncCursor(companies, lastCursor);
 
 			return { data: companyDtos, nextCursor };
 		},

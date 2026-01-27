@@ -1,3 +1,5 @@
+import type { SyncCursor } from "@playatlas/common/common";
+
 export type GetAllGamesQuery = {
-	since?: Date | null;
+	lastCursor?: SyncCursor | null;
 };

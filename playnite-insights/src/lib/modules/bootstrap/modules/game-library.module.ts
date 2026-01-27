@@ -119,6 +119,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			gameMapper: this.gameMapper,
 			playAtlasClient: this.playAtlasClient,
 			syncGamesCommandHandler: this.syncGamesCommandHandler,
+			clock,
 		});
 
 		this.genreRepository = new GenreRepository({ dbSignal });
@@ -145,6 +146,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			gameLibrarySyncState: this.gameLibrarySyncState,
 			playAtlasClient: this.playAtlasClient,
 			syncCompaniesCommandHandler: this.syncCompaniesCommandHandler,
+			clock,
 		});
 
 		this.platformRepository = new PlatformRepository({ dbSignal });
@@ -168,6 +170,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			completionStatusMapper: this.completionStatusMapper,
 			playAtlasClient: this.playAtlasClient,
 			syncCompletionStatusesCommandHandler: this.syncCompletionStatusesCommandHandler,
+			clock,
 		});
 
 		this.gameLibrarySyncManager = new GameLibrarySyncManager({

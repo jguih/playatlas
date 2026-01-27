@@ -1,4 +1,5 @@
 import type { ILogServicePort } from "@playatlas/common/application";
+import type { SyncCursor } from "@playatlas/common/common";
 import type { IClockPort } from "@playatlas/common/infra";
 import type { IGameMapperPort } from "../../application";
 import type { PlayniteProjectionResponseDto } from "../../dtos/game.response.dto";
@@ -13,5 +14,5 @@ export type GetAllGamesQueryHandlerDeps = {
 
 export type GetAllGamesQueryResult = {
 	data: PlayniteProjectionResponseDto[];
-	nextCursor: string;
+	nextCursor: SyncCursor;
 };

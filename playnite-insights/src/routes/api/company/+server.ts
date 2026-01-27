@@ -1,12 +1,14 @@
 import { instanceAuthMiddleware } from "$lib/server/api/middleware/auth.middleware";
+import { deserializeSyncCursor, serializeSyncCursor } from "@playatlas/common/common";
 import type { GetCompaniesResponseDto } from "@playatlas/game-library/dtos";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
 	instanceAuthMiddleware({ request, api }, async () => {
 		const sinceLastSync = url.searchParams.get("sinceLastSync");
+		const lastCursor = deserializeSyncCursor(sinceLastSync);
 
-		if (sinceLastSync && Number.isNaN(Date.parse(sinceLastSync))) {
+		if (sinceLastSync && !lastCursor) {
 			return json(
 				{
 					success: false,
@@ -17,15 +19,13 @@ export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
 			);
 		}
 
-		const result = api.gameLibrary.queries
-			.getGetAllCompaniesQueryHandler()
-			.execute({ since: sinceLastSync ? new Date(sinceLastSync) : null });
+		const result = api.gameLibrary.queries.getGetAllCompaniesQueryHandler().execute({ lastCursor });
 
 		return json({
 			success: true,
 			companies: result.data,
 			reason_code: "companies_fetched_successfully",
 			reason: "Companies fetched successfully",
-			nextCursor: result.nextCursor,
+			nextCursor: serializeSyncCursor(result.nextCursor),
 		} satisfies GetCompaniesResponseDto);
 	});

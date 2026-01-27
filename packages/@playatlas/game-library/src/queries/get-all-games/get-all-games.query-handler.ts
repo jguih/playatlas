@@ -1,5 +1,4 @@
-import type { QueryHandler } from "@playatlas/common/common";
-import type { PlayniteProjectionResponseDto } from "../../dtos";
+import { computeNextSyncCursor, type QueryHandler } from "@playatlas/common/common";
 import type { GameFilters } from "../../infra/game.repository.types";
 import type { GetAllGamesQuery } from "./get-all-games.query";
 import type {
@@ -15,34 +14,18 @@ export const makeGetAllGamesQueryHandler = ({
 	logService,
 	clock,
 }: GetAllGamesQueryHandlerDeps): IGetAllGamesQueryHandlerPort => {
-	const computeNextCursor = (
-		gameDtos: PlayniteProjectionResponseDto[],
-		since?: Date | null,
-	): Date => {
-		const baseCursor = since ?? new Date(0);
-
-		if (gameDtos.length === 0) {
-			return baseCursor;
-		}
-
-		return gameDtos.reduce<Date>((latest, game) => {
-			const updatedAt = new Date(game.Sync.LastUpdatedAt);
-			return updatedAt > latest ? updatedAt : latest;
-		}, baseCursor);
-	};
-
 	return {
-		execute: ({ since } = {}) => {
-			const filters: GameFilters | undefined = since
+		execute: ({ lastCursor } = {}) => {
+			const filters: GameFilters | undefined = lastCursor
 				? {
-						lastUpdatedAt: [{ op: "gte", value: since }],
+						syncCursor: lastCursor,
 					}
 				: undefined;
 
 			const games = gameRepository.all({ load: true }, filters);
 
-			if (since) {
-				const elapsedMs = clock.now().getTime() - since.getTime();
+			if (lastCursor) {
+				const elapsedMs = clock.now().getTime() - lastCursor.lastUpdatedAt.getTime();
 				const elapsedSeconds = Math.floor(elapsedMs / 1000);
 				logService.debug(
 					`Found ${games.length} games (updated since last sync: ${elapsedSeconds}s ago)`,
@@ -52,8 +35,7 @@ export const makeGetAllGamesQueryHandler = ({
 			}
 
 			const gameDtos = gameMapper.toDtoList(games);
-			const nextCursor = computeNextCursor(gameDtos, since).toISOString();
-
+			const nextCursor = computeNextSyncCursor(games, lastCursor);
 			return { data: gameDtos, nextCursor };
 		},
 	};

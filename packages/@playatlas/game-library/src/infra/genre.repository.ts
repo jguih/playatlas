@@ -4,6 +4,7 @@ import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/i
 import z from "zod";
 import type { IGenreMapperPort } from "../application";
 import type { IGenreRepositoryPort } from "./genre.repository.port";
+import type { GenreRepositoryFilters } from "./genre.repository.types";
 
 export const genreSchema = z.object({
 	Id: genreIdSchema,
@@ -34,6 +35,32 @@ export const makeGenreRepository = ({
 		"DeletedAt",
 		"DeleteAfter",
 	];
+
+	const getWhereClauseAndParamsFromFilters = (filters?: GenreRepositoryFilters) => {
+		const where: string[] = [];
+		const params: (string | number)[] = [];
+
+		if (!filters) {
+			return { where: "", params };
+		}
+
+		if (filters.syncCursor) {
+			const syncCursor = filters.syncCursor;
+
+			where.push(`(LastUpdatedAt > ? OR (LastUpdatedAt = ? AND Id > ?))`);
+			params.push(
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.id,
+			);
+		}
+
+		return {
+			where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
+			params,
+		};
+	};
+
 	const base = makeBaseRepository({
 		getDb,
 		logService,
@@ -44,6 +71,8 @@ export const makeGenreRepository = ({
 			updateColumns: COLUMNS.filter((c) => c !== "Id"),
 			mapper: genreMapper,
 			modelSchema: genreSchema,
+			getWhereClauseAndParamsFromFilters,
+			getOrderBy: () => `ORDER BY LastUpdatedAt ASC, Id ASC`,
 		},
 	});
 

@@ -1,3 +1,4 @@
+import type { IClockPort } from "$lib/modules/common/application";
 import type { ISyncGamesCommandHandlerPort } from "../commands/sync-games/sync-games.command-handler";
 import type { IGameLibrarySyncStatePort } from "./game-library-sync-state.port";
 import type { IGameMapperPort } from "./game.mapper.port";
@@ -9,6 +10,7 @@ export type SyncGameLibraryServiceDeps = {
 	playAtlasClient: IPlayAtlasClientPort;
 	syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
 	gameMapper: IGameMapperPort;
+	clock: IClockPort;
 };
 
 export class SyncGamesFlow implements ISyncGamesFlowPort {
@@ -16,32 +18,36 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 	private readonly playAtlasClient: IPlayAtlasClientPort;
 	private readonly syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
 	private readonly gameMapper: IGameMapperPort;
+	private readonly clock: IClockPort;
 
 	constructor({
 		gameLibrarySyncState,
 		playAtlasClient,
 		syncGamesCommandHandler,
 		gameMapper,
+		clock,
 	}: SyncGameLibraryServiceDeps) {
 		this.gameLibrarySyncState = gameLibrarySyncState;
 		this.playAtlasClient = playAtlasClient;
 		this.syncGamesCommandHandler = syncGamesCommandHandler;
 		this.gameMapper = gameMapper;
+		this.clock = clock;
 	}
 
 	executeAsync: ISyncGamesFlowPort["executeAsync"] = async () => {
-		const lastSync = this.gameLibrarySyncState.getLastServerSync("games");
+		const now = this.clock.now();
+		const lastCursor = this.gameLibrarySyncState.getLastServerSyncCursor("games");
 
 		const response = await this.playAtlasClient.getGamesAsync({
-			sinceLastSync: lastSync,
+			lastCursor,
 		});
 
 		if (!response.success) return;
 
-		const games = response.games.map((g) => this.gameMapper.toDomain(g, lastSync));
+		const games = response.games.map((g) => this.gameMapper.toDomain(g, now));
 
 		await this.syncGamesCommandHandler.executeAsync({ games });
 
-		this.gameLibrarySyncState.setLastServerSync("games", new Date(response.nextCursor));
+		this.gameLibrarySyncState.setLastServerSyncCursor("games", response.nextCursor);
 	};
 }
