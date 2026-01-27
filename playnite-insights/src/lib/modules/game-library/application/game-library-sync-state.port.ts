@@ -1,4 +1,4 @@
-export type SyncTarget = "completionStatuses" | "games" | "companies";
+export type SyncTarget = "completionStatuses" | "games" | "companies" | "genres" | "platforms";
 
 export interface IGameLibrarySyncStatePort {
 	getLastServerSyncCursor(target: SyncTarget): string | null;

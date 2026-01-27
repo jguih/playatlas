@@ -1,53 +1,50 @@
-import type { IClockPort } from "$lib/modules/common/application";
+import type { CompanyResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncCompaniesCommandHandlerPort } from "../commands";
 import type { ICompanyMapperPort } from "./company.mapper.port";
-import type { IGameLibrarySyncStatePort } from "./game-library-sync-state.port";
 import type { IPlayAtlasClientPort } from "./playatlas-client.port";
-import type { ISyncCompaniesFlowPort } from "./sync-companies-flow.port";
+import type { ISyncRunnerPort, SyncRunnerFetchResult } from "./sync-runner";
+
+export type ISyncCompaniesFlowPort = {
+	executeAsync: () => Promise<void>;
+};
 
 export type SyncCompaniesFlowDeps = {
-	gameLibrarySyncState: IGameLibrarySyncStatePort;
 	playAtlasClient: IPlayAtlasClientPort;
 	syncCompaniesCommandHandler: ISyncCompaniesCommandHandlerPort;
 	companyMapper: ICompanyMapperPort;
-	clock: IClockPort;
+	syncRunner: ISyncRunnerPort;
 };
 
 export class SyncCompaniesFlow implements ISyncCompaniesFlowPort {
-	private readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
-	private readonly playAtlasClient: IPlayAtlasClientPort;
-	private readonly syncCompaniesCommandHandler: ISyncCompaniesCommandHandlerPort;
-	private readonly companyMapper: ICompanyMapperPort;
-	private readonly clock: IClockPort;
+	constructor(private readonly deps: SyncCompaniesFlowDeps) {}
 
-	constructor({
-		companyMapper,
-		gameLibrarySyncState,
-		playAtlasClient,
-		syncCompaniesCommandHandler,
-		clock,
-	}: SyncCompaniesFlowDeps) {
-		this.gameLibrarySyncState = gameLibrarySyncState;
-		this.playAtlasClient = playAtlasClient;
-		this.syncCompaniesCommandHandler = syncCompaniesCommandHandler;
-		this.companyMapper = companyMapper;
-		this.clock = clock;
-	}
-
-	executeAsync: ISyncCompaniesFlowPort["executeAsync"] = async () => {
-		const now = this.clock.now();
-		const lastCursor = this.gameLibrarySyncState.getLastServerSyncCursor("companies");
-
-		const response = await this.playAtlasClient.getCompaniesAsync({
+	private fetchAsync = async ({
+		lastCursor,
+	}: {
+		lastCursor: string | null;
+	}): Promise<SyncRunnerFetchResult<CompanyResponseDto>> => {
+		const response = await this.deps.playAtlasClient.getCompaniesAsync({
 			lastCursor,
 		});
 
-		if (!response.success) return;
+		if (!response.success) return { success: false };
 
-		const companies = response.companies.map((g) => this.companyMapper.fromDto(g, now));
+		return {
+			success: true,
+			items: response.companies,
+			nextCursor: response.nextCursor,
+		};
+	};
 
-		await this.syncCompaniesCommandHandler.executeAsync({ companies });
+	executeAsync: ISyncCompaniesFlowPort["executeAsync"] = async () => {
+		const { companyMapper, syncCompaniesCommandHandler, syncRunner } = this.deps;
 
-		this.gameLibrarySyncState.setLastServerSyncCursor("companies", response.nextCursor);
+		await syncRunner.runAsync({
+			syncTarget: "companies",
+			fetchAsync: this.fetchAsync,
+			mapDtoToEntity: ({ dto, now }) => companyMapper.fromDto(dto, now),
+			persistAsync: ({ entities }) =>
+				syncCompaniesCommandHandler.executeAsync({ companies: entities }),
+		});
 	};
 }

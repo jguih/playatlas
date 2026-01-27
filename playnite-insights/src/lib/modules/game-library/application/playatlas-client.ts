@@ -3,6 +3,7 @@ import {
 	getCompaniesResponseDtoSchema,
 	getCompletionStatusesResponseDtoSchema,
 	getGamesResponseDtoSchema,
+	getGenresResponseDtoSchema,
 } from "@playatlas/game-library/dtos";
 import type { IPlayAtlasClientPort } from "./playatlas-client.port";
 
@@ -11,14 +12,10 @@ export type PlayAtlasClientDeps = {
 };
 
 export class PlayAtlasClient implements IPlayAtlasClientPort {
-	private readonly httpClient: IHttpClientPort;
-
-	constructor({ httpClient }: PlayAtlasClientDeps) {
-		this.httpClient = httpClient;
-	}
+	constructor(private readonly deps: PlayAtlasClientDeps) {}
 
 	getGamesAsync: IPlayAtlasClientPort["getGamesAsync"] = async ({ lastCursor }) => {
-		const response = await this.httpClient.getAsync({
+		const response = await this.deps.httpClient.getAsync({
 			endpoint: `/api/game`,
 			searchParams: {
 				sinceLastSync: lastCursor,
@@ -30,7 +27,7 @@ export class PlayAtlasClient implements IPlayAtlasClientPort {
 	getCompletionStatusesAsync: IPlayAtlasClientPort["getCompletionStatusesAsync"] = async ({
 		lastCursor,
 	}) => {
-		const response = await this.httpClient.getAsync({
+		const response = await this.deps.httpClient.getAsync({
 			endpoint: `/api/completion-status`,
 			searchParams: {
 				sinceLastSync: lastCursor,
@@ -40,7 +37,7 @@ export class PlayAtlasClient implements IPlayAtlasClientPort {
 	};
 
 	getCompaniesAsync: IPlayAtlasClientPort["getCompaniesAsync"] = async ({ lastCursor }) => {
-		const response = await this.httpClient.getAsync({
+		const response = await this.deps.httpClient.getAsync({
 			endpoint: `/api/company`,
 			searchParams: {
 				sinceLastSync: lastCursor,
@@ -49,8 +46,14 @@ export class PlayAtlasClient implements IPlayAtlasClientPort {
 		return await zodJsonParser(getCompaniesResponseDtoSchema)(response);
 	};
 
-	getGenresAsync: IPlayAtlasClientPort["getGenresAsync"] = async () => {
-		throw new Error("Not Implemented");
+	getGenresAsync: IPlayAtlasClientPort["getGenresAsync"] = async ({ lastCursor }) => {
+		const response = await this.deps.httpClient.getAsync({
+			endpoint: `/api/genre`,
+			searchParams: {
+				sinceLastSync: lastCursor,
+			},
+		});
+		return await zodJsonParser(getGenresResponseDtoSchema)(response);
 	};
 
 	getPlatformsAsync: IPlayAtlasClientPort["getPlatformsAsync"] = async () => {

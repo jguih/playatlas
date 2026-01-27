@@ -1,34 +1,28 @@
 import type { IGameLibrarySyncManagerPort } from "./game-library-sync-manager.port";
-import type { ISyncCompaniesFlowPort } from "./sync-companies-flow.port";
-import type { ISyncCompletionStatusesFlowPort } from "./sync-completion-statuses-flow.port";
-import type { ISyncGamesFlowPort } from "./sync-games-flow.port";
+import type { ISyncCompaniesFlowPort } from "./sync-companies-flow";
+import type { ISyncCompletionStatusesFlowPort } from "./sync-completion-statuses-flow";
+import type { ISyncGamesFlowPort } from "./sync-games-flow";
+import type { ISyncGenresFlowPort } from "./sync-genres-flow";
 
 export type GameLibrarySyncManagerDeps = {
 	syncGamesFlow: ISyncGamesFlowPort;
 	syncCompletionStatusesFlow: ISyncCompletionStatusesFlowPort;
 	syncCompaniesFlow: ISyncCompaniesFlowPort;
+	syncGenresFlow: ISyncGenresFlowPort;
 };
 
 export class GameLibrarySyncManager implements IGameLibrarySyncManagerPort {
-	private readonly syncGamesFlow: ISyncGamesFlowPort;
-	private readonly syncCompletionStatusesFlow: ISyncCompletionStatusesFlowPort;
-	private readonly syncCompaniesFlow: ISyncCompaniesFlowPort;
-
-	constructor({
-		syncGamesFlow,
-		syncCompletionStatusesFlow,
-		syncCompaniesFlow,
-	}: GameLibrarySyncManagerDeps) {
-		this.syncGamesFlow = syncGamesFlow;
-		this.syncCompletionStatusesFlow = syncCompletionStatusesFlow;
-		this.syncCompaniesFlow = syncCompaniesFlow;
-	}
+	constructor(private readonly deps: GameLibrarySyncManagerDeps) {}
 
 	executeAsync: IGameLibrarySyncManagerPort["executeAsync"] = async () => {
+		const { syncCompaniesFlow, syncCompletionStatusesFlow, syncGamesFlow, syncGenresFlow } =
+			this.deps;
+
 		await Promise.all([
-			this.syncGamesFlow.executeAsync(),
-			this.syncCompletionStatusesFlow.executeAsync(),
-			this.syncCompaniesFlow.executeAsync(),
+			syncGamesFlow.executeAsync(),
+			syncCompletionStatusesFlow.executeAsync(),
+			syncCompaniesFlow.executeAsync(),
+			syncGenresFlow.executeAsync(),
 		]);
 	};
 }

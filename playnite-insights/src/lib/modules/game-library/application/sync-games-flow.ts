@@ -1,53 +1,49 @@
-import type { IClockPort } from "$lib/modules/common/application";
+import type { PlayniteProjectionResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncGamesCommandHandlerPort } from "../commands/sync-games/sync-games.command-handler";
-import type { IGameLibrarySyncStatePort } from "./game-library-sync-state.port";
 import type { IGameMapperPort } from "./game.mapper.port";
 import type { IPlayAtlasClientPort } from "./playatlas-client.port";
-import type { ISyncGamesFlowPort } from "./sync-games-flow.port";
+import type { ISyncRunnerPort, SyncRunnerFetchResult } from "./sync-runner";
+
+export interface ISyncGamesFlowPort {
+	executeAsync: () => Promise<void>;
+}
 
 export type SyncGameLibraryServiceDeps = {
-	gameLibrarySyncState: IGameLibrarySyncStatePort;
 	playAtlasClient: IPlayAtlasClientPort;
 	syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
 	gameMapper: IGameMapperPort;
-	clock: IClockPort;
+	syncRunner: ISyncRunnerPort;
 };
 
 export class SyncGamesFlow implements ISyncGamesFlowPort {
-	private readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
-	private readonly playAtlasClient: IPlayAtlasClientPort;
-	private readonly syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
-	private readonly gameMapper: IGameMapperPort;
-	private readonly clock: IClockPort;
+	constructor(private readonly deps: SyncGameLibraryServiceDeps) {}
 
-	constructor({
-		gameLibrarySyncState,
-		playAtlasClient,
-		syncGamesCommandHandler,
-		gameMapper,
-		clock,
-	}: SyncGameLibraryServiceDeps) {
-		this.gameLibrarySyncState = gameLibrarySyncState;
-		this.playAtlasClient = playAtlasClient;
-		this.syncGamesCommandHandler = syncGamesCommandHandler;
-		this.gameMapper = gameMapper;
-		this.clock = clock;
-	}
-
-	executeAsync: ISyncGamesFlowPort["executeAsync"] = async () => {
-		const now = this.clock.now();
-		const lastCursor = this.gameLibrarySyncState.getLastServerSyncCursor("games");
-
-		const response = await this.playAtlasClient.getGamesAsync({
+	private fetchAsync = async ({
+		lastCursor,
+	}: {
+		lastCursor: string | null;
+	}): Promise<SyncRunnerFetchResult<PlayniteProjectionResponseDto>> => {
+		const response = await this.deps.playAtlasClient.getGamesAsync({
 			lastCursor,
 		});
 
-		if (!response.success) return;
+		if (!response.success) return { success: false };
 
-		const games = response.games.map((g) => this.gameMapper.fromDto(g, now));
+		return {
+			success: true,
+			items: response.games,
+			nextCursor: response.nextCursor,
+		};
+	};
 
-		await this.syncGamesCommandHandler.executeAsync({ games });
+	executeAsync: ISyncGamesFlowPort["executeAsync"] = async () => {
+		const { syncRunner, gameMapper, syncGamesCommandHandler } = this.deps;
 
-		this.gameLibrarySyncState.setLastServerSyncCursor("games", response.nextCursor);
+		await syncRunner.runAsync({
+			syncTarget: "games",
+			fetchAsync: this.fetchAsync,
+			mapDtoToEntity: ({ dto, now }) => gameMapper.fromDto(dto, now),
+			persistAsync: ({ entities }) => syncGamesCommandHandler.executeAsync({ games: entities }),
+		});
 	};
 }

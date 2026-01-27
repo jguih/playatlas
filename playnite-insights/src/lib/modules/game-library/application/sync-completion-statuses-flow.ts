@@ -1,55 +1,50 @@
-import type { IClockPort } from "$lib/modules/common/application";
+import type { CompletionStatusResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncCompletionStatusesCommandHandlerPort } from "../commands";
 import type { ICompletionStatusMapperPort } from "./completion-status.mapper.port";
-import type { IGameLibrarySyncStatePort } from "./game-library-sync-state.port";
 import type { IPlayAtlasClientPort } from "./playatlas-client.port";
-import type { ISyncCompletionStatusesFlowPort } from "./sync-completion-statuses-flow.port";
+import type { ISyncRunnerPort, SyncRunnerFetchResult } from "./sync-runner";
+
+export interface ISyncCompletionStatusesFlowPort {
+	executeAsync: () => Promise<void>;
+}
 
 export type SyncCompletionStatusesFlowDeps = {
-	gameLibrarySyncState: IGameLibrarySyncStatePort;
 	playAtlasClient: IPlayAtlasClientPort;
 	syncCompletionStatusesCommandHandler: ISyncCompletionStatusesCommandHandlerPort;
 	completionStatusMapper: ICompletionStatusMapperPort;
-	clock: IClockPort;
+	syncRunner: ISyncRunnerPort;
 };
 
 export class SyncCompletionStatusesFlow implements ISyncCompletionStatusesFlowPort {
-	private readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
-	private readonly playAtlasClient: IPlayAtlasClientPort;
-	private readonly syncCompletionStatusesCommandHandler: ISyncCompletionStatusesCommandHandlerPort;
-	private readonly completionStatusMapper: ICompletionStatusMapperPort;
-	private readonly clock: IClockPort;
+	constructor(private readonly deps: SyncCompletionStatusesFlowDeps) {}
 
-	constructor({
-		gameLibrarySyncState,
-		completionStatusMapper,
-		playAtlasClient,
-		syncCompletionStatusesCommandHandler,
-		clock,
-	}: SyncCompletionStatusesFlowDeps) {
-		this.gameLibrarySyncState = gameLibrarySyncState;
-		this.playAtlasClient = playAtlasClient;
-		this.syncCompletionStatusesCommandHandler = syncCompletionStatusesCommandHandler;
-		this.completionStatusMapper = completionStatusMapper;
-		this.clock = clock;
-	}
-
-	executeAsync: ISyncCompletionStatusesFlowPort["executeAsync"] = async () => {
-		const now = this.clock.now();
-		const lastCursor = this.gameLibrarySyncState.getLastServerSyncCursor("completionStatuses");
-
-		const response = await this.playAtlasClient.getCompletionStatusesAsync({
+	private fetchAsync = async ({
+		lastCursor,
+	}: {
+		lastCursor: string | null;
+	}): Promise<SyncRunnerFetchResult<CompletionStatusResponseDto>> => {
+		const response = await this.deps.playAtlasClient.getCompletionStatusesAsync({
 			lastCursor,
 		});
 
-		if (!response.success) return;
+		if (!response.success) return { success: false };
 
-		const completionStatuses = response.completionStatuses.map((g) =>
-			this.completionStatusMapper.fromDto(g, now),
-		);
+		return {
+			success: true,
+			items: response.completionStatuses,
+			nextCursor: response.nextCursor,
+		};
+	};
 
-		await this.syncCompletionStatusesCommandHandler.executeAsync({ completionStatuses });
+	executeAsync: ISyncCompletionStatusesFlowPort["executeAsync"] = async () => {
+		const { completionStatusMapper, syncCompletionStatusesCommandHandler, syncRunner } = this.deps;
 
-		this.gameLibrarySyncState.setLastServerSyncCursor("completionStatuses", response.nextCursor);
+		await syncRunner.runAsync({
+			syncTarget: "completionStatuses",
+			fetchAsync: this.fetchAsync,
+			mapDtoToEntity: ({ dto, now }) => completionStatusMapper.fromDto(dto, now),
+			persistAsync: ({ entities }) =>
+				syncCompletionStatusesCommandHandler.executeAsync({ completionStatuses: entities }),
+		});
 	};
 }

@@ -2,9 +2,9 @@ import type {
 	GetCompaniesResponseDto,
 	GetCompletionStatusesResponseDto,
 	GetGamesResponseDto,
+	GetGenresResponseDto,
+	GetPlatformResponseDto,
 } from "@playatlas/game-library/dtos";
-import type { Genre } from "../domain/genre.entity";
-import type { Platform } from "../domain/platform.entity";
 
 export type CommonProps = {
 	lastCursor: string | null;
@@ -14,6 +14,6 @@ export interface IPlayAtlasClientPort {
 	getGamesAsync: (props: CommonProps) => Promise<GetGamesResponseDto>;
 	getCompletionStatusesAsync: (props: CommonProps) => Promise<GetCompletionStatusesResponseDto>;
 	getCompaniesAsync: (props: CommonProps) => Promise<GetCompaniesResponseDto>;
-	getPlatformsAsync: (props: CommonProps) => Promise<Platform[]>;
-	getGenresAsync: (props: CommonProps) => Promise<Genre[]>;
+	getPlatformsAsync: (props: CommonProps) => Promise<GetPlatformResponseDto>;
+	getGenresAsync: (props: CommonProps) => Promise<GetGenresResponseDto>;
 }

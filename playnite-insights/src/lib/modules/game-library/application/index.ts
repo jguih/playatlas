@@ -19,3 +19,5 @@ export * from "./sync-completion-statuses-flow";
 export type * from "./sync-completion-statuses-flow.port";
 export * from "./sync-games-flow";
 export type * from "./sync-games-flow.port";
+export * from "./sync-genres-flow";
+export type * from "./sync-genres-flow.port";
