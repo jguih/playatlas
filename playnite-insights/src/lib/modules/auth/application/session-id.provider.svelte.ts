@@ -1,5 +1,5 @@
 import type { IClockPort } from "$lib/modules/common/application";
-import type { SessionId, SessionIdObject } from "../domain";
+import type { SessionId, SessionIdAggregate } from "../domain";
 import type { ISessionIdRepositoryPort } from "../infra";
 import type { ISessionIdProviderPort } from "./session-id.provider.port";
 
@@ -29,7 +29,7 @@ export class SessionIdProvider implements ISessionIdProviderPort {
 	async setAsync(sessionId: SessionId): Promise<void> {
 		const now = this.clock.now();
 
-		const sessionIdObject: SessionIdObject = {
+		const sessionIdObject: SessionIdAggregate = {
 			Id: sessionId,
 			SessionId: sessionId,
 			SourceUpdatedAt: now,

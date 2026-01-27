@@ -1,31 +1,42 @@
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
-import type { SessionId, SessionIdObject } from "../domain/session-id.entity";
+import type { ISessionIdMapperPort } from "../application";
+import type { SessionId, SessionIdAggregate } from "../domain/session-id.entity";
 import type { ISessionIdRepositoryPort } from "./session-id.repository.port";
 import { sessionIdRepositoryMeta } from "./session-id.repository.schema";
 
-export type SessionIdRepositoryDeps = ClientEntityRepositoryDeps;
+export type SessionIdRepositoryDeps = ClientEntityRepositoryDeps & {
+	sessionIdMapper: ISessionIdMapperPort;
+};
+
+export type SessionIdModel = {
+	Id: string;
+	SourceUpdatedAt: Date;
+	SourceUpdatedAtMs: number;
+	SessionId: string;
+};
 
 export class SessionIdRepository
-	extends ClientEntityRepository<SessionIdObject, SessionId>
+	extends ClientEntityRepository<SessionId, SessionIdAggregate, SessionIdModel>
 	implements ISessionIdRepositoryPort
 {
-	constructor({ dbSignal }: SessionIdRepositoryDeps) {
-		super({ dbSignal, storeName: sessionIdRepositoryMeta.storeName });
+	constructor({ dbSignal, sessionIdMapper }: SessionIdRepositoryDeps) {
+		super({ dbSignal, storeName: sessionIdRepositoryMeta.storeName, mapper: sessionIdMapper });
 	}
 
-	getAsync = async (): Promise<SessionIdObject | null> => {
+	getAsync = async (): Promise<SessionIdAggregate | null> => {
 		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
-			const entity = await this.runRequest<SessionIdObject[]>(store.getAll());
-			return entity.at(0) ?? null;
+			const models = await this.runRequest<SessionIdModel[]>(store.getAll());
+			return models.at(0) ? this.mapper.toDomain(models.at(0)!) : null;
 		});
 	};
 
-	setAsync = async (sessionId: SessionIdObject): Promise<void> => {
+	setAsync = async (sessionId: SessionIdAggregate): Promise<void> => {
 		await this.runTransaction([this.storeName], "readwrite", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
+			const model = this.mapper.toPersistence(sessionId);
 			await this.runRequest(store.clear());
-			await this.runRequest(store.put(sessionId));
+			await this.runRequest(store.put(model));
 		});
 	};
 }

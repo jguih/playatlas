@@ -47,6 +47,8 @@ export class CompanyMapper implements ICompanyMapperPort {
 			Name: entity.Name,
 			SourceUpdatedAt: entity.SourceUpdatedAt,
 			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,
+			SourceDeleteAfter: null,
+			SourceDeletedAt: null,
 			Sync: entity.Sync,
 		};
 	};

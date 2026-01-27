@@ -10,8 +10,8 @@ export type GenreModel = {
 	Name: string;
 	SourceUpdatedAt: Date;
 	SourceUpdatedAtMs: number;
-	SourceDeletedAt?: Date;
-	SourceDeleteAfter?: Date;
+	SourceDeletedAt?: Date | null;
+	SourceDeleteAfter?: Date | null;
 
 	Sync: {
 		Status: SyncStatus;

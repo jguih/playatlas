@@ -62,17 +62,18 @@ export class TestCompositionRoot {
 		});
 		await infra.initializeAsync();
 
-		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
-			dbSignal: infra.dbSignal,
-			httpClient: this.mocks.httpClient,
-			clock: infra.clock,
-		});
-
 		const auth: IAuthModulePort = new AuthModule({
 			httpClient: this.mocks.httpClient,
 			dbSignal: infra.dbSignal,
 			clock: infra.clock,
 			logService: this.mocks.logService,
+		});
+		await auth.initializeAsync();
+
+		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
+			dbSignal: infra.dbSignal,
+			httpClient: this.mocks.httpClient,
+			clock: infra.clock,
 		});
 
 		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary, auth } });

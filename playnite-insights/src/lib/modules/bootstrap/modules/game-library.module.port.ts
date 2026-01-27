@@ -1,5 +1,6 @@
 import type {
 	ICompanyMapperPort,
+	ICompletionStatusMapperPort,
 	IGameLibrarySyncManagerPort,
 	IGameLibrarySyncStatePort,
 	IGameMapperPort,
@@ -58,6 +59,7 @@ export interface IClientGameLibraryModulePort {
 	get getPlatformsByIdsQueryHandler(): IGetPlatformsByIdsQueryHandlerPort;
 	get syncPlatformsCommandHandler(): ISyncPlatformsCommandHandlerPort;
 
+	get completionStatusMapper(): ICompletionStatusMapperPort;
 	get completionStatusRepository(): ICompletionStatusRepositoryPort;
 	get getCompletionStatusesByIdsQueryHandler(): IGetCompletionStatusesByIdsQueryHandlerPort;
 	get syncCompletionStatusesCommandHandler(): ISyncCompletionStatusesCommandHandlerPort;

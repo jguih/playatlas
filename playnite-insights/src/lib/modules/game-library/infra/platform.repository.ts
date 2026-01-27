@@ -15,8 +15,8 @@ export type PlatformModel = {
 	SpecificationId: string;
 	SourceUpdatedAt: Date;
 	SourceUpdatedAtMs: number;
-	SourceDeletedAt?: Date;
-	SourceDeleteAfter?: Date;
+	SourceDeletedAt?: Date | null;
+	SourceDeleteAfter?: Date | null;
 	Icon?: string | null;
 	Cover?: string | null;
 	Background?: string | null;

@@ -56,6 +56,11 @@ export class PlatformMapper implements IPlatformMapperPort {
 			SpecificationId: entity.SpecificationId,
 			SourceUpdatedAt: entity.SourceUpdatedAt,
 			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,
+			Background: entity.Background,
+			Cover: entity.Cover,
+			Icon: entity.Icon,
+			SourceDeleteAfter: null,
+			SourceDeletedAt: null,
 			Sync: entity.Sync,
 		};
 	};

@@ -43,6 +43,8 @@ export class CompletionStatusMapper implements ICompletionStatusMapperPort {
 			Name: entity.Name,
 			SourceUpdatedAt: entity.SourceUpdatedAt,
 			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,
+			SourceDeleteAfter: null,
+			SourceDeletedAt: null,
 			Sync: entity.Sync,
 		};
 	};
