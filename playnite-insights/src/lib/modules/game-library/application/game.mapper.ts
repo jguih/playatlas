@@ -1,4 +1,5 @@
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
+import { GameIdParser } from "../domain";
 import type { IGameMapperPort } from "./game.mapper.port";
 
 export type GameMapperDeps = {
@@ -12,9 +13,9 @@ export class GameMapper implements IGameMapperPort {
 		this.clock = clock;
 	}
 
-	toDomain: IGameMapperPort["toDomain"] = (dto, lastSync) => {
+	fromDto: IGameMapperPort["fromDto"] = (dto, lastSync) => {
 		return {
-			Id: dto.Id,
+			Id: GameIdParser.fromTrusted(dto.Id),
 			Name: dto.Name,
 			Description: dto.Description,
 			Added: dto.Added ? new Date(dto.Added) : null,
@@ -42,6 +43,70 @@ export class GameMapper implements IGameMapperPort {
 				LastSyncedAt: lastSync ?? this.clock.now(),
 				ErrorMessage: null,
 			},
+		};
+	};
+
+	toDomain: IGameMapperPort["toDomain"] = (model) => {
+		return {
+			Id: model.Id,
+			Name: model.Name,
+			SourceUpdatedAt: model.SourceUpdatedAt,
+			SourceUpdatedAtMs: model.SourceUpdatedAtMs,
+			DeleteAfter: model.SourceDeleteAfter ?? null,
+			DeletedAt: model.SourceDeletedAt ?? null,
+			Added: model.Added,
+			BackgroundImagePath: model.BackgroundImagePath,
+			CoverImagePath: model.CoverImagePath,
+			IconImagePath: model.IconImagePath,
+			CompletionStatusId: model.CompletionStatusId,
+			ContentHash: model.ContentHash,
+			Description: model.Description,
+			Developers: model.Developers,
+			Publishers: model.Publishers,
+			Genres: model.Genres,
+			Platforms: model.Platforms,
+			Hidden: model.Hidden,
+			InstallDirectory: model.InstallDirectory,
+			IsInstalled: model.IsInstalled,
+			LastActivity: model.LastActivity,
+			Playtime: model.Playtime,
+			ReleaseDate: model.ReleaseDate,
+			Sync: {
+				Status: model.Sync.Status,
+				ErrorMessage: model.Sync.ErrorMessage ?? null,
+				LastSyncedAt: model.Sync.LastSyncedAt,
+			},
+		};
+	};
+
+	toPersistence: IGameMapperPort["toPersistence"] = (entity) => {
+		return {
+			Id: entity.Id,
+			Name: entity.Name,
+			SourceUpdatedAt: entity.SourceUpdatedAt,
+			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,
+			SourceDeleteAfter: entity.DeleteAfter,
+			SourceDeletedAt: entity.DeletedAt,
+			Added: entity.Added,
+			BackgroundImagePath: entity.BackgroundImagePath,
+			CoverImagePath: entity.CoverImagePath,
+			IconImagePath: entity.IconImagePath,
+			CompletionStatusId: entity.CompletionStatusId,
+			ContentHash: entity.ContentHash,
+			DeleteAfter: entity.DeleteAfter,
+			DeletedAt: entity.DeletedAt,
+			Description: entity.Description,
+			Developers: entity.Developers,
+			Publishers: entity.Publishers,
+			Genres: entity.Genres,
+			Platforms: entity.Platforms,
+			Hidden: entity.Hidden,
+			InstallDirectory: entity.InstallDirectory,
+			IsInstalled: entity.IsInstalled,
+			LastActivity: entity.LastActivity,
+			Playtime: entity.Playtime,
+			ReleaseDate: entity.ReleaseDate,
+			Sync: entity.Sync,
 		};
 	};
 }

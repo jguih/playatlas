@@ -1,6 +1,6 @@
 import type { IClientEntityFactoryPort } from "$lib/modules/common/testing";
 import { faker } from "@faker-js/faker";
-import type { Platform } from "../domain/platform.entity";
+import { PlatformIdParser, type Platform } from "../domain/platform.entity";
 
 export type IPlatformFactoryPort = IClientEntityFactoryPort<Platform>;
 
@@ -10,14 +10,22 @@ export class PlatformFactory implements IPlatformFactoryPort {
 			return faker.helpers.arrayElement([faker.image.url(), null]);
 		};
 
+		const SourceUpdatedAt = faker.date.recent();
+
 		return {
-			Id: faker.string.uuid(),
+			Id: PlatformIdParser.fromTrusted(faker.string.uuid()),
 			Name: faker.word.noun(),
-			SourceUpdatedAt: faker.date.recent(),
+			SourceUpdatedAt,
+			SourceUpdatedAtMs: SourceUpdatedAt.getTime(),
 			SpecificationId: faker.string.uuid(),
 			Background: getImagePath(),
 			Cover: getImagePath(),
 			Icon: getImagePath(),
+			Sync: {
+				Status: "synced",
+				LastSyncedAt: faker.date.recent(),
+				ErrorMessage: null,
+			},
 		};
 	};
 

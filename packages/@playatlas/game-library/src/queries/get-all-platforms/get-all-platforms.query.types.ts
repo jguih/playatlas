@@ -1,3 +1,6 @@
+import type { ILogServicePort } from "@playatlas/common/application";
+import type { SyncCursor } from "@playatlas/common/common";
+import type { IClockPort } from "@playatlas/common/infra";
 import type { IPlatformMapperPort } from "../../application/platform.mapper";
 import type { PlatformResponseDto } from "../../dtos/platform.response.dto";
 import type { IPlatformRepositoryPort } from "../../infra/platform.repository.port";
@@ -5,8 +8,8 @@ import type { IPlatformRepositoryPort } from "../../infra/platform.repository.po
 export type GetAllPlatformsQueryHandlerDeps = {
 	platformRepository: IPlatformRepositoryPort;
 	platformMapper: IPlatformMapperPort;
+	logService: ILogServicePort;
+	clock: IClockPort;
 };
 
-export type GetAllPlatformsQueryResult =
-	| { type: "not_modified" }
-	| { type: "ok"; data: PlatformResponseDto[]; etag: string };
+export type GetAllPlatformsQueryResult = { data: PlatformResponseDto[]; nextCursor: SyncCursor };

@@ -22,6 +22,11 @@ export const makePlatformMapper = ({
 			Icon: entity.getIcon(),
 			Name: entity.getName(),
 			SpecificationId: entity.getSpecificationId(),
+			Sync: {
+				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
+				DeletedAt: entity.getDeletedAt()?.toISOString() ?? null,
+				DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,
+			},
 		};
 		return dto;
 	};

@@ -44,7 +44,7 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 
 		if (!response.success) return;
 
-		const games = response.games.map((g) => this.gameMapper.toDomain(g, now));
+		const games = response.games.map((g) => this.gameMapper.fromDto(g, now));
 
 		await this.syncGamesCommandHandler.executeAsync({ games });
 

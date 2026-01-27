@@ -1,6 +1,13 @@
-import type { ClientEntity } from "$lib/modules/common/common";
+import type { ClientEntity, EntitySyncStateProps } from "$lib/modules/common/common";
 
-export type GenreId = string;
+export type GenreId = string & { readonly __band: "GenreId" };
+
+export const GenreIdParser = {
+	fromTrusted: (value: string): GenreId => value as GenreId,
+};
+
 export type Genre = ClientEntity<GenreId> & {
 	Name: string;
+	// Front-end specific
+	Sync: EntitySyncStateProps;
 };

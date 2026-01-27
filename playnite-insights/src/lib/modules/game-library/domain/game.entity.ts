@@ -1,6 +1,10 @@
 import type { ClientEntity, EntitySyncStateProps } from "$lib/modules/common/common";
 
-export type GameId = string;
+export type GameId = string & { readonly __brand: "GameId" };
+
+export const GameIdParser = {
+	fromTrusted: (value: string) => value as GameId,
+};
 
 export type Game = ClientEntity<GameId> & {
 	Name: string | null;

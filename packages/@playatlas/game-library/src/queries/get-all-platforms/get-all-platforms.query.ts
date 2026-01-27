@@ -1,3 +1,5 @@
+import type { SyncCursor } from "@playatlas/common/common";
+
 export type GetAllPlatformsQuery = {
-	ifNoneMatch?: string | null;
+	lastCursor?: SyncCursor | null;
 };

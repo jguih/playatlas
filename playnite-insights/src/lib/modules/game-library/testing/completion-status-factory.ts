@@ -1,6 +1,9 @@
 import type { IClientEntityFactoryPort } from "$lib/modules/common/testing";
 import { faker } from "@faker-js/faker";
-import type { CompletionStatus } from "../domain/completion-status.entity";
+import {
+	CompletionStatusIdParser,
+	type CompletionStatus,
+} from "../domain/completion-status.entity";
 
 export type ICompletionStatusFactoryPort = IClientEntityFactoryPort<CompletionStatus>;
 
@@ -8,7 +11,7 @@ export class CompletionStatusFactory implements ICompletionStatusFactoryPort {
 	private buildCompletionStatus = (): CompletionStatus => {
 		const SourceUpdatedAt = faker.date.recent();
 		return {
-			Id: faker.string.uuid(),
+			Id: CompletionStatusIdParser.fromTrusted(faker.string.uuid()),
 			Name: faker.word.noun(),
 			SourceUpdatedAt,
 			SourceUpdatedAtMs: SourceUpdatedAt.getTime(),

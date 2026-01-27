@@ -1,15 +1,34 @@
+import type { SyncStatus } from "$lib/modules/common/common";
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
+import type { ICompanyMapperPort } from "../application/company.mapper.port";
 import type { Company, CompanyId } from "../domain/company.entity";
 import type { ICompanyRepositoryPort } from "./company.repository.port";
 import { companyRepositoryMeta } from "./company.repository.schema";
 
-export type CompanyRepositoryDeps = ClientEntityRepositoryDeps;
+export type CompanyRepositoryDeps = ClientEntityRepositoryDeps & {
+	companyMapper: ICompanyMapperPort;
+};
+
+export type CompanyModel = {
+	Id: CompanyId;
+	Name: string;
+	SourceUpdatedAt: Date;
+	SourceUpdatedAtMs: number;
+	SourceDeletedAt?: Date | null;
+	SourceDeleteAfter?: Date | null;
+
+	Sync: {
+		Status: SyncStatus;
+		ErrorMessage?: string | null;
+		LastSyncedAt: Date;
+	};
+};
 
 export class CompanyRepository
-	extends ClientEntityRepository<Company, CompanyId>
+	extends ClientEntityRepository<CompanyId, Company, CompanyModel>
 	implements ICompanyRepositoryPort
 {
-	constructor({ dbSignal }: CompanyRepositoryDeps) {
-		super({ dbSignal, storeName: companyRepositoryMeta.storeName });
+	constructor({ dbSignal, companyMapper }: CompanyRepositoryDeps) {
+		super({ dbSignal, storeName: companyRepositoryMeta.storeName, mapper: companyMapper });
 	}
 }

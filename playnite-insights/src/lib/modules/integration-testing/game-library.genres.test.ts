@@ -2,7 +2,7 @@ import { type ClientApiV1 } from "$lib/modules/bootstrap/application";
 import { TestCompositionRoot } from "$lib/modules/bootstrap/testing";
 import { faker } from "@faker-js/faker";
 import "fake-indexeddb/auto";
-import type { Genre } from "../game-library/domain";
+import { GenreIdParser, type Genre } from "../game-library/domain";
 
 describe("GameLibrary / Genres", () => {
 	let root: TestCompositionRoot;
@@ -54,7 +54,7 @@ describe("GameLibrary / Genres", () => {
 		// Arrange
 		const genres = root.factories.genre.buildList(5);
 		const existingIds = genres.map((g) => g.Id);
-		const missingId = "non-existing-genre-id";
+		const missingId = GenreIdParser.fromTrusted("non-existing-genre-id");
 
 		await api.GameLibrary.Command.SyncGenres.executeAsync({ genres });
 
@@ -68,18 +68,18 @@ describe("GameLibrary / Genres", () => {
 		expect(result.genres.map((g) => g.Id)).toEqual(existingIds);
 	});
 
-	it.each([{ genreIds: ["genre-1", "genre-2"] }, { genreIds: [] }])(
-		"returns an empty list when no genres exist",
-		async ({ genreIds }) => {
-			// Act
-			const result = await api.GameLibrary.Query.GetGenresByIds.executeAsync({
-				genreIds,
-			});
+	it.each([
+		{ genreIds: [GenreIdParser.fromTrusted("genre-1"), GenreIdParser.fromTrusted("genre-2")] },
+		{ genreIds: [] },
+	])("returns an empty list when no genres exist", async ({ genreIds }) => {
+		// Act
+		const result = await api.GameLibrary.Query.GetGenresByIds.executeAsync({
+			genreIds,
+		});
 
-			// Assert
-			expect(result.genres).toEqual([]);
-		},
-	);
+		// Assert
+		expect(result.genres).toEqual([]);
+	});
 
 	it("preserves the order of requested genre ids", async () => {
 		// Arrange

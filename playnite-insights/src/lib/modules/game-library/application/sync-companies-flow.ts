@@ -44,7 +44,7 @@ export class SyncCompaniesFlow implements ISyncCompaniesFlowPort {
 
 		if (!response.success) return;
 
-		const companies = response.companies.map((g) => this.companyMapper.toDomain(g, now));
+		const companies = response.companies.map((g) => this.companyMapper.fromDto(g, now));
 
 		await this.syncCompaniesCommandHandler.executeAsync({ companies });
 

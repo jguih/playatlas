@@ -12,7 +12,7 @@ export const genreRepositorySchema: IIndexedDbSchema = {
 	define({ db }) {
 		if (!db.objectStoreNames.contains(genreRepositoryMeta.storeName)) {
 			const store = db.createObjectStore(genreRepositoryMeta.storeName, { keyPath: "Id" });
-			store.createIndex(genreRepositoryMeta.index.bySourceUpdatedAt, ["SourceUpdatedAt", "Id"]);
+			store.createIndex(genreRepositoryMeta.index.bySourceUpdatedAt, ["SourceUpdatedAtMs", "Id"]);
 		}
 	},
 };

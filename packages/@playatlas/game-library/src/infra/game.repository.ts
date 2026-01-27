@@ -220,7 +220,7 @@ export const makeGameRepository = ({
 			query += where;
 			const total = (db.prepare(query).get(...params)?.Total as number) ?? 0;
 
-			logService.debug(`Query returned total amount of games: ${total}`);
+			logService.debug(`Query returned total amount of records: ${total}`);
 
 			return total;
 		}, `getTotal()`);
@@ -247,7 +247,7 @@ export const makeGameRepository = ({
 				props.load,
 			);
 
-			logService.debug(`Query returned game ${gameModel?.PlayniteName}`);
+			logService.debug(`Query returned record ${gameModel?.PlayniteName}`);
 			return gameMapper.toDomain(gameModel, {
 				developerIds: developerIds?.get(modelId),
 				publisherIds: publisherIds?.get(modelId),
@@ -278,7 +278,7 @@ export const makeGameRepository = ({
 				props.load,
 			);
 
-			logService.debug(`Query returned game ${gameModel?.PlayniteName}`);
+			logService.debug(`Query returned record ${gameModel?.PlayniteName}`);
 			return gameMapper.toDomain(gameModel, {
 				developerIds: developerIds?.get(modelId),
 				publisherIds: publisherIds?.get(modelId),
@@ -418,7 +418,7 @@ export const makeGameRepository = ({
 				});
 			});
 
-			logService.debug(`Query returned ${games?.length ?? 0} games`);
+			logService.debug(`Query returned ${games?.length ?? 0} records`);
 			return games;
 		}, `all()`);
 	};

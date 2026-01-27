@@ -1,4 +1,5 @@
 import type { ClientEntity } from "../common/client-entity";
+import type { IClientEntityMapper } from "../common/client-entity.mapper";
 import type { IClientEntityRepository } from "./client-entity.repository.port";
 import type { ClientRepositoryStoreName } from "./client-entity.repository.types";
 
@@ -7,18 +8,25 @@ export type ClientEntityRepositoryDeps = {
 };
 
 export class ClientEntityRepository<
-	TEntity extends ClientEntity<TEntityKey>,
 	TEntityKey extends IDBValidKey,
+	TEntity extends ClientEntity<TEntityKey>,
+	TModel,
 > implements IClientEntityRepository<TEntity, TEntityKey> {
 	private readonly dbSignal: IDBDatabase;
 	protected readonly storeName: ClientRepositoryStoreName;
+	protected readonly mapper: IClientEntityMapper<TEntityKey, TEntity, TModel>;
 
 	constructor({
 		dbSignal,
 		storeName,
-	}: ClientEntityRepositoryDeps & { storeName: ClientRepositoryStoreName }) {
+		mapper,
+	}: ClientEntityRepositoryDeps & {
+		storeName: ClientRepositoryStoreName;
+		mapper: IClientEntityMapper<TEntityKey, TEntity, TModel>;
+	}) {
 		this.dbSignal = dbSignal;
 		this.storeName = storeName;
+		this.mapper = mapper;
 	}
 
 	runTransaction = async <T>(
@@ -53,14 +61,16 @@ export class ClientEntityRepository<
 	addAsync: IClientEntityRepository<TEntity, TEntityKey>["addAsync"] = async (entity) => {
 		await this.runTransaction([this.storeName], "readwrite", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
-			await this.runRequest(store.add(entity));
+			const model = this.mapper.toPersistence(entity);
+			await this.runRequest(store.add(model));
 		});
 	};
 
 	putAsync: IClientEntityRepository<TEntity, TEntityKey>["putAsync"] = async (entity) => {
 		await this.runTransaction([this.storeName], "readwrite", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
-			await this.runRequest(store.put(entity));
+			const model = this.mapper.toPersistence(entity);
+			await this.runRequest(store.put(model));
 		});
 	};
 
@@ -74,8 +84,8 @@ export class ClientEntityRepository<
 	getByIdAsync: IClientEntityRepository<TEntity, TEntityKey>["getByIdAsync"] = async (entityId) => {
 		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
-			const entity = await this.runRequest<TEntity | undefined>(store.get(entityId));
-			return entity ?? null;
+			const model = await this.runRequest<TModel | undefined>(store.get(entityId));
+			return model ? this.mapper.toDomain(model) : null;
 		});
 	};
 
@@ -87,11 +97,11 @@ export class ClientEntityRepository<
 		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
 
-			const requests = ids.map((key) => this.runRequest<TEntity | undefined>(store.get(key)));
+			const requests = ids.map((key) => this.runRequest<TModel | undefined>(store.get(key)));
 
 			const results = await Promise.all(requests);
 
-			return results.filter((e) => e !== undefined);
+			return results.filter((e) => e !== undefined).map(this.mapper.toDomain);
 		});
 	};
 
@@ -105,7 +115,8 @@ export class ClientEntityRepository<
 			for (const entity of entities) {
 				const existing = await this.runRequest<TEntity | undefined>(store.get(entity.Id));
 				if (!existing || new Date(entity.SourceUpdatedAt) > new Date(existing.SourceUpdatedAt)) {
-					await this.runRequest(store.put(entity));
+					const model = this.mapper.toPersistence(entity);
+					await this.runRequest(store.put(model));
 				}
 			}
 		});

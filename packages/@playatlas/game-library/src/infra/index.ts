@@ -14,3 +14,4 @@ export * from "./genre.repository";
 export type * from "./genre.repository.port";
 export * from "./platform.repository";
 export type * from "./platform.repository.port";
+export type * from "./platform.repository.types";

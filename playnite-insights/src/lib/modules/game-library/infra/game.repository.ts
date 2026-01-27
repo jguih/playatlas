@@ -1,17 +1,52 @@
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
+import type { IGameMapperPort } from "../application/game.mapper.port";
 import type { Game, GameId } from "../domain/game.entity";
 import type { IGameRepositoryPort } from "./game.repository.port";
 import { gameRepositoryMeta } from "./game.repository.schema";
 import type { GameQueryResult } from "./game.repository.types";
 
-export type GameRepositoryDeps = ClientEntityRepositoryDeps;
+export type GameRepositoryDeps = ClientEntityRepositoryDeps & {
+	gameMapper: IGameMapperPort;
+};
+
+export type GameModel = {
+	Id: GameId;
+	SourceUpdatedAt: Date;
+	SourceUpdatedAtMs: number;
+	SourceDeletedAt?: Date | null;
+	SourceDeleteAfter?: Date | null;
+	Name: string | null;
+	Description: string | null;
+	ReleaseDate: Date | null;
+	Playtime: number;
+	LastActivity: Date | null;
+	Added: Date | null;
+	InstallDirectory: string | null;
+	IsInstalled: boolean;
+	BackgroundImagePath: string | null;
+	CoverImagePath: string | null;
+	IconImagePath: string | null;
+	Hidden: boolean;
+	CompletionStatusId: string | null;
+	ContentHash: string;
+	Developers: string[];
+	Publishers: string[];
+	Genres: string[];
+	Platforms: string[];
+
+	Sync: {
+		Status: "pending" | "synced" | "error";
+		ErrorMessage?: string | null;
+		LastSyncedAt: Date;
+	};
+};
 
 export class GameRepository
-	extends ClientEntityRepository<Game, GameId>
+	extends ClientEntityRepository<GameId, Game, GameModel>
 	implements IGameRepositoryPort
 {
-	constructor({ dbSignal }: GameRepositoryDeps) {
-		super({ dbSignal, storeName: gameRepositoryMeta.storeName });
+	constructor({ dbSignal, gameMapper }: GameRepositoryDeps) {
+		super({ dbSignal, storeName: gameRepositoryMeta.storeName, mapper: gameMapper });
 	}
 
 	queryAsync: IGameRepositoryPort["queryAsync"] = async ({ index, direction, range, limit }) => {

@@ -1,5 +1,5 @@
-import type { QueryHandler } from "@playatlas/common/common";
-import { createHashForObject } from "@playatlas/common/infra";
+import { computeNextSyncCursor, type QueryHandler } from "@playatlas/common/common";
+import type { PlatformRepositoryFilters } from "../../infra/platform.repository.types";
 import type { GetAllPlatformsQuery } from "./get-all-platforms.query";
 import type {
 	GetAllPlatformsQueryHandlerDeps,
@@ -14,24 +14,33 @@ export type IGetAllPlatformsQueryHandlerPort = QueryHandler<
 export const makeGetAllPlatformQueryHandler = ({
 	platformRepository,
 	platformMapper,
+	logService,
+	clock,
 }: GetAllPlatformsQueryHandlerDeps): IGetAllPlatformsQueryHandlerPort => {
 	return {
-		execute: ({ ifNoneMatch } = {}) => {
-			const platforms = platformRepository.all();
+		execute: ({ lastCursor } = {}) => {
+			const filters: PlatformRepositoryFilters | undefined = lastCursor
+				? {
+						syncCursor: lastCursor,
+					}
+				: undefined;
 
-			if (!platforms || platforms.length === 0) {
-				return { type: "ok", data: [], etag: '"empty"' };
+			const platforms = platformRepository.all(filters);
+
+			if (lastCursor) {
+				const elapsedMs = clock.now().getTime() - lastCursor.lastUpdatedAt.getTime();
+				const elapsedSeconds = Math.floor(elapsedMs / 1000);
+				logService.debug(
+					`Found ${platforms.length} platforms (updated since last sync: ${elapsedSeconds}s ago)`,
+				);
+			} else {
+				logService.debug(`Found ${platforms.length} platforms (no filters)`);
 			}
 
 			const platformDtos = platformMapper.toDtoList(platforms);
-			const hash = createHashForObject(platformDtos);
-			const etag = `"${hash}"`;
+			const nextCursor = computeNextSyncCursor(platforms, lastCursor);
 
-			if (ifNoneMatch === etag) {
-				return { type: "not_modified" };
-			}
-
-			return { type: "ok", data: platformDtos, etag };
+			return { data: platformDtos, nextCursor };
 		},
 	};
 };

@@ -1,6 +1,6 @@
 import type { IClientEntityFactoryPort } from "$lib/modules/common/testing";
 import { faker } from "@faker-js/faker";
-import type { Game } from "../domain";
+import { GameIdParser, type Game } from "../domain/game.entity";
 
 export type IGameFactoryPort = IClientEntityFactoryPort<Game>;
 
@@ -9,7 +9,7 @@ export class GameFactory implements IGameFactoryPort {
 		const sourceUpdatedAt = faker.date.recent();
 
 		return {
-			Id: faker.string.uuid(),
+			Id: GameIdParser.fromTrusted(faker.string.uuid()),
 			Name: faker.lorem.words({ min: 1, max: 4 }),
 			Description: faker.lorem.paragraphs({ min: 1, max: 5 }),
 			ReleaseDate: faker.date.past(),

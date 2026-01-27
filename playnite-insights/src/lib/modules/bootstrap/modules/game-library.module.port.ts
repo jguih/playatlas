@@ -3,6 +3,8 @@ import type {
 	IGameLibrarySyncManagerPort,
 	IGameLibrarySyncStatePort,
 	IGameMapperPort,
+	IGenreMapperPort,
+	IPlatformMapperPort,
 	IPlayAtlasClientPort,
 	ISyncCompaniesFlowPort,
 	ISyncGamesFlowPort,
@@ -39,6 +41,7 @@ export interface IClientGameLibraryModulePort {
 	get syncGamesCommandHandler(): ISyncGamesCommandHandlerPort;
 	get syncGamesFlow(): ISyncGamesFlowPort;
 
+	get genreMapper(): IGenreMapperPort;
 	get genreRepository(): IGenreRepositoryPort;
 	get getGenreByIdQueryHandler(): IGetGenreByIdQueryHandlerPort;
 	get getGenresByIdsQueryHandler(): IGetGenresByIdsQueryHandlerPort;
@@ -50,6 +53,7 @@ export interface IClientGameLibraryModulePort {
 	get syncCompaniesCommandHandler(): ISyncCompaniesCommandHandlerPort;
 	get syncCompaniesFlow(): ISyncCompaniesFlowPort;
 
+	get platformMapper(): IPlatformMapperPort;
 	get platformRepository(): IPlatformRepositoryPort;
 	get getPlatformsByIdsQueryHandler(): IGetPlatformsByIdsQueryHandlerPort;
 	get syncPlatformsCommandHandler(): ISyncPlatformsCommandHandlerPort;

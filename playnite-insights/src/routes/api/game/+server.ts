@@ -12,7 +12,7 @@ export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
 			return json({
 				success: false,
 				reason_code: "validation_error",
-				reason: "Invalid 'sinceLastSync' param, it must be a valid ISO date string",
+				reason: "Invalid 'sinceLastSync' param, it must be a valid sync cursor",
 			} satisfies GetGamesResponseDto);
 		}
 

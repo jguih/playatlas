@@ -4,6 +4,7 @@ import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/i
 import z from "zod";
 import type { IPlatformMapperPort } from "../application/platform.mapper";
 import type { IPlatformRepositoryPort } from "./platform.repository.port";
+import type { PlatformRepositoryFilters } from "./platform.repository.types";
 
 export const platformSchema = z.object({
 	Id: platformIdSchema,
@@ -42,6 +43,32 @@ export const makePlatformRepository = ({
 		"DeletedAt",
 		"DeleteAfter",
 	];
+
+	const getWhereClauseAndParamsFromFilters = (filters?: PlatformRepositoryFilters) => {
+		const where: string[] = [];
+		const params: (string | number)[] = [];
+
+		if (!filters) {
+			return { where: "", params };
+		}
+
+		if (filters.syncCursor) {
+			const syncCursor = filters.syncCursor;
+
+			where.push(`(LastUpdatedAt > ? OR (LastUpdatedAt = ? AND Id > ?))`);
+			params.push(
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.id,
+			);
+		}
+
+		return {
+			where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
+			params,
+		};
+	};
+
 	const base = makeBaseRepository({
 		getDb,
 		logService,
@@ -52,6 +79,8 @@ export const makePlatformRepository = ({
 			updateColumns: COLUMNS.filter((c) => c !== "Id"),
 			mapper: platformMapper,
 			modelSchema: platformSchema,
+			getWhereClauseAndParamsFromFilters,
+			getOrderBy: () => `ORDER BY LastUpdatedAt ASC, Id ASC`,
 		},
 	});
 

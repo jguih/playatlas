@@ -10,7 +10,7 @@ describe("Game Library / Platform", () => {
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute();
-		const platforms = result.type === "ok" ? result.data : [];
+		const platforms = result.data;
 		const addedPlatform = platforms.find((p) => p.Id === platform.getId());
 
 		// Assert
@@ -22,7 +22,7 @@ describe("Game Library / Platform", () => {
 			Background: platform.getBackground(),
 			Cover: platform.getCover(),
 			Icon: platform.getIcon(),
-		} satisfies PlatformResponseDto);
+		} satisfies Partial<PlatformResponseDto>);
 	});
 
 	it("handles a big list of platforms", () => {
@@ -33,51 +33,9 @@ describe("Game Library / Platform", () => {
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute();
-		const platforms = result.type === "ok" ? result.data : [];
+		const platforms = result.data;
 
 		// Assert
 		expect(platforms.length).toBeGreaterThanOrEqual(newPlatformsCount);
-	});
-
-	it("query returns 'not_modified' when provided a matching etag", () => {
-		// Arrange
-		const platforms = factory.getPlatformFactory().buildList(500);
-		root.seedPlatform(platforms);
-
-		// Act
-		const firstResult = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute();
-		const firstEtag = firstResult.type === "ok" ? firstResult.etag : null;
-
-		const secondResult = api.gameLibrary.queries
-			.getGetAllPlatformsQueryHandler()
-			.execute({ ifNoneMatch: firstEtag });
-
-		// Assert
-		expect(secondResult.type === "not_modified").toBeTruthy();
-	});
-
-	it("query does not return 'not_modified' when platform list changes after first call", () => {
-		// Arrange
-		const platforms = factory.getPlatformFactory().buildList(500);
-		root.seedPlatform(platforms);
-
-		// Act
-		const firstResult = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute();
-		const firstEtag = firstResult.type === "ok" ? firstResult.etag : null;
-		const firstData = firstResult.type === "ok" ? firstResult.data : [];
-
-		const newPlatforms = factory.getPlatformFactory().buildList(500);
-		root.seedPlatform(newPlatforms);
-
-		const secondResult = api.gameLibrary.queries
-			.getGetAllPlatformsQueryHandler()
-			.execute({ ifNoneMatch: firstEtag });
-		const secondEtag = secondResult.type === "ok" ? secondResult.etag : null;
-		const secondData = secondResult.type === "ok" ? secondResult.data : [];
-
-		// Assert
-		expect(secondResult.type).not.toBe("not_modified");
-		expect(secondData).toHaveLength(firstData.length + 500);
-		expect(secondEtag).not.toBe(firstEtag);
 	});
 });

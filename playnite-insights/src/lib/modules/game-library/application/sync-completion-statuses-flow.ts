@@ -45,7 +45,7 @@ export class SyncCompletionStatusesFlow implements ISyncCompletionStatusesFlowPo
 		if (!response.success) return;
 
 		const completionStatuses = response.completionStatuses.map((g) =>
-			this.completionStatusMapper.toDomain(g, now),
+			this.completionStatusMapper.fromDto(g, now),
 		);
 
 		await this.syncCompletionStatusesCommandHandler.executeAsync({ completionStatuses });

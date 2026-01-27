@@ -1,21 +1,21 @@
 import type { IClockPort } from "$lib/modules/common/application";
-import { CompanyIdParser } from "../domain";
-import type { ICompanyMapperPort } from "./company.mapper.port";
+import { GenreIdParser } from "../domain";
+import type { IGenreMapperPort } from "./genre.mapper.port";
 
-export type CompanyMapperDeps = {
+export type GenreMapperDeps = {
 	clock: IClockPort;
 };
 
-export class CompanyMapper implements ICompanyMapperPort {
+export class GenreMapper implements IGenreMapperPort {
 	private readonly clock: IClockPort;
 
-	constructor({ clock }: CompanyMapperDeps) {
+	constructor({ clock }: GenreMapperDeps) {
 		this.clock = clock;
 	}
 
-	fromDto: ICompanyMapperPort["fromDto"] = (dto, lastSync) => {
+	fromDto: IGenreMapperPort["fromDto"] = (dto, lastSync) => {
 		return {
-			Id: CompanyIdParser.fromTrusted(dto.Id),
+			Id: GenreIdParser.fromTrusted(dto.Id),
 			Name: dto.Name,
 			SourceUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
 			SourceUpdatedAtMs: new Date(dto.Sync.LastUpdatedAt).getTime(),
@@ -27,7 +27,7 @@ export class CompanyMapper implements ICompanyMapperPort {
 		};
 	};
 
-	toDomain: ICompanyMapperPort["toDomain"] = (model) => {
+	toDomain: IGenreMapperPort["toDomain"] = (model) => {
 		return {
 			Id: model.Id,
 			Name: model.Name,
@@ -41,7 +41,7 @@ export class CompanyMapper implements ICompanyMapperPort {
 		};
 	};
 
-	toPersistence: ICompanyMapperPort["toPersistence"] = (entity) => {
+	toPersistence: IGenreMapperPort["toPersistence"] = (entity) => {
 		return {
 			Id: entity.Id,
 			Name: entity.Name,
