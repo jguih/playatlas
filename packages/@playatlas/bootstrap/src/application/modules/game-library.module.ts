@@ -102,6 +102,8 @@ export const makeGameLibraryModule = ({
 	const queryHandlerGetAllPlatforms = makeGetAllPlatformQueryHandler({
 		platformRepository,
 		platformMapper,
+		logService: buildLog("GetAllPlatformsQueryHandler"),
+		clock,
 	});
 
 	const genreFactory = makeGenreFactory({ clock });
