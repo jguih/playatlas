@@ -255,6 +255,7 @@
 						{@render detailSection("Hidden", store.game.Hidden ? "Yes" : "No")}
 						{@render detailSection("Developers", vm.getDevelopersString())}
 						{@render detailSection("Publishers", vm.getPublishersString())}
+						{@render detailSection("Genres", vm.getGenresString())}
 					</GameInfoSection>
 
 					<GameInfoSection

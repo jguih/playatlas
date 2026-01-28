@@ -33,4 +33,9 @@ export class GameViewModel {
 		if (this.store.publishers.length === 0) return "";
 		return this.store.publishers.map((d) => d.Name).join(", ");
 	};
+
+	getGenresString = (): string => {
+		if (this.store.genres.length === 0) return "";
+		return this.store.genres.map((g) => g.Name).join(" • ");
+	};
 }

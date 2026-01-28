@@ -1,5 +1,14 @@
 import type { ClientApiGetter } from "$lib/modules/bootstrap/application";
-import type { Company, CompletionStatus, Game, GameId } from "$lib/modules/game-library/domain";
+import {
+	CompanyIdParser,
+	CompletionStatusIdParser,
+	GenreIdParser,
+	type Company,
+	type CompletionStatus,
+	type Game,
+	type GameId,
+	type Genre,
+} from "$lib/modules/game-library/domain";
 
 type GameAggregateStoreDeps = {
 	api: ClientApiGetter;
@@ -14,6 +23,7 @@ export class GameAggregateStore {
 	completionStatus: CompletionStatus | null;
 	developers: Company[];
 	publishers: Company[];
+	genres: Genre[];
 
 	constructor({ api, getGameId }: GameAggregateStoreDeps) {
 		this.api = api;
@@ -23,13 +33,14 @@ export class GameAggregateStore {
 		this.completionStatus = $state(null);
 		this.developers = $state([]);
 		this.publishers = $state([]);
+		this.genres = $state([]);
 	}
 
 	private loadPublishersAsync = async () => {
 		if (!this.game || this.game.Publishers.length === 0) return;
 
 		const { companies } = await this.api().GameLibrary.Query.GetCompaniesByIds.executeAsync({
-			companyIds: this.game.Publishers,
+			companyIds: this.game.Publishers.map(CompanyIdParser.fromTrusted),
 		});
 		this.publishers = companies;
 	};
@@ -38,7 +49,7 @@ export class GameAggregateStore {
 		if (!this.game || this.game.Developers.length === 0) return;
 
 		const { companies } = await this.api().GameLibrary.Query.GetCompaniesByIds.executeAsync({
-			companyIds: this.game.Developers,
+			companyIds: this.game.Developers.map(CompanyIdParser.fromTrusted),
 		});
 		this.developers = companies;
 	};
@@ -48,9 +59,18 @@ export class GameAggregateStore {
 
 		const { completionStatuses } =
 			await this.api().GameLibrary.Query.GetCompletionStatusesByIds.executeAsync({
-				completionStatusesIds: [this.game.CompletionStatusId],
+				completionStatusesIds: [CompletionStatusIdParser.fromTrusted(this.game.CompletionStatusId)],
 			});
 		this.completionStatus = completionStatuses.at(0) ?? null;
+	};
+
+	private loadGenres = async () => {
+		if (!this.game || this.game.Genres.length === 0) return;
+
+		const { genres } = await this.api().GameLibrary.Query.GetGenresByIds.executeAsync({
+			genreIds: this.game.Genres.map(GenreIdParser.fromTrusted),
+		});
+		this.genres = genres;
 	};
 
 	initAsync = async () => {
@@ -64,10 +84,9 @@ export class GameAggregateStore {
 
 		if (!this.game) return;
 
-		await Promise.all([
-			this.loadCompletionStatusAsync(),
-			this.loadDevelopersAsync(),
-			this.loadPublishersAsync(),
-		]);
+		await this.loadCompletionStatusAsync();
+		await this.loadDevelopersAsync();
+		await this.loadPublishersAsync();
+		await this.loadGenres();
 	};
 }
