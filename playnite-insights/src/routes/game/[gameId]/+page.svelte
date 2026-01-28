@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import { getClientApiContext } from "$lib/modules/bootstrap/application";
+	import { GameIdParser } from "$lib/modules/game-library/domain";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
 	import SolidChip from "$lib/ui/components/chip/SolidChip.svelte";
@@ -24,7 +25,7 @@
 	import { GameViewModel } from "./page/game-view-model.svelte";
 
 	const { params } = $props();
-	const getGameId = () => params.gameId;
+	const getGameId = () => GameIdParser.fromTrusted(params.gameId);
 
 	const api = getClientApiContext();
 	const store = new GameAggregateStore({ api, getGameId });

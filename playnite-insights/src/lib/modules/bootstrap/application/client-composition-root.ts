@@ -1,8 +1,10 @@
 import { sessionIdRepositorySchema } from "$lib/modules/auth/infra";
 import {
 	AuthenticatedHttpClient,
+	EventBus,
 	HttpClient,
 	LogService,
+	type IDomainEventBusPort,
 	type ILogServicePort,
 } from "$lib/modules/common/application";
 import {
@@ -24,11 +26,10 @@ import type { ClientApiV1 } from "./client-api.v1";
 import { ClientBootstrapper } from "./client-bootstrapper";
 
 export class ClientCompositionRoot {
-	private readonly logService: ILogServicePort;
+	private readonly logService: ILogServicePort = new LogService();
+	private readonly eventBus: IDomainEventBusPort = new EventBus();
 
-	constructor() {
-		this.logService = new LogService();
-	}
+	constructor() {}
 
 	buildAsync = async (): Promise<ClientApiV1> => {
 		const infra: IClientInfraModulePort = new ClientInfraModule({
@@ -50,6 +51,7 @@ export class ClientCompositionRoot {
 			dbSignal: infra.dbSignal,
 			clock: infra.clock,
 			logService: this.logService,
+			eventBus: this.eventBus,
 		});
 		await auth.initializeAsync();
 
@@ -61,9 +63,36 @@ export class ClientCompositionRoot {
 			dbSignal: infra.dbSignal,
 			httpClient: playAtlasHttpClient,
 			clock: infra.clock,
+			eventBus: this.eventBus,
 		});
 
-		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary, auth } });
+		this.startLibrarySync({ auth, gameLibrary });
+		this.setupDomainEventListeners({ auth, gameLibrary });
+
+		const bootstrapper = new ClientBootstrapper({
+			modules: { infra, gameLibrary, auth },
+			eventBus: this.eventBus,
+		});
 		return bootstrapper.bootstrap();
+	};
+
+	private startLibrarySync = (deps: {
+		auth: IAuthModulePort;
+		gameLibrary: IClientGameLibraryModulePort;
+	}) => {
+		void deps.auth.sessionIdProvider.getAsync().then((sessionId) => {
+			if (sessionId) {
+				void deps.gameLibrary.gameLibrarySyncManager.executeAsync();
+			}
+		});
+	};
+
+	private setupDomainEventListeners = (deps: {
+		auth: IAuthModulePort;
+		gameLibrary: IClientGameLibraryModulePort;
+	}) => {
+		this.eventBus.on("login-successful", () => {
+			this.startLibrarySync(deps);
+		});
 	};
 }

@@ -10,6 +10,7 @@ import {
 } from "$lib/modules/auth/application";
 import { SessionIdRepository, type ISessionIdRepositoryPort } from "$lib/modules/auth/infra";
 import type { IClockPort, IHttpClientPort, ILogServicePort } from "$lib/modules/common/application";
+import type { IDomainEventBusPort } from "$lib/modules/common/application/event-bus.port";
 import type { IAuthModulePort } from "./auth.module.port";
 
 export type AuthModuleDeps = {
@@ -17,6 +18,7 @@ export type AuthModuleDeps = {
 	dbSignal: IDBDatabase;
 	clock: IClockPort;
 	logService: ILogServicePort;
+	eventBus: IDomainEventBusPort;
 };
 
 export class AuthModule implements IAuthModulePort {
@@ -28,7 +30,7 @@ export class AuthModule implements IAuthModulePort {
 
 	readonly authFlow: IAuthFlowPort;
 
-	constructor({ httpClient, dbSignal, clock, logService }: AuthModuleDeps) {
+	constructor({ httpClient, dbSignal, clock, logService, eventBus }: AuthModuleDeps) {
 		this.authService = new AuthService({ httpClient });
 
 		this.sessionIdMapper = new SessionIdMapper();
@@ -45,6 +47,8 @@ export class AuthModule implements IAuthModulePort {
 			authService: this.authService,
 			sessionIdProvider: this.sessionIdProvider,
 			logService,
+			clock,
+			eventBus,
 		});
 	}
 

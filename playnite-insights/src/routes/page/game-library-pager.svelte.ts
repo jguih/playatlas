@@ -1,5 +1,5 @@
 import type { ClientApiGetter } from "$lib/modules/bootstrap/application";
-import type { GameCardProjection } from "../components/game-card/game-card.projection";
+import type { GameCardProjection } from "../../lib/ui/components/game-card/game-card.projection";
 
 export type GameLibraryPagerState = {
 	games: GameCardProjection[];
@@ -57,5 +57,14 @@ export class GameLibraryPager {
 		} finally {
 			this.pagerStateSignal.loading = false;
 		}
+	};
+
+	invalidateSignal = () => {
+		if (this.pagerStateSignal.loading) return;
+
+		this.pagerStateSignal.exhausted = false;
+		this.pagerStateSignal.games = [];
+		this.pagerStateSignal.loading = false;
+		this.pagerStateSignal.nextKey = null;
 	};
 }

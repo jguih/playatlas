@@ -1,4 +1,4 @@
-import type { IHttpClientPort } from "$lib/modules/common/application";
+import type { IDomainEventBusPort, IHttpClientPort } from "$lib/modules/common/application";
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
 import {
 	type ICompanyMapperPort,
@@ -24,7 +24,9 @@ import {
 	SyncCompletionStatusesFlow,
 	SyncGamesFlow,
 	SyncGenresFlow,
+	SyncProgressReport,
 } from "$lib/modules/game-library/application";
+import type { ISyncProgressReporterPort } from "$lib/modules/game-library/application/sync-progress-reporter.svelte";
 import {
 	type ISyncRunnerPort,
 	SyncRunner,
@@ -76,6 +78,7 @@ export type ClientGameLibraryModuleDeps = {
 	dbSignal: IDBDatabase;
 	httpClient: IHttpClientPort;
 	clock: IClockPort;
+	eventBus: IDomainEventBusPort;
 };
 
 export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
@@ -113,14 +116,16 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly playAtlasClient: IPlayAtlasClientPort;
 	readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
 	readonly gameLibrarySyncManager: IGameLibrarySyncManagerPort;
+	readonly syncProgressReporter: ISyncProgressReporterPort;
 
-	constructor({ dbSignal, httpClient, clock }: ClientGameLibraryModuleDeps) {
+	constructor({ dbSignal, httpClient, clock, eventBus }: ClientGameLibraryModuleDeps) {
 		this.playAtlasClient = new PlayAtlasClient({ httpClient });
 		this.gameLibrarySyncState = new GameLibrarySyncState();
 		const syncRunner: ISyncRunnerPort = new SyncRunner({
 			clock,
 			gameLibrarySyncState: this.gameLibrarySyncState,
 		});
+		this.syncProgressReporter = new SyncProgressReport();
 
 		this.gameMapper = new GameMapper({ clock });
 		this.gameRepository = new GameRepository({ dbSignal, gameMapper: this.gameMapper });
@@ -206,6 +211,9 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			syncGamesFlow: this.syncGamesFlow,
 			syncCompaniesFlow: this.syncCompaniesFlow,
 			syncGenresFlow: this.syncGenresFlow,
+			progressReporter: this.syncProgressReporter,
+			clock,
+			eventBus,
 		});
 	}
 }

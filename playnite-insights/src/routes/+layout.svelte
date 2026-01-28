@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { ClientCompositionRoot, type ClientApiV1 } from "$lib/modules/bootstrap/application";
 	import { setClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
-	import Spinner from "$lib/ui/components/Spinner.svelte";
-	import { onMount } from "svelte";
+	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
+	import Main from "$lib/ui/components/Main.svelte";
 	import "../app.css";
 
 	const { children } = $props();
@@ -12,21 +12,17 @@
 	let api: ClientApiV1;
 	const getApi = (): ClientApiV1 => api;
 
-	void apiPromise.then((clientApi) => {
+	void apiPromise.then(async (clientApi) => {
 		api = clientApi;
 	});
 
 	setClientApiContext(getApi);
-
-	onMount(() => {
-		void apiPromise.then(async (api) => {
-			await api.GameLibrary.SyncManager.executeAsync();
-		});
-	});
 </script>
 
 {#await apiPromise}
-	<Spinner />
+	<AppLayout>
+		<Main class="p-0!"></Main>
+	</AppLayout>
 {:then}
 	{@render children()}
 {:catch}

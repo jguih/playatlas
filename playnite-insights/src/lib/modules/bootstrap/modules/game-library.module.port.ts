@@ -10,6 +10,7 @@ import type {
 	ISyncCompaniesFlowPort,
 	ISyncGamesFlowPort,
 } from "$lib/modules/game-library/application";
+import type { ISyncProgressReporterPort } from "$lib/modules/game-library/application/sync-progress-reporter.svelte";
 import type {
 	ISyncCompaniesCommandHandlerPort,
 	ISyncCompletionStatusesCommandHandlerPort,
@@ -69,4 +70,6 @@ export interface IClientGameLibraryModulePort {
 	get gameLibrarySyncState(): IGameLibrarySyncStatePort;
 
 	get gameLibrarySyncManager(): IGameLibrarySyncManagerPort;
+
+	get syncProgressReporter(): ISyncProgressReporterPort;
 }

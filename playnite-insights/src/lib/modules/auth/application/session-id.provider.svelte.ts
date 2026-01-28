@@ -29,14 +29,14 @@ export class SessionIdProvider implements ISessionIdProviderPort {
 	async setAsync(sessionId: SessionId): Promise<void> {
 		const now = this.clock.now();
 
-		const sessionIdObject: SessionIdAggregate = {
+		const sessionIdAggregate: SessionIdAggregate = {
 			Id: sessionId,
 			SessionId: sessionId,
 			SourceUpdatedAt: now,
 			SourceUpdatedAtMs: now.getTime(),
 		};
 
-		await this.sessionIdRepository.setAsync(sessionIdObject);
+		await this.sessionIdRepository.setAsync(sessionIdAggregate);
 
 		this.sessionIdSignal = sessionId;
 	}

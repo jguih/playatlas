@@ -12,5 +12,12 @@
 	"duration": {
 		"hours_and_minutes": "{hours}h {mins}m",
 		"hours_minutes_seconds": "{hours}h {mins}m {secs}s"
+	},
+	"progress": {
+		"syncing_games": "Syncing games...",
+		"syncing_platforms": "Syncing platforms...",
+		"syncing_genres": "Syncing genres...",
+		"syncing_completion_statuses": "Syncing completion statuses..",
+		"syncing_companies": "Syncing companies..."
 	}
 }

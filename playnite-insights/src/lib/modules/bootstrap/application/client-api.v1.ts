@@ -1,5 +1,9 @@
 import type { IAuthFlowPort } from "$lib/modules/auth/application";
-import type { IGameLibrarySyncManagerPort } from "$lib/modules/game-library/application";
+import type { IDomainEventBusPort } from "$lib/modules/common/application";
+import type {
+	IGameLibrarySyncManagerPort,
+	ISyncProgressReporterPort,
+} from "$lib/modules/game-library/application";
 import type {
 	ISyncCompaniesCommandHandlerPort,
 	ISyncCompletionStatusesCommandHandlerPort,
@@ -36,8 +40,10 @@ export interface ClientApiV1 {
 			SyncCompletionStatuses: ISyncCompletionStatusesCommandHandlerPort;
 		};
 		SyncManager: IGameLibrarySyncManagerPort;
+		SyncProgressReporter: ISyncProgressReporterPort;
 	};
 	Auth: {
 		Flow: IAuthFlowPort;
 	};
+	EventBus: IDomainEventBusPort;
 }

@@ -11,7 +11,6 @@
 	import BottomSheet from "$lib/ui/components/sidebar/BottomSheet.svelte";
 	import Sidebar from "$lib/ui/components/sidebar/Sidebar.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
-	import { GameLibraryPager } from "$lib/ui/pager";
 	import { HomePageFilters, homePageScrollState, HomePageSearch } from "$lib/ui/state";
 	import {
 		HomeIcon,
@@ -21,11 +20,14 @@
 		SettingsIcon,
 	} from "@lucide/svelte";
 	import { onMount, tick } from "svelte";
+	import { GameLibraryPager } from "./page/game-library-pager.svelte";
+	import { SyncProgressViewModel } from "./page/sync-progress.view-model";
 
 	const api = getClientApiContext();
 	const gamePager = new GameLibraryPager({ api });
 	const filters = new HomePageFilters();
 	const search = new HomePageSearch();
+	const syncProgress = $derived(api().GameLibrary.SyncProgressReporter.progressSignal);
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);
 	let main = $state<HTMLElement | undefined>(undefined);
 
@@ -49,6 +51,17 @@
 		})();
 
 		return () => observer.disconnect();
+	});
+
+	onMount(() => {
+		const unsubscribe = api().EventBus.on("sync-finished", () => {
+			if (gamePager.pagerStateSignal.games.length === 0) {
+				gamePager.invalidateSignal();
+				void gamePager.loadMore();
+			}
+		});
+
+		return () => unsubscribe();
 	});
 
 	beforeNavigate(() => {
@@ -83,25 +96,38 @@
 <AppLayout>
 	{#snippet header()}
 		<Header>
-			<div class="ml-auto block w-fit">
-				<LightButton
-					variant="neutral"
-					iconOnly
-					onclick={search.open}
-				>
-					<Icon>
-						<SearchIcon />
-					</Icon>
-				</LightButton>
-				<LightButton
-					variant="neutral"
-					iconOnly
-					onclick={filters.open}
-				>
-					<Icon>
-						<ListFilter />
-					</Icon>
-				</LightButton>
+			<div class="flex justify-between items-center">
+				<div class="min-w-16 flex gap-2 text-sm">
+					{#if syncProgress.running}
+						<Spinner
+							size="sm"
+							variant="primary"
+						/>
+						<p class="font-medium text-foreground/80">
+							{SyncProgressViewModel.getSyncProgressLabel(syncProgress.activeFlow)}
+						</p>
+					{/if}
+				</div>
+				<div>
+					<LightButton
+						variant="neutral"
+						iconOnly
+						onclick={search.open}
+					>
+						<Icon>
+							<SearchIcon />
+						</Icon>
+					</LightButton>
+					<LightButton
+						variant="neutral"
+						iconOnly
+						onclick={filters.open}
+					>
+						<Icon>
+							<ListFilter />
+						</Icon>
+					</LightButton>
+				</div>
 			</div>
 		</Header>
 	{/snippet}

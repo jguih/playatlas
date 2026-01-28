@@ -1,3 +1,4 @@
+import type { IDomainEventBusPort } from "$lib/modules/common/application";
 import type { IAuthModulePort } from "../modules/auth.module.port";
 import type { IClientGameLibraryModulePort } from "../modules/game-library.module.port";
 import type { IClientInfraModulePort } from "../modules/infra.module.port";
@@ -11,17 +12,20 @@ export type ClientModules = {
 
 export type ClientBootstrapperDeps = {
 	modules: ClientModules;
+	eventBus: IDomainEventBusPort;
 };
 
 export class ClientBootstrapper {
 	private readonly infra: IClientInfraModulePort;
 	private readonly gameLibrary: IClientGameLibraryModulePort;
 	private readonly auth: IAuthModulePort;
+	private readonly eventBus: IDomainEventBusPort;
 
-	constructor({ modules }: ClientBootstrapperDeps) {
+	constructor({ modules, eventBus }: ClientBootstrapperDeps) {
 		this.infra = modules.infra;
 		this.gameLibrary = modules.gameLibrary;
 		this.auth = modules.auth;
+		this.eventBus = eventBus;
 	}
 
 	bootstrap(): ClientApiV1 {
@@ -44,10 +48,12 @@ export class ClientBootstrapper {
 					SyncCompletionStatuses: this.gameLibrary.syncCompletionStatusesCommandHandler,
 				},
 				SyncManager: this.gameLibrary.gameLibrarySyncManager,
+				SyncProgressReporter: this.gameLibrary.syncProgressReporter,
 			},
 			Auth: {
 				Flow: this.auth.authFlow,
 			},
+			EventBus: this.eventBus,
 		};
 
 		return Object.freeze(api);

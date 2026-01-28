@@ -1,5 +1,8 @@
 export * from "./authenticated-http-client";
 export type * from "./clock.port";
+export * from "./event-bus";
+export type * from "./event-bus.port";
+export type * from "./event-bus.types";
 export * from "./http";
 export * from "./http-client";
 export type * from "./http-client.port";
