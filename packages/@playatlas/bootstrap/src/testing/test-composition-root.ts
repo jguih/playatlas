@@ -7,7 +7,7 @@ import type {
 	Genre,
 	Platform,
 } from "@playatlas/game-library/domain";
-import { makeGameFactory } from "@playatlas/game-library/testing";
+import { makeTestGameFactory } from "@playatlas/game-library/testing";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapV1, type PlayAtlasApiV1 } from "../application";
 import { makeAuthModule, makeGameLibraryModule, makeSystemModule } from "../application/modules";
@@ -99,7 +99,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		const platformOptions = platformList.map((p) => p.getId());
 
 		factory.setGameFactory(
-			makeGameFactory({
+			makeTestGameFactory({
 				companyOptions,
 				completionStatusOptions,
 				genreOptions,

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { InvalidStateError } from "../error";
 
-export const gameIdSchema = z.string().min(1, "GameId cannot be empty").uuid();
+export const gameIdSchema = z.string().min(1, "GameId cannot be empty").ulid();
 
 export type GameId = z.infer<typeof gameIdSchema> & {
 	readonly __brand: "GameId";

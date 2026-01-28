@@ -33,6 +33,7 @@ import type {
 	IGenreRepositoryPort,
 	IPlatformRepositoryPort,
 } from "@playatlas/game-library/infra";
+import { monotonicFactory } from "ulid";
 import type { SyncGamesCommand, SyncGamesCommandItem } from "./sync-games.command";
 
 export type ExtractedSyncData = {
@@ -77,6 +78,7 @@ export const extractSyncData = ({
 	const added: PlayniteGameId[] = [];
 	const updated: PlayniteGameId[] = [];
 	const deleted: PlayniteGameId[] = [];
+	const ulid = monotonicFactory();
 
 	const processCommandItem = (item: SyncGamesCommandItem) => {
 		item.Genres?.forEach((g) => {
@@ -215,7 +217,7 @@ export const extractSyncData = ({
 			if (didUpdate) games.set(itemPlayniteGameId, existingGame);
 		} else {
 			const newGame = gameFactory.create({
-				id: GameIdParser.fromTrusted(crypto.randomUUID()),
+				id: GameIdParser.fromTrusted(ulid()),
 				playniteSnapshot,
 				developerIds: developerIds,
 				genreIds: genreIds,

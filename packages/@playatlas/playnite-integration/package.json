@@ -15,8 +15,8 @@
 	},
 	"dependencies": {
 		"@playatlas/common": "workspace:*",
-		"@playatlas/system": "workspace:*",
 		"@playatlas/game-library": "workspace:*",
+		"@playatlas/system": "workspace:*",
 		"busboy": "^1.6.0"
 	}
 }

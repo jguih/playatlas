@@ -17,9 +17,9 @@ import {
 	makePlatformFactory,
 	type CompanyFactory,
 	type CompletionStatusFactory,
-	type GameFactory,
 	type GenreFactory,
 	type PlatformFactory,
+	type TestGameFactory,
 } from "@playatlas/game-library/testing";
 import {
 	makeSyncGamesRequestDtoFactory,
@@ -30,8 +30,8 @@ export type ITestFactoryModulePort = {
 	getCompletionStatusFactory: () => CompletionStatusFactory;
 	getGenreFactory: () => GenreFactory;
 	getCompanyFactory: () => CompanyFactory;
-	getGameFactory: () => GameFactory;
-	setGameFactory: (factory: GameFactory) => void;
+	getGameFactory: () => TestGameFactory;
+	setGameFactory: (factory: TestGameFactory) => void;
 	getPlatformFactory: () => PlatformFactory;
 	getExtensionRegistrationFactory: () => ExtensionRegistrationFactory;
 	getSyncGameRequestDtoFactory: () => SyncGamesRequestDtoFactory;
@@ -50,7 +50,7 @@ export const makeTestFactoryModule = (deps: TestFactoryModuleDeps): ITestFactory
 	const _completion_status = makeCompletionStatusFactory(deps);
 	const _genre = makeGenreFactory(deps);
 	const _company = makeCompanyFactory(deps);
-	let _game_factory: GameFactory | null = null;
+	let _game_factory: TestGameFactory | null = null;
 	const _platform = makePlatformFactory(deps);
 	const _extension_registration_factory = makeExtensionRegistrationFactory(deps);
 	const _sync_game_dto_factory = makeSyncGamesRequestDtoFactory();

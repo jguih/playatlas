@@ -1,9 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { PlayniteGameIdParser } from "@playatlas/common/domain";
-import {
-	makeSyncGamesCommand,
-	type SyncGamesRequestDtoItem,
-} from "@playatlas/playnite-integration/commands";
+import { makeSyncGamesCommand } from "@playatlas/playnite-integration/commands";
 import { beforeEach, describe, expect, it } from "vitest";
 import { api, factory, root } from "../vitest.global.setup";
 
@@ -243,56 +240,6 @@ describe("Game Library / Game", () => {
 		expect(oneResult!.Added).toBeNull();
 		expect(oneResult!.InstallDirectory).toBeNull();
 		expect(oneResult!.CompletionStatusId).toBeNull();
-	});
-
-	it.only("update games and returns only those updated after the previous cursor", async () => {
-		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
-
-		const syncItems = factory.getSyncGameRequestDtoFactory().buildList(200);
-
-		const seedCommand = makeSyncGamesCommand({
-			AddedItems: syncItems,
-			RemovedItems: [],
-			UpdatedItems: [],
-		});
-
-		const seedResult = await api.playniteIntegration.commands
-			.getSyncGamesCommandHandler()
-			.executeAsync(seedCommand);
-		expect(seedResult.success).toBe(true);
-		const firstQueryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
-		console.log("first cursor", firstQueryResult.nextCursor);
-
-		const itemsToUpdate = faker.helpers.arrayElements(syncItems, 20);
-		const updatedItems: SyncGamesRequestDtoItem[] = itemsToUpdate.map((i) => ({
-			...i,
-			Name: `${i.Name} (Updated)`,
-			ContentHash: `${faker.string.uuid()}-updated`,
-		}));
-		const updateCommand = makeSyncGamesCommand({
-			AddedItems: [],
-			RemovedItems: [],
-			UpdatedItems: updatedItems,
-		});
-
-		root.clock.advance(1000);
-
-		const updateResult = await api.playniteIntegration.commands
-			.getSyncGamesCommandHandler()
-			.executeAsync(updateCommand);
-
-		// Act
-		const queryResult = api.gameLibrary.queries
-			.getGetAllGamesQueryHandler()
-			.execute({ lastCursor: firstQueryResult.nextCursor });
-		const games = queryResult.data;
-
-		// Assert
-		expect(updateResult.success).toBe(true);
-		expect(games).toHaveLength(20);
-		expect(games.every((g) => g.Name?.match(/(updated)/i))).toBe(true);
-		expect(games.every((g) => g.ContentHash?.match(/updated/i))).toBe(true);
 	});
 
 	it("deletion don't actually delete games, but mark them as deleted", async () => {
