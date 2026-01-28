@@ -17,4 +17,5 @@ export * from "./sync-companies-flow";
 export * from "./sync-completion-statuses-flow";
 export * from "./sync-games-flow";
 export * from "./sync-genres-flow";
+export * from "./sync-platforms-flow";
 export * from "./sync-progress-reporter.svelte";

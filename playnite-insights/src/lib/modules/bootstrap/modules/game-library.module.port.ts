@@ -8,7 +8,10 @@ import type {
 	IPlatformMapperPort,
 	IPlayAtlasClientPort,
 	ISyncCompaniesFlowPort,
+	ISyncCompletionStatusesFlowPort,
 	ISyncGamesFlowPort,
+	ISyncGenresFlowPort,
+	ISyncPlatformsFlowPort,
 } from "$lib/modules/game-library/application";
 import type { ISyncProgressReporterPort } from "$lib/modules/game-library/application/sync-progress-reporter.svelte";
 import type {
@@ -48,6 +51,7 @@ export interface IClientGameLibraryModulePort {
 	get getGenreByIdQueryHandler(): IGetGenreByIdQueryHandlerPort;
 	get getGenresByIdsQueryHandler(): IGetGenresByIdsQueryHandlerPort;
 	get syncGenresCommandHandler(): ISyncGenresCommandHandlerPort;
+	get syncGenresFlow(): ISyncGenresFlowPort;
 
 	get companyMapper(): ICompanyMapperPort;
 	get companyRepository(): ICompanyRepositoryPort;
@@ -59,11 +63,13 @@ export interface IClientGameLibraryModulePort {
 	get platformRepository(): IPlatformRepositoryPort;
 	get getPlatformsByIdsQueryHandler(): IGetPlatformsByIdsQueryHandlerPort;
 	get syncPlatformsCommandHandler(): ISyncPlatformsCommandHandlerPort;
+	get syncPlatformsFlow(): ISyncPlatformsFlowPort;
 
 	get completionStatusMapper(): ICompletionStatusMapperPort;
 	get completionStatusRepository(): ICompletionStatusRepositoryPort;
 	get getCompletionStatusesByIdsQueryHandler(): IGetCompletionStatusesByIdsQueryHandlerPort;
 	get syncCompletionStatusesCommandHandler(): ISyncCompletionStatusesCommandHandlerPort;
+	get syncCompletionStatusesFlow(): ISyncCompletionStatusesFlowPort;
 
 	get playAtlasClient(): IPlayAtlasClientPort;
 

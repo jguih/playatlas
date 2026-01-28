@@ -11,7 +11,7 @@ export class GameViewModel {
 		this.store = gameAggregateStore;
 	}
 
-	getCompaniesSummary = (): string => {
+	get companiesSummarySignal(): string {
 		const firstDev = this.store.developers.at(0);
 		const firstPublisher = this.store.publishers.at(0);
 
@@ -22,20 +22,25 @@ export class GameViewModel {
 		if (firstDev) return firstDev.Name;
 
 		return firstPublisher?.Name ?? "";
-	};
+	}
 
-	getDevelopersString = (): string => {
+	get developersStringSignal(): string {
 		if (this.store.developers.length === 0) return "";
 		return this.store.developers.map((d) => d.Name).join(", ");
-	};
+	}
 
-	getPublishersString = (): string => {
+	get publishersStringSignal(): string {
 		if (this.store.publishers.length === 0) return "";
 		return this.store.publishers.map((d) => d.Name).join(", ");
-	};
+	}
 
-	getGenresString = (): string => {
+	get genresStringSignal(): string {
 		if (this.store.genres.length === 0) return "";
 		return this.store.genres.map((g) => g.Name).join(" • ");
-	};
+	}
+
+	get platformsStringSignal(): string {
+		if (this.store.platforms.length === 0) return "";
+		return this.store.platforms.map((p) => p.Name).join(" • ");
+	}
 }

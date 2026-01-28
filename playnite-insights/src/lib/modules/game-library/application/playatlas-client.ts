@@ -4,6 +4,7 @@ import {
 	getCompletionStatusesResponseDtoSchema,
 	getGamesResponseDtoSchema,
 	getGenresResponseDtoSchema,
+	getPlatformsResponseDtoSchema,
 } from "@playatlas/game-library/dtos";
 import type { IPlayAtlasClientPort } from "./playatlas-client.port";
 
@@ -56,7 +57,13 @@ export class PlayAtlasClient implements IPlayAtlasClientPort {
 		return await zodJsonParser(getGenresResponseDtoSchema)(response);
 	};
 
-	getPlatformsAsync: IPlayAtlasClientPort["getPlatformsAsync"] = async () => {
-		throw new Error("Not Implemented");
+	getPlatformsAsync: IPlayAtlasClientPort["getPlatformsAsync"] = async ({ lastCursor }) => {
+		const response = await this.deps.httpClient.getAsync({
+			endpoint: `/api/platform`,
+			searchParams: {
+				sinceLastSync: lastCursor,
+			},
+		});
+		return await zodJsonParser(getPlatformsResponseDtoSchema)(response);
 	};
 }

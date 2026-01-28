@@ -13,6 +13,7 @@ import {
 	type ISyncCompletionStatusesFlowPort,
 	type ISyncGamesFlowPort,
 	type ISyncGenresFlowPort,
+	type ISyncPlatformsFlowPort,
 	CompanyMapper,
 	CompletionStatusMapper,
 	GameLibrarySyncManager,
@@ -24,6 +25,7 @@ import {
 	SyncCompletionStatusesFlow,
 	SyncGamesFlow,
 	SyncGenresFlow,
+	SyncPlatformsFlow,
 	SyncProgressReport,
 } from "$lib/modules/game-library/application";
 import type { ISyncProgressReporterPort } from "$lib/modules/game-library/application/sync-progress-reporter.svelte";
@@ -106,6 +108,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly platformRepository: IPlatformRepositoryPort;
 	readonly getPlatformsByIdsQueryHandler: IGetPlatformsByIdsQueryHandlerPort;
 	readonly syncPlatformsCommandHandler: ISyncPlatformsCommandHandlerPort;
+	readonly syncPlatformsFlow: ISyncPlatformsFlowPort;
 
 	readonly completionStatusMapper: ICompletionStatusMapperPort;
 	readonly completionStatusRepository: ICompletionStatusRepositoryPort;
@@ -187,6 +190,12 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.syncPlatformsCommandHandler = new SyncPlatformsCommandHandler({
 			platformRepository: this.platformRepository,
 		});
+		this.syncPlatformsFlow = new SyncPlatformsFlow({
+			platformMapper: this.platformMapper,
+			playAtlasClient: this.playAtlasClient,
+			syncPlatformsCommandHandler: this.syncPlatformsCommandHandler,
+			syncRunner,
+		});
 
 		this.completionStatusMapper = new CompletionStatusMapper({ clock });
 		this.completionStatusRepository = new CompletionStatusRepository({
@@ -211,6 +220,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			syncGamesFlow: this.syncGamesFlow,
 			syncCompaniesFlow: this.syncCompaniesFlow,
 			syncGenresFlow: this.syncGenresFlow,
+			syncPlatformsFlow: this.syncPlatformsFlow,
 			progressReporter: this.syncProgressReporter,
 			clock,
 			eventBus,

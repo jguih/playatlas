@@ -5,6 +5,7 @@ import type { ISyncCompaniesFlowPort } from "./sync-companies-flow";
 import type { ISyncCompletionStatusesFlowPort } from "./sync-completion-statuses-flow";
 import type { ISyncGamesFlowPort } from "./sync-games-flow";
 import type { ISyncGenresFlowPort } from "./sync-genres-flow";
+import type { ISyncPlatformsFlowPort } from "./sync-platforms-flow";
 import type { ISyncProgressReporterPort, SyncFlowKey } from "./sync-progress-reporter.svelte";
 
 export type GameLibrarySyncManagerDeps = {
@@ -12,6 +13,7 @@ export type GameLibrarySyncManagerDeps = {
 	syncCompletionStatusesFlow: ISyncCompletionStatusesFlowPort;
 	syncCompaniesFlow: ISyncCompaniesFlowPort;
 	syncGenresFlow: ISyncGenresFlowPort;
+	syncPlatformsFlow: ISyncPlatformsFlowPort;
 	progressReporter: ISyncProgressReporterPort;
 	clock: IClockPort;
 	eventBus: IDomainEventBusPort;
@@ -38,6 +40,7 @@ export class GameLibrarySyncManager implements IGameLibrarySyncManagerPort {
 				{ key: "completion-statuses", run: this.deps.syncCompletionStatusesFlow.executeAsync },
 				{ key: "companies", run: this.deps.syncCompaniesFlow.executeAsync },
 				{ key: "genres", run: this.deps.syncGenresFlow.executeAsync },
+				{ key: "platforms", run: this.deps.syncPlatformsFlow.executeAsync },
 			];
 
 			for (const { key, run } of flows) {

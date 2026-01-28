@@ -145,16 +145,16 @@
 								{store.game.Name}
 							</h1>
 
-							{#if store.game.ReleaseDate || vm.getCompaniesSummary().length > 0}
+							{#if store.game.ReleaseDate || vm.companiesSummarySignal.length > 0}
 								<span class="text-sm">
 									<span class="text-foreground/60">
 										{store.game.ReleaseDate?.getFullYear()}
 									</span>
-									{#if store.game.ReleaseDate && vm.getCompaniesSummary().length > 0}
+									{#if store.game.ReleaseDate && vm.companiesSummarySignal.length > 0}
 										•
 									{/if}
 									<span class="font-bold text-foreground/60">
-										{vm.getCompaniesSummary()}
+										{vm.companiesSummarySignal}
 									</span>
 								</span>
 							{/if}
@@ -253,9 +253,10 @@
 						{@render detailSection("Released", store.game.ReleaseDate?.toLocaleDateString())}
 						{@render detailSection("Added", store.game.Added?.toLocaleDateString())}
 						{@render detailSection("Hidden", store.game.Hidden ? "Yes" : "No")}
-						{@render detailSection("Developers", vm.getDevelopersString())}
-						{@render detailSection("Publishers", vm.getPublishersString())}
-						{@render detailSection("Genres", vm.getGenresString())}
+						{@render detailSection("Developers", vm.developersStringSignal)}
+						{@render detailSection("Publishers", vm.publishersStringSignal)}
+						{@render detailSection("Genres", vm.genresStringSignal)}
+						{@render detailSection("Platforms", vm.platformsStringSignal)}
 					</GameInfoSection>
 
 					<GameInfoSection
