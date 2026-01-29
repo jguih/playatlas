@@ -161,11 +161,11 @@ describe("Game Library / Game", () => {
 		);
 		expect(oneResult!.Playnite.Added).toBe(oneGamePlayniteSnapshot.added?.toISOString() ?? null);
 		expect(oneResult!.Playnite.InstallDirectory).toBe(oneGamePlayniteSnapshot.installDirectory);
-		expect(oneResult!.Playnite.IsInstalled).toBe(+oneGamePlayniteSnapshot.isInstalled);
+		expect(oneResult!.Playnite.IsInstalled).toBe(oneGamePlayniteSnapshot.isInstalled);
 		expect(oneResult!.Assets.BackgroundImagePath).toBe(oneGame.getBackgroundImagePath());
 		expect(oneResult!.Assets.CoverImagePath).toBe(oneGame.getCoverImagePath());
 		expect(oneResult!.Assets.IconImagePath).toBe(oneGame.getIconImagePath());
-		expect(oneResult!.Playnite.Hidden).toBe(+oneGamePlayniteSnapshot.hidden);
+		expect(oneResult!.Playnite.Hidden).toBe(oneGamePlayniteSnapshot.hidden);
 		expect(oneResult!.CompletionStatusId).toBe(oneGame.getCompletionStatusId());
 		expect(oneResult!.ContentHash).toBe(oneGame.getContentHash());
 		expect(new Set(oneResult!.Developers)).toEqual(new Set(oneGame.relationships.developers.get()));
