@@ -1,5 +1,5 @@
 import { type EntityMapper } from "@playatlas/common/application";
-import { GenreIdParser } from "@playatlas/common/domain";
+import { GenreIdParser, PlayniteGenreIdParser } from "@playatlas/common/domain";
 import { type Genre } from "../domain";
 import type { GenreResponseDto } from "../dtos";
 import type { GenreModel } from "../infra/genre.repository";
@@ -15,6 +15,7 @@ export const makeGenreMapper = ({ genreFactory }: GenreMapperDeps): IGenreMapper
 	const _toDto: IGenreMapperPort["toDto"] = (entity) => {
 		const dto: GenreResponseDto = {
 			Id: entity.getId(),
+			PlayniteId: entity.getPlayniteSnapshot()?.id ?? null,
 			Name: entity.getName(),
 			Sync: {
 				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
@@ -29,6 +30,7 @@ export const makeGenreMapper = ({ genreFactory }: GenreMapperDeps): IGenreMapper
 		toPersistence: (entity) => {
 			const model: GenreModel = {
 				Id: entity.getId(),
+				PlayniteId: entity.getPlayniteSnapshot()?.id ?? null,
 				Name: entity.getName(),
 				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
 				CreatedAt: entity.getCreatedAt().toISOString(),
@@ -40,11 +42,14 @@ export const makeGenreMapper = ({ genreFactory }: GenreMapperDeps): IGenreMapper
 		toDomain: (model) => {
 			const entity: Genre = genreFactory.rehydrate({
 				id: GenreIdParser.fromTrusted(model.Id),
+				playniteSnapshot: {
+					id: model.PlayniteId ? PlayniteGenreIdParser.fromTrusted(model.PlayniteId) : null,
+				},
 				name: model.Name,
 				lastUpdatedAt: new Date(model.LastUpdatedAt),
 				createdAt: new Date(model.CreatedAt),
-				deletedAt: model.DeletedAt ? new Date(model.DeletedAt) : undefined,
-				deleteAfter: model.DeleteAfter ? new Date(model.DeleteAfter) : undefined,
+				deletedAt: model.DeletedAt ? new Date(model.DeletedAt) : null,
+				deleteAfter: model.DeleteAfter ? new Date(model.DeleteAfter) : null,
 			});
 			return entity;
 		},

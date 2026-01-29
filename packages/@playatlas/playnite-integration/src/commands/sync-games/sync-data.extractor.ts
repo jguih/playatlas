@@ -7,6 +7,7 @@ import {
 	PlayniteCompanyIdParser,
 	PlayniteCompletionStatusIdParser,
 	PlayniteGameIdParser,
+	PlayniteGenreIdParser,
 	PlaynitePlatformIdParser,
 	type CompanyId,
 	type GameId,
@@ -15,6 +16,7 @@ import {
 	type PlayniteCompanyId,
 	type PlayniteCompletionStatusId,
 	type PlayniteGameId,
+	type PlayniteGenreId,
 	type PlaynitePlatformId,
 } from "@playatlas/common/domain";
 import type {
@@ -31,6 +33,7 @@ import {
 	type Genre,
 	type Platform,
 	type PlayniteGameSnapshot,
+	type PlayniteGenreSnapshot,
 	type PlaynitePlatformSnapshot,
 } from "@playatlas/game-library/domain";
 import type {
@@ -75,7 +78,7 @@ export const extractSyncData = ({
 	platformFactory,
 	genreFactory,
 }: SyncDataExtractorDeps): ExtractedSyncData => {
-	const genres = new Map<GenreId, Genre>();
+	const genres = new Map<PlayniteGenreId, Genre>();
 	const platforms = new Map<PlaynitePlatformId, Platform>();
 	const companies = new Map<PlayniteCompanyId, Company>();
 	const completionStatuses = new Map<PlayniteCompletionStatusId, CompletionStatus>();
@@ -91,22 +94,34 @@ export const extractSyncData = ({
 		const itemPublishers = new Set<CompanyId>();
 		const itemDevelopers = new Set<CompanyId>();
 		const itemPlatforms = new Set<PlatformId>();
+		const itemGenres = new Set<GenreId>();
 
 		item.Genres?.forEach((g) => {
-			const genreId = GenreIdParser.fromExternal(g.Id);
-			const existing = context.genres.get(genreId) ?? genres.get(genreId);
+			const playniteGenreId = PlayniteGenreIdParser.fromExternal(g.Id);
+			const existing = context.genres.get(playniteGenreId) ?? genres.get(playniteGenreId);
+
+			const playniteSnapshot: PlayniteGenreSnapshot = {
+				id: playniteGenreId,
+			};
 
 			if (existing) {
-				const didUpdate = existing.updateFromPlaynite({ name: g.Name });
-				if (didUpdate) genres.set(genreId, existing);
+				itemGenres.add(existing.getId());
+
+				const didUpdate = existing.updateFromPlaynite({
+					name: g.Name,
+					playniteSnapshot,
+				});
+				if (didUpdate) genres.set(playniteGenreId, existing);
 			} else {
 				const newGenre = genreFactory.create({
-					id: genreId,
+					id: GenreIdParser.fromTrusted(ulid()),
+					playniteSnapshot,
 					name: g.Name,
 					lastUpdatedAt: now,
 					createdAt: now,
 				});
-				genres.set(genreId, newGenre);
+				genres.set(playniteGenreId, newGenre);
+				itemGenres.add(newGenre.getId());
 			}
 		});
 
@@ -232,7 +247,7 @@ export const extractSyncData = ({
 		};
 
 		const developerIds = itemDevelopers.values().toArray();
-		const genreIds = item.Genres?.map((g) => GenreIdParser.fromExternal(g.Id)) ?? [];
+		const genreIds = itemGenres.values().toArray();
 		const publisherIds = itemPublishers.values().toArray();
 		const platformIds = itemPlatforms.values().toArray();
 
@@ -300,7 +315,7 @@ export const extractSyncData = ({
 
 export type GameLibrarySyncContext = {
 	readonly games: ReadonlyMap<PlayniteGameId, Game>;
-	readonly genres: ReadonlyMap<GenreId, Genre>;
+	readonly genres: ReadonlyMap<PlayniteGenreId, Genre>;
 	readonly completionStatuses: ReadonlyMap<PlayniteCompletionStatusId, CompletionStatus>;
 	readonly platforms: ReadonlyMap<PlaynitePlatformId, Platform>;
 	readonly companies: ReadonlyMap<PlayniteCompanyId, Company>;
@@ -330,7 +345,12 @@ export const buildGameLibrarySyncContext = ({
 	}
 
 	const _genres = genreRepository.all();
-	const genres = new Map(_genres.map((g) => [g.getId(), g]));
+	const genres = new Map<PlayniteGenreId, Genre>();
+
+	for (const genre of _genres) {
+		const playniteGenreId = genre.getPlayniteSnapshot()?.id;
+		if (playniteGenreId) genres.set(playniteGenreId, genre);
+	}
 
 	const _platforms = platformRepository.all();
 	const platforms = new Map<PlaynitePlatformId, Platform>();

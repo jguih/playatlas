@@ -1,5 +1,5 @@
 import { ISODateSchema } from "@playatlas/common/common";
-import { genreIdSchema } from "@playatlas/common/domain";
+import { genreIdSchema, playniteGenreIdSchema } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
 import type { IGenreMapperPort } from "../application";
@@ -8,6 +8,7 @@ import type { GenreRepositoryFilters } from "./genre.repository.types";
 
 export const genreSchema = z.object({
 	Id: genreIdSchema,
+	PlayniteId: playniteGenreIdSchema.nullable(),
 	Name: z.string(),
 	LastUpdatedAt: ISODateSchema,
 	CreatedAt: ISODateSchema,
@@ -26,9 +27,10 @@ export const makeGenreRepository = ({
 	logService,
 	genreMapper,
 }: GenreRepositoryDeps): IGenreRepositoryPort => {
-	const TABLE_NAME = "playnite_genre";
+	const TABLE_NAME = "genre";
 	const COLUMNS: (keyof GenreModel)[] = [
 		"Id",
+		"PlayniteId",
 		"Name",
 		"LastUpdatedAt",
 		"CreatedAt",

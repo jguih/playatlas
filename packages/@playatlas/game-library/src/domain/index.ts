@@ -5,5 +5,6 @@ export type * from "./completion-status.entity.types";
 export * from "./game.entity";
 export type * from "./game.entity.types";
 export * from "./genre.entity";
+export type * from "./genre.entity.types";
 export * from "./platform.entity";
 export * from "./platform.entity.types";

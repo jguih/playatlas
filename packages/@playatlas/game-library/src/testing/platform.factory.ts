@@ -38,7 +38,8 @@ export const makePlatformFactory = ({ platformFactory }: PlatformFactoryDeps): P
 	};
 
 	const buildList: PlatformFactory["buildList"] = (n, props = {}) => {
-		return Array.from({ length: n }, () => build(props));
+		const builder = createBuilder();
+		return Array.from({ length: n }, () => builder.build(props));
 	};
 
 	return { build, buildList };

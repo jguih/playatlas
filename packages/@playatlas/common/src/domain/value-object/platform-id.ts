@@ -1,7 +1,7 @@
 import z from "zod";
 import { InvalidStateError } from "../error";
 
-export const platformIdSchema = z.string().min(1, "PlatformId cannot be empty");
+export const platformIdSchema = z.string().min(1, "PlatformId cannot be empty").ulid();
 
 export type PlatformId = string & {
 	readonly __brand: "PlatformId";
@@ -9,7 +9,8 @@ export type PlatformId = string & {
 
 export const PlatformIdParser = {
 	fromExternal(value: string): PlatformId {
-		if (!value || value.trim() === "") throw new InvalidStateError(`PlatformId must not be empty`);
+		if (!platformIdSchema.safeParse(value).success)
+			throw new InvalidStateError(`PlatformId must be a valid ULID`);
 		return value as PlatformId;
 	},
 

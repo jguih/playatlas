@@ -7,6 +7,7 @@ import z from "zod";
 
 export const genreResponseDtoSchema = z.object({
 	Id: z.string(),
+	PlayniteId: z.string().nullable(),
 	Name: z.string(),
 	Sync: z.object({
 		LastUpdatedAt: ISODateSchema,

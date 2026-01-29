@@ -1,14 +1,15 @@
 import z from "zod";
 import { InvalidStateError } from "../error";
 
-export const genreIdSchema = z.string().min(1, "GenreId cannot be empty");
+export const genreIdSchema = z.string().min(1, "GenreId cannot be empty").ulid();
 
 export type GenreId = string & {
 	readonly __brand: "GenreId";
 };
 export const GenreIdParser = {
 	fromExternal(value: string): GenreId {
-		if (!value || value.trim() === "") throw new InvalidStateError(`GenreId must not be empty`);
+		if (!genreIdSchema.safeParse(value).success)
+			throw new InvalidStateError(`GenreId must be a valid ULID`);
 		return value as GenreId;
 	},
 

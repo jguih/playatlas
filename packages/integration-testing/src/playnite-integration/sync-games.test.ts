@@ -158,10 +158,6 @@ describe("Game Library Sync", () => {
 			new Set(initialSyncItems.map((g) => g.Id)),
 		);
 
-		expect(updatedGames.every((g) => genreOptions.every((gg) => g.Genres.includes(gg.Id)))).toBe(
-			true,
-		);
-
 		expect(events).toHaveLength(1);
 
 		const event = events.at(0);

@@ -8,4 +8,5 @@ export * from "./platform-id";
 export * from "./playnite-company-id";
 export * from "./playnite-completion-status-id";
 export * from "./playnite-game-id";
+export * from "./playnite-genre-id";
 export * from "./playnite-platform-id";
