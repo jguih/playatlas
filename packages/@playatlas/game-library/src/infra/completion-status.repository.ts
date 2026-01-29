@@ -1,5 +1,8 @@
 import { ISODateSchema } from "@playatlas/common/common";
-import { completionStatusIdSchema } from "@playatlas/common/domain";
+import {
+	completionStatusIdSchema,
+	playniteCompletionStatusIdSchema,
+} from "@playatlas/common/domain";
 import { type BaseRepositoryDeps, makeBaseRepository } from "@playatlas/common/infra";
 import z from "zod";
 import type { ICompletionStatusMapperPort } from "../application/completion-status.mapper";
@@ -8,6 +11,7 @@ import type { CompletionStatusRepositoryFilters } from "./completion-status.repo
 
 export const completionStatusSchema = z.object({
 	Id: completionStatusIdSchema,
+	PlayniteId: playniteCompletionStatusIdSchema.nullable(),
 	Name: z.string(),
 	LastUpdatedAt: ISODateSchema,
 	CreatedAt: ISODateSchema,
@@ -26,9 +30,10 @@ export const makeCompletionStatusRepository = ({
 	logService,
 	completionStatusMapper,
 }: CompletionStatusRepositoryDeps): ICompletionStatusRepositoryPort => {
-	const TABLE_NAME = `playnite_completion_status`;
+	const TABLE_NAME = `completion_status`;
 	const COLUMNS: (keyof CompletionStatusModel)[] = [
 		"Id",
+		"PlayniteId",
 		"Name",
 		"LastUpdatedAt",
 		"CreatedAt",

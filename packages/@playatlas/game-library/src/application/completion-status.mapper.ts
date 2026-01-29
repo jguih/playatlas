@@ -1,5 +1,8 @@
 import { type EntityMapper } from "@playatlas/common/application";
-import { CompletionStatusIdParser } from "@playatlas/common/domain";
+import {
+	CompletionStatusIdParser,
+	PlayniteCompletionStatusIdParser,
+} from "@playatlas/common/domain";
 import type { ICompletionStatusFactoryPort } from ".";
 import { type CompletionStatus } from "../domain/completion-status.entity";
 import type { CompletionStatusResponseDto } from "../dtos/completion-status.response.dto";
@@ -34,6 +37,7 @@ export const makeCompletionStatusMapper = ({
 		toPersistence: (completionStatus: CompletionStatus): CompletionStatusModel => {
 			const record: CompletionStatusModel = {
 				Id: completionStatus.getId(),
+				PlayniteId: completionStatus.getPlayniteId(),
 				Name: completionStatus.getName(),
 				LastUpdatedAt: completionStatus.getLastUpdatedAt().toISOString(),
 				CreatedAt: completionStatus.getCreatedAt().toISOString(),
@@ -45,6 +49,9 @@ export const makeCompletionStatusMapper = ({
 		toDomain: (completionStatus: CompletionStatusModel): CompletionStatus => {
 			const entity: CompletionStatus = completionStatusFactory.rehydrate({
 				id: CompletionStatusIdParser.fromTrusted(completionStatus.Id),
+				playniteId: completionStatus.PlayniteId
+					? PlayniteCompletionStatusIdParser.fromTrusted(completionStatus.PlayniteId)
+					: null,
 				name: completionStatus.Name,
 				lastUpdatedAt: new Date(completionStatus.LastUpdatedAt),
 				createdAt: new Date(completionStatus.CreatedAt),

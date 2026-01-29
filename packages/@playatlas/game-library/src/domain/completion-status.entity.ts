@@ -4,20 +4,23 @@ import {
 	InvalidStateError,
 	type BaseEntity,
 	type CompletionStatusId,
+	type PlayniteCompletionStatusId,
 } from "@playatlas/common/domain";
 import type {
 	MakeCompletionStatusDeps,
 	MakeCompletionStatusProps,
 	RehydrateCompletionStatusProps,
+	UpdateCompletionStatusFromPlayniteProps,
 } from "./completion-status.entity.types";
 
-type CompletionStatusName = string;
+export type CompletionStatusName = string;
 
 export type CompletionStatus = BaseEntity<CompletionStatusId> &
 	EntitySoftDeleteProps &
 	Readonly<{
 		getName: () => CompletionStatusName;
-		updateFromPlaynite: (value: { name: CompletionStatusName }) => boolean;
+		getPlayniteId: () => PlayniteCompletionStatusId | null;
+		updateFromPlaynite: (value: UpdateCompletionStatusFromPlayniteProps) => boolean;
 	}>;
 
 export const makeCompletionStatus = (
@@ -27,6 +30,7 @@ export const makeCompletionStatus = (
 	const now = clock.now();
 
 	const _id: CompletionStatusId = props.id;
+	let _playnite_id = props.playniteId ?? null;
 	let _name: CompletionStatusName = props.name;
 	let _last_updated_at = props.lastUpdatedAt ?? now;
 	const _created_at = props.createdAt ?? now;
@@ -50,16 +54,24 @@ export const makeCompletionStatus = (
 	const completionStatus: CompletionStatus = {
 		getId: () => _id,
 		getSafeId: () => _id,
+		getPlayniteId: () => _playnite_id,
 		getName: () => _name,
 		getLastUpdatedAt: () => _last_updated_at,
 		getCreatedAt: () => _created_at,
-		updateFromPlaynite: ({ name }) => {
-			if (name === _name) return false;
+		updateFromPlaynite: ({ name, playniteId }) => {
+			let updated = false;
+
+			if (_name !== name) updated = true;
+			if (_playnite_id !== playniteId) updated = true;
+
+			if (!updated) return updated;
 
 			_name = name;
+			_playnite_id = playniteId;
+
 			_touch();
 			_validate();
-			return true;
+			return updated;
 		},
 		validate: _validate,
 		...softDelete,

@@ -18,7 +18,7 @@ export const COLUMNS: (keyof GameModel)[] = [
 	"PlayniteCoverImage",
 	"PlayniteIcon",
 	"PlayniteHidden",
-	"PlayniteCompletionStatusId",
+	"CompletionStatusId",
 	"ContentHash",
 	"LastUpdatedAt",
 	"CreatedAt",

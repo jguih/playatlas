@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { PlayniteGameIdParser } from "@playatlas/common/domain";
+import { GameIdParser, PlayniteGameIdParser } from "@playatlas/common/domain";
 import { makeSyncGamesCommand } from "@playatlas/playnite-integration/commands";
 import { beforeEach, describe, expect, it } from "vitest";
 import { api, factory, root } from "../vitest.global.setup";
@@ -18,15 +18,13 @@ describe("Game Library / Game", () => {
 		root.seedGame(games);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const added = queryResult.data;
-		const addedRandomGame = added.find((g) => g.Id === randomGame.getPlayniteSnapshot().id);
+		const addedRandomGame = added.find((g) => g.Id === randomGame.getId());
 
 		// Assert
 		expect(added).toHaveLength(games.length);
-		expect(addedRandomGame?.Id).toBe(randomGame.getPlayniteSnapshot().id);
-		expect(addedRandomGame?.Name).toBe(randomGame.getPlayniteSnapshot().name);
-		expect(addedRandomGame?.CompletionStatusId).toBe(
-			randomGame.getPlayniteSnapshot().completionStatusId,
-		);
+		expect(addedRandomGame).toBeDefined();
+		expect(addedRandomGame!.Playnite.Name).toBe(randomGame.getPlayniteSnapshot().name);
+		expect(addedRandomGame!.CompletionStatusId).toBe(randomGame.getCompletionStatusId());
 	});
 
 	it("persists a game and eager load its developers", () => {
@@ -41,11 +39,11 @@ describe("Game Library / Game", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = result.data;
-		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
+		const insertedGame = games?.find((g) => g.Id === game.getId());
 
 		// Assert
 		expect(games).toBeTruthy();
-		expect(insertedGame).toBeTruthy();
+		expect(insertedGame).toBeDefined();
 		expect(new Set(insertedGame?.Developers)).toEqual(new Set([devId]));
 	});
 
@@ -61,7 +59,7 @@ describe("Game Library / Game", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = result.data;
-		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
+		const insertedGame = games?.find((g) => g.Id === game.getId());
 
 		// Assert
 		expect(games).toBeTruthy();
@@ -81,7 +79,7 @@ describe("Game Library / Game", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = result.data;
-		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
+		const insertedGame = games?.find((g) => g.Id === game.getId());
 
 		// Assert
 		expect(games).toBeTruthy();
@@ -101,7 +99,7 @@ describe("Game Library / Game", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = result.data;
-		const insertedGame = games?.find((g) => g.Id === game.getPlayniteSnapshot().id);
+		const insertedGame = games?.find((g) => g.Id === game.getId());
 
 		// Assert
 		expect(games).toBeTruthy();
@@ -137,7 +135,7 @@ describe("Game Library / Game", () => {
 		// Arrange
 		const listLength = 10000;
 		const games = factory.getGameFactory().buildList(listLength);
-		const gameIds = games.map((g) => g.getPlayniteSnapshot().id);
+		const gameIds = games.map((g) => g.getId());
 		const oneGame = faker.helpers.arrayElement(games);
 		const oneGamePlayniteSnapshot = oneGame.getPlayniteSnapshot();
 		root.seedGame(games);
@@ -145,30 +143,30 @@ describe("Game Library / Game", () => {
 		// Act
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const queryGames = queryResult.data;
-		const oneResult = queryGames.find((g) => g.Id === oneGame.getPlayniteSnapshot().id);
+		const oneResult = queryGames.find((g) => g.Id === oneGame.getId());
 
 		// Assert
 		expect(queryGames).toHaveLength(listLength);
-		expect(
-			queryGames.every((g) => gameIds.includes(PlayniteGameIdParser.fromExternal(g.Id))),
-		).toBeTruthy();
+		expect(queryGames.every((g) => gameIds.includes(GameIdParser.fromExternal(g.Id)))).toBeTruthy();
 
 		expect(oneResult).toBeDefined();
-		expect(oneResult!.Name).toBe(oneGamePlayniteSnapshot.name);
-		expect(oneResult!.Description).toBe(oneGamePlayniteSnapshot.description);
-		expect(oneResult!.ReleaseDate).toBe(oneGamePlayniteSnapshot.releaseDate?.toISOString() ?? null);
-		expect(oneResult!.Playtime).toBe(oneGamePlayniteSnapshot.playtime);
-		expect(oneResult!.LastActivity).toBe(
+		expect(oneResult!.Playnite.Name).toBe(oneGamePlayniteSnapshot.name);
+		expect(oneResult!.Playnite.Description).toBe(oneGamePlayniteSnapshot.description);
+		expect(oneResult!.Playnite.ReleaseDate).toBe(
+			oneGamePlayniteSnapshot.releaseDate?.toISOString() ?? null,
+		);
+		expect(oneResult!.Playnite.Playtime).toBe(oneGamePlayniteSnapshot.playtime);
+		expect(oneResult!.Playnite.LastActivity).toBe(
 			oneGamePlayniteSnapshot.lastActivity?.toISOString() ?? null,
 		);
-		expect(oneResult!.Added).toBe(oneGamePlayniteSnapshot.added?.toISOString() ?? null);
-		expect(oneResult!.InstallDirectory).toBe(oneGamePlayniteSnapshot.installDirectory);
-		expect(oneResult!.IsInstalled).toBe(+oneGamePlayniteSnapshot.isInstalled);
+		expect(oneResult!.Playnite.Added).toBe(oneGamePlayniteSnapshot.added?.toISOString() ?? null);
+		expect(oneResult!.Playnite.InstallDirectory).toBe(oneGamePlayniteSnapshot.installDirectory);
+		expect(oneResult!.Playnite.IsInstalled).toBe(+oneGamePlayniteSnapshot.isInstalled);
 		expect(oneResult!.Assets.BackgroundImagePath).toBe(oneGame.getBackgroundImagePath());
 		expect(oneResult!.Assets.CoverImagePath).toBe(oneGame.getCoverImagePath());
 		expect(oneResult!.Assets.IconImagePath).toBe(oneGame.getIconImagePath());
-		expect(oneResult!.Hidden).toBe(+oneGamePlayniteSnapshot.hidden);
-		expect(oneResult!.CompletionStatusId).toBe(oneGamePlayniteSnapshot.completionStatusId);
+		expect(oneResult!.Playnite.Hidden).toBe(+oneGamePlayniteSnapshot.hidden);
+		expect(oneResult!.CompletionStatusId).toBe(oneGame.getCompletionStatusId());
 		expect(oneResult!.ContentHash).toBe(oneGame.getContentHash());
 		expect(new Set(oneResult!.Developers)).toEqual(new Set(oneGame.relationships.developers.get()));
 		expect(new Set(oneResult!.Publishers)).toEqual(new Set(oneGame.relationships.publishers.get()));
@@ -194,7 +192,7 @@ describe("Game Library / Game", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = result.data;
-		const oneResult = games.find((g) => g.Id === game.getPlayniteSnapshot().id);
+		const oneResult = games.find((g) => g.Id === game.getId());
 
 		// Assert
 		expect(oneResult).toBeDefined();
@@ -217,7 +215,6 @@ describe("Game Library / Game", () => {
 				backgroundImage: null,
 				coverImage: null,
 				icon: null,
-				completionStatusId: null,
 				hidden: false,
 				id: PlayniteGameIdParser.fromTrusted(faker.string.uuid()),
 				isInstalled: false,
@@ -229,17 +226,16 @@ describe("Game Library / Game", () => {
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = result.data;
-		const oneResult = games.find((g) => g.Id === game.getPlayniteSnapshot().id);
+		const oneResult = games.find((g) => g.Id === game.getId());
 
 		// Assert
 		expect(oneResult).toBeDefined();
-		expect(oneResult!.Name).toBeNull();
-		expect(oneResult!.Description).toBeNull();
-		expect(oneResult!.ReleaseDate).toBeNull();
-		expect(oneResult!.LastActivity).toBeNull();
-		expect(oneResult!.Added).toBeNull();
-		expect(oneResult!.InstallDirectory).toBeNull();
-		expect(oneResult!.CompletionStatusId).toBeNull();
+		expect(oneResult!.Playnite.Name).toBeNull();
+		expect(oneResult!.Playnite.Description).toBeNull();
+		expect(oneResult!.Playnite.ReleaseDate).toBeNull();
+		expect(oneResult!.Playnite.LastActivity).toBeNull();
+		expect(oneResult!.Playnite.Added).toBeNull();
+		expect(oneResult!.Playnite.InstallDirectory).toBeNull();
 	});
 
 	it("deletion don't actually delete games, but mark them as deleted", async () => {

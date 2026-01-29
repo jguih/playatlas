@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { PlayniteGameId } from "@playatlas/common/domain";
+import { PlayniteGameIdParser, type PlayniteGameId } from "@playatlas/common/domain";
 import type { Game } from "@playatlas/game-library/domain";
 import type { GameAssetsContext } from "@playatlas/game-library/infra";
 import type { ValidMediaFileFieldName } from "@playatlas/playnite-integration/infra";
@@ -112,10 +112,11 @@ export class MediaFilesSyncTestEnvironmentBuilder {
 	};
 
 	buildAsync = async (): Promise<MediaFilesSyncTestEnvironment> => {
-		const game = factory.getGameFactory().build();
+		const gameId = PlayniteGameIdParser.fromTrusted(faker.string.uuid());
+		const snapshot = factory.getGameFactory().buildPlayniteSnapshot({ id: gameId });
+		const game = factory.getGameFactory().build({ playniteSnapshot: snapshot });
 		root.seedGame(game);
 
-		const gameId = game.getPlayniteSnapshot().id;
 		const gameContext = api.gameLibrary.getGameAssetsContextFactory().buildContext(gameId);
 
 		const cleanupAsync = async () => {

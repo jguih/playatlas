@@ -1,6 +1,7 @@
 import type { Relationship } from "@playatlas/common/common";
 import type {
 	CompanyId,
+	CompletionStatusId,
 	GameId,
 	GenreId,
 	PlatformId,
@@ -29,7 +30,7 @@ export type MakeGameRelationshipProps = {
 };
 
 export type PlayniteGameSnapshot = Readonly<{
-	id: PlayniteGameId;
+	id: PlayniteGameId | null;
 	name: string | null;
 	description: string | null;
 	releaseDate: Date | null;
@@ -42,7 +43,6 @@ export type PlayniteGameSnapshot = Readonly<{
 	coverImage: string | null;
 	icon: string | null;
 	hidden: boolean;
-	completionStatusId: string | null;
 }>;
 
 type BaseGame = {
@@ -54,6 +54,7 @@ type BaseGame = {
 	iconImagePath?: string | null;
 	deletedAt?: Date | null;
 	deleteAfter?: Date | null;
+	completionStatusId?: CompletionStatusId | null;
 };
 
 type CommonGameProps = {
@@ -76,6 +77,7 @@ export type UpdateGameFromPlayniteProps = {
 		genreIds: GenreId[];
 		platformIds: PlatformId[];
 	};
+	completionStatusId: CompletionStatusId | null;
 	contentHash: string;
 	playniteSnapshot: PlayniteGameSnapshot;
 };

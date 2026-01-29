@@ -1,5 +1,6 @@
 import { ISODateSchema } from "@playatlas/common/common";
 import {
+	completionStatusIdSchema,
 	GameIdParser,
 	gameIdSchema,
 	playniteGameIdSchema,
@@ -24,7 +25,7 @@ export const GROUPADD_SEPARATOR = ",";
 
 export const gameSchema = z.object({
 	Id: gameIdSchema,
-	PlayniteId: playniteGameIdSchema,
+	PlayniteId: playniteGameIdSchema.nullable(),
 	PlayniteName: z.string().nullable(),
 	PlayniteDescription: z.string().nullable(),
 	PlayniteReleaseDate: ISODateSchema.nullable(),
@@ -37,7 +38,7 @@ export const gameSchema = z.object({
 	PlayniteCoverImage: z.string().nullable(),
 	PlayniteIcon: z.string().nullable(),
 	PlayniteHidden: z.number(),
-	PlayniteCompletionStatusId: z.string().nullable(),
+	CompletionStatusId: completionStatusIdSchema.nullable(),
 	ContentHash: z.string(),
 	LastUpdatedAt: ISODateSchema,
 	CreatedAt: ISODateSchema,

@@ -2,20 +2,20 @@ BEGIN TRANSACTION;
 
 CREATE TABLE IF NOT EXISTS `game` (
   `Id` TEXT NOT NULL PRIMARY KEY,
-  `PlayniteId` TEXT NOT NULL UNIQUE,
-  `PlayniteName` TEXT,
-  `PlayniteDescription` TEXT,
-  `PlayniteReleaseDate` DATETIME,
+  `PlayniteId` TEXT UNIQUE DEFAULT NULL,
+  `PlayniteName` TEXT DEFAULT NULL,
+  `PlayniteDescription` TEXT DEFAULT NULL,
+  `PlayniteReleaseDate` DATETIME DEFAULT NULL,
   `PlaynitePlaytime` REAL NOT NULL DEFAULT 0,
-  `PlayniteLastActivity` TEXT,
-  `PlayniteAdded` DATETIME,
-  `PlayniteInstallDirectory` TEXT,
+  `PlayniteLastActivity` TEXT DEFAULT NULL,
+  `PlayniteAdded` DATETIME DEFAULT NULL,
+  `PlayniteInstallDirectory` TEXT DEFAULT NULL,
   `PlayniteIsInstalled` BOOLEAN NOT NULL DEFAULT FALSE,
-  `PlayniteBackgroundImage` TEXT,
-  `PlayniteCoverImage` TEXT,
-  `PlayniteIcon` TEXT,
+  `PlayniteBackgroundImage` TEXT DEFAULT NULL,
+  `PlayniteCoverImage` TEXT DEFAULT NULL,
+  `PlayniteIcon` TEXT DEFAULT NULL,
   `PlayniteHidden` BOOLEAN NOT NULL DEFAULT FALSE,
-  `PlayniteCompletionStatusId` TEXT,
+  `CompletionStatusId` TEXT DEFAULT NULL,
   `ContentHash` TEXT NOT NULL,
   `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS `game` (
   `DeleteAfter` DATETIME DEFAULT NULL,
   `BackgroundImagePath` TEXT DEFAULT NULL,
   `CoverImagePath` TEXT DEFAULT NULL,
-  `IconImagePath` TEXT DEFAULT NULL
+  `IconImagePath` TEXT DEFAULT NULL,
+  FOREIGN KEY (`CompletionStatusId`) REFERENCES `completion_status`(`Id`)
 );
 
 CREATE TABLE IF NOT EXISTS `playnite_company` (
@@ -35,8 +36,9 @@ CREATE TABLE IF NOT EXISTS `playnite_company` (
   `DeleteAfter` DATETIME DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS `playnite_completion_status` (
+CREATE TABLE IF NOT EXISTS `completion_status` (
   `Id` TEXT PRIMARY KEY,
+  `PlayniteId` TEXT UNIQUE DEFAULT NULL,
   `Name` TEXT NOT NULL,
   `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

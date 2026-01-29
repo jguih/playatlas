@@ -31,6 +31,7 @@ describe("Game Library Synchronization / Game", () => {
 					name: `${snapshot.name} (Updated)`,
 				},
 				relationships: { developerIds: [], genreIds: [], platformIds: [], publisherIds: [] },
+				completionStatusId: null,
 			});
 		}
 
@@ -48,13 +49,12 @@ describe("Game Library Synchronization / Game", () => {
 			"Sync cursor must be strictly monotonic; Changes to repository's 'ORDER BY' clause may break incremental sync. All items must be ordered by LastUpdatedAt ASC, then Id ASC.",
 		).toBe(true);
 
-		expect(
-			secondGames.every((g) => !firstQueryIds.has(g.Id)),
-			"Query must return items that were updated after the sync cursor",
-		).toBe(true);
-
 		expect(secondGames).toHaveLength(10);
-		expect(secondGames.every((g) => g.Name?.match(/(updated)/i))).toBe(true);
+		expect(
+			secondGames.every((g) => firstQueryIds.has(g.Id)),
+			"Query must return updated versions of previously-synced items",
+		).toBe(true);
+		expect(secondGames.every((g) => g.Playnite.Name?.match(/(updated)/i))).toBe(true);
 		expect(secondGames.every((g) => g.ContentHash?.match(/updated/i))).toBe(true);
 	});
 });

@@ -1,7 +1,10 @@
 import z from "zod";
 import { InvalidStateError } from "../error";
 
-export const completionStatusIdSchema = z.string().min(1, "CompletionStatusId cannot be empty");
+export const completionStatusIdSchema = z
+	.string()
+	.min(1, "CompletionStatusId cannot be empty")
+	.ulid();
 
 export type CompletionStatusId = string & {
 	readonly __brand: "CompletionStatusId";

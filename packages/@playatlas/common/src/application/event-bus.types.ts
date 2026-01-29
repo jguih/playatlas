@@ -1,4 +1,4 @@
-import type { ExtensionRegistrationId, GameId, GameSessionId, PlayniteGameId } from "../domain";
+import type { ExtensionRegistrationId, GameId, GameSessionId } from "../domain";
 
 export type DomainEvent = { id: string; occurredAt: Date } & (
 	| {
@@ -39,7 +39,7 @@ export type DomainEvent = { id: string; occurredAt: Date } & (
 	  }
 	| {
 			name: "game-library-synchronized";
-			payload: { added: PlayniteGameId[]; updated: PlayniteGameId[]; deleted: PlayniteGameId[] };
+			payload: { added: GameId[]; updated: GameId[]; deleted: GameId[] };
 	  }
 	| {
 			name: "instance-registered";

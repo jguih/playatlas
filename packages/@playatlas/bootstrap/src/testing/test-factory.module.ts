@@ -12,13 +12,13 @@ import type {
 } from "@playatlas/game-library/application";
 import {
 	makeCompanyFactory,
-	makeCompletionStatusFactory,
 	makeGenreFactory,
 	makePlatformFactory,
+	makeTestCompletionStatusFactory,
 	type CompanyFactory,
-	type CompletionStatusFactory,
 	type GenreFactory,
 	type PlatformFactory,
+	type TestCompletionStatusFactory,
 	type TestGameFactory,
 } from "@playatlas/game-library/testing";
 import {
@@ -27,7 +27,7 @@ import {
 } from "@playatlas/playnite-integration/testing";
 
 export type ITestFactoryModulePort = {
-	getCompletionStatusFactory: () => CompletionStatusFactory;
+	getCompletionStatusFactory: () => TestCompletionStatusFactory;
 	getGenreFactory: () => GenreFactory;
 	getCompanyFactory: () => CompanyFactory;
 	getGameFactory: () => TestGameFactory;
@@ -47,7 +47,7 @@ export type TestFactoryModuleDeps = {
 };
 
 export const makeTestFactoryModule = (deps: TestFactoryModuleDeps): ITestFactoryModulePort => {
-	const _completion_status = makeCompletionStatusFactory(deps);
+	const _completion_status = makeTestCompletionStatusFactory(deps);
 	const _genre = makeGenreFactory(deps);
 	const _company = makeCompanyFactory(deps);
 	let _game_factory: TestGameFactory | null = null;

@@ -5,7 +5,12 @@ import {
 	type EntitySoftDeleteProps,
 	type GameImageType,
 } from "@playatlas/common/common";
-import { InvalidStateError, type BaseEntity, type GameId } from "@playatlas/common/domain";
+import {
+	InvalidStateError,
+	type BaseEntity,
+	type CompletionStatusId,
+	type GameId,
+} from "@playatlas/common/domain";
 import type {
 	GameRelationshipProps,
 	MakeGameDeps,
@@ -25,6 +30,7 @@ export type Game = BaseEntity<GameId> &
 		getContentHash: () => string;
 		setImageReference: (props: { name: GameImageType; path: { filename: string } }) => void;
 		relationships: GameRelationshipProps;
+		getCompletionStatusId: () => CompletionStatusId | null;
 		updateFromPlaynite: (value: UpdateGameFromPlayniteProps) => boolean;
 	}>;
 
@@ -39,6 +45,7 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 	let _cover_image_path = props.coverImagePath ?? null;
 	let _icon_image_path = props.iconImagePath ?? null;
 	let _playnite_snapshot: PlayniteGameSnapshot = props.playniteSnapshot;
+	let _completion_status_id = props.completionStatusId ?? null;
 
 	const developers = createRelationship(props.developerIds ?? null);
 	const genres = createRelationship(props.genreIds ?? null);
@@ -83,6 +90,7 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 			platforms,
 			publishers,
 		},
+		getCompletionStatusId: () => _completion_status_id,
 		setImageReference: ({ name, path }) => {
 			if (validation.isNullOrEmptyString(path.filename))
 				throw new InvalidStateError("Filename must not be an empty string or null");
@@ -110,6 +118,7 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 
 			_playnite_snapshot = value.playniteSnapshot;
 			_content_hash = value.contentHash;
+			_completion_status_id = value.completionStatusId ?? null;
 
 			developers.set(value.relationships.developerIds);
 			publishers.set(value.relationships.publisherIds);

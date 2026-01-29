@@ -1,9 +1,10 @@
 import { faker } from "@faker-js/faker";
+import { PlayniteCompletionStatusIdParser } from "@playatlas/common/domain";
 import { describe, expect, it } from "vitest";
-import { api, factory, root } from "../vitest.global.setup";
+import { api, factory, root } from "../../vitest.global.setup";
 
-describe("Game Library / Completion Status", () => {
-	it("update games and returns only those updated after last sync", async () => {
+describe("Game Library Synchronization / Completion Status", () => {
+	it("Sync cursor invariant: correctly returns updated items across distinct timestamps", async () => {
 		// Arrange
 		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
 
@@ -16,7 +17,12 @@ describe("Game Library / Completion Status", () => {
 		root.clock.advance(1000);
 
 		const itemsToUpdate = faker.helpers.arrayElements(completionStatuses, 20);
-		itemsToUpdate.forEach((i) => i.updateFromPlaynite({ name: `${i.getName()} (Updated)` }));
+		itemsToUpdate.forEach((i) =>
+			i.updateFromPlaynite({
+				name: `${i.getName()} (Updated)`,
+				playniteId: PlayniteCompletionStatusIdParser.fromTrusted(`${i.getPlayniteId()}-(updated)`),
+			}),
+		);
 		root.seedCompletionStatus(itemsToUpdate);
 
 		// Act

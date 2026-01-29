@@ -8,6 +8,7 @@ import {
 	type CloseGameSessionRequestDto,
 	type OpenGameSessionRequestDto,
 } from "@playatlas/game-session/commands";
+import { ulid } from "ulid";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { recordDomainEvents } from "../test.lib";
 import { api, factory, root } from "../vitest.global.setup";
@@ -68,7 +69,7 @@ describe("Game Sessions", () => {
 		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
 		const now = root.clock.now();
 
-		const gameId = faker.string.uuid();
+		const gameId = ulid();
 		const sessionId = faker.string.uuid();
 
 		const requestDto: OpenGameSessionRequestDto = {

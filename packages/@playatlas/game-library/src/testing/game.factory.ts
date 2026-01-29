@@ -12,7 +12,7 @@ import { monotonicFactory } from "ulid";
 import type { IGameFactoryPort, IGameMapperPort } from "../application";
 import { type Game } from "../domain/game.entity";
 import { type MakeGameProps, type PlayniteGameSnapshot } from "../domain/game.entity.types";
-import type { PlayniteProjectionResponseDto } from "../dtos";
+import type { GameResponseDto } from "../dtos";
 
 export type GameFactoryDeps = {
 	completionStatusOptions: CompletionStatusId[];
@@ -24,8 +24,8 @@ export type GameFactoryDeps = {
 };
 
 export type TestGameFactory = TestEntityFactory<MakeGameProps, Game> & {
-	buildDto: (props?: Partial<MakeGameProps>) => PlayniteProjectionResponseDto;
-	buildDtoList: (n: number, props?: Partial<MakeGameProps>) => PlayniteProjectionResponseDto[];
+	buildDto: (props?: Partial<MakeGameProps>) => GameResponseDto;
+	buildDtoList: (n: number, props?: Partial<MakeGameProps>) => GameResponseDto[];
 	buildPlayniteSnapshot: (
 		override?: Partial<MakeGameProps["playniteSnapshot"]>,
 	) => PlayniteGameSnapshot;
@@ -42,25 +42,28 @@ export const makeTestGameFactory = ({
 	const pickMany = <T>(options: readonly T[], { min, max }: { min: number; max: number }) =>
 		faker.helpers.arrayElements(options, { min, max });
 
-	const buildPlayniteSnapshot: TestGameFactory["buildPlayniteSnapshot"] = (override = {}) => {
-		const completionStatusId =
-			override?.completionStatusId ?? faker.helpers.arrayElement(completionStatusOptions);
+	const pickOne = <T>(options: readonly T[]) => faker.helpers.arrayElement(options);
 
+	const p = <T, V>(value: V, prop?: T) => {
+		if (prop === undefined) return value;
+		return prop;
+	};
+
+	const buildPlayniteSnapshot: TestGameFactory["buildPlayniteSnapshot"] = (override = {}) => {
 		return {
 			id: PlayniteGameIdParser.fromExternal(override?.id ?? faker.string.uuid()),
-			name: override?.name ?? faker.commerce.productName(),
-			description: override?.description ?? faker.lorem.sentence(),
-			releaseDate: override?.releaseDate ?? faker.date.past(),
-			playtime: override?.playtime ?? faker.number.int({ min: 0, max: 500 }),
-			lastActivity: override?.lastActivity ?? faker.date.recent(),
-			added: override?.added ?? faker.date.past(),
-			installDirectory: override?.installDirectory ?? faker.system.directoryPath(),
-			isInstalled: override?.isInstalled ?? faker.datatype.boolean(),
-			backgroundImage: override?.backgroundImage ?? faker.image.url(),
-			coverImage: override?.coverImage ?? faker.image.url(),
-			icon: override?.icon ?? faker.image.url(),
-			hidden: override?.hidden ?? faker.datatype.boolean(),
-			completionStatusId,
+			name: p(faker.commerce.productName(), override.name),
+			description: p(faker.lorem.sentence(), override.description),
+			releaseDate: p(faker.date.past(), override.releaseDate),
+			playtime: p(faker.number.int({ min: 0, max: 50000 }), override.playtime),
+			lastActivity: p(faker.date.recent(), override.lastActivity),
+			added: p(faker.date.past(), override.added),
+			installDirectory: p(faker.system.directoryPath(), override.installDirectory),
+			isInstalled: p(faker.datatype.boolean(), override.isInstalled),
+			backgroundImage: p(faker.image.url(), override.backgroundImage),
+			coverImage: p(faker.image.url(), override.coverImage),
+			icon: p(faker.image.url(), override.icon),
+			hidden: p(faker.datatype.boolean(), override.hidden),
 		};
 	};
 
@@ -69,11 +72,12 @@ export const makeTestGameFactory = ({
 			gameFactory.create({
 				id: GameIdParser.fromExternal(props.id ?? ulid()),
 				playniteSnapshot: buildPlayniteSnapshot(props.playniteSnapshot),
-				contentHash: props.contentHash ?? faker.string.hexadecimal({ length: 32 }),
-				developerIds: props.developerIds ?? pickMany(companyOptions, { min: 1, max: 3 }),
-				publisherIds: props.publisherIds ?? pickMany(companyOptions, { min: 1, max: 3 }),
-				genreIds: props.genreIds ?? pickMany(genreOptions, { min: 1, max: 15 }),
-				platformIds: props.platformIds ?? pickMany(platformOptions, { min: 1, max: 5 }),
+				contentHash: p(faker.string.hexadecimal({ length: 32 }), props.contentHash),
+				developerIds: p(pickMany(companyOptions, { min: 1, max: 3 }), props.developerIds),
+				publisherIds: p(pickMany(companyOptions, { min: 1, max: 3 }), props.publisherIds),
+				genreIds: p(pickMany(genreOptions, { min: 1, max: 15 }), props.genreIds),
+				platformIds: p(pickMany(platformOptions, { min: 1, max: 5 }), props.platformIds),
+				completionStatusId: p(pickOne(completionStatusOptions), props.completionStatusId),
 			}),
 	});
 

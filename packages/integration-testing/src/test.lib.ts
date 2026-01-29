@@ -9,7 +9,6 @@ export const recordDomainEvents = () => {
 };
 
 export const isCursorAfter = (a: SyncCursor, b: SyncCursor): boolean => {
-	console.warn(a, b);
 	if (a.lastUpdatedAt.getTime() !== b.lastUpdatedAt.getTime()) {
 		return a.lastUpdatedAt > b.lastUpdatedAt;
 	}

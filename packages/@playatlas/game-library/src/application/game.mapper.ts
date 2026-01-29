@@ -1,16 +1,20 @@
 import { type EntityMapper } from "@playatlas/common/application";
-import { GameIdParser, PlayniteGameIdParser } from "@playatlas/common/domain";
+import {
+	CompletionStatusIdParser,
+	GameIdParser,
+	PlayniteGameIdParser,
+} from "@playatlas/common/domain";
 import type { Game } from "../domain/game.entity";
 import type { MakeGameRelationshipProps } from "../domain/game.entity.types";
-import type { PlayniteProjectionResponseDto } from "../dtos";
+import type { GameResponseDto } from "../dtos";
 import type { GameModel } from "../infra/game.repository";
 import type { IGameFactoryPort } from "./game.factory";
 
-export type IGameMapperPort = EntityMapper<Game, GameModel, PlayniteProjectionResponseDto> & {
+export type IGameMapperPort = EntityMapper<Game, GameModel, GameResponseDto> & {
 	toDomain: (model: GameModel, relationships: MakeGameRelationshipProps) => Game;
 };
 
-const _toDto = (game: Game): PlayniteProjectionResponseDto => {
+const _toDto = (game: Game): GameResponseDto => {
 	const Developers = game.relationships.developers.isLoaded()
 		? game.relationships.developers.get()
 		: [];
@@ -23,18 +27,21 @@ const _toDto = (game: Game): PlayniteProjectionResponseDto => {
 		: [];
 	const playniteSnapshot = game.getPlayniteSnapshot();
 
-	const dto: PlayniteProjectionResponseDto = {
-		Id: playniteSnapshot.id,
-		Name: playniteSnapshot.name,
-		Description: playniteSnapshot.description,
-		ReleaseDate: playniteSnapshot.releaseDate?.toISOString() ?? null,
-		Playtime: playniteSnapshot.playtime,
-		LastActivity: playniteSnapshot.lastActivity?.toISOString() ?? null,
-		Added: playniteSnapshot.added?.toISOString() ?? null,
-		InstallDirectory: playniteSnapshot.installDirectory,
-		IsInstalled: +playniteSnapshot.isInstalled,
-		Hidden: +playniteSnapshot.hidden,
-		CompletionStatusId: playniteSnapshot.completionStatusId,
+	const dto: GameResponseDto = {
+		Id: game.getId(),
+		Playnite: {
+			Id: playniteSnapshot.id,
+			Name: playniteSnapshot.name,
+			Description: playniteSnapshot.description,
+			ReleaseDate: playniteSnapshot.releaseDate?.toISOString() ?? null,
+			Playtime: playniteSnapshot.playtime,
+			LastActivity: playniteSnapshot.lastActivity?.toISOString() ?? null,
+			Added: playniteSnapshot.added?.toISOString() ?? null,
+			InstallDirectory: playniteSnapshot.installDirectory,
+			IsInstalled: +playniteSnapshot.isInstalled,
+			Hidden: +playniteSnapshot.hidden,
+		},
+		CompletionStatusId: game.getCompletionStatusId(),
 		ContentHash: game.getContentHash(),
 		Developers,
 		Publishers,
@@ -77,7 +84,7 @@ export const makeGameMapper = ({ gameFactory }: GameMapperDeps): IGameMapperPort
 				PlayniteCoverImage: playniteSnapshot.coverImage,
 				PlayniteIcon: playniteSnapshot.icon,
 				PlayniteHidden: +playniteSnapshot.hidden,
-				PlayniteCompletionStatusId: playniteSnapshot.completionStatusId,
+				CompletionStatusId: game.getCompletionStatusId(),
 				ContentHash: game.getContentHash(),
 				LastUpdatedAt: game.getLastUpdatedAt().toISOString(),
 				CreatedAt: game.getCreatedAt().toISOString(),
@@ -93,7 +100,7 @@ export const makeGameMapper = ({ gameFactory }: GameMapperDeps): IGameMapperPort
 			const entity: Game = gameFactory.rehydrate({
 				id: GameIdParser.fromTrusted(game.Id),
 				playniteSnapshot: {
-					id: PlayniteGameIdParser.fromTrusted(game.PlayniteId),
+					id: game.PlayniteId ? PlayniteGameIdParser.fromTrusted(game.PlayniteId) : null,
 					name: game.PlayniteName,
 					description: game.PlayniteDescription,
 					releaseDate: game.PlayniteReleaseDate ? new Date(game.PlayniteReleaseDate) : null,
@@ -106,12 +113,14 @@ export const makeGameMapper = ({ gameFactory }: GameMapperDeps): IGameMapperPort
 					coverImage: game.PlayniteCoverImage,
 					icon: game.PlayniteIcon,
 					hidden: Boolean(game.PlayniteHidden),
-					completionStatusId: game.PlayniteCompletionStatusId,
 				},
 				developerIds: relationships.developerIds,
 				genreIds: relationships.genreIds,
 				platformIds: relationships.platformIds,
 				publisherIds: relationships.publisherIds,
+				completionStatusId: game.CompletionStatusId
+					? CompletionStatusIdParser.fromTrusted(game.CompletionStatusId)
+					: null,
 				contentHash: game.ContentHash,
 				lastUpdatedAt: new Date(game.LastUpdatedAt),
 				createdAt: new Date(game.CreatedAt),
@@ -124,7 +133,7 @@ export const makeGameMapper = ({ gameFactory }: GameMapperDeps): IGameMapperPort
 			return entity;
 		},
 		toDto: _toDto,
-		toDtoList: (games: Game[]): PlayniteProjectionResponseDto[] => {
+		toDtoList: (games: Game[]): GameResponseDto[] => {
 			return games.map(_toDto);
 		},
 	};

@@ -171,7 +171,7 @@ describe("Playnite Integration / Media Files Handler", () => {
 			.handleMediaFilesSynchronizationRequest(request);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = queryResult.data;
-		const updatedGame = games.find((g) => g.Id === gameContext.getPlayniteGameId());
+		const updatedGame = games.find((g) => g.Playnite.Id === gameContext.getPlayniteGameId());
 
 		const fileEntries = await fsAsync.readdir(gameContext.getMediaFilesDirPath(), {
 			withFileTypes: true,
@@ -199,6 +199,7 @@ describe("Playnite Integration / Media Files Handler", () => {
 			filenames.push(entry.name);
 		}
 
+		expect(updatedGame).toBeDefined();
 		expect(updatedGame!.Assets.BackgroundImagePath).not.toBe(null);
 		expect(updatedGame?.Assets.BackgroundImagePath).toMatch(
 			new RegExp(`^${gameContext.getPlayniteGameId()}/`),

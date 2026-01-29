@@ -1,23 +1,30 @@
 import { ISODateSchema } from "@playatlas/common/common";
-import { playniteGameIdSchema } from "@playatlas/common/domain";
+import {
+	completionStatusIdSchema,
+	gameIdSchema,
+	playniteGameIdSchema,
+} from "@playatlas/common/domain";
 import {
 	defaultFailedResponseDtoSchema,
 	defaultSuccessResponseDtoSchema,
 } from "@playatlas/common/dtos";
 import z from "zod";
 
-export const playniteProjectionResponseDtoSchema = z.object({
-	Id: playniteGameIdSchema,
-	Name: z.string().nullable(),
-	Description: z.string().nullable(),
-	ReleaseDate: z.string().nullable(),
-	Playtime: z.number(),
-	LastActivity: z.string().nullable(),
-	Added: z.string().nullable(),
-	InstallDirectory: z.string().nullable(),
-	IsInstalled: z.number(),
-	Hidden: z.number(),
-	CompletionStatusId: z.string().nullable(),
+export const gameResponseDtoSchema = z.object({
+	Id: gameIdSchema,
+	Playnite: z.object({
+		Id: playniteGameIdSchema.nullable(),
+		Name: z.string().nullable(),
+		Description: z.string().nullable(),
+		ReleaseDate: z.string().nullable(),
+		Playtime: z.number(),
+		LastActivity: z.string().nullable(),
+		Added: z.string().nullable(),
+		InstallDirectory: z.string().nullable(),
+		IsInstalled: z.number(),
+		Hidden: z.number(),
+	}),
+	CompletionStatusId: completionStatusIdSchema.nullable(),
 	ContentHash: z.string(),
 	Developers: z.array(z.string()),
 	Publishers: z.array(z.string()),
@@ -35,9 +42,11 @@ export const playniteProjectionResponseDtoSchema = z.object({
 	}),
 });
 
+export type GameResponseDto = z.infer<typeof gameResponseDtoSchema>;
+
 const successResponse = z.object({
 	...defaultSuccessResponseDtoSchema.shape,
-	games: z.array(playniteProjectionResponseDtoSchema),
+	games: z.array(gameResponseDtoSchema),
 	reason_code: z.enum(["games_fetched_successfully"]),
 	nextCursor: z.string(),
 });
@@ -51,7 +60,5 @@ export const getGamesResponseDtoSchema = z.discriminatedUnion("success", [
 	successResponse,
 	failedResponse,
 ]);
-
-export type PlayniteProjectionResponseDto = z.infer<typeof playniteProjectionResponseDtoSchema>;
 
 export type GetGamesResponseDto = z.infer<typeof getGamesResponseDtoSchema>;
