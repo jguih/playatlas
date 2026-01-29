@@ -2,7 +2,7 @@ import {
 	type IFileSystemServicePort,
 	type ILogServiceFactoryPort,
 } from "@playatlas/common/application";
-import type { BaseRepositoryDeps, IClockPort, ISystemConfigPort } from "@playatlas/common/infra";
+import type { DbGetter, IClockPort, ISystemConfigPort } from "@playatlas/common/infra";
 import {
 	makeCompanyFactory,
 	makeCompanyMapper,
@@ -20,6 +20,7 @@ import {
 	makeCompletionStatusRepository,
 	makeGameAssetsContextFactory,
 	makeGameLibraryUnitOfWork,
+	makeGameRelationshipStore,
 	makeGameRepository,
 	makeGenreRepository,
 	makePlatformRepository,
@@ -34,7 +35,7 @@ import {
 import type { IGameLibraryModulePort } from "./game-library.module.port";
 
 export type GameLibraryModuleDeps = {
-	getDb: BaseRepositoryDeps["getDb"];
+	getDb: DbGetter;
 	logServiceFactory: ILogServiceFactoryPort;
 	fileSystemService: IFileSystemServicePort;
 	systemConfig: ISystemConfigPort;
@@ -52,10 +53,12 @@ export const makeGameLibraryModule = ({
 
 	const gameFactory = makeGameFactory({ clock });
 	const gameMapper = makeGameMapper({ gameFactory });
+	const relationshipStore = makeGameRelationshipStore({ getDb });
 	const gameRepository = makeGameRepository({
 		getDb,
 		logService: buildLog("GameRepository"),
 		gameMapper,
+		relationshipStore,
 	});
 	const queryHandlerGetAllGames = makeGetAllGamesQueryHandler({
 		gameRepository,

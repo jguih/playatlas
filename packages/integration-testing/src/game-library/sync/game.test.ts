@@ -31,7 +31,6 @@ describe("Game Library Synchronization / Game", () => {
 					name: `${snapshot.name} (Updated)`,
 				},
 				relationships: { developerIds: [], genreIds: [], platformIds: [], publisherIds: [] },
-				completionStatusId: null,
 			});
 		}
 

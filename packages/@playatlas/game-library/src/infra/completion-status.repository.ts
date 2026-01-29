@@ -10,8 +10,8 @@ import type { ICompletionStatusRepositoryPort } from "./completion-status.reposi
 import type { CompletionStatusRepositoryFilters } from "./completion-status.repository.types";
 
 export const completionStatusSchema = z.object({
-	Id: completionStatusIdSchema,
-	PlayniteId: playniteCompletionStatusIdSchema.nullable(),
+	Id: completionStatusIdSchema, // It was Playnite's id before, now it's a ULID
+	PlayniteId: playniteCompletionStatusIdSchema.nullable(), // New field
 	Name: z.string(),
 	LastUpdatedAt: ISODateSchema,
 	CreatedAt: ISODateSchema,

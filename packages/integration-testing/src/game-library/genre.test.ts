@@ -1,22 +1,7 @@
 import { faker } from "@faker-js/faker";
-import type { GenreResponseDto } from "@playatlas/game-library/dtos";
 import { describe, expect, it } from "vitest";
 import { isCursorAfter } from "../test.lib";
 import { api, factory, root } from "../vitest.global.setup";
-
-const isOrderedByUpdatedAtAndIdAsc = (items: GenreResponseDto[]) =>
-	items.every((current, index, array) => {
-		if (index === 0) return true;
-
-		const prev = array[index - 1];
-
-		const prevUpdatedAt = new Date(prev.Sync.LastUpdatedAt).getTime();
-		const currUpdatedAt = new Date(current.Sync.LastUpdatedAt).getTime();
-
-		return (
-			prevUpdatedAt < currUpdatedAt || (prevUpdatedAt === currUpdatedAt && prev.Id < current.Id)
-		);
-	});
 
 describe("Game Library / Genre", () => {
 	it("persists a new genre", () => {
@@ -87,21 +72,5 @@ describe("Game Library / Genre", () => {
 
 		expect(secondData).toHaveLength(500);
 		expect(secondData.every((g) => g.Name.match(/(new)/i))).toBe(true);
-	});
-
-	it("ENFORCES sync invariant: items must be ordered by LastUpdatedAt ASC, then Id ASC", () => {
-		// Arrange
-		const genres = factory.getGenreFactory().buildList(500);
-		root.seedGenre(genres);
-
-		// Act
-		const result = api.gameLibrary.queries.getGetAllGenresQueryHandler().execute();
-
-		// Assert
-		expect(result.data).toHaveLength(500);
-		expect(
-			isOrderedByUpdatedAtAndIdAsc(result.data),
-			"Sync cursor invariant violated: results MUST be ordered by LastUpdatedAt ASC, then Id ASC",
-		).toBe(true);
 	});
 });

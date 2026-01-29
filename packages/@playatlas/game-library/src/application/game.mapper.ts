@@ -2,6 +2,7 @@ import { type EntityMapper } from "@playatlas/common/application";
 import {
 	CompletionStatusIdParser,
 	GameIdParser,
+	PlayniteCompletionStatusIdParser,
 	PlayniteGameIdParser,
 } from "@playatlas/common/domain";
 import type { Game } from "../domain/game.entity";
@@ -40,6 +41,7 @@ const _toDto = (game: Game): GameResponseDto => {
 			InstallDirectory: playniteSnapshot.installDirectory,
 			IsInstalled: +playniteSnapshot.isInstalled,
 			Hidden: +playniteSnapshot.hidden,
+			CompletionStatusId: playniteSnapshot.completionStatusId,
 		},
 		CompletionStatusId: game.getCompletionStatusId(),
 		ContentHash: game.getContentHash(),
@@ -84,6 +86,7 @@ export const makeGameMapper = ({ gameFactory }: GameMapperDeps): IGameMapperPort
 				PlayniteCoverImage: playniteSnapshot.coverImage,
 				PlayniteIcon: playniteSnapshot.icon,
 				PlayniteHidden: +playniteSnapshot.hidden,
+				PlayniteCompletionStatusId: playniteSnapshot.completionStatusId,
 				CompletionStatusId: game.getCompletionStatusId(),
 				ContentHash: game.getContentHash(),
 				LastUpdatedAt: game.getLastUpdatedAt().toISOString(),
@@ -113,6 +116,9 @@ export const makeGameMapper = ({ gameFactory }: GameMapperDeps): IGameMapperPort
 					coverImage: game.PlayniteCoverImage,
 					icon: game.PlayniteIcon,
 					hidden: Boolean(game.PlayniteHidden),
+					completionStatusId: game.PlayniteCompletionStatusId
+						? PlayniteCompletionStatusIdParser.fromTrusted(game.PlayniteCompletionStatusId)
+						: null,
 				},
 				developerIds: relationships.developerIds,
 				genreIds: relationships.genreIds,

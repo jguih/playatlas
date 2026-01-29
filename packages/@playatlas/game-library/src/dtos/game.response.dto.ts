@@ -2,6 +2,7 @@ import { ISODateSchema } from "@playatlas/common/common";
 import {
 	completionStatusIdSchema,
 	gameIdSchema,
+	playniteCompletionStatusIdSchema,
 	playniteGameIdSchema,
 } from "@playatlas/common/domain";
 import {
@@ -23,6 +24,7 @@ export const gameResponseDtoSchema = z.object({
 		InstallDirectory: z.string().nullable(),
 		IsInstalled: z.number(),
 		Hidden: z.number(),
+		CompletionStatusId: playniteCompletionStatusIdSchema.nullable(),
 	}),
 	CompletionStatusId: completionStatusIdSchema.nullable(),
 	ContentHash: z.string(),

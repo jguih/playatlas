@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `game` (
   `PlayniteCoverImage` TEXT DEFAULT NULL,
   `PlayniteIcon` TEXT DEFAULT NULL,
   `PlayniteHidden` BOOLEAN NOT NULL DEFAULT FALSE,
+  `PlayniteCompletionStatusId` TEXT DEFAULT NULL,
   `CompletionStatusId` TEXT DEFAULT NULL,
   `ContentHash` TEXT NOT NULL,
   `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

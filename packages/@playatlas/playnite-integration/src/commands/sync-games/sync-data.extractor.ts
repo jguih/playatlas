@@ -83,6 +83,7 @@ export const extractSyncData = ({
 	const ulid = monotonicFactory();
 
 	const processCommandItem = (item: SyncGamesCommandItem): Game | undefined => {
+		let itemPlayniteCompletionStatusId: PlayniteCompletionStatusId | null = null;
 		let itemCompletionStatus: CompletionStatus | undefined = undefined;
 		const itemPublishers = new Set<CompanyId>();
 		const itemDevelopers = new Set<CompanyId>();
@@ -178,28 +179,28 @@ export const extractSyncData = ({
 		});
 
 		if (item.CompletionStatus) {
-			const playniteCompletionStatusId = PlayniteCompletionStatusIdParser.fromExternal(
+			itemPlayniteCompletionStatusId = PlayniteCompletionStatusIdParser.fromExternal(
 				item.CompletionStatus.Id,
 			);
 			itemCompletionStatus =
-				context.completionStatuses.get(playniteCompletionStatusId) ??
-				completionStatuses.get(playniteCompletionStatusId);
+				context.completionStatuses.get(itemPlayniteCompletionStatusId) ??
+				completionStatuses.get(itemPlayniteCompletionStatusId);
 
 			if (itemCompletionStatus) {
 				const didUpdate = itemCompletionStatus.updateFromPlaynite({
 					name: item.CompletionStatus.Name,
-					playniteId: playniteCompletionStatusId,
+					playniteId: itemPlayniteCompletionStatusId,
 				});
-				if (didUpdate) completionStatuses.set(playniteCompletionStatusId, itemCompletionStatus);
+				if (didUpdate) completionStatuses.set(itemPlayniteCompletionStatusId, itemCompletionStatus);
 			} else {
 				const newCompletionStatus = completionStatusFactory.create({
 					id: CompletionStatusIdParser.fromTrusted(ulid()),
-					playniteId: playniteCompletionStatusId,
+					playniteId: itemPlayniteCompletionStatusId,
 					name: item.CompletionStatus.Name,
 					lastUpdatedAt: now,
 					createdAt: now,
 				});
-				completionStatuses.set(playniteCompletionStatusId, newCompletionStatus);
+				completionStatuses.set(itemPlayniteCompletionStatusId, newCompletionStatus);
 			}
 		}
 
@@ -220,6 +221,7 @@ export const extractSyncData = ({
 			lastActivity: item.LastActivity ? new Date(item.LastActivity) : null,
 			playtime: item.Playtime,
 			releaseDate: item.ReleaseDate ? new Date(item.ReleaseDate) : null,
+			completionStatusId: itemPlayniteCompletionStatusId,
 		};
 
 		const developerIds = itemDevelopers.values().toArray();
@@ -232,7 +234,6 @@ export const extractSyncData = ({
 				contentHash: item.ContentHash,
 				playniteSnapshot,
 				relationships: { developerIds, genreIds, platformIds, publisherIds },
-				completionStatusId: itemCompletionStatus?.getId() ?? null,
 			});
 			if (didUpdate) games.set(playniteGameId, existingGame);
 		} else {

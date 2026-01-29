@@ -45,7 +45,7 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 	let _cover_image_path = props.coverImagePath ?? null;
 	let _icon_image_path = props.iconImagePath ?? null;
 	let _playnite_snapshot: PlayniteGameSnapshot = props.playniteSnapshot;
-	let _completion_status_id = props.completionStatusId ?? null;
+	const _completion_status_id = props.completionStatusId ?? null;
 
 	const developers = createRelationship(props.developerIds ?? null);
 	const genres = createRelationship(props.genreIds ?? null);
@@ -127,7 +127,6 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 
 			_playnite_snapshot = value.playniteSnapshot;
 			_content_hash = value.contentHash;
-			_completion_status_id = value.completionStatusId ?? null;
 
 			developers.set(value.relationships.developerIds);
 			publishers.set(value.relationships.publisherIds);

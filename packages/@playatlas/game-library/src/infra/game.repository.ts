@@ -3,6 +3,7 @@ import {
 	completionStatusIdSchema,
 	GameIdParser,
 	gameIdSchema,
+	playniteCompletionStatusIdSchema,
 	playniteGameIdSchema,
 	type CompanyId,
 	type GameId,
@@ -12,14 +13,11 @@ import {
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
 import type { IGameMapperPort } from "../application";
-import type { GameRelationship, GameRelationshipMap } from "../domain/game.entity.types";
-import { COLUMNS, GAME_RELATIONSHIP_META, TABLE_NAME } from "./game.repository.constants";
+import type { GameRelationship } from "../domain/game.entity.types";
+import type { IGameRelationshipStorePort } from "./game-relationship.store.port";
+import { COLUMNS, TABLE_NAME } from "./game.repository.constants";
 import type { GameRepositoryEagerLoadProps, IGameRepositoryPort } from "./game.repository.port";
-import type {
-	GameFilters,
-	GetRelationshipsForFn,
-	UpdateRelationshipsForFn,
-} from "./game.repository.types";
+import type { GameFilters } from "./game.repository.types";
 
 export const GROUPADD_SEPARATOR = ",";
 
@@ -38,6 +36,7 @@ export const gameSchema = z.object({
 	PlayniteCoverImage: z.string().nullable(),
 	PlayniteIcon: z.string().nullable(),
 	PlayniteHidden: z.number(),
+	PlayniteCompletionStatusId: playniteCompletionStatusIdSchema.nullable(),
 	CompletionStatusId: completionStatusIdSchema.nullable(),
 	ContentHash: z.string(),
 	LastUpdatedAt: ISODateSchema,
@@ -60,12 +59,16 @@ export const gameManifestDataSchema = z.array(
 
 export type GameManifestData = z.infer<typeof gameManifestDataSchema>;
 
-type GameRepositoryDeps = BaseRepositoryDeps & { gameMapper: IGameMapperPort };
+type GameRepositoryDeps = BaseRepositoryDeps & {
+	gameMapper: IGameMapperPort;
+	relationshipStore: IGameRelationshipStorePort;
+};
 
 export const makeGameRepository = ({
 	getDb,
 	logService,
 	gameMapper,
+	relationshipStore,
 }: GameRepositoryDeps): IGameRepositoryPort => {
 	const getWhereClauseAndParamsFromFilters = (filters?: GameFilters) => {
 		const where: string[] = [];
@@ -114,54 +117,6 @@ export const makeGameRepository = ({
 		},
 	});
 
-	const _updateRelationshipFor: UpdateRelationshipsForFn = ({
-		gameId,
-		relationship,
-		newRelationshipIds,
-	}) => {
-		const { table, column } = GAME_RELATIONSHIP_META[relationship];
-		return base.run(
-			({ db }) => {
-				base.runSavePoint(() => {
-					db.prepare(`DELETE FROM ${table} WHERE GameId = ?`).run(gameId);
-					if (newRelationshipIds.length > 0) {
-						const stmt = db.prepare(`INSERT INTO ${table} (GameId, ${column}) VALUES (?, ?)`);
-						for (const id of newRelationshipIds) {
-							stmt.run(gameId, id);
-						}
-					}
-				});
-			},
-			`_updateRelationshipFor(${gameId}, ${relationship}, ${newRelationshipIds.length} relationship(s))`,
-			false,
-		);
-	};
-
-	const _getRelationshipsFor: GetRelationshipsForFn = ({ relationship, gameIds }) => {
-		const { table, column } = GAME_RELATIONSHIP_META[relationship];
-		const placeholders = gameIds.map(() => "?").join(",");
-		return base.run(
-			({ db }) => {
-				const stmt = db.prepare(`
-            SELECT GameId, ${column}
-            FROM ${table}
-            WHERE GameId IN (${placeholders})
-          `);
-				const rows = stmt.all(...gameIds);
-				const map = new Map<GameId, GameRelationshipMap[typeof relationship][]>();
-				for (const props of rows) {
-					const gameId = props.GameId as GameId;
-					const entityId = props[column] as GameRelationshipMap[typeof relationship];
-					if (!map.get(gameId)) map.set(gameId, []);
-					map.get(gameId)!.push(entityId);
-				}
-				return map;
-			},
-			`_getRelationshipsFor(${relationship}, ${gameIds.length} game(s))`,
-			false,
-		);
-	};
-
 	const _shouldLoadRelationship = (
 		load: GameRepositoryEagerLoadProps["load"],
 		relationship: GameRelationship,
@@ -171,14 +126,14 @@ export const makeGameRepository = ({
 		else return false;
 	};
 
-	const _getAllRelationshipEntities = (
+	const _getAllRelationshipsForGame = (
 		gameIds: GameId[],
 		load: GameRepositoryEagerLoadProps["load"],
 	) => {
 		let developerIds: Map<GameId, CompanyId[]> | null = null;
 		if (_shouldLoadRelationship(load, "developers"))
 			developerIds =
-				_getRelationshipsFor({
+				relationshipStore.loadForGames({
 					relationship: "developers",
 					gameIds,
 				}) ?? [];
@@ -186,7 +141,7 @@ export const makeGameRepository = ({
 		let publisherIds: Map<GameId, CompanyId[]> | null = null;
 		if (_shouldLoadRelationship(load, "publishers"))
 			publisherIds =
-				_getRelationshipsFor({
+				relationshipStore.loadForGames({
 					relationship: "publishers",
 					gameIds,
 				}) ?? [];
@@ -194,7 +149,7 @@ export const makeGameRepository = ({
 		let genreIds: Map<GameId, GenreId[]> | null = null;
 		if (_shouldLoadRelationship(load, "genres"))
 			genreIds =
-				_getRelationshipsFor({
+				relationshipStore.loadForGames({
 					relationship: "genres",
 					gameIds,
 				}) ?? [];
@@ -202,7 +157,7 @@ export const makeGameRepository = ({
 		let platformIds: Map<GameId, PlatformId[]> | null = null;
 		if (_shouldLoadRelationship(load, "platforms"))
 			platformIds =
-				_getRelationshipsFor({
+				relationshipStore.loadForGames({
 					relationship: "platforms",
 					gameIds,
 				}) ?? [];
@@ -243,7 +198,7 @@ export const makeGameRepository = ({
 
 			const modelId = GameIdParser.fromTrusted(gameModel.Id);
 
-			const { developerIds, genreIds, platformIds, publisherIds } = _getAllRelationshipEntities(
+			const { developerIds, genreIds, platformIds, publisherIds } = _getAllRelationshipsForGame(
 				[modelId],
 				props.load,
 			);
@@ -274,7 +229,7 @@ export const makeGameRepository = ({
 
 			const modelId = GameIdParser.fromTrusted(gameModel.Id);
 
-			const { developerIds, genreIds, platformIds, publisherIds } = _getAllRelationshipEntities(
+			const { developerIds, genreIds, platformIds, publisherIds } = _getAllRelationshipsForGame(
 				[modelId],
 				props.load,
 			);
@@ -297,25 +252,25 @@ export const makeGameRepository = ({
 
 			const modelId = GameIdParser.fromTrusted(model.Id);
 			if (game.relationships.developers.isLoaded())
-				_updateRelationshipFor({
+				relationshipStore.replaceForGame({
 					relationship: "developers",
 					gameId: modelId,
 					newRelationshipIds: game.relationships.developers.get(),
 				});
 			if (game.relationships.publishers.isLoaded())
-				_updateRelationshipFor({
+				relationshipStore.replaceForGame({
 					relationship: "publishers",
 					gameId: modelId,
 					newRelationshipIds: game.relationships.publishers.get(),
 				});
 			if (game.relationships.genres.isLoaded())
-				_updateRelationshipFor({
+				relationshipStore.replaceForGame({
 					relationship: "genres",
 					gameId: modelId,
 					newRelationshipIds: game.relationships.genres.get(),
 				});
 			if (game.relationships.platforms.isLoaded())
-				_updateRelationshipFor({
+				relationshipStore.replaceForGame({
 					relationship: "platforms",
 					gameId: modelId,
 					newRelationshipIds: game.relationships.platforms.get(),
@@ -373,28 +328,28 @@ export const makeGameRepository = ({
 
 			let developerIdsMap: Map<GameId, CompanyId[]> = new Map();
 			if (_shouldLoadRelationship(props.load, "developers"))
-				developerIdsMap = _getRelationshipsFor({
+				developerIdsMap = relationshipStore.loadForGames({
 					relationship: "developers",
 					gameIds: gameModelsIds,
 				});
 
 			let publisherIdsMap: Map<GameId, CompanyId[]> = new Map();
 			if (_shouldLoadRelationship(props.load, "publishers"))
-				publisherIdsMap = _getRelationshipsFor({
+				publisherIdsMap = relationshipStore.loadForGames({
 					relationship: "publishers",
 					gameIds: gameModelsIds,
 				});
 
 			let genreIdsMap: Map<GameId, GenreId[]> = new Map();
 			if (_shouldLoadRelationship(props.load, "genres"))
-				genreIdsMap = _getRelationshipsFor({
+				genreIdsMap = relationshipStore.loadForGames({
 					relationship: "genres",
 					gameIds: gameModelsIds,
 				});
 
 			let platformIdsMap: Map<GameId, PlatformId[]> = new Map();
 			if (_shouldLoadRelationship(props.load, "platforms"))
-				platformIdsMap = _getRelationshipsFor({
+				platformIdsMap = relationshipStore.loadForGames({
 					relationship: "platforms",
 					gameIds: gameModelsIds,
 				});

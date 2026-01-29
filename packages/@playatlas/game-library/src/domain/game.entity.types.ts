@@ -5,6 +5,7 @@ import type {
 	GameId,
 	GenreId,
 	PlatformId,
+	PlayniteCompletionStatusId,
 	PlayniteGameId,
 } from "@playatlas/common/domain";
 import type { IClockPort } from "@playatlas/common/infra";
@@ -43,6 +44,7 @@ export type PlayniteGameSnapshot = Readonly<{
 	coverImage: string | null;
 	icon: string | null;
 	hidden: boolean;
+	completionStatusId: PlayniteCompletionStatusId | null;
 }>;
 
 type BaseGame = {
@@ -77,7 +79,6 @@ export type UpdateGameFromPlayniteProps = {
 		genreIds: GenreId[];
 		platformIds: PlatformId[];
 	};
-	completionStatusId: CompletionStatusId | null;
 	contentHash: string;
 	playniteSnapshot: PlayniteGameSnapshot;
 };

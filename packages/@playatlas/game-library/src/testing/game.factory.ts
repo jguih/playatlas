@@ -3,9 +3,9 @@ import {
 	GameIdParser,
 	PlayniteGameIdParser,
 	type CompanyId,
-	type CompletionStatusId,
 	type GenreId,
 	type PlatformId,
+	type PlayniteCompletionStatusId,
 } from "@playatlas/common/domain";
 import type { TestEntityFactory } from "@playatlas/common/testing";
 import { monotonicFactory } from "ulid";
@@ -15,7 +15,7 @@ import { type MakeGameProps, type PlayniteGameSnapshot } from "../domain/game.en
 import type { GameResponseDto } from "../dtos";
 
 export type GameFactoryDeps = {
-	completionStatusOptions: CompletionStatusId[];
+	completionStatusOptions: PlayniteCompletionStatusId[];
 	companyOptions: CompanyId[];
 	genreOptions: GenreId[];
 	platformOptions: PlatformId[];
@@ -64,6 +64,7 @@ export const makeTestGameFactory = ({
 			coverImage: p(faker.image.url(), override.coverImage),
 			icon: p(faker.image.url(), override.icon),
 			hidden: p(faker.datatype.boolean(), override.hidden),
+			completionStatusId: p(pickOne(completionStatusOptions), override.completionStatusId),
 		};
 	};
 
@@ -77,7 +78,7 @@ export const makeTestGameFactory = ({
 				publisherIds: p(pickMany(companyOptions, { min: 1, max: 3 }), props.publisherIds),
 				genreIds: p(pickMany(genreOptions, { min: 1, max: 15 }), props.genreIds),
 				platformIds: p(pickMany(platformOptions, { min: 1, max: 5 }), props.platformIds),
-				completionStatusId: p(pickOne(completionStatusOptions), props.completionStatusId),
+				completionStatusId: null,
 			}),
 	});
 

@@ -18,9 +18,11 @@ export type BaseRepositoryConfig<TEntity, TPersistence, TFilters = undefined> = 
 	getOrderBy?: () => string;
 };
 
+export type DbGetter = () => DatabaseSync;
+
 export type BaseRepositoryDeps = {
 	logService: ILogServicePort;
-	getDb: () => DatabaseSync;
+	getDb: DbGetter;
 };
 
 export type MakeBaseRepositoryDeps<

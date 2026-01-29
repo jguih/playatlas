@@ -219,6 +219,7 @@ describe("Game Library / Game", () => {
 				id: PlayniteGameIdParser.fromTrusted(faker.string.uuid()),
 				isInstalled: false,
 				playtime: 0,
+				completionStatusId: null,
 			},
 		});
 		root.seedGame([game]);
