@@ -1,5 +1,5 @@
 import { ISODateSchema } from "@playatlas/common/common";
-import { platformIdSchema } from "@playatlas/common/domain";
+import { platformIdSchema, playnitePlatformIdSchema } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
 import type { IPlatformMapperPort } from "../application/platform.mapper";
@@ -8,11 +8,9 @@ import type { PlatformRepositoryFilters } from "./platform.repository.types";
 
 export const platformSchema = z.object({
 	Id: platformIdSchema,
+	PlayniteId: playnitePlatformIdSchema.nullable(),
+	PlayniteSpecificationId: z.string().nullable(),
 	Name: z.string(),
-	SpecificationId: z.string(),
-	Icon: z.string().nullable(),
-	Cover: z.string().nullable(),
-	Background: z.string().nullable(),
 	LastUpdatedAt: ISODateSchema,
 	CreatedAt: ISODateSchema,
 	DeletedAt: ISODateSchema.nullable(),
@@ -30,14 +28,12 @@ export const makePlatformRepository = ({
 	logService,
 	platformMapper,
 }: PlatformRepositoryDeps): IPlatformRepositoryPort => {
-	const TABLE_NAME = "playnite_platform";
+	const TABLE_NAME = "platform";
 	const COLUMNS: (keyof PlatformModel)[] = [
 		"Id",
+		"PlayniteId",
+		"PlayniteSpecificationId",
 		"Name",
-		"SpecificationId",
-		"Icon",
-		"Cover",
-		"Background",
 		"LastUpdatedAt",
 		"CreatedAt",
 		"DeletedAt",

@@ -34,7 +34,7 @@ export const RELATIONSHIP_TABLE_NAME = {
 	gameDeveloper: "game_developer",
 	gamePublisher: "game_publisher",
 	gameGenre: "playnite_game_genre",
-	gamePlatform: "playnite_game_platform",
+	gamePlatform: "game_platform",
 } as const;
 
 export const GAME_RELATIONSHIP_META = {

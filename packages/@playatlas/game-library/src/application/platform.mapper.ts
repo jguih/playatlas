@@ -1,5 +1,5 @@
 import { type EntityMapper } from "@playatlas/common/application";
-import { PlatformIdParser } from "@playatlas/common/domain";
+import { PlatformIdParser, PlaynitePlatformIdParser } from "@playatlas/common/domain";
 import type { Platform } from "../domain/platform.entity";
 import type { PlatformResponseDto } from "../dtos";
 import type { PlatformModel } from "../infra/platform.repository";
@@ -15,13 +15,13 @@ export const makePlatformMapper = ({
 	platformFactory,
 }: PlatformMapperDeps): IPlatformMapperPort => {
 	const _toDto: IPlatformMapperPort["toDto"] = (entity) => {
+		const playniteSnapshot = entity.getPlayniteSnapshot();
+
 		const dto: PlatformResponseDto = {
 			Id: entity.getId(),
-			Background: entity.getBackground(),
-			Cover: entity.getCover(),
-			Icon: entity.getIcon(),
+			PlayniteId: playniteSnapshot?.id ?? null,
 			Name: entity.getName(),
-			SpecificationId: entity.getSpecificationId(),
+			PlayniteSpecificationId: playniteSnapshot?.specificationId ?? null,
 			Sync: {
 				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
 				DeletedAt: entity.getDeletedAt()?.toISOString() ?? null,
@@ -33,13 +33,13 @@ export const makePlatformMapper = ({
 
 	return {
 		toPersistence: (entity) => {
+			const playniteSnapshot = entity.getPlayniteSnapshot();
+
 			const model: PlatformModel = {
 				Id: entity.getId(),
+				PlayniteId: playniteSnapshot?.id ?? null,
+				PlayniteSpecificationId: playniteSnapshot?.specificationId ?? null,
 				Name: entity.getName(),
-				SpecificationId: entity.getSpecificationId(),
-				Background: entity.getBackground(),
-				Cover: entity.getCover(),
-				Icon: entity.getIcon(),
 				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
 				CreatedAt: entity.getCreatedAt().toISOString(),
 				DeletedAt: null,
@@ -51,14 +51,14 @@ export const makePlatformMapper = ({
 			const entity: Platform = platformFactory.rehydrate({
 				id: PlatformIdParser.fromTrusted(model.Id),
 				name: model.Name,
-				specificationId: model.SpecificationId,
-				background: model.Background,
-				cover: model.Cover,
-				icon: model.Icon,
+				playniteSnapshot: {
+					id: model.PlayniteId ? PlaynitePlatformIdParser.fromTrusted(model.PlayniteId) : null,
+					specificationId: model.PlayniteSpecificationId,
+				},
 				lastUpdatedAt: new Date(model.LastUpdatedAt),
 				createdAt: new Date(model.CreatedAt),
-				deletedAt: model.DeletedAt ? new Date(model.DeletedAt) : undefined,
-				deleteAfter: model.DeleteAfter ? new Date(model.DeleteAfter) : undefined,
+				deletedAt: model.DeletedAt ? new Date(model.DeletedAt) : null,
+				deleteAfter: model.DeleteAfter ? new Date(model.DeleteAfter) : null,
 			});
 			return entity;
 		},

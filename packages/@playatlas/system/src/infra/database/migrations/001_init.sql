@@ -48,13 +48,11 @@ CREATE TABLE IF NOT EXISTS `completion_status` (
   `DeleteAfter` DATETIME DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS `playnite_platform` (
+CREATE TABLE IF NOT EXISTS `platform` (
   `Id` TEXT NOT NULL PRIMARY KEY,
+  `PlayniteId` TEXT UNIQUE DEFAULT NULL,
+  `PlayniteSpecificationId` TEXT DEFAULT NULL,
   `Name` TEXT NOT NULL,
-  `SpecificationId` TEXT NOT NULL,
-  `Icon` TEXT,
-  `Cover` TEXT,
-  `Background` TEXT,
   `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `DeletedAt` DATETIME DEFAULT NULL,
@@ -78,12 +76,12 @@ CREATE TABLE IF NOT EXISTS `game_developer` (
   FOREIGN KEY (`DeveloperId`) REFERENCES `company`(`Id`) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS `playnite_game_platform` (
+CREATE TABLE IF NOT EXISTS `game_platform` (
   `GameId` TEXT NOT NULL,
   `PlatformId` TEXT NOT NULL,
   PRIMARY KEY (`GameId`, `PlatformId`),
   FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
-  FOREIGN KEY (`PlatformId`) REFERENCES `playnite_platform`(`Id`) ON DELETE CASCADE
+  FOREIGN KEY (`PlatformId`) REFERENCES `platform`(`Id`) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS `playnite_game_genre` (

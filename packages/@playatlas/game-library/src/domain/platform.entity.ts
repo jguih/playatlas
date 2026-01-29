@@ -4,18 +4,18 @@ import { InvalidStateError, type BaseEntity, type PlatformId } from "@playatlas/
 import type {
 	MakePlatformDeps,
 	MakePlatformProps,
+	PlaynitePlatformSnapshot,
 	RehydratePlatformProps,
 	UpdatePlatformFromPlayniteProps,
 } from "./platform.entity.types";
 
+export type PlatformName = string;
+
 export type Platform = BaseEntity<PlatformId> &
 	EntitySoftDeleteProps &
 	Readonly<{
-		getName: () => string;
-		getSpecificationId: () => string;
-		getIcon: () => string | null;
-		getCover: () => string | null;
-		getBackground: () => string | null;
+		getName: () => PlatformName;
+		getPlayniteSnapshot: () => PlaynitePlatformSnapshot | null;
 		updateFromPlaynite: (value: UpdatePlatformFromPlayniteProps) => boolean;
 	}>;
 
@@ -24,10 +24,7 @@ export const makePlatform = (props: MakePlatformProps, { clock }: MakePlatformDe
 
 	const _id = props.id;
 	let _name = props.name;
-	let _specificationId = props.specificationId;
-	let _icon = props.icon ?? null;
-	let _cover = props.cover ?? null;
-	let _background = props.background ?? null;
+	let _playnite_snapshot = props.playniteSnapshot ?? null;
 	let _last_updated_at = props.lastUpdatedAt ?? now;
 	const _created_at = props.createdAt ?? now;
 
@@ -51,35 +48,20 @@ export const makePlatform = (props: MakePlatformProps, { clock }: MakePlatformDe
 		getId: () => _id,
 		getSafeId: () => _id,
 		getName: () => _name,
-		getSpecificationId: () => _specificationId,
-		getIcon: () => _icon,
-		getCover: () => _cover,
-		getBackground: () => _background,
+		getPlayniteSnapshot: () => _playnite_snapshot,
 		getLastUpdatedAt: () => _last_updated_at,
 		getCreatedAt: () => _created_at,
-		updateFromPlaynite: ({ name, specificationId, background, cover, icon }) => {
+		updateFromPlaynite: ({ playniteSnapshot, name }) => {
 			let updated = false;
 
-			if (name !== _name) {
-				_name = name;
-				updated = true;
-			}
-			if (specificationId !== _specificationId) {
-				_specificationId = specificationId;
-				updated = true;
-			}
-			if (background && background !== _background) {
-				_background = background ?? null;
-				updated = true;
-			}
-			if (cover && cover !== _cover) {
-				_cover = cover ?? null;
-				updated = true;
-			}
-			if (icon && icon !== _icon) {
-				_icon = icon ?? null;
-				updated = true;
-			}
+			if (_playnite_snapshot?.id !== playniteSnapshot.id) updated = true;
+			if (_playnite_snapshot?.specificationId !== playniteSnapshot.specificationId) updated = true;
+			if (_name !== name) updated = true;
+
+			if (!updated) return updated;
+
+			_playnite_snapshot = playniteSnapshot;
+			_name = name;
 
 			_touch();
 			_validate();

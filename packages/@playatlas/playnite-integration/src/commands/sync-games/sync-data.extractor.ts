@@ -7,6 +7,7 @@ import {
 	PlayniteCompanyIdParser,
 	PlayniteCompletionStatusIdParser,
 	PlayniteGameIdParser,
+	PlaynitePlatformIdParser,
 	type CompanyId,
 	type GameId,
 	type GenreId,
@@ -14,6 +15,7 @@ import {
 	type PlayniteCompanyId,
 	type PlayniteCompletionStatusId,
 	type PlayniteGameId,
+	type PlaynitePlatformId,
 } from "@playatlas/common/domain";
 import type {
 	ICompanyFactoryPort,
@@ -29,6 +31,7 @@ import {
 	type Genre,
 	type Platform,
 	type PlayniteGameSnapshot,
+	type PlaynitePlatformSnapshot,
 } from "@playatlas/game-library/domain";
 import type {
 	ICompanyRepositoryPort,
@@ -73,7 +76,7 @@ export const extractSyncData = ({
 	genreFactory,
 }: SyncDataExtractorDeps): ExtractedSyncData => {
 	const genres = new Map<GenreId, Genre>();
-	const platforms = new Map<PlatformId, Platform>();
+	const platforms = new Map<PlaynitePlatformId, Platform>();
 	const companies = new Map<PlayniteCompanyId, Company>();
 	const completionStatuses = new Map<PlayniteCompletionStatusId, CompletionStatus>();
 	const games = new Map<PlayniteGameId, Game>();
@@ -87,6 +90,7 @@ export const extractSyncData = ({
 		let itemCompletionStatus: CompletionStatus | undefined = undefined;
 		const itemPublishers = new Set<CompanyId>();
 		const itemDevelopers = new Set<CompanyId>();
+		const itemPlatforms = new Set<PlatformId>();
 
 		item.Genres?.forEach((g) => {
 			const genreId = GenreIdParser.fromExternal(g.Id);
@@ -107,30 +111,33 @@ export const extractSyncData = ({
 		});
 
 		item.Platforms?.forEach((p) => {
-			const platformId = PlatformIdParser.fromExternal(p.Id);
-			const existing = context.platforms.get(platformId) ?? platforms.get(platformId);
+			const playnitePlatformId = PlaynitePlatformIdParser.fromExternal(p.Id);
+			const existing =
+				context.platforms.get(playnitePlatformId) ?? platforms.get(playnitePlatformId);
+
+			const playniteSnapshot: PlaynitePlatformSnapshot = {
+				id: playnitePlatformId,
+				specificationId: p.SpecificationId,
+			};
 
 			if (existing) {
+				itemPlatforms.add(existing.getId());
+
 				const didUpdate = existing.updateFromPlaynite({
 					name: p.Name,
-					specificationId: p.SpecificationId,
-					background: p.Background,
-					cover: p.Cover,
-					icon: p.Icon,
+					playniteSnapshot,
 				});
-				if (didUpdate) platforms.set(platformId, existing);
+				if (didUpdate) platforms.set(playnitePlatformId, existing);
 			} else {
 				const newPlatform = platformFactory.create({
-					id: platformId,
-					specificationId: p.SpecificationId,
+					id: PlatformIdParser.fromTrusted(ulid()),
 					name: p.Name,
-					icon: p.Icon,
-					cover: p.Cover,
-					background: p.Background,
+					playniteSnapshot,
 					lastUpdatedAt: now,
 					createdAt: now,
 				});
-				platforms.set(platformId, newPlatform);
+				platforms.set(playnitePlatformId, newPlatform);
+				itemPlatforms.add(newPlatform.getId());
 			}
 		});
 
@@ -227,7 +234,7 @@ export const extractSyncData = ({
 		const developerIds = itemDevelopers.values().toArray();
 		const genreIds = item.Genres?.map((g) => GenreIdParser.fromExternal(g.Id)) ?? [];
 		const publisherIds = itemPublishers.values().toArray();
-		const platformIds = item.Platforms?.map((p) => PlatformIdParser.fromExternal(p.Id)) ?? [];
+		const platformIds = itemPlatforms.values().toArray();
 
 		if (existingGame) {
 			const didUpdate = existingGame.updateFromPlaynite({
@@ -295,7 +302,7 @@ export type GameLibrarySyncContext = {
 	readonly games: ReadonlyMap<PlayniteGameId, Game>;
 	readonly genres: ReadonlyMap<GenreId, Genre>;
 	readonly completionStatuses: ReadonlyMap<PlayniteCompletionStatusId, CompletionStatus>;
-	readonly platforms: ReadonlyMap<PlatformId, Platform>;
+	readonly platforms: ReadonlyMap<PlaynitePlatformId, Platform>;
 	readonly companies: ReadonlyMap<PlayniteCompanyId, Company>;
 };
 
@@ -324,8 +331,14 @@ export const buildGameLibrarySyncContext = ({
 
 	const _genres = genreRepository.all();
 	const genres = new Map(_genres.map((g) => [g.getId(), g]));
+
 	const _platforms = platformRepository.all();
-	const platforms = new Map(_platforms.map((p) => [p.getId(), p]));
+	const platforms = new Map<PlaynitePlatformId, Platform>();
+
+	for (const platform of _platforms) {
+		const playnitePlatformId = platform.getPlayniteSnapshot()?.id;
+		if (playnitePlatformId) platforms.set(playnitePlatformId, platform);
+	}
 
 	const _completionStatuses = completionStatusRepository.all();
 	const completionStatuses = new Map<PlayniteCompletionStatusId, CompletionStatus>();

@@ -7,11 +7,9 @@ import z from "zod";
 
 export const platformResponseDtoSchema = z.object({
 	Id: z.string(),
+	PlayniteId: z.string().nullable(),
 	Name: z.string(),
-	SpecificationId: z.string(),
-	Icon: z.string().nullable(),
-	Cover: z.string().nullable(),
-	Background: z.string().nullable(),
+	PlayniteSpecificationId: z.string().nullable(),
 	Sync: z.object({
 		LastUpdatedAt: ISODateSchema,
 		DeletedAt: ISODateSchema.nullable(),

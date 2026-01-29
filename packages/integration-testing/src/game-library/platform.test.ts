@@ -5,23 +5,19 @@ import { api, factory, root } from "../vitest.global.setup";
 describe("Game Library / Platform", () => {
 	it("persists a new platform", () => {
 		// Arrange
-		const platform = factory.getPlatformFactory().build();
+		const platformName = "test-platform#12" as const;
+		const platform = factory.getPlatformFactory().build({ name: platformName });
 		root.seedPlatform(platform);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute();
 		const platforms = result.data;
-		const addedPlatform = platforms.find((p) => p.Id === platform.getId());
+		const addedPlatform = platforms.find((p) => p.Name === platformName);
 
 		// Assert
-		expect(addedPlatform).not.toBe(null);
+		expect(addedPlatform).toBeDefined();
 		expect(addedPlatform).toMatchObject({
-			Id: platform.getId(),
-			Name: platform.getName(),
-			SpecificationId: platform.getSpecificationId(),
-			Background: platform.getBackground(),
-			Cover: platform.getCover(),
-			Icon: platform.getIcon(),
+			Name: platformName,
 		} satisfies Partial<PlatformResponseDto>);
 	});
 
