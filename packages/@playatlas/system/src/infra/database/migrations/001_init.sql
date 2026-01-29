@@ -27,8 +27,9 @@ CREATE TABLE IF NOT EXISTS `game` (
   FOREIGN KEY (`CompletionStatusId`) REFERENCES `completion_status`(`Id`)
 );
 
-CREATE TABLE IF NOT EXISTS `playnite_company` (
+CREATE TABLE IF NOT EXISTS `company` (
   `Id` TEXT NOT NULL PRIMARY KEY,
+  `PlayniteId` TEXT UNIQUE DEFAULT NULL,
   `Name` TEXT NOT NULL,
   `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -68,12 +69,12 @@ CREATE TABLE IF NOT EXISTS `playnite_genre` (
   `DeleteAfter` DATETIME DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS `playnite_game_developer` (
+CREATE TABLE IF NOT EXISTS `game_developer` (
   `GameId` TEXT NOT NULL,
   `DeveloperId` TEXT NOT NULL,
   PRIMARY KEY (`GameId`, `DeveloperId`),
   FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
-  FOREIGN KEY (`DeveloperId`) REFERENCES `playnite_company`(`Id`) ON DELETE CASCADE
+  FOREIGN KEY (`DeveloperId`) REFERENCES `company`(`Id`) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS `playnite_game_platform` (
@@ -81,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `playnite_game_platform` (
   `PlatformId` TEXT NOT NULL,
   PRIMARY KEY (`GameId`, `PlatformId`),
   FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
-  FOREIGN KEY (`PlatformId`) REFERENCES `playnite_platform`(`Id`)
+  FOREIGN KEY (`PlatformId`) REFERENCES `playnite_platform`(`Id`) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS `playnite_game_genre` (
@@ -89,15 +90,15 @@ CREATE TABLE IF NOT EXISTS `playnite_game_genre` (
   `GenreId` TEXT NOT NULL,
   PRIMARY KEY (`GameId`, `GenreId`),
   FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
-  FOREIGN KEY (`GenreId`) REFERENCES `playnite_genre`(`Id`)
+  FOREIGN KEY (`GenreId`) REFERENCES `playnite_genre`(`Id`) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS `playnite_game_publisher` (
+CREATE TABLE IF NOT EXISTS `game_publisher` (
   `GameId` TEXT NOT NULL,
   `PublisherId` TEXT NOT NULL,
   PRIMARY KEY (`GameId`, `PublisherId`),
   FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
-  FOREIGN KEY (`PublisherId`) REFERENCES `playnite_company`(`Id`)
+  FOREIGN KEY (`PublisherId`) REFERENCES `company`(`Id`) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS `game_session` (

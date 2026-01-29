@@ -114,7 +114,16 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 			_validate();
 		},
 		updateFromPlaynite: (value) => {
-			if (_content_hash === value.contentHash) return false;
+			let updated = false;
+
+			if (softDelete.isDeleted()) {
+				softDelete.restore();
+				updated = true;
+			}
+
+			if (_content_hash !== value.contentHash) updated = true;
+
+			if (!updated) return updated;
 
 			_playnite_snapshot = value.playniteSnapshot;
 			_content_hash = value.contentHash;
@@ -127,7 +136,7 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 
 			_touch();
 			_validate();
-			return true;
+			return updated;
 		},
 		validate: _validate,
 	};

@@ -5,6 +5,8 @@ export type EntitySoftDeleteProps = {
 	getDeletedAt: () => Date | null;
 	getDeleteAfter: () => Date | null;
 	delete: () => boolean;
+	restore: () => void;
+	isDeleted: () => boolean;
 };
 
 const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
@@ -49,5 +51,10 @@ export const makeSoftDeletable = (
 		getDeletedAt: () => _deleted_at,
 		getDeleteAfter: () => _delete_after,
 		delete: softDelete,
+		restore: () => {
+			_deleted_at = null;
+			_delete_after = null;
+		},
+		isDeleted: () => _deleted_at !== null,
 	};
 };

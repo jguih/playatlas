@@ -1,5 +1,5 @@
 import { type EntityMapper } from "@playatlas/common/application";
-import { CompanyIdParser } from "@playatlas/common/domain";
+import { CompanyIdParser, PlayniteCompanyIdParser } from "@playatlas/common/domain";
 import { type Company } from "../domain/company.entity";
 import type { CompanyResponseDto } from "../dtos";
 import type { CompanyModel } from "../infra/company.repository";
@@ -29,6 +29,7 @@ export const makeCompanyMapper = ({ companyFactory }: CompanyMapperDeps): ICompa
 		toPersistence: (company: Company): CompanyModel => {
 			const record: CompanyModel = {
 				Id: company.getId(),
+				PlayniteId: company.getPlayniteId(),
 				Name: company.getName(),
 				LastUpdatedAt: company.getLastUpdatedAt().toISOString(),
 				CreatedAt: company.getCreatedAt().toISOString(),
@@ -37,14 +38,17 @@ export const makeCompanyMapper = ({ companyFactory }: CompanyMapperDeps): ICompa
 			};
 			return record;
 		},
-		toDomain: (company: CompanyModel): Company => {
+		toDomain: (record: CompanyModel): Company => {
 			const entity: Company = companyFactory.rehydrate({
-				id: CompanyIdParser.fromTrusted(company.Id),
-				name: company.Name,
-				lastUpdatedAt: new Date(company.LastUpdatedAt),
-				createdAt: new Date(company.CreatedAt),
-				deletedAt: company.DeletedAt ? new Date(company.DeletedAt) : undefined,
-				deleteAfter: company.DeleteAfter ? new Date(company.DeleteAfter) : undefined,
+				id: CompanyIdParser.fromTrusted(record.Id),
+				playniteId: record.PlayniteId
+					? PlayniteCompanyIdParser.fromTrusted(record.PlayniteId)
+					: null,
+				name: record.Name,
+				lastUpdatedAt: new Date(record.LastUpdatedAt),
+				createdAt: new Date(record.CreatedAt),
+				deletedAt: record.DeletedAt ? new Date(record.DeletedAt) : undefined,
+				deleteAfter: record.DeleteAfter ? new Date(record.DeleteAfter) : undefined,
 			});
 			return entity;
 		},

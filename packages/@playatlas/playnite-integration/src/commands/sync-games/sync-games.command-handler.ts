@@ -58,8 +58,7 @@ export const makeSyncGamesCommandHandler = ({
 
 				genreRepository.upsert(extracted.genres);
 				platformRepository.upsert(extracted.platforms);
-				companyRepository.upsert(extracted.developers);
-				companyRepository.upsert(extracted.publishers);
+				companyRepository.upsert(extracted.companies);
 				completionStatusRepository.upsert(extracted.completionStatuses);
 				gameRepository.upsert(extracted.games);
 

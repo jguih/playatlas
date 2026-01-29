@@ -293,6 +293,8 @@ export const makeGameRepository = ({
 		const result = base._upsert(games);
 
 		for (const [game, model] of result) {
+			if (game.isDeleted()) continue;
+
 			const modelId = GameIdParser.fromTrusted(model.Id);
 			if (game.relationships.developers.isLoaded())
 				_updateRelationshipFor({

@@ -30,8 +30,8 @@ export const COLUMNS: (keyof GameModel)[] = [
 ];
 
 export const RELATIONSHIP_TABLE_NAME = {
-	gameDeveloper: "playnite_game_developer",
-	gamePublisher: "playnite_game_publisher",
+	gameDeveloper: "game_developer",
+	gamePublisher: "game_publisher",
 	gameGenre: "playnite_game_genre",
 	gamePlatform: "playnite_game_platform",
 } as const;

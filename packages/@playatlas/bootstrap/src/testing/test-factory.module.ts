@@ -11,13 +11,13 @@ import type {
 	IPlatformFactoryPort,
 } from "@playatlas/game-library/application";
 import {
-	makeCompanyFactory,
 	makeGenreFactory,
 	makePlatformFactory,
+	makeTestCompanyFactory,
 	makeTestCompletionStatusFactory,
-	type CompanyFactory,
 	type GenreFactory,
 	type PlatformFactory,
+	type TestCompanyFactory,
 	type TestCompletionStatusFactory,
 	type TestGameFactory,
 } from "@playatlas/game-library/testing";
@@ -29,7 +29,7 @@ import {
 export type ITestFactoryModulePort = {
 	getCompletionStatusFactory: () => TestCompletionStatusFactory;
 	getGenreFactory: () => GenreFactory;
-	getCompanyFactory: () => CompanyFactory;
+	getCompanyFactory: () => TestCompanyFactory;
 	getGameFactory: () => TestGameFactory;
 	setGameFactory: (factory: TestGameFactory) => void;
 	getPlatformFactory: () => PlatformFactory;
@@ -49,7 +49,7 @@ export type TestFactoryModuleDeps = {
 export const makeTestFactoryModule = (deps: TestFactoryModuleDeps): ITestFactoryModulePort => {
 	const _completion_status = makeTestCompletionStatusFactory(deps);
 	const _genre = makeGenreFactory(deps);
-	const _company = makeCompanyFactory(deps);
+	const _company = makeTestCompanyFactory(deps);
 	let _game_factory: TestGameFactory | null = null;
 	const _platform = makePlatformFactory(deps);
 	const _extension_registration_factory = makeExtensionRegistrationFactory(deps);

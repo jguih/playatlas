@@ -1,25 +1,33 @@
 import { validation } from "@playatlas/common/application";
 import { makeSoftDeletable, type EntitySoftDeleteProps } from "@playatlas/common/common";
-import { InvalidStateError, type BaseEntity, type CompanyId } from "@playatlas/common/domain";
+import {
+	InvalidStateError,
+	type BaseEntity,
+	type CompanyId,
+	type PlayniteCompanyId,
+} from "@playatlas/common/domain";
 import type {
 	MakeCompanyDeps,
 	MakeCompanyProps,
 	RehydrateCompanyProps,
+	UpdateCompanyFromPlayniteProps,
 } from "./company.entity.types";
 
-type CompanyName = string;
+export type CompanyName = string;
 
 export type Company = BaseEntity<CompanyId> &
 	EntitySoftDeleteProps &
 	Readonly<{
 		getName: () => CompanyName;
-		updateFromPlaynite: (value: { name: CompanyName }) => boolean;
+		getPlayniteId: () => PlayniteCompanyId | null;
+		updateFromPlaynite: (value: UpdateCompanyFromPlayniteProps) => boolean;
 	}>;
 
 export const makeCompany = (props: MakeCompanyProps, { clock }: MakeCompanyDeps): Company => {
 	const now = clock.now();
 
 	const _id: CompanyId = props.id;
+	let _playnite_id = props.playniteId ?? null;
 	let _name: CompanyName = props.name;
 	let _last_updated_at = props.lastUpdatedAt ?? now;
 	const _created_at = props.createdAt ?? now;
@@ -43,16 +51,24 @@ export const makeCompany = (props: MakeCompanyProps, { clock }: MakeCompanyDeps)
 	const company: Company = {
 		getId: () => _id,
 		getSafeId: () => _id,
+		getPlayniteId: () => _playnite_id,
 		getName: () => _name,
 		getLastUpdatedAt: () => _last_updated_at,
 		getCreatedAt: () => _created_at,
-		updateFromPlaynite: ({ name }) => {
-			if (name === _name) return false;
+		updateFromPlaynite: ({ name, playniteId }) => {
+			let updated = false;
+
+			if (name === _name) updated = true;
+			if (playniteId === _playnite_id) updated = true;
+
+			if (!updated) return updated;
 
 			_name = name;
+			_playnite_id = playniteId;
+
 			_touch();
 			_validate();
-			return true;
+			return updated;
 		},
 		validate: _validate,
 		...softDelete,

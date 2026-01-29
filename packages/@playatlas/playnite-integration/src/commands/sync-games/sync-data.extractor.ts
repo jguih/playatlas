@@ -4,12 +4,14 @@ import {
 	GameIdParser,
 	GenreIdParser,
 	PlatformIdParser,
+	PlayniteCompanyIdParser,
 	PlayniteCompletionStatusIdParser,
 	PlayniteGameIdParser,
 	type CompanyId,
 	type GameId,
 	type GenreId,
 	type PlatformId,
+	type PlayniteCompanyId,
 	type PlayniteCompletionStatusId,
 	type PlayniteGameId,
 } from "@playatlas/common/domain";
@@ -41,8 +43,7 @@ import type { SyncGamesCommand, SyncGamesCommandItem } from "./sync-games.comman
 export type ExtractedSyncData = {
 	genres: Genre[];
 	platforms: Platform[];
-	developers: Company[];
-	publishers: Company[];
+	companies: Company[];
 	completionStatuses: CompletionStatus[];
 	games: Game[];
 	added: GameId[];
@@ -73,8 +74,7 @@ export const extractSyncData = ({
 }: SyncDataExtractorDeps): ExtractedSyncData => {
 	const genres = new Map<GenreId, Genre>();
 	const platforms = new Map<PlatformId, Platform>();
-	const developers = new Map<CompanyId, Company>();
-	const publishers = new Map<CompanyId, Company>();
+	const companies = new Map<PlayniteCompanyId, Company>();
 	const completionStatuses = new Map<PlayniteCompletionStatusId, CompletionStatus>();
 	const games = new Map<PlayniteGameId, Game>();
 	const added: GameId[] = [];
@@ -83,7 +83,9 @@ export const extractSyncData = ({
 	const ulid = monotonicFactory();
 
 	const processCommandItem = (item: SyncGamesCommandItem): Game | undefined => {
-		let existingCompletionStatus: CompletionStatus | undefined = undefined;
+		let itemCompletionStatus: CompletionStatus | undefined = undefined;
+		const itemPublishers = new Set<CompanyId>();
+		const itemDevelopers = new Set<CompanyId>();
 
 		item.Genres?.forEach((g) => {
 			const genreId = GenreIdParser.fromExternal(g.Id);
@@ -132,38 +134,46 @@ export const extractSyncData = ({
 		});
 
 		item.Developers?.forEach((d) => {
-			const companyId = CompanyIdParser.fromExternal(d.Id);
-			const existing = context.companies.get(companyId) ?? developers.get(companyId);
+			const companyId = PlayniteCompanyIdParser.fromExternal(d.Id);
+			const existing = context.companies.get(companyId) ?? companies.get(companyId);
 
 			if (existing) {
-				const didUpdate = existing.updateFromPlaynite({ name: d.Name });
-				if (didUpdate) developers.set(companyId, existing);
+				itemDevelopers.add(existing.getId());
+
+				const didUpdate = existing.updateFromPlaynite({ name: d.Name, playniteId: companyId });
+				if (didUpdate) companies.set(companyId, existing);
 			} else {
 				const newCompany = companyFactory.create({
-					id: companyId,
+					id: CompanyIdParser.fromTrusted(ulid()),
+					playniteId: companyId,
 					name: d.Name,
 					lastUpdatedAt: now,
 					createdAt: now,
 				});
-				developers.set(companyId, newCompany);
+				companies.set(companyId, newCompany);
+				itemDevelopers.add(newCompany.getId());
 			}
 		});
 
 		item.Publishers?.forEach((p) => {
-			const companyId = CompanyIdParser.fromExternal(p.Id);
-			const existing = context.companies.get(companyId) ?? publishers.get(companyId);
+			const companyId = PlayniteCompanyIdParser.fromExternal(p.Id);
+			const existing = context.companies.get(companyId) ?? companies.get(companyId);
 
 			if (existing) {
-				const didUpdate = existing.updateFromPlaynite({ name: p.Name });
-				if (didUpdate) publishers.set(companyId, existing);
+				itemPublishers.add(existing.getId());
+
+				const didUpdate = existing.updateFromPlaynite({ name: p.Name, playniteId: companyId });
+				if (didUpdate) companies.set(companyId, existing);
 			} else {
 				const newCompany = companyFactory.create({
-					id: companyId,
+					id: CompanyIdParser.fromTrusted(ulid()),
+					playniteId: companyId,
 					name: p.Name,
 					lastUpdatedAt: now,
 					createdAt: now,
 				});
-				publishers.set(companyId, newCompany);
+				companies.set(companyId, newCompany);
+				itemPublishers.add(newCompany.getId());
 			}
 		});
 
@@ -171,16 +181,16 @@ export const extractSyncData = ({
 			const playniteCompletionStatusId = PlayniteCompletionStatusIdParser.fromExternal(
 				item.CompletionStatus.Id,
 			);
-			existingCompletionStatus =
+			itemCompletionStatus =
 				context.completionStatuses.get(playniteCompletionStatusId) ??
 				completionStatuses.get(playniteCompletionStatusId);
 
-			if (existingCompletionStatus) {
-				const didUpdate = existingCompletionStatus.updateFromPlaynite({
+			if (itemCompletionStatus) {
+				const didUpdate = itemCompletionStatus.updateFromPlaynite({
 					name: item.CompletionStatus.Name,
 					playniteId: playniteCompletionStatusId,
 				});
-				if (didUpdate) completionStatuses.set(playniteCompletionStatusId, existingCompletionStatus);
+				if (didUpdate) completionStatuses.set(playniteCompletionStatusId, itemCompletionStatus);
 			} else {
 				const newCompletionStatus = completionStatusFactory.create({
 					id: CompletionStatusIdParser.fromTrusted(ulid()),
@@ -212,9 +222,9 @@ export const extractSyncData = ({
 			releaseDate: item.ReleaseDate ? new Date(item.ReleaseDate) : null,
 		};
 
-		const developerIds = item.Developers?.map((d) => CompanyIdParser.fromExternal(d.Id)) ?? [];
+		const developerIds = itemDevelopers.values().toArray();
 		const genreIds = item.Genres?.map((g) => GenreIdParser.fromExternal(g.Id)) ?? [];
-		const publisherIds = item.Publishers?.map((p) => CompanyIdParser.fromExternal(p.Id)) ?? [];
+		const publisherIds = itemPublishers.values().toArray();
 		const platformIds = item.Platforms?.map((p) => PlatformIdParser.fromExternal(p.Id)) ?? [];
 
 		if (existingGame) {
@@ -222,7 +232,7 @@ export const extractSyncData = ({
 				contentHash: item.ContentHash,
 				playniteSnapshot,
 				relationships: { developerIds, genreIds, platformIds, publisherIds },
-				completionStatusId: existingCompletionStatus?.getId() ?? null,
+				completionStatusId: itemCompletionStatus?.getId() ?? null,
 			});
 			if (didUpdate) games.set(playniteGameId, existingGame);
 		} else {
@@ -271,8 +281,7 @@ export const extractSyncData = ({
 	return {
 		genres: [...genres.values()],
 		platforms: [...platforms.values()],
-		developers: [...developers.values()],
-		publishers: [...publishers.values()],
+		companies: [...companies.values()],
 		completionStatuses: [...completionStatuses.values()],
 		games: [...games.values()],
 		added,
@@ -286,7 +295,7 @@ export type GameLibrarySyncContext = {
 	readonly genres: ReadonlyMap<GenreId, Genre>;
 	readonly completionStatuses: ReadonlyMap<PlayniteCompletionStatusId, CompletionStatus>;
 	readonly platforms: ReadonlyMap<PlatformId, Platform>;
-	readonly companies: ReadonlyMap<CompanyId, Company>;
+	readonly companies: ReadonlyMap<PlayniteCompanyId, Company>;
 };
 
 export type GameLibrarySyncContextBuilderDeps = {
@@ -319,6 +328,7 @@ export const buildGameLibrarySyncContext = ({
 
 	const _completionStatuses = completionStatusRepository.all();
 	const completionStatuses = new Map<PlayniteCompletionStatusId, CompletionStatus>();
+
 	for (const completionStatus of _completionStatuses) {
 		const playniteCompletionStatusId = completionStatus.getPlayniteId();
 		if (playniteCompletionStatusId)
@@ -326,7 +336,12 @@ export const buildGameLibrarySyncContext = ({
 	}
 
 	const _companies = companyRepository.all();
-	const companies = new Map(_companies.map((c) => [c.getId(), c]));
+	const companies = new Map<PlayniteCompanyId, Company>();
+
+	for (const company of _companies) {
+		const playniteCompanyId = company.getPlayniteId();
+		if (playniteCompanyId) companies.set(playniteCompanyId, company);
+	}
 
 	return {
 		games,

@@ -1,5 +1,5 @@
 import { ISODateSchema } from "@playatlas/common/common";
-import { companyIdSchema } from "@playatlas/common/domain";
+import { companyIdSchema, playniteCompanyIdSchema } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
 import type { ICompanyMapperPort } from "../application";
@@ -8,6 +8,7 @@ import type { CompanyRepositoryFilters } from "./company.repository.types";
 
 export const companySchema = z.object({
 	Id: companyIdSchema,
+	PlayniteId: playniteCompanyIdSchema.nullable(),
 	Name: z.string(),
 	LastUpdatedAt: ISODateSchema,
 	CreatedAt: ISODateSchema,
@@ -26,9 +27,10 @@ export const makeCompanyRepository = ({
 	logService,
 	companyMapper,
 }: CompanyRepositoryDeps): ICompanyRepositoryPort => {
-	const TABLE_NAME = "playnite_company";
+	const TABLE_NAME = "company";
 	const COLUMNS: (keyof CompanyModel)[] = [
 		"Id",
+		"PlayniteId",
 		"Name",
 		"LastUpdatedAt",
 		"CreatedAt",
