@@ -46,7 +46,7 @@ export class GameAggregateStore {
 	};
 
 	private loadCompletionStatusAsync = async () => {
-		if (!this.game || !this.game.Playnite.CompletionStatusId) return;
+		if (!this.game || !this.game.Playnite?.CompletionStatusId) return;
 
 		const { completionStatuses } = await this.deps
 			.api()

@@ -1,6 +1,6 @@
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
 import type { IGameMapperPort } from "../application/game.mapper.port";
-import type { Game, GameId } from "../domain/game.entity";
+import type { Game, GameId, PlayniteGameId } from "../domain/game.entity";
 import type { IGameRepositoryPort } from "./game.repository.port";
 import { gameRepositoryMeta } from "./game.repository.schema";
 import type { GameQueryResult } from "./game.repository.types";
@@ -16,7 +16,7 @@ export type GameModel = {
 	DeletedAt?: Date | null;
 	DeleteAfter?: Date | null;
 	Playnite: {
-		Id: string | null;
+		Id: PlayniteGameId;
 		Name: string | null;
 		Description: string | null;
 		ReleaseDate: Date | null;
@@ -27,12 +27,10 @@ export type GameModel = {
 		IsInstalled: boolean;
 		Hidden: boolean;
 		CompletionStatusId: string | null;
-	};
-	Assets: {
 		BackgroundImagePath: string | null;
 		CoverImagePath: string | null;
 		IconImagePath: string | null;
-	};
+	} | null;
 	CompletionStatusId: string | null;
 	ContentHash: string;
 	Developers: string[];

@@ -8,13 +8,15 @@
 	import ActionButtonContainer from "./ActionButtonContainer.svelte";
 	import ActionButtonLabel from "./ActionButtonLabel.svelte";
 
-	let { completionStatus, ...props }: BaseButtonProps & { completionStatus: CompletionStatus } =
-		$props();
+	let {
+		completionStatus,
+		...props
+	}: BaseButtonProps & { completionStatus?: CompletionStatus | null } = $props();
 
 	const variant: ComponentVariant = $derived(
-		completionStatus.Name?.match(/playing/i)
+		completionStatus?.Name?.match(/playing/i)
 			? "success"
-			: completionStatus.Name?.match(/not played/i)
+			: completionStatus?.Name?.match(/not played/i)
 				? "neutral"
 				: "primary",
 	);
@@ -33,6 +35,6 @@
 		</Icon>
 	</SolidButton>
 	<ActionButtonLabel>
-		{completionStatus.Name}
+		{completionStatus?.Name ?? "Unknown status"}
 	</ActionButtonLabel>
 </ActionButtonContainer>

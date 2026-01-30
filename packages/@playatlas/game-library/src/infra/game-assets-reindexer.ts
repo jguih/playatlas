@@ -52,12 +52,8 @@ export const makeGameAssetsReindexer = ({
 			`Found image at ${filepath} for ${playniteSnapshot.name} (width: ${width}, height: ${height}, computed type: ${imageType})`,
 		);
 
-		if (!game.getImagePath(imageType)) {
-			game.setImageReference({ name: imageType, path: { filename: basename(filepath) } });
-			return true;
-		}
-
-		return false;
+		game.setImageReference({ name: imageType, path: { filename: basename(filepath) } });
+		return true;
 	};
 
 	const reindexGameAssetsAsync: IGameAssetsReindexerPort["reindexGameAssetsAsync"] = async () => {

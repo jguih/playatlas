@@ -49,7 +49,7 @@ export type PlayniteGameSnapshot = {
 type BaseGame = {
 	id: GameId;
 	contentHash: string;
-	completionStatusId?: CompletionStatusId | null;
+	completionStatusId: CompletionStatusId | null;
 };
 
 type PlayniteProps = {

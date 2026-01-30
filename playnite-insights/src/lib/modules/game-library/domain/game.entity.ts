@@ -14,7 +14,7 @@ export const PlayniteGameIdParser = {
 
 export type Game = ClientEntity<GameId> & {
 	Playnite: {
-		Id: PlayniteGameId | null;
+		Id: PlayniteGameId;
 		Name: string | null;
 		Description: string | null;
 		ReleaseDate: Date | null;
@@ -25,12 +25,10 @@ export type Game = ClientEntity<GameId> & {
 		IsInstalled: boolean;
 		Hidden: boolean;
 		CompletionStatusId: string | null;
-	};
-	Assets: {
 		BackgroundImagePath: string | null;
 		CoverImagePath: string | null;
 		IconImagePath: string | null;
-	};
+	} | null;
 	CompletionStatusId: string | null;
 	ContentHash: string;
 	Developers: string[];
