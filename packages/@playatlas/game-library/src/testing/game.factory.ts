@@ -3,9 +3,9 @@ import {
 	GameIdParser,
 	PlayniteGameIdParser,
 	type CompanyId,
+	type CompletionStatusId,
 	type GenreId,
 	type PlatformId,
-	type PlayniteCompletionStatusId,
 } from "@playatlas/common/domain";
 import type { TestEntityFactory } from "@playatlas/common/testing";
 import { monotonicFactory } from "ulid";
@@ -15,7 +15,7 @@ import { type MakeGameProps, type PlayniteGameSnapshot } from "../domain/game.en
 import type { GameResponseDto } from "../dtos";
 
 export type GameFactoryDeps = {
-	completionStatusOptions: PlayniteCompletionStatusId[];
+	completionStatusOptions: CompletionStatusId[];
 	companyOptions: CompanyId[];
 	genreOptions: GenreId[];
 	platformOptions: PlatformId[];
@@ -52,19 +52,19 @@ export const makeTestGameFactory = ({
 	const buildPlayniteSnapshot: TestGameFactory["buildPlayniteSnapshot"] = (override = {}) => {
 		return {
 			id: PlayniteGameIdParser.fromExternal(override?.id ?? faker.string.uuid()),
-			name: p(faker.commerce.productName(), override.name),
-			description: p(faker.lorem.sentence(), override.description),
-			releaseDate: p(faker.date.past(), override.releaseDate),
-			playtime: p(faker.number.int({ min: 0, max: 50000 }), override.playtime),
-			lastActivity: p(faker.date.recent(), override.lastActivity),
-			added: p(faker.date.past(), override.added),
-			installDirectory: p(faker.system.directoryPath(), override.installDirectory),
-			isInstalled: p(faker.datatype.boolean(), override.isInstalled),
-			backgroundImage: p(faker.image.url(), override.backgroundImage),
-			coverImage: p(faker.image.url(), override.coverImage),
-			icon: p(faker.image.url(), override.icon),
-			hidden: p(faker.datatype.boolean(), override.hidden),
-			completionStatusId: p(pickOne(completionStatusOptions), override.completionStatusId),
+			name: p(faker.commerce.productName(), override?.name),
+			description: p(faker.lorem.sentence(), override?.description),
+			releaseDate: p(faker.date.past(), override?.releaseDate),
+			playtime: p(faker.number.int({ min: 0, max: 50000 }), override?.playtime),
+			lastActivity: p(faker.date.recent(), override?.lastActivity),
+			added: p(faker.date.past(), override?.added),
+			installDirectory: p(faker.system.directoryPath(), override?.installDirectory),
+			isInstalled: p(faker.datatype.boolean(), override?.isInstalled),
+			backgroundImagePath: p(faker.image.url(), override?.backgroundImagePath),
+			coverImagePath: p(faker.image.url(), override?.coverImagePath),
+			iconImagePath: p(faker.image.url(), override?.iconImagePath),
+			hidden: p(faker.datatype.boolean(), override?.hidden),
+			completionStatusId: p(pickOne(completionStatusOptions), override?.completionStatusId),
 		};
 	};
 

@@ -144,7 +144,7 @@ describe("Game Library Sync", () => {
 
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = queryResult.data;
-		const updatedGames = games.filter((g) => g.Playnite.Name?.match(/(updated)/i));
+		const updatedGames = games.filter((g) => g.Playnite?.Name?.match(/(updated)/i));
 
 		// Assert
 		expect(commandResult.success).toBe(true);
@@ -154,7 +154,7 @@ describe("Game Library Sync", () => {
 		expect(updatedGames.every((g) => g.ContentHash.match(/(updated)/i))).toBe(true);
 
 		expect(games).toHaveLength(2000);
-		expect(new Set(games.map((g) => g.Playnite.Id))).toEqual(
+		expect(new Set(games.map((g) => g.Playnite?.Id))).toEqual(
 			new Set(initialSyncItems.map((g) => g.Id)),
 		);
 

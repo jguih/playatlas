@@ -63,10 +63,12 @@ describe("GameLibrary / Games", () => {
 
 		const updated: Game[] = games.map((g) => ({
 			...g,
-			Playnite: {
-				...g.Playnite,
-				Name: `${g.Playnite.Name} (updated)`,
-			},
+			Playnite: g.Playnite
+				? {
+						...g.Playnite,
+						Name: `${g.Playnite?.Name} (updated)`,
+					}
+				: null,
 			SourceUpdatedAt: now,
 		}));
 
@@ -79,7 +81,7 @@ describe("GameLibrary / Games", () => {
 		});
 
 		// Assert
-		expect(result.items[0].Playnite.Name).toContain("(updated)");
+		expect(result.items[0].Playnite?.Name).toContain("(updated)");
 	});
 
 	it("returns empty result when no games exist", async () => {
@@ -117,17 +119,19 @@ describe("GameLibrary / Games", () => {
 		await api.GameLibrary.Command.SyncGames.executeAsync({
 			games: {
 				...game,
-				Playnite: {
-					...game.Playnite,
-					Name: "Old name",
-				},
+				Playnite: game.Playnite
+					? {
+							...game.Playnite,
+							Name: "Old name",
+						}
+					: null,
 				SourceUpdatedAt: new Date("2026-01-01"),
 			},
 		});
 		const stored = await api.GameLibrary.Query.GetGames.executeAsync({ limit: 1, sort: "recent" });
 
 		// Assert
-		expect(stored.items[0].Playnite.Name).toBe(game.Playnite.Name);
+		expect(stored.items[0].Playnite?.Name).toBe(game.Playnite?.Name);
 	});
 
 	it("revives a deleted game when server clears DeletedAt", async () => {

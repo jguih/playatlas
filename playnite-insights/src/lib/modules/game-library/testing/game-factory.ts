@@ -22,8 +22,6 @@ export class GameFactory implements IGameFactoryPort {
 				IsInstalled: faker.datatype.boolean(),
 				Hidden: faker.datatype.boolean(),
 				CompletionStatusId: faker.string.uuid(),
-			},
-			Assets: {
 				IconImagePath: faker.image.url(),
 				CoverImagePath: faker.image.url(),
 				BackgroundImagePath: faker.image.url(),

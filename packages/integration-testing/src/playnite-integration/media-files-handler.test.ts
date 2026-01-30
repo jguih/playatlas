@@ -171,7 +171,7 @@ describe("Playnite Integration / Media Files Handler", () => {
 			.handleMediaFilesSynchronizationRequest(request);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const games = queryResult.data;
-		const updatedGame = games.find((g) => g.Playnite.Id === gameContext.getPlayniteGameId());
+		const updatedGame = games.find((g) => g.Playnite?.Id === gameContext.getPlayniteGameId());
 
 		const fileEntries = await fsAsync.readdir(gameContext.getMediaFilesDirPath(), {
 			withFileTypes: true,
@@ -200,36 +200,37 @@ describe("Playnite Integration / Media Files Handler", () => {
 		}
 
 		expect(updatedGame).toBeDefined();
-		expect(updatedGame!.Assets.BackgroundImagePath).not.toBe(null);
-		expect(updatedGame?.Assets.BackgroundImagePath).toMatch(
+		expect(updatedGame?.Playnite).toBeDefined();
+		expect(updatedGame!.Playnite!.BackgroundImagePath).not.toBe(null);
+		expect(updatedGame!.Playnite!.BackgroundImagePath).toMatch(
 			new RegExp(`^${gameContext.getPlayniteGameId()}/`),
 		);
-		expect(updatedGame!.Assets.BackgroundImagePath).toMatch(/\.webp$/);
+		expect(updatedGame!.Playnite!.BackgroundImagePath).toMatch(/\.webp$/);
 		const backgroundPath = join(
 			api.system.getSystemConfig().getMediaFilesRootDirPath(),
-			updatedGame!.Assets.BackgroundImagePath!,
+			updatedGame!.Playnite!.BackgroundImagePath!,
 		);
 		await expect(fsAsync.access(backgroundPath)).resolves.toBeUndefined();
 
-		expect(updatedGame!.Assets.CoverImagePath).not.toBe(null);
-		expect(updatedGame?.Assets.CoverImagePath).toMatch(
+		expect(updatedGame!.Playnite!.CoverImagePath).not.toBe(null);
+		expect(updatedGame!.Playnite!.CoverImagePath).toMatch(
 			new RegExp(`^${gameContext.getPlayniteGameId()}/`),
 		);
-		expect(updatedGame!.Assets.CoverImagePath).toMatch(/\.webp$/);
+		expect(updatedGame!.Playnite!.CoverImagePath).toMatch(/\.webp$/);
 		const coverPath = join(
 			api.system.getSystemConfig().getMediaFilesRootDirPath(),
-			updatedGame!.Assets.CoverImagePath!,
+			updatedGame!.Playnite!.CoverImagePath!,
 		);
 		await expect(fsAsync.access(coverPath)).resolves.toBeUndefined();
 
-		expect(updatedGame!.Assets.IconImagePath).not.toBe(null);
-		expect(updatedGame?.Assets.IconImagePath).toMatch(
+		expect(updatedGame!.Playnite!.IconImagePath).not.toBe(null);
+		expect(updatedGame!.Playnite!.IconImagePath).toMatch(
 			new RegExp(`^${gameContext.getPlayniteGameId()}/`),
 		);
-		expect(updatedGame!.Assets.IconImagePath).toMatch(/\.webp$/);
+		expect(updatedGame!.Playnite!.IconImagePath).toMatch(/\.webp$/);
 		const iconPath = join(
 			api.system.getSystemConfig().getMediaFilesRootDirPath(),
-			updatedGame!.Assets.IconImagePath!,
+			updatedGame!.Playnite!.IconImagePath!,
 		);
 		await expect(fsAsync.access(iconPath)).resolves.toBeUndefined();
 	});

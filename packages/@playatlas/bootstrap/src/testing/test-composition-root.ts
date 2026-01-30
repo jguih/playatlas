@@ -93,9 +93,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 	const setupGameFactory = () => {
 		const { companyList, completionStatusList, genreList, platformList } = gameRelationshipOptions;
 
-		const completionStatusOptions = completionStatusList
-			.filter((c) => c.getPlayniteId() !== null)
-			.map((c) => c.getPlayniteId()!);
+		const completionStatusOptions = completionStatusList.map((c) => c.getId());
 		const companyOptions = companyList.map((c) => c.getId());
 		const genreOptions = genreList.map((g) => g.getId());
 		const platformOptions = platformList.map((p) => p.getId());

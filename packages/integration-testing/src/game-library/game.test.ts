@@ -23,7 +23,7 @@ describe("Game Library / Game", () => {
 		// Assert
 		expect(added).toHaveLength(games.length);
 		expect(addedRandomGame).toBeDefined();
-		expect(addedRandomGame!.Playnite.Name).toBe(randomGame.getPlayniteSnapshot().name);
+		expect(addedRandomGame!.Playnite?.Name).toBe(randomGame.getPlayniteSnapshot()?.name);
 		expect(addedRandomGame!.CompletionStatusId).toBe(randomGame.getCompletionStatusId());
 	});
 
@@ -110,7 +110,7 @@ describe("Game Library / Game", () => {
 	it("returns game manifest data", async () => {
 		// Arrange
 		const game = factory.getGameFactory().build();
-		const gameId = game.getPlayniteSnapshot().id;
+		const gameId = game.getPlayniteSnapshot()?.id;
 		root.seedGame(game);
 
 		// Act
@@ -150,22 +150,23 @@ describe("Game Library / Game", () => {
 		expect(queryGames.every((g) => gameIds.includes(GameIdParser.fromExternal(g.Id)))).toBeTruthy();
 
 		expect(oneResult).toBeDefined();
-		expect(oneResult!.Playnite.Name).toBe(oneGamePlayniteSnapshot.name);
-		expect(oneResult!.Playnite.Description).toBe(oneGamePlayniteSnapshot.description);
-		expect(oneResult!.Playnite.ReleaseDate).toBe(
-			oneGamePlayniteSnapshot.releaseDate?.toISOString() ?? null,
+		expect(oneResult?.Playnite).toBeDefined();
+		expect(oneResult!.Playnite!.Name).toBe(oneGamePlayniteSnapshot?.name);
+		expect(oneResult!.Playnite!.Description).toBe(oneGamePlayniteSnapshot?.description);
+		expect(oneResult!.Playnite!.ReleaseDate).toBe(
+			oneGamePlayniteSnapshot?.releaseDate?.toISOString() ?? null,
 		);
-		expect(oneResult!.Playnite.Playtime).toBe(oneGamePlayniteSnapshot.playtime);
-		expect(oneResult!.Playnite.LastActivity).toBe(
-			oneGamePlayniteSnapshot.lastActivity?.toISOString() ?? null,
+		expect(oneResult!.Playnite!.Playtime).toBe(oneGamePlayniteSnapshot!.playtime);
+		expect(oneResult!.Playnite?.LastActivity).toBe(
+			oneGamePlayniteSnapshot?.lastActivity?.toISOString() ?? null,
 		);
-		expect(oneResult!.Playnite.Added).toBe(oneGamePlayniteSnapshot.added?.toISOString() ?? null);
-		expect(oneResult!.Playnite.InstallDirectory).toBe(oneGamePlayniteSnapshot.installDirectory);
-		expect(oneResult!.Playnite.IsInstalled).toBe(oneGamePlayniteSnapshot.isInstalled);
-		expect(oneResult!.Assets.BackgroundImagePath).toBe(oneGame.getBackgroundImagePath());
-		expect(oneResult!.Assets.CoverImagePath).toBe(oneGame.getCoverImagePath());
-		expect(oneResult!.Assets.IconImagePath).toBe(oneGame.getIconImagePath());
-		expect(oneResult!.Playnite.Hidden).toBe(oneGamePlayniteSnapshot.hidden);
+		expect(oneResult!.Playnite!.Added).toBe(oneGamePlayniteSnapshot?.added?.toISOString() ?? null);
+		expect(oneResult!.Playnite!.InstallDirectory).toBe(oneGamePlayniteSnapshot?.installDirectory);
+		expect(oneResult!.Playnite!.IsInstalled).toBe(oneGamePlayniteSnapshot?.isInstalled);
+		expect(oneResult!.Playnite!.BackgroundImagePath).toBe(oneGame.getBackgroundImagePath());
+		expect(oneResult!.Playnite!.CoverImagePath).toBe(oneGame.getCoverImagePath());
+		expect(oneResult!.Playnite!.IconImagePath).toBe(oneGame.getIconImagePath());
+		expect(oneResult!.Playnite!.Hidden).toBe(oneGamePlayniteSnapshot?.hidden);
 		expect(oneResult!.CompletionStatusId).toBe(oneGame.getCompletionStatusId());
 		expect(oneResult!.ContentHash).toBe(oneGame.getContentHash());
 		expect(new Set(oneResult!.Developers)).toEqual(new Set(oneGame.relationships.developers.get()));
@@ -212,9 +213,9 @@ describe("Game Library / Game", () => {
 				lastActivity: null,
 				added: null,
 				installDirectory: null,
-				backgroundImage: null,
-				coverImage: null,
-				icon: null,
+				backgroundImagePath: null,
+				coverImagePath: null,
+				iconImagePath: null,
 				hidden: false,
 				id: PlayniteGameIdParser.fromTrusted(faker.string.uuid()),
 				isInstalled: false,
@@ -231,12 +232,13 @@ describe("Game Library / Game", () => {
 
 		// Assert
 		expect(oneResult).toBeDefined();
-		expect(oneResult!.Playnite.Name).toBeNull();
-		expect(oneResult!.Playnite.Description).toBeNull();
-		expect(oneResult!.Playnite.ReleaseDate).toBeNull();
-		expect(oneResult!.Playnite.LastActivity).toBeNull();
-		expect(oneResult!.Playnite.Added).toBeNull();
-		expect(oneResult!.Playnite.InstallDirectory).toBeNull();
+		expect(oneResult?.Playnite).toBeDefined();
+		expect(oneResult!.Playnite!.Name).toBeNull();
+		expect(oneResult!.Playnite!.Description).toBeNull();
+		expect(oneResult!.Playnite!.ReleaseDate).toBeNull();
+		expect(oneResult!.Playnite!.LastActivity).toBeNull();
+		expect(oneResult!.Playnite!.Added).toBeNull();
+		expect(oneResult!.Playnite!.InstallDirectory).toBeNull();
 	});
 
 	it("deletion don't actually delete games, but mark them as deleted", async () => {
