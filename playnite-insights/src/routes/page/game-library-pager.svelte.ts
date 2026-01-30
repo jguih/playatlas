@@ -1,5 +1,6 @@
 import type { ClientApiGetter } from "$lib/modules/bootstrap/application";
 import type { GameCardProjection } from "../../lib/ui/components/game-card/game-card.projection";
+import { homePageFiltersSignal } from "./home-page-filters.svelte";
 
 export type GameLibraryPagerState = {
 	games: GameCardProjection[];
@@ -40,6 +41,7 @@ export class GameLibraryPager {
 				limit: 50,
 				sort: "recent",
 				cursor: snapshot.nextKey,
+				filter: homePageFiltersSignal,
 			});
 
 			const cardProjectionItems = result.items.map(

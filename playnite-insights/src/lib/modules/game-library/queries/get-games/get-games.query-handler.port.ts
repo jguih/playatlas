@@ -1,12 +1,14 @@
 import type { IAsyncQueryHandlerPort } from "$lib/modules/common/common";
 import type { Game } from "../../domain/game.entity";
 
+export type GetGamesQueryFilter = {
+	installed?: boolean;
+	search?: string;
+};
+
 export type GetGamesQuery = {
 	sort: "recent" | "name";
-	filter?: {
-		installed?: boolean;
-		search?: string;
-	};
+	filter?: GetGamesQueryFilter;
 	cursor?: IDBValidKey | null;
 	limit: number;
 };

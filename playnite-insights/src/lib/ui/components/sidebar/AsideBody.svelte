@@ -1,37 +1,12 @@
 <script lang="ts">
-	import { onDestroy, onMount } from "svelte";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	let {
-		bottomNav = false,
-		header = true,
-		onMount: handleOnMount,
-		onDestroy: handleOnDetroy,
-		...props
-	}: HTMLAttributes<HTMLDivElement> & {
-		bottomNav?: boolean;
-		header?: boolean;
-		onMount?: () => void | Promise<void>;
-		onDestroy?: () => void | Promise<void>;
-	} = $props();
-
-	onMount(() => {
-		void handleOnMount?.();
-	});
-
-	onDestroy(() => {
-		void handleOnDetroy?.();
-	});
+	let props: HTMLAttributes<HTMLDivElement> & {} = $props();
 </script>
 
 <div
 	{...props}
-	class={[
-		"z-21 absolute bottom-0 left-0 right-0 w-full overflow-y-auto p-4",
-		bottomNav ? "bottom-[3.4rem]" : "bottom-0",
-		header ? "top-(--header-height)" : "top-0",
-		props.class,
-	]}
+	class={["p-4", props.class]}
 >
 	{#if props.children}
 		{@render props.children()}

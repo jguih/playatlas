@@ -1,5 +1,8 @@
 import { pushState } from "$app/navigation";
 import { page } from "$app/state";
+import type { GetGamesQueryFilter } from "$lib/modules/game-library/queries";
+
+export const homePageFiltersSignal: GetGamesQueryFilter = $state({});
 
 export class HomePageFilters {
 	open = () => {

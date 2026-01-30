@@ -8,10 +8,8 @@
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
-	import BottomSheet from "$lib/ui/components/sidebar/BottomSheet.svelte";
 	import Sidebar from "$lib/ui/components/sidebar/Sidebar.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
-	import { HomePageFilters, homePageScrollState, HomePageSearch } from "$lib/ui/state";
 	import {
 		HomeIcon,
 		LayoutDashboardIcon,
@@ -20,22 +18,53 @@
 		SettingsIcon,
 	} from "@lucide/svelte";
 	import { onMount, tick } from "svelte";
+	import SearchBottomSheet from "./page/components/SearchBottomSheet.svelte";
 	import { GameLibraryPager } from "./page/game-library-pager.svelte";
+	import { HomePageFilters, homePageFiltersSignal } from "./page/home-page-filters.svelte";
+	import { homePageScrollState } from "./page/home-page-scroll-position.svelte";
+	import { HomePageSearch } from "./page/home-page-search.svelte";
 	import { SyncProgressViewModel } from "./page/sync-progress.view-model";
 
 	const api = getClientApiContext();
-	const gamePager = new GameLibraryPager({ api });
+	const pager = new GameLibraryPager({ api });
 	const filters = new HomePageFilters();
 	const search = new HomePageSearch();
 	const syncProgress = $derived(api().GameLibrary.SyncProgressReporter.progressSignal);
+	let reloadPagerTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);
 	let main = $state<HTMLElement | undefined>(undefined);
+
+	const reloadPager = () => {
+		pager.invalidateSignal();
+		void pager.loadMore();
+	};
+
+	const clearReloadPagerTimeout = () => {
+		if (reloadPagerTimeout !== undefined) {
+			clearTimeout(reloadPagerTimeout);
+			reloadPagerTimeout = undefined;
+		}
+	};
+
+	const reloadPagerDebounced = () => {
+		clearReloadPagerTimeout();
+
+		if (!homePageFiltersSignal.search) {
+			reloadPager();
+			return;
+		}
+
+		reloadPagerTimeout = setTimeout(() => {
+			reloadPager();
+			reloadPagerTimeout = undefined;
+		}, 1_000);
+	};
 
 	onMount(() => {
 		const observer = new IntersectionObserver(
 			async ([entry]) => {
 				if (entry.isIntersecting) {
-					await gamePager.loadMore();
+					await pager.loadMore();
 				}
 			},
 			{
@@ -55,9 +84,8 @@
 
 	onMount(() => {
 		const unsubscribe = api().EventBus.on("sync-finished", () => {
-			if (gamePager.pagerStateSignal.games.length === 0) {
-				gamePager.invalidateSignal();
-				void gamePager.loadMore();
+			if (pager.pagerStateSignal.games.length === 0) {
+				reloadPager();
 			}
 		});
 
@@ -90,7 +118,15 @@
 {/if}
 
 {#if search.shouldOpen}
-	<BottomSheet onClose={search.close} />
+	<SearchBottomSheet
+		onClose={() => {
+			clearReloadPagerTimeout();
+			reloadPager();
+			search.close();
+		}}
+		bind:value={homePageFiltersSignal.search}
+		onChange={reloadPagerDebounced}
+	/>
 {/if}
 
 <AppLayout>
@@ -142,12 +178,12 @@
 				["grid-cols-[repeat(auto-fill,minmax(9rem,1fr))]"],
 			]}
 		>
-			{#each gamePager.pagerStateSignal.games as game (game.id)}
+			{#each pager.pagerStateSignal.games as game (game.id)}
 				<GameCard {game} />
 			{/each}
 		</ul>
 
-		{#if gamePager.pagerStateSignal.loading}
+		{#if pager.pagerStateSignal.loading}
 			<div class="w-fit block mx-auto">
 				<Spinner />
 			</div>

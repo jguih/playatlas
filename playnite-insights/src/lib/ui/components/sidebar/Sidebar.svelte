@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from "svelte";
-	import { cubicOut } from "svelte/easing";
+	import { cubicInOut } from "svelte/easing";
 	import { fly } from "svelte/transition";
 	import Backdrop from "./Backdrop.svelte";
 	import type { SidebarProps } from "./types";
@@ -45,7 +45,7 @@
 		props.class,
 	]}
 	style:width={`min(${width}dvw, 28rem)`}
-	transition:fly={{ x: `-${width}dvw`, duration: 150, easing: cubicOut }}
+	transition:fly={{ x: `-${width}dvw`, duration: 200, easing: cubicInOut }}
 >
 	{#if props.children && showChildren}
 		{@render props.children()}

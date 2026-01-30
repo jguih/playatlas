@@ -11,8 +11,7 @@
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
-	import { GameAssets } from "$lib/ui/state";
-	import { PlaytimeFormatter } from "$lib/ui/utils";
+	import { GameAssets, PlaytimeFormatter } from "$lib/ui/utils";
 	import { ArrowLeftIcon, ClockIcon, NotebookPenIcon } from "@lucide/svelte";
 	import { onMount, tick } from "svelte";
 	import { cubicInOut } from "svelte/easing";
