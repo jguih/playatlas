@@ -13,7 +13,10 @@ import type {
 import type { IGetAllExtensionRegistrationsQueryHandlerPort } from "@playatlas/auth/queries";
 import type { IDomainEventBusPort, ILogServicePort } from "@playatlas/common/application";
 import type { ISystemConfigPort } from "@playatlas/common/infra";
-import type { IGameAssetsContextFactoryPort } from "@playatlas/game-library/infra";
+import type {
+	IGameAssetsContextFactoryPort,
+	IGameAssetsReindexerPort,
+} from "@playatlas/game-library/infra";
 import type {
 	IGetAllCompaniesQueryHandlerPort,
 	IGetAllCompletionStatusesQueryHandlerPort,
@@ -46,6 +49,7 @@ export type PlayAtlasApiV1 = {
 			getGetAllCompletionStatusesQueryHandler: () => IGetAllCompletionStatusesQueryHandlerPort;
 		};
 		getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
+		getGameAssetsReindexer: () => IGameAssetsReindexerPort;
 	};
 	auth: {
 		getExtensionAuthService: () => IExtensionAuthServicePort;

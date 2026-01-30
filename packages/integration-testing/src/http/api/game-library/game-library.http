@@ -18,6 +18,11 @@ GET {{protocol}}://{{host}}/api/game
 Content-Type: {{contentType}}
 Authorization: {{authorization}}
 
+### Reindex all game assets
+GET {{protocol}}://{{host}}/api/game/reindex-assets
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
 ### Get all completion statuses
 GET {{protocol}}://{{host}}/api/completion-status
 Content-Type: {{contentType}}

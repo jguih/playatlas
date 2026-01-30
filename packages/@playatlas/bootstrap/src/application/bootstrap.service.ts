@@ -37,6 +37,7 @@ export const bootstrapV1 = ({
 					gameLibrary.queries.getGetAllCompletionStatusesQueryHandler,
 			},
 			getGameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory,
+			getGameAssetsReindexer: gameLibrary.getGameAssetsReindexer,
 		},
 		auth: {
 			getExtensionAuthService: auth.getExtensionAuthService,

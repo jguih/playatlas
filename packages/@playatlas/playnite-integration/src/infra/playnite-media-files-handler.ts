@@ -1,4 +1,5 @@
 import { type IFileSystemServicePort, type ILogServicePort } from "@playatlas/common/application";
+import { GAME_MEDIA_PRESETS, isValidFileName, type GameImageType } from "@playatlas/common/common";
 import {
 	InvalidFileTypeError,
 	InvalidStateError,
@@ -11,12 +12,11 @@ import type {
 import busboy from "busboy";
 import { createHash, timingSafeEqual, type Hash } from "crypto";
 import { once } from "events";
-import { basename, extname, join } from "path";
+import { basename, join } from "path";
 import sharp from "sharp";
 import { Readable } from "stream";
 import type { ReadableStream } from "stream/web";
 import type { IPlayniteMediaFilesContextFactoryPort } from "./playnite-media-files-context.factory.port";
-import { isValidFileName, MEDIA_PRESETS } from "./playnite-media-files-handler.constants";
 import type { IPlayniteMediaFilesHandlerPort } from "./playnite-media-files-handler.port";
 import type { PlayniteMediaFileStreamResult } from "./playnite-media-files-handler.types";
 
@@ -43,6 +43,8 @@ export const makePlayniteMediaFilesHandler = ({
 		}
 	};
 
+	const _getImageFileName = (name: GameImageType) => `${crypto.randomUUID()}.${name}.webp`;
+
 	const _streamFileIntoHash = async (hash: Hash, filepath: string) => {
 		const stream = fileSystemService.createReadStream(filepath);
 
@@ -57,7 +59,7 @@ export const makePlayniteMediaFilesHandler = ({
 		coverPath: string,
 		outputPath: string,
 	): Promise<PlayniteMediaFileStreamResult> => {
-		const preset = MEDIA_PRESETS.icon;
+		const preset = GAME_MEDIA_PRESETS.icon;
 		const image = sharp(coverPath);
 		const metadata = await image.metadata();
 
@@ -66,7 +68,6 @@ export const makePlayniteMediaFilesHandler = ({
 		}
 
 		const side = Math.min(metadata.width, metadata.height);
-
 		const left = Math.floor((metadata.width - side) / 2);
 		const top = Math.floor((metadata.height - side) / 2);
 
@@ -246,9 +247,9 @@ export const makePlayniteMediaFilesHandler = ({
 		});
 
 		const results = await Promise.all(
-			mediaContext.getStreamResults().map(async ({ name, filepath, filename }) => {
-				const preset = MEDIA_PRESETS[name];
-				const outputFilename = basename(filename, extname(filename)) + ".webp";
+			mediaContext.getStreamResults().map(async ({ name, filepath }) => {
+				const preset = GAME_MEDIA_PRESETS[name];
+				const outputFilename = _getImageFileName(name);
 				const outputPath = join(mediaContext.getTmpOptimizedDirPath(), outputFilename);
 
 				return sharp(filepath, { failOn: "none" })
@@ -279,8 +280,10 @@ export const makePlayniteMediaFilesHandler = ({
 		);
 
 		const cover = results.find((r) => r.name === "cover");
-		if (!results.find((r) => r.name === "icon") && cover) {
-			const outputPath = join(mediaContext.getTmpOptimizedDirPath(), `${crypto.randomUUID()}.webp`);
+		const icon = results.find((r) => r.name === "icon");
+
+		if (!icon && cover) {
+			const outputPath = join(mediaContext.getTmpOptimizedDirPath(), _getImageFileName("icon"));
 			const result = await _deriveIconFromCover(cover.filepath, outputPath);
 			results.push(result);
 		}

@@ -3,11 +3,10 @@ import {
 	type IFileSystemServicePort,
 	type ILogServicePort,
 } from "@playatlas/common/application";
+import { CONTENT_HASH_FILE_NAME } from "@playatlas/common/common";
 import { InvalidStateError, type PlayniteGameId } from "@playatlas/common/domain";
 import type { ISystemConfigPort } from "@playatlas/common/infra";
 import { join } from "path";
-
-export const CONTENT_HASH_FILE_NAME = "contentHash.txt" as const;
 
 export type GameAssetsContext = Readonly<{
 	getPlayniteGameId: () => PlayniteGameId;

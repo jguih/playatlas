@@ -1,5 +1,5 @@
+import { CONTENT_HASH_FILE_NAME } from "@playatlas/common/common";
 import { join } from "path";
-import { CONTENT_HASH_FILE_NAME } from "../infra/playnite-media-files-handler.constants";
 import type { LibraryManifest } from "./library-manifest";
 import { libraryManifestSchema } from "./library-manifest.schema";
 import type { ILibraryManifestServicePort } from "./library-manifest.service.port";

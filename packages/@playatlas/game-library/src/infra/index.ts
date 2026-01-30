@@ -7,6 +7,8 @@ export type * from "./completion-status.repository.types";
 export * from "./game-assets-context";
 export * from "./game-assets-context.factory";
 export type * from "./game-assets-context.factory.port";
+export * from "./game-assets-reindexer";
+export type * from "./game-assets-reindexer.port";
 export * from "./game-library.uow";
 export * from "./game-relationship.store";
 export type * from "./game-relationship.store.port";

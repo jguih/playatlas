@@ -26,6 +26,7 @@ export type Game = BaseEntity<GameId> &
 		getBackgroundImagePath: () => string | null;
 		getCoverImagePath: () => string | null;
 		getIconImagePath: () => string | null;
+		getImagePath: (name: GameImageType) => string | null;
 		getPlayniteSnapshot: () => PlayniteGameSnapshot;
 		getContentHash: () => string;
 		setImageReference: (props: { name: GameImageType; path: { filename: string } }) => void;
@@ -79,6 +80,22 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 		getBackgroundImagePath: () => _background_image_path,
 		getCoverImagePath: () => _cover_image_path,
 		getIconImagePath: () => _icon_image_path,
+		getImagePath: (name) => {
+			switch (name) {
+				case "background": {
+					return _background_image_path;
+					break;
+				}
+				case "cover": {
+					return _cover_image_path;
+					break;
+				}
+				case "icon": {
+					return _icon_image_path;
+					break;
+				}
+			}
+		},
 		...softDelete,
 		getPlayniteSnapshot: () => _playnite_snapshot,
 		getContentHash: () => _content_hash,

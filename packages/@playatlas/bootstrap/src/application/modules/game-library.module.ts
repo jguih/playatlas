@@ -19,6 +19,7 @@ import {
 	makeCompanyRepository,
 	makeCompletionStatusRepository,
 	makeGameAssetsContextFactory,
+	makeGameAssetsReindexer,
 	makeGameLibraryUnitOfWork,
 	makeGameRelationshipStore,
 	makeGameRepository,
@@ -128,6 +129,12 @@ export const makeGameLibraryModule = ({
 		logServiceFactory,
 		systemConfig,
 	});
+	const gameAssetsReindexer = makeGameAssetsReindexer({
+		fileSystemService,
+		gameAssetsContextFactory,
+		gameRepository,
+		logService: buildLog("GameAssetsReindexer"),
+	});
 
 	const gameLibraryUnitOfWork = makeGameLibraryUnitOfWork({
 		companyFactory,
@@ -159,16 +166,23 @@ export const makeGameLibraryModule = ({
 		},
 
 		getGameAssetsContextFactory: () => gameAssetsContextFactory,
+		getGameAssetsReindexer: () => gameAssetsReindexer,
+
 		getGameFactory: () => gameFactory,
 		getGameMapper: () => gameMapper,
+
 		getCompanyFactory: () => companyFactory,
 		getCompanyMapper: () => companyMapper,
+
 		getCompletionStatusFactory: () => completionStatusFactory,
 		getCompletionStatusMapper: () => completionStatusMapper,
+
 		getPlatformFactory: () => platformFactory,
 		getPlatformMapper: () => platformMapper,
+
 		getGenreFactory: () => genreFactory,
 		getGenreMapper: () => genreMapper,
+
 		getGameLibraryUnitOfWork: () => gameLibraryUnitOfWork,
 	};
 	return Object.freeze(gameLibrary);
