@@ -230,29 +230,30 @@ export const extractSyncData = ({
 		const playniteGameId = PlayniteGameIdParser.fromExternal(item.Id);
 		const existingGame = context.games.get(playniteGameId) ?? games.get(playniteGameId);
 
-		const playniteSnapshot: PlayniteGameSnapshot = {
-			id: playniteGameId,
-			name: item.Name ?? null,
-			added: item.Added ? new Date(item.Added) : null,
-			description: item.Description ?? null,
-			hidden: item.Hidden,
-			installDirectory: item.InstallDirectory ?? null,
-			isInstalled: item.IsInstalled,
-			lastActivity: item.LastActivity ? new Date(item.LastActivity) : null,
-			playtime: item.Playtime,
-			releaseDate: item.ReleaseDate ? new Date(item.ReleaseDate) : null,
-			completionStatusId: itemCompletionStatus?.getId() ?? null,
-			backgroundImagePath: item.BackgroundImage ?? null,
-			coverImagePath: item.CoverImage ?? null,
-			iconImagePath: item.CoverImage ?? null,
-		};
-
 		const developerIds = itemDevelopers.values().toArray();
 		const genreIds = itemGenres.values().toArray();
 		const publisherIds = itemPublishers.values().toArray();
 		const platformIds = itemPlatforms.values().toArray();
 
 		if (existingGame) {
+			const existingSnapshot = existingGame.getPlayniteSnapshot();
+			const playniteSnapshot: PlayniteGameSnapshot | null = existingSnapshot
+				? {
+						...existingSnapshot,
+						id: playniteGameId,
+						name: item.Name ?? null,
+						added: item.Added ? new Date(item.Added) : null,
+						description: item.Description ?? null,
+						hidden: item.Hidden,
+						installDirectory: item.InstallDirectory ?? null,
+						isInstalled: item.IsInstalled,
+						lastActivity: item.LastActivity ? new Date(item.LastActivity) : null,
+						playtime: item.Playtime,
+						releaseDate: item.ReleaseDate ? new Date(item.ReleaseDate) : null,
+						completionStatusId: itemCompletionStatus?.getId() ?? null,
+					}
+				: null;
+
 			const didUpdate = existingGame.updateFromPlaynite({
 				contentHash: item.ContentHash,
 				playniteSnapshot,
@@ -260,6 +261,23 @@ export const extractSyncData = ({
 			});
 			if (didUpdate) games.set(playniteGameId, existingGame);
 		} else {
+			const playniteSnapshot: PlayniteGameSnapshot = {
+				id: playniteGameId,
+				name: item.Name ?? null,
+				added: item.Added ? new Date(item.Added) : null,
+				description: item.Description ?? null,
+				hidden: item.Hidden,
+				installDirectory: item.InstallDirectory ?? null,
+				isInstalled: item.IsInstalled,
+				lastActivity: item.LastActivity ? new Date(item.LastActivity) : null,
+				playtime: item.Playtime,
+				releaseDate: item.ReleaseDate ? new Date(item.ReleaseDate) : null,
+				completionStatusId: itemCompletionStatus?.getId() ?? null,
+				backgroundImagePath: item.BackgroundImage ?? null,
+				coverImagePath: item.CoverImage ?? null,
+				iconImagePath: item.Icon ?? null,
+			};
+
 			const newGame = gameFactory.create({
 				id: GameIdParser.fromTrusted(ulid()),
 				playniteSnapshot,

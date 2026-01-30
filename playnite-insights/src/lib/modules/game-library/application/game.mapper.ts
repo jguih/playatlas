@@ -1,5 +1,12 @@
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
-import { GameIdParser, PlayniteGameIdParser } from "../domain";
+import {
+	CompanyIdParser,
+	CompletionStatusIdParser,
+	GameIdParser,
+	GenreIdParser,
+	PlatformIdParser,
+	PlayniteGameIdParser,
+} from "../domain";
 import type { IGameMapperPort } from "./game.mapper.port";
 
 export type GameMapperDeps = {
@@ -22,7 +29,9 @@ export class GameMapper implements IGameMapperPort {
 						Name: dto.Playnite.Name,
 						Description: dto.Playnite.Description,
 						Added: dto.Playnite.Added ? new Date(dto.Playnite.Added) : null,
-						CompletionStatusId: dto.Playnite.CompletionStatusId,
+						CompletionStatusId: dto.Playnite.CompletionStatusId
+							? CompletionStatusIdParser.fromTrusted(dto.Playnite.CompletionStatusId)
+							: null,
 						Hidden: dto.Playnite.Hidden,
 						InstallDirectory: dto.Playnite.InstallDirectory,
 						IsInstalled: dto.Playnite.IsInstalled,
@@ -34,12 +43,14 @@ export class GameMapper implements IGameMapperPort {
 						IconImagePath: dto.Playnite.IconImagePath,
 					}
 				: null,
-			CompletionStatusId: dto.CompletionStatusId,
+			CompletionStatusId: dto.CompletionStatusId
+				? CompletionStatusIdParser.fromTrusted(dto.CompletionStatusId)
+				: null,
 			ContentHash: dto.ContentHash,
-			Developers: dto.Developers,
-			Publishers: dto.Publishers,
-			Genres: dto.Genres,
-			Platforms: dto.Platforms,
+			Developers: dto.Developers.map(CompanyIdParser.fromTrusted),
+			Publishers: dto.Publishers.map(CompanyIdParser.fromTrusted),
+			Genres: dto.Genres.map(GenreIdParser.fromTrusted),
+			Platforms: dto.Platforms.map(PlatformIdParser.fromTrusted),
 			SourceUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
 			SourceUpdatedAtMs: new Date(dto.Sync.LastUpdatedAt).getTime(),
 			DeletedAt: dto.Sync.DeletedAt ? new Date(dto.Sync.DeletedAt) : null,

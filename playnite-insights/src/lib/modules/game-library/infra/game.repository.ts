@@ -1,5 +1,7 @@
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
 import type { IGameMapperPort } from "../application/game.mapper.port";
+import type { CompanyId, GenreId, PlatformId } from "../domain";
+import type { CompletionStatusId } from "../domain/completion-status.entity";
 import type { Game, GameId, PlayniteGameId } from "../domain/game.entity";
 import type { IGameRepositoryPort } from "./game.repository.port";
 import { gameRepositoryMeta } from "./game.repository.schema";
@@ -26,17 +28,17 @@ export type GameModel = {
 		InstallDirectory: string | null;
 		IsInstalled: boolean;
 		Hidden: boolean;
-		CompletionStatusId: string | null;
+		CompletionStatusId: CompletionStatusId | null;
 		BackgroundImagePath: string | null;
 		CoverImagePath: string | null;
 		IconImagePath: string | null;
 	} | null;
-	CompletionStatusId: string | null;
+	CompletionStatusId: CompletionStatusId | null;
 	ContentHash: string;
-	Developers: string[];
-	Publishers: string[];
-	Genres: string[];
-	Platforms: string[];
+	Developers: CompanyId[];
+	Publishers: CompanyId[];
+	Genres: GenreId[];
+	Platforms: PlatformId[];
 
 	Sync: {
 		Status: "pending" | "synced" | "error";

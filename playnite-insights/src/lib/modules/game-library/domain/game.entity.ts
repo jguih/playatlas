@@ -1,4 +1,8 @@
 import type { ClientEntity, EntitySyncStateProps } from "$lib/modules/common/common";
+import type { CompanyId } from "./company.entity";
+import type { CompletionStatusId } from "./completion-status.entity";
+import type { GenreId } from "./genre.entity";
+import type { PlatformId } from "./platform.entity";
 
 export type GameId = string & { readonly __brand: "GameId" };
 
@@ -24,17 +28,17 @@ export type Game = ClientEntity<GameId> & {
 		InstallDirectory: string | null;
 		IsInstalled: boolean;
 		Hidden: boolean;
-		CompletionStatusId: string | null;
+		CompletionStatusId: CompletionStatusId | null;
 		BackgroundImagePath: string | null;
 		CoverImagePath: string | null;
 		IconImagePath: string | null;
 	} | null;
-	CompletionStatusId: string | null;
+	CompletionStatusId: CompletionStatusId | null;
 	ContentHash: string;
-	Developers: string[];
-	Publishers: string[];
-	Genres: string[];
-	Platforms: string[];
+	Developers: CompanyId[];
+	Publishers: CompanyId[];
+	Genres: GenreId[];
+	Platforms: PlatformId[];
 	DeletedAt: Date | null;
 	DeleteAfter: Date | null;
 	// Front-end specific

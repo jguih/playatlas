@@ -90,5 +90,5 @@ export type UpdateGameFromPlayniteProps = {
 		platformIds: PlatformId[];
 	};
 	contentHash: string;
-	playniteSnapshot: PlayniteGameSnapshot;
+	playniteSnapshot: PlayniteGameSnapshot | null;
 };
