@@ -32,20 +32,17 @@ export const gameSchema = z.object({
 	PlayniteAdded: ISODateSchema.nullable(),
 	PlayniteInstallDirectory: z.string().nullable(),
 	PlayniteIsInstalled: z.number(),
-	PlayniteBackgroundImage: z.string().nullable(),
-	PlayniteCoverImage: z.string().nullable(),
-	PlayniteIcon: z.string().nullable(),
 	PlayniteHidden: z.number(),
 	PlayniteCompletionStatusId: playniteCompletionStatusIdSchema.nullable(),
+	PlayniteBackgroundImagePath: z.string().nullable(),
+	PlayniteCoverImagePath: z.string().nullable(),
+	PlayniteIconImagePath: z.string().nullable(),
 	CompletionStatusId: completionStatusIdSchema.nullable(),
 	ContentHash: z.string(),
 	LastUpdatedAt: ISODateSchema,
 	CreatedAt: ISODateSchema,
 	DeletedAt: ISODateSchema.nullable(),
 	DeleteAfter: ISODateSchema.nullable(),
-	BackgroundImagePath: z.string().nullable(),
-	CoverImagePath: z.string().nullable(),
-	IconImagePath: z.string().nullable(),
 });
 
 export type GameModel = z.infer<typeof gameSchema>;

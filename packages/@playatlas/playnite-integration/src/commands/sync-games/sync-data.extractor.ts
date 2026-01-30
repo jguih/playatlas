@@ -223,6 +223,7 @@ export const extractSyncData = ({
 					createdAt: now,
 				});
 				completionStatuses.set(itemPlayniteCompletionStatusId, newCompletionStatus);
+				itemCompletionStatus = newCompletionStatus;
 			}
 		}
 
@@ -233,9 +234,6 @@ export const extractSyncData = ({
 			id: playniteGameId,
 			name: item.Name ?? null,
 			added: item.Added ? new Date(item.Added) : null,
-			backgroundImage: item.BackgroundImage ?? null,
-			coverImage: item.CoverImage ?? null,
-			icon: item.Icon ?? null,
 			description: item.Description ?? null,
 			hidden: item.Hidden,
 			installDirectory: item.InstallDirectory ?? null,
@@ -243,7 +241,10 @@ export const extractSyncData = ({
 			lastActivity: item.LastActivity ? new Date(item.LastActivity) : null,
 			playtime: item.Playtime,
 			releaseDate: item.ReleaseDate ? new Date(item.ReleaseDate) : null,
-			completionStatusId: itemPlayniteCompletionStatusId,
+			completionStatusId: itemCompletionStatus?.getId() ?? null,
+			backgroundImagePath: item.BackgroundImage ?? null,
+			coverImagePath: item.CoverImage ?? null,
+			iconImagePath: item.CoverImage ?? null,
 		};
 
 		const developerIds = itemDevelopers.values().toArray();
@@ -340,7 +341,7 @@ export const buildGameLibrarySyncContext = ({
 	const games = new Map<PlayniteGameId, Game>();
 
 	for (const game of _games) {
-		const playniteGameId = game.getPlayniteSnapshot().id;
+		const playniteGameId = game.getPlayniteSnapshot()?.id;
 		if (playniteGameId) games.set(playniteGameId, game);
 	}
 

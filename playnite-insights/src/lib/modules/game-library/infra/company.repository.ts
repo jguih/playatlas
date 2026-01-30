@@ -14,8 +14,8 @@ export type CompanyModel = {
 	Name: string;
 	SourceUpdatedAt: Date;
 	SourceUpdatedAtMs: number;
-	SourceDeletedAt?: Date | null;
-	SourceDeleteAfter?: Date | null;
+	DeletedAt?: Date | null;
+	DeleteAfter?: Date | null;
 
 	Sync: {
 		Status: SyncStatus;

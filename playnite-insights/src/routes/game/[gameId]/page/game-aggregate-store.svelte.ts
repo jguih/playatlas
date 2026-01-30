@@ -46,12 +46,14 @@ export class GameAggregateStore {
 	};
 
 	private loadCompletionStatusAsync = async () => {
-		if (!this.game || !this.game.CompletionStatusId) return;
+		if (!this.game || !this.game.Playnite.CompletionStatusId) return;
 
 		const { completionStatuses } = await this.deps
 			.api()
 			.GameLibrary.Query.GetCompletionStatusesByIds.executeAsync({
-				completionStatusesIds: [CompletionStatusIdParser.fromTrusted(this.game.CompletionStatusId)],
+				completionStatusesIds: [
+					CompletionStatusIdParser.fromTrusted(this.game.Playnite.CompletionStatusId),
+				],
 			});
 		this.completionStatus = completionStatuses.at(0) ?? null;
 	};

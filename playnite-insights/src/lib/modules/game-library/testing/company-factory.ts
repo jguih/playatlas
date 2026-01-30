@@ -8,7 +8,7 @@ export class CompanyFactory implements ICompanyFactoryPort {
 	private buildCompany = (): Company => {
 		const SourceUpdatedAt = faker.date.recent();
 		return {
-			Id: CompanyIdParser.fromTrusted(faker.string.uuid()),
+			Id: CompanyIdParser.fromTrusted(faker.string.ulid()),
 			Name: faker.word.noun(),
 			SourceUpdatedAt,
 			SourceUpdatedAtMs: SourceUpdatedAt.getTime(),

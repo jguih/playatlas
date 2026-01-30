@@ -113,9 +113,13 @@ export const makePlayniteMediaFilesHandler = ({
 
 					bb.on("field", async (name, val) => {
 						if (name === "gameId") {
-							gameContext = gameAssetsContextFactory.buildContext(
-								PlayniteGameIdParser.fromExternal(val),
-							);
+							try {
+								const playniteGameId = PlayniteGameIdParser.fromExternal(val);
+								gameContext = gameAssetsContextFactory.buildContext(playniteGameId);
+							} catch (error) {
+								bb.end();
+								reject(error);
+							}
 						}
 						if (name === "contentHash") {
 							gameContext?.setMediaFilesContentHash(val);

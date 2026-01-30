@@ -27,7 +27,7 @@ export type Game = BaseEntity<GameId> &
 		getCoverImagePath: () => string | null;
 		getIconImagePath: () => string | null;
 		getImagePath: (name: GameImageType) => string | null;
-		getPlayniteSnapshot: () => PlayniteGameSnapshot;
+		getPlayniteSnapshot: () => PlayniteGameSnapshot | null;
 		getContentHash: () => string;
 		setImageReference: (props: { name: GameImageType; path: { filename: string } }) => void;
 		relationships: GameRelationshipProps;
@@ -42,10 +42,7 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 	const _created_at = props.createdAt ?? now;
 	let _content_hash = props.contentHash;
 	let _last_updated_at = props.lastUpdatedAt ?? now;
-	let _background_image_path = props.backgroundImagePath ?? null;
-	let _cover_image_path = props.coverImagePath ?? null;
-	let _icon_image_path = props.iconImagePath ?? null;
-	let _playnite_snapshot: PlayniteGameSnapshot = props.playniteSnapshot;
+	let _playnite_snapshot: PlayniteGameSnapshot | null = props.playniteSnapshot ?? null;
 	const _completion_status_id = props.completionStatusId ?? null;
 
 	const developers = createRelationship(props.developerIds ?? null);
@@ -54,7 +51,7 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 	const publishers = createRelationship(props.publisherIds ?? null);
 
 	const _validate = () => {
-		if (_playnite_snapshot.playtime < 0)
+		if (_playnite_snapshot && _playnite_snapshot.playtime < 0)
 			throw new InvalidStateError("Playnite playtime must not be negative");
 		if (validation.isEmptyString(_content_hash))
 			throw new InvalidStateError("ContentHash must not be an empty string");
@@ -77,21 +74,21 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 	const game: Game = {
 		getId: () => _id,
 		getSafeId: () => _id,
-		getBackgroundImagePath: () => _background_image_path,
-		getCoverImagePath: () => _cover_image_path,
-		getIconImagePath: () => _icon_image_path,
+		getBackgroundImagePath: () => _playnite_snapshot?.backgroundImagePath ?? null,
+		getCoverImagePath: () => _playnite_snapshot?.coverImagePath ?? null,
+		getIconImagePath: () => _playnite_snapshot?.iconImagePath ?? null,
 		getImagePath: (name) => {
 			switch (name) {
 				case "background": {
-					return _background_image_path;
+					return _playnite_snapshot?.backgroundImagePath ?? null;
 					break;
 				}
 				case "cover": {
-					return _cover_image_path;
+					return _playnite_snapshot?.coverImagePath ?? null;
 					break;
 				}
 				case "icon": {
-					return _icon_image_path;
+					return _playnite_snapshot?.iconImagePath ?? null;
 					break;
 				}
 			}
@@ -111,19 +108,20 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 		setImageReference: ({ name, path }) => {
 			if (validation.isNullOrEmptyString(path.filename))
 				throw new InvalidStateError("Filename must not be an empty string or null");
+			if (!_playnite_snapshot) throw new InvalidStateError("Playnite game snapshot not set");
 
 			const filepath = `${_playnite_snapshot.id}/${path.filename}`;
 			switch (name) {
 				case "background": {
-					_background_image_path = filepath;
+					_playnite_snapshot.backgroundImagePath = filepath;
 					break;
 				}
 				case "cover": {
-					_cover_image_path = filepath;
+					_playnite_snapshot.coverImagePath = filepath;
 					break;
 				}
 				case "icon": {
-					_icon_image_path = filepath;
+					_playnite_snapshot.iconImagePath = filepath;
 					break;
 				}
 			}

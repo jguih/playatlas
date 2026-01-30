@@ -11,20 +11,17 @@ CREATE TABLE IF NOT EXISTS `game` (
   `PlayniteAdded` DATETIME DEFAULT NULL,
   `PlayniteInstallDirectory` TEXT DEFAULT NULL,
   `PlayniteIsInstalled` BOOLEAN NOT NULL DEFAULT FALSE,
-  `PlayniteBackgroundImage` TEXT DEFAULT NULL,
-  `PlayniteCoverImage` TEXT DEFAULT NULL,
-  `PlayniteIcon` TEXT DEFAULT NULL,
   `PlayniteHidden` BOOLEAN NOT NULL DEFAULT FALSE,
+  `PlayniteBackgroundImagePath` TEXT DEFAULT NULL,
+  `PlayniteCoverImagePath` TEXT DEFAULT NULL,
+  `PlayniteIconImagePath` TEXT DEFAULT NULL,
   `PlayniteCompletionStatusId` TEXT DEFAULT NULL,
   `CompletionStatusId` TEXT DEFAULT NULL,
   `ContentHash` TEXT NOT NULL,
   `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `DeletedAt` DATETIME DEFAULT NULL,
-  `DeleteAfter` DATETIME DEFAULT NULL,
-  `BackgroundImagePath` TEXT DEFAULT NULL,
-  `CoverImagePath` TEXT DEFAULT NULL,
-  `IconImagePath` TEXT DEFAULT NULL,
+  `DeleteAfter` DATETIME DEFAULT NULL
   FOREIGN KEY (`CompletionStatusId`) REFERENCES `completion_status`(`Id`)
 );
 

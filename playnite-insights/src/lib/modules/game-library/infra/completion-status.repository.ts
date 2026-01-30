@@ -13,8 +13,8 @@ export type CompletionStatusModel = {
 	Name: string | null;
 	SourceUpdatedAt: Date;
 	SourceUpdatedAtMs: number;
-	SourceDeletedAt?: Date | null;
-	SourceDeleteAfter?: Date | null;
+	DeletedAt?: Date | null;
+	DeleteAfter?: Date | null;
 
 	Sync: {
 		Status: "pending" | "synced" | "error";

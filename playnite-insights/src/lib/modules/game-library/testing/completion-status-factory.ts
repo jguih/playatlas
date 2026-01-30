@@ -11,7 +11,7 @@ export class CompletionStatusFactory implements ICompletionStatusFactoryPort {
 	private buildCompletionStatus = (): CompletionStatus => {
 		const SourceUpdatedAt = faker.date.recent();
 		return {
-			Id: CompletionStatusIdParser.fromTrusted(faker.string.uuid()),
+			Id: CompletionStatusIdParser.fromTrusted(faker.string.ulid()),
 			Name: faker.word.noun(),
 			SourceUpdatedAt,
 			SourceUpdatedAtMs: SourceUpdatedAt.getTime(),

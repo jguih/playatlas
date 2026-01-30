@@ -46,8 +46,8 @@ export class GameLibraryPager {
 				(i) =>
 					({
 						id: i.Id,
-						name: i.Name ?? "Unknown",
-						coverImageFilePath: i.CoverImagePath,
+						name: i.Playnite.Name ?? "Unknown",
+						coverImageFilePath: i.Assets.CoverImagePath,
 					}) satisfies GameCardProjection,
 			);
 

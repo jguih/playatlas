@@ -69,14 +69,14 @@ export const makeGameAssetsReindexer = ({
 
 		for (const game of games) {
 			const playniteSnapshot = game.getPlayniteSnapshot();
-			const gameDescription = `(Id: ${game.getId()}, Name: ${playniteSnapshot.name})`;
+			const gameDescription = `(Id: ${game.getId()}, Name: ${playniteSnapshot?.name})`;
 
-			const playniteGameId = playniteSnapshot.id;
-			if (!playniteGameId) {
-				logService.debug(`Skipping game (${gameDescription}) due to missing PlayniteId`);
+			if (!playniteSnapshot) {
+				logService.debug(`Skipping game (${gameDescription}) due to missing Playnite snapshot`);
 				continue;
 			}
 
+			const playniteGameId = playniteSnapshot.id;
 			const context = gameAssetsContextFactory.buildContext(playniteGameId);
 			const mediaFolder = context.getMediaFilesDirPath();
 
@@ -95,18 +95,26 @@ export const makeGameAssetsReindexer = ({
 				}
 				const filepath = path.join(mediaFolder, entry);
 
-				const didUpdate = await processGameImage({ filepath, game, playniteSnapshot });
-				if (didUpdate) updatedImageReferences++;
+				try {
+					const didUpdate = await processGameImage({ filepath, game, playniteSnapshot });
+					if (didUpdate) updatedImageReferences++;
+				} catch {
+					logService.debug(`Failed processing image at ${filepath}`);
+					continue;
+				}
 			}
 
 			if (updatedImageReferences > 0) {
+				logService.debug(
+					`Will update ${updatedImageReferences} image references for ${gameDescription}`,
+				);
 				updatedGames.push(game);
 			} else {
 				logService.debug(`No image reference updated for ${gameDescription}`);
 			}
 		}
 
-		// gameRepository.upsert(updatedGames);
+		gameRepository.upsert(updatedGames);
 	};
 
 	return {

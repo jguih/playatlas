@@ -1,4 +1,4 @@
-import type { PlayniteProjectionResponseDto } from "@playatlas/game-library/dtos";
+import type { GameResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncGamesCommandHandlerPort } from "../commands/sync-games/sync-games.command-handler";
 import type { IGameMapperPort } from "./game.mapper.port";
 import type { IPlayAtlasClientPort } from "./playatlas-client.port";
@@ -22,7 +22,7 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 		lastCursor,
 	}: {
 		lastCursor: string | null;
-	}): Promise<SyncRunnerFetchResult<PlayniteProjectionResponseDto>> => {
+	}): Promise<SyncRunnerFetchResult<GameResponseDto>> => {
 		const response = await this.deps.playAtlasClient.getGamesAsync({
 			lastCursor,
 		});

@@ -1,7 +1,7 @@
 import type { SyncStatus } from "$lib/modules/common/common";
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
 import type { IPlatformMapperPort } from "../application/platform.mapper.port";
-import type { Platform, PlatformId } from "../domain/platform.entity";
+import type { Platform, PlatformId, PlaynitePlatformId } from "../domain/platform.entity";
 import type { IPlatformRepositoryPort } from "./platform.repository.port";
 import { platformRepositoryMeta } from "./platform.repository.schema";
 
@@ -12,14 +12,14 @@ export type PlatformRepositoryDeps = ClientEntityRepositoryDeps & {
 export type PlatformModel = {
 	Id: PlatformId;
 	Name: string;
-	SpecificationId: string;
+	Playnite: {
+		Id: PlaynitePlatformId | null;
+		SpecificationId: string | null;
+	};
 	SourceUpdatedAt: Date;
 	SourceUpdatedAtMs: number;
-	SourceDeletedAt?: Date | null;
-	SourceDeleteAfter?: Date | null;
-	Icon?: string | null;
-	Cover?: string | null;
-	Background?: string | null;
+	DeletedAt?: Date | null;
+	DeleteAfter?: Date | null;
 
 	Sync: {
 		Status: SyncStatus;

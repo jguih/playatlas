@@ -19,9 +19,11 @@ export const makePlatformMapper = ({
 
 		const dto: PlatformResponseDto = {
 			Id: entity.getId(),
-			PlayniteId: playniteSnapshot?.id ?? null,
 			Name: entity.getName(),
-			PlayniteSpecificationId: playniteSnapshot?.specificationId ?? null,
+			Playnite: {
+				Id: playniteSnapshot?.id ?? null,
+				SpecificationId: playniteSnapshot?.specificationId ?? null,
+			},
 			Sync: {
 				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
 				DeletedAt: entity.getDeletedAt()?.toISOString() ?? null,

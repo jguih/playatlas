@@ -79,7 +79,7 @@
 				class={["font-semibold leading-tight text-lg truncate max-w-[70dvw]"]}
 				transition:fade={{ duration: 150, easing: cubicInOut }}
 			>
-				{store.game?.Name}
+				{store.game?.Playnite.Name}
 			</p>
 		{/if}
 	</div>
@@ -97,9 +97,11 @@
 					<div class="h-[50dvh] w-full overflow-hidden">
 						<img
 							src={resolve(`/api/assets/image/[...params]`, {
-								params: GameAssets.parseBackgroundImageParams(store.game.BackgroundImagePath),
+								params: GameAssets.parseBackgroundImageParams(
+									store.game.Assets.BackgroundImagePath,
+								),
 							})}
-							alt={`Background of ${store.game.Name}`}
+							alt={`Background of ${store.game.Playnite.Name}`}
 							loading="eager"
 							decoding="sync"
 							fetchpriority="high"
@@ -120,9 +122,9 @@
 						<div class="relative min-w-40 max-w-40 aspect-2/3">
 							<img
 								src={resolve(`/api/assets/image/[...params]`, {
-									params: GameAssets.parseCoverImageParams(store.game.CoverImagePath),
+									params: GameAssets.parseCoverImageParams(store.game.Assets.CoverImagePath),
 								})}
-								alt={`Cover of ${store.game.Name}`}
+								alt={`Cover of ${store.game.Playnite.Name}`}
 								loading="eager"
 								decoding="sync"
 								fetchpriority="high"
@@ -142,15 +144,15 @@
 							bind:this={heroTitleEl}
 						>
 							<h1 class="text-2xl font-semibold leading-tight drop-shadow-md mb-1">
-								{store.game.Name}
+								{store.game.Playnite.Name}
 							</h1>
 
-							{#if store.game.ReleaseDate || vm.companiesSummarySignal.length > 0}
+							{#if store.game.Playnite.ReleaseDate || vm.companiesSummarySignal.length > 0}
 								<span class="text-sm">
 									<span class="text-foreground/60">
-										{store.game.ReleaseDate?.getFullYear()}
+										{store.game.Playnite.ReleaseDate?.getFullYear()}
 									</span>
-									{#if store.game.ReleaseDate && vm.companiesSummarySignal.length > 0}
+									{#if store.game.Playnite.ReleaseDate && vm.companiesSummarySignal.length > 0}
 										•
 									{/if}
 									<span class="font-bold text-foreground/60">
@@ -194,26 +196,26 @@
 						class="flex gap-2 flex-col"
 					>
 						<div class="flex items-center gap-2 flex-nowrap min-w-0">
-							<SolidChip variant={store.game.IsInstalled ? "success" : "neutral"}>
+							<SolidChip variant={store.game.Playnite.IsInstalled ? "success" : "neutral"}>
 								<span
 									class={[
 										"size-2 rounded-full",
-										store.game.IsInstalled ? "bg-success-bg" : "bg-foreground/40",
+										store.game.Playnite.IsInstalled ? "bg-success-bg" : "bg-foreground/40",
 									]}
 								></span>
 
-								{store.game.IsInstalled ? "Installed" : "Not installed"}
+								{store.game.Playnite.IsInstalled ? "Installed" : "Not installed"}
 							</SolidChip>
 
-							{#if store.game.IsInstalled}
-								{#if store.game.InstallDirectory}
+							{#if store.game.Playnite.IsInstalled}
+								{#if store.game.Playnite.InstallDirectory}
 									<SolidChip
 										class="bg-background-1! text-foreground/80! min-w-0 flex-1"
-										title={store.game.InstallDirectory}
+										title={store.game.Playnite.InstallDirectory}
 									>
 										📂
 										<span class="truncate">
-											{store.game.InstallDirectory}
+											{store.game.Playnite.InstallDirectory}
 										</span>
 									</SolidChip>
 								{:else}
@@ -239,10 +241,13 @@
 						title="Activity"
 						class="flex gap-2 flex-col"
 					>
-						{@render detailSection("Last Played", store.game.LastActivity?.toLocaleDateString())}
+						{@render detailSection(
+							"Last Played",
+							store.game.Playnite.LastActivity?.toLocaleDateString(),
+						)}
 						{@render detailSection(
 							"Playtime",
-							PlaytimeFormatter.toHoursMinutesSeconds(store.game.Playtime),
+							PlaytimeFormatter.toHoursMinutesSeconds(store.game.Playnite.Playtime),
 						)}
 					</GameInfoSection>
 
@@ -250,9 +255,12 @@
 						title="Details"
 						class="flex gap-2 flex-col"
 					>
-						{@render detailSection("Released", store.game.ReleaseDate?.toLocaleDateString())}
-						{@render detailSection("Added", store.game.Added?.toLocaleDateString())}
-						{@render detailSection("Hidden", store.game.Hidden ? "Yes" : "No")}
+						{@render detailSection(
+							"Released",
+							store.game.Playnite.ReleaseDate?.toLocaleDateString(),
+						)}
+						{@render detailSection("Added", store.game.Playnite.Added?.toLocaleDateString())}
+						{@render detailSection("Hidden", store.game.Playnite.Hidden ? "Yes" : "No")}
 						{@render detailSection("Developers", vm.developersStringSignal)}
 						{@render detailSection("Publishers", vm.publishersStringSignal)}
 						{@render detailSection("Genres", vm.genresStringSignal)}

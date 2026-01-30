@@ -5,7 +5,6 @@ import type {
 	GameId,
 	GenreId,
 	PlatformId,
-	PlayniteCompletionStatusId,
 	PlayniteGameId,
 } from "@playatlas/common/domain";
 import type { IClockPort } from "@playatlas/common/infra";
@@ -30,8 +29,8 @@ export type MakeGameRelationshipProps = {
 	platformIds?: PlatformId[] | null;
 };
 
-export type PlayniteGameSnapshot = Readonly<{
-	id: PlayniteGameId | null;
+export type PlayniteGameSnapshot = {
+	id: PlayniteGameId;
 	name: string | null;
 	description: string | null;
 	releaseDate: Date | null;
@@ -40,33 +39,44 @@ export type PlayniteGameSnapshot = Readonly<{
 	added: Date | null;
 	installDirectory: string | null;
 	isInstalled: boolean;
-	backgroundImage: string | null;
-	coverImage: string | null;
-	icon: string | null;
 	hidden: boolean;
-	completionStatusId: PlayniteCompletionStatusId | null;
-}>;
+	completionStatusId: CompletionStatusId | null;
+	backgroundImagePath: string | null;
+	coverImagePath: string | null;
+	iconImagePath: string | null;
+};
 
 type BaseGame = {
 	id: GameId;
 	contentHash: string;
-	playniteSnapshot: PlayniteGameSnapshot;
-	backgroundImagePath?: string | null;
-	coverImagePath?: string | null;
-	iconImagePath?: string | null;
-	deletedAt?: Date | null;
-	deleteAfter?: Date | null;
 	completionStatusId?: CompletionStatusId | null;
 };
 
-type CommonGameProps = {
+type PlayniteProps = {
+	playniteSnapshot: PlayniteGameSnapshot | null;
+};
+
+type SoftDeleteProps = {
+	deletedAt: Date | null;
+	deleteAfter: Date | null;
+};
+
+type SyncGameProps = {
 	lastUpdatedAt: Date;
 	createdAt: Date;
 };
 
-export type MakeGameProps = Partial<CommonGameProps> & BaseGame & MakeGameRelationshipProps;
+export type MakeGameProps = Partial<SyncGameProps> &
+	BaseGame &
+	MakeGameRelationshipProps &
+	Partial<SoftDeleteProps> &
+	Partial<PlayniteProps>;
 
-export type RehydrateGameProps = CommonGameProps & BaseGame & MakeGameRelationshipProps;
+export type RehydrateGameProps = SyncGameProps &
+	BaseGame &
+	MakeGameRelationshipProps &
+	SoftDeleteProps &
+	PlayniteProps;
 
 export type MakeGameDeps = {
 	clock: IClockPort;

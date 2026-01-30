@@ -47,8 +47,8 @@ export class GenreMapper implements IGenreMapperPort {
 			Name: entity.Name,
 			SourceUpdatedAt: entity.SourceUpdatedAt,
 			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,
-			SourceDeleteAfter: null,
-			SourceDeletedAt: null,
+			DeleteAfter: null,
+			DeletedAt: null,
 			Sync: entity.Sync,
 		};
 	};

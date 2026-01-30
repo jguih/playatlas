@@ -13,30 +13,30 @@ import z from "zod";
 
 export const gameResponseDtoSchema = z.object({
 	Id: gameIdSchema,
-	Playnite: z.object({
-		Id: playniteGameIdSchema.nullable(),
-		Name: z.string().nullable(),
-		Description: z.string().nullable(),
-		ReleaseDate: z.string().nullable(),
-		Playtime: z.number(),
-		LastActivity: z.string().nullable(),
-		Added: z.string().nullable(),
-		InstallDirectory: z.string().nullable(),
-		IsInstalled: z.boolean(),
-		Hidden: z.boolean(),
-		CompletionStatusId: playniteCompletionStatusIdSchema.nullable(),
-	}),
+	Playnite: z
+		.object({
+			Id: playniteGameIdSchema,
+			Name: z.string().nullable(),
+			Description: z.string().nullable(),
+			ReleaseDate: z.string().nullable(),
+			Playtime: z.number(),
+			LastActivity: z.string().nullable(),
+			Added: z.string().nullable(),
+			InstallDirectory: z.string().nullable(),
+			IsInstalled: z.boolean(),
+			Hidden: z.boolean(),
+			CompletionStatusId: playniteCompletionStatusIdSchema.nullable(),
+			BackgroundImagePath: z.string().nullable(),
+			CoverImagePath: z.string().nullable(),
+			IconImagePath: z.string().nullable(),
+		})
+		.nullable(),
 	CompletionStatusId: completionStatusIdSchema.nullable(),
 	ContentHash: z.string(),
 	Developers: z.array(z.string()),
 	Publishers: z.array(z.string()),
 	Genres: z.array(z.string()),
 	Platforms: z.array(z.string()),
-	Assets: z.object({
-		BackgroundImagePath: z.string().nullable(),
-		CoverImagePath: z.string().nullable(),
-		IconImagePath: z.string().nullable(),
-	}),
 	Sync: z.object({
 		LastUpdatedAt: ISODateSchema,
 		DeletedAt: ISODateSchema.nullable(),

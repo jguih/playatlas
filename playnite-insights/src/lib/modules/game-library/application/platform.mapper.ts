@@ -1,5 +1,5 @@
 import type { IClockPort } from "$lib/modules/common/application";
-import { PlatformIdParser } from "../domain";
+import { PlatformIdParser, PlaynitePlatformIdParser } from "../domain";
 import type { IPlatformMapperPort } from "./platform.mapper.port";
 
 export type PlatformMapperDeps = {
@@ -17,12 +17,12 @@ export class PlatformMapper implements IPlatformMapperPort {
 		return {
 			Id: PlatformIdParser.fromTrusted(dto.Id),
 			Name: dto.Name,
+			Playnite: {
+				Id: dto.Playnite.Id ? PlaynitePlatformIdParser.fromTrusted(dto.Playnite.Id) : null,
+				SpecificationId: dto.Playnite.SpecificationId,
+			},
 			SourceUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
 			SourceUpdatedAtMs: new Date(dto.Sync.LastUpdatedAt).getTime(),
-			Background: dto.Background,
-			Cover: dto.Cover,
-			Icon: dto.Icon,
-			SpecificationId: dto.SpecificationId,
 			Sync: {
 				Status: "synced",
 				LastSyncedAt: lastSync ?? this.clock.now(),
@@ -35,12 +35,12 @@ export class PlatformMapper implements IPlatformMapperPort {
 		return {
 			Id: model.Id,
 			Name: model.Name,
-			SpecificationId: model.SpecificationId,
+			Playnite: {
+				Id: model.Playnite.Id,
+				SpecificationId: model.Playnite.SpecificationId,
+			},
 			SourceUpdatedAt: model.SourceUpdatedAt,
 			SourceUpdatedAtMs: model.SourceUpdatedAtMs,
-			Background: model.Background ?? null,
-			Cover: model.Cover ?? null,
-			Icon: model.Icon ?? null,
 			Sync: {
 				Status: model.Sync.Status,
 				ErrorMessage: model.Sync.ErrorMessage ?? null,
@@ -53,14 +53,14 @@ export class PlatformMapper implements IPlatformMapperPort {
 		return {
 			Id: entity.Id,
 			Name: entity.Name,
-			SpecificationId: entity.SpecificationId,
+			Playnite: {
+				Id: entity.Playnite.Id,
+				SpecificationId: entity.Playnite.SpecificationId,
+			},
 			SourceUpdatedAt: entity.SourceUpdatedAt,
 			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,
-			SourceDeleteAfter: null,
-			SourceDeletedAt: null,
-			Background: entity.Background,
-			Cover: entity.Cover,
-			Icon: entity.Icon,
+			DeleteAfter: null,
+			DeletedAt: null,
 			Sync: entity.Sync,
 		};
 	};

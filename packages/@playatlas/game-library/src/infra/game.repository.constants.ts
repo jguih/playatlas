@@ -14,20 +14,17 @@ export const COLUMNS: (keyof GameModel)[] = [
 	"PlayniteAdded",
 	"PlayniteInstallDirectory",
 	"PlayniteIsInstalled",
-	"PlayniteBackgroundImage",
-	"PlayniteCoverImage",
-	"PlayniteIcon",
 	"PlayniteHidden",
 	"PlayniteCompletionStatusId",
+	"PlayniteBackgroundImagePath",
+	"PlayniteCoverImagePath",
+	"PlayniteIconImagePath",
 	"CompletionStatusId",
 	"ContentHash",
 	"LastUpdatedAt",
 	"CreatedAt",
 	"DeletedAt",
 	"DeleteAfter",
-	"BackgroundImagePath",
-	"CoverImagePath",
-	"IconImagePath",
 ];
 
 export const RELATIONSHIP_TABLE_NAME = {
