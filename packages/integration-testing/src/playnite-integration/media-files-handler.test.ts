@@ -1,4 +1,4 @@
-import { MEDIA_PRESETS } from "@playatlas/playnite-integration/infra";
+import { GAME_MEDIA_PRESETS } from "@playatlas/common/common";
 import * as fsAsync from "fs/promises";
 import { extname, join } from "path";
 import sharp from "sharp";
@@ -85,7 +85,7 @@ describe("Playnite Integration / Media Files Handler", () => {
 			// Assert
 			expect(isValid).toBe(true);
 			for (const { filepath, name } of optimizedResults) {
-				const preset = MEDIA_PRESETS[name];
+				const preset = GAME_MEDIA_PRESETS[name];
 				const stats = await fsAsync.stat(filepath);
 				const ext = extname(filepath);
 				const metadata = await sharp(filepath).metadata();
