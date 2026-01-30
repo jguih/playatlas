@@ -33,6 +33,8 @@ export type Game = ClientEntity<GameId> & {
 		CoverImagePath: string | null;
 		IconImagePath: string | null;
 	} | null;
+
+	SearchName: string | null;
 	CompletionStatusId: CompletionStatusId | null;
 	ContentHash: string;
 	Developers: CompanyId[];
@@ -41,6 +43,7 @@ export type Game = ClientEntity<GameId> & {
 	Platforms: PlatformId[];
 	DeletedAt: Date | null;
 	DeleteAfter: Date | null;
+
 	// Front-end specific
 	Sync: EntitySyncStateProps;
 };

@@ -1,38 +1,94 @@
-import type { GameQueryResult } from "../../infra";
+import type { Game } from "../../domain/game.entity";
 import type { IGameRepositoryPort } from "../../infra/game.repository.port";
-import type { IGetGamesQueryHandlerPort } from "./get-games.query-handler.port";
+import type { IGetGamesQueryHandlerFilterBuilderProps } from "./get-games.query-handler.filter-builder";
+import type {
+	GetGamesQueryResult,
+	IGetGamesQueryHandlerPort,
+} from "./get-games.query-handler.port";
+import type { GameFilter, ScanSourceAsyncFn } from "./get-games.query-handler.types";
 
 export type GetGamesQueryHandlerDeps = {
 	gameRepository: IGameRepositoryPort;
+	filterBuilder: IGetGamesQueryHandlerFilterBuilderProps;
 };
 
 export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
-	#gameRepository: IGameRepositoryPort;
+	constructor(private readonly deps: GetGamesQueryHandlerDeps) {}
 
-	constructor({ gameRepository }: GetGamesQueryHandlerDeps) {
-		this.#gameRepository = gameRepository;
-	}
+	private combineFilters = <T>(...filters: Array<(item: T) => boolean>) => {
+		return (item: T) => filters.every((f) => f(item));
+	};
+
+	private scanGamesUntilLimit = async (params: {
+		limit: number;
+		filters: GameFilter | GameFilter[];
+		scanSourceAsync: ScanSourceAsyncFn;
+		cursor?: IDBValidKey | null;
+	}): Promise<GetGamesQueryResult> => {
+		const { limit, scanSourceAsync: queryAsync } = params;
+
+		const batchSize = Math.min(limit * 3, 200);
+		const collected: Game[] = [];
+		const filters = Array.isArray(params.filters) ? params.filters : [params.filters];
+		const filter = this.combineFilters(
+			this.deps.filterBuilder.createNotDeletedFilter(),
+			...filters,
+		);
+		let cursor = params.cursor ?? null;
+		let nextKey: IDBValidKey | null = null;
+
+		while (collected.length < limit) {
+			const result = await queryAsync({ batchSize, cursor });
+
+			if (result.items.length === 0) break;
+
+			for (const game of result.items) {
+				if (filter(game)) collected.push(game);
+
+				if (collected.length === limit) {
+					nextKey = result.keys.get(game.Id) ?? null;
+					break;
+				}
+			}
+
+			const lastVisited = result.items.at(-1);
+			cursor = lastVisited ? (result.keys.get(lastVisited.Id) ?? null) : null;
+
+			if (!cursor) break;
+		}
+
+		return { items: collected, nextKey };
+	};
+
+	private recentScanSource: ScanSourceAsyncFn = async ({ batchSize, cursor }) => {
+		const { items, keys } = await this.deps.gameRepository.queryAsync({
+			index: "bySourceUpdatedAt",
+			direction: "prev",
+			range: cursor ? IDBKeyRange.upperBound(cursor, true) : null,
+			limit: batchSize,
+		});
+		return { items, keys };
+	};
 
 	executeAsync: IGetGamesQueryHandlerPort["executeAsync"] = async (query) => {
-		let result: GameQueryResult | null = null;
-
-		if (query.sort === "recent") {
-			result = await this.#gameRepository.queryAsync({
-				index: "bySourceUpdatedAt",
-				direction: "prev",
-				range: query.cursor ? IDBKeyRange.upperBound(query.cursor, true) : null,
+		if (query.sort === "recent" && query.filter?.search) {
+			return await this.scanGamesUntilLimit({
 				limit: query.limit,
+				cursor: query.cursor,
+				scanSourceAsync: this.recentScanSource,
+				filters: this.deps.filterBuilder.createNameFilter(query.filter.search),
 			});
 		}
 
-		if (!result) throw new Error("Unsupported query");
+		if (query.sort === "recent") {
+			return await this.scanGamesUntilLimit({
+				limit: query.limit,
+				cursor: query.cursor,
+				scanSourceAsync: this.recentScanSource,
+				filters: [],
+			});
+		}
 
-		const filtered = result.items.filter((g) => !g.DeletedAt);
-		const lastReturnedGame = filtered[filtered.length - 1];
-		const adjustedNextKey = lastReturnedGame
-			? (result.keys.get(lastReturnedGame.Id) ?? null)
-			: null;
-
-		return { items: filtered, nextKey: adjustedNextKey };
+		throw new Error("Unsupported query");
 	};
 }

@@ -17,6 +17,7 @@ export type GameModel = {
 	SourceUpdatedAtMs: number;
 	DeletedAt?: Date | null;
 	DeleteAfter?: Date | null;
+
 	Playnite: {
 		Id: PlayniteGameId;
 		Name: string | null;
@@ -33,6 +34,8 @@ export type GameModel = {
 		CoverImagePath: string | null;
 		IconImagePath: string | null;
 	} | null;
+
+	SearchName?: string | null;
 	CompletionStatusId: CompletionStatusId | null;
 	ContentHash: string;
 	Developers: CompanyId[];

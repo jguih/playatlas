@@ -1,4 +1,5 @@
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
+import { normalize } from "$lib/modules/common/common";
 import {
 	CompanyIdParser,
 	CompletionStatusIdParser,
@@ -23,6 +24,7 @@ export class GameMapper implements IGameMapperPort {
 	fromDto: IGameMapperPort["fromDto"] = (dto, lastSync) => {
 		return {
 			Id: GameIdParser.fromTrusted(dto.Id),
+
 			Playnite: dto.Playnite
 				? {
 						Id: PlayniteGameIdParser.fromTrusted(dto.Playnite.Id),
@@ -43,6 +45,8 @@ export class GameMapper implements IGameMapperPort {
 						IconImagePath: dto.Playnite.IconImagePath,
 					}
 				: null,
+
+			SearchName: null,
 			CompletionStatusId: dto.CompletionStatusId
 				? CompletionStatusIdParser.fromTrusted(dto.CompletionStatusId)
 				: null,
@@ -66,6 +70,7 @@ export class GameMapper implements IGameMapperPort {
 	toDomain: IGameMapperPort["toDomain"] = (model) => {
 		return {
 			Id: GameIdParser.fromTrusted(model.Id),
+
 			Playnite: model.Playnite
 				? {
 						Id: PlayniteGameIdParser.fromTrusted(model.Playnite.Id),
@@ -86,6 +91,8 @@ export class GameMapper implements IGameMapperPort {
 						IconImagePath: model.Playnite.IconImagePath,
 					}
 				: null,
+
+			SearchName: model.SearchName ?? null,
 			CompletionStatusId: model.CompletionStatusId,
 			ContentHash: model.ContentHash,
 			Developers: model.Developers,
@@ -111,6 +118,7 @@ export class GameMapper implements IGameMapperPort {
 			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,
 			DeleteAfter: entity.DeleteAfter,
 			DeletedAt: entity.DeletedAt,
+
 			Playnite: entity.Playnite
 				? {
 						Id: entity.Playnite.Id,
@@ -129,6 +137,8 @@ export class GameMapper implements IGameMapperPort {
 						IconImagePath: entity.Playnite.IconImagePath,
 					}
 				: null,
+
+			SearchName: entity.Playnite?.Name ? normalize(entity.Playnite.Name) : null,
 			CompletionStatusId: entity.CompletionStatusId,
 			ContentHash: entity.ContentHash,
 			Developers: entity.Developers,

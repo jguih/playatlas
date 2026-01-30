@@ -1,5 +1,6 @@
 import type { IClientEntityFactoryPort } from "$lib/modules/common/testing";
 import { faker } from "@faker-js/faker";
+import { CompletionStatusIdParser } from "../domain";
 import { GameIdParser, PlayniteGameIdParser, type Game } from "../domain/game.entity";
 
 export type IGameFactoryPort = IClientEntityFactoryPort<Game>;
@@ -10,6 +11,7 @@ export class GameFactory implements IGameFactoryPort {
 
 		return {
 			Id: GameIdParser.fromTrusted(faker.string.ulid()),
+
 			Playnite: {
 				Id: PlayniteGameIdParser.fromTrusted(faker.string.uuid()),
 				Name: faker.lorem.words({ min: 1, max: 4 }),
@@ -21,12 +23,14 @@ export class GameFactory implements IGameFactoryPort {
 				InstallDirectory: faker.system.directoryPath(),
 				IsInstalled: faker.datatype.boolean(),
 				Hidden: faker.datatype.boolean(),
-				CompletionStatusId: faker.string.uuid(),
+				CompletionStatusId: CompletionStatusIdParser.fromTrusted(faker.string.ulid()),
 				IconImagePath: faker.image.url(),
 				CoverImagePath: faker.image.url(),
 				BackgroundImagePath: faker.image.url(),
 			},
-			CompletionStatusId: faker.string.uuid(),
+
+			SearchName: null,
+			CompletionStatusId: null,
 			ContentHash: faker.string.uuid(),
 			Developers: [],
 			Publishers: [],

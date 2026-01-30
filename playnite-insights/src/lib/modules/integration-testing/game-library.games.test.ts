@@ -230,4 +230,132 @@ describe("GameLibrary / Games", () => {
 		// Assert
 		expect(result.items).toHaveLength(10);
 	});
+
+	it("filters games by name while preserving recent ordering", async () => {
+		// Arrange
+		const baseGames = root.factories.game
+			.buildList(20)
+			// Makes sure no other game is named Grim something, probably impossible, but better safe than another failed test
+			.map((g) => ({ ...g, Playnite: { ...g.Playnite!, Name: "Another Game" } }));
+
+		const oldUpdatedAt = new Date("2025-01-01");
+		const matchingOld: Game = {
+			...root.factories.game.build(),
+			Playnite: {
+				...root.factories.game.build().Playnite!,
+				Name: "Grim Dawn",
+			},
+			SourceUpdatedAt: oldUpdatedAt,
+			SourceUpdatedAtMs: oldUpdatedAt.getTime(), // Index uses this one instead of SourceUpdatedAt
+		};
+
+		const newUpdatedAt = new Date("2026-01-01");
+		const matchingNew: Game = {
+			...root.factories.game.build(),
+			Playnite: {
+				...root.factories.game.build().Playnite!,
+				Name: "Grim Dawn Definitive Edition",
+			},
+			SourceUpdatedAt: newUpdatedAt,
+			SourceUpdatedAtMs: newUpdatedAt.getTime(),
+		};
+
+		await api.GameLibrary.Command.SyncGames.executeAsync({
+			games: [...baseGames, matchingOld, matchingNew],
+		});
+
+		// Act
+		const result = await api.GameLibrary.Query.GetGames.executeAsync({
+			limit: 10,
+			sort: "recent",
+			filter: { search: "Grim" },
+		});
+
+		// Assert
+		expect(result.items).toHaveLength(2);
+		expect(result.items[0].Playnite?.Name).toContain("Grim");
+		expect(result.items[1].Playnite?.Name).toContain("Grim");
+
+		expect(result.items[0].SourceUpdatedAt >= result.items[1].SourceUpdatedAt).toBe(true);
+	});
+
+	it("continues scanning past full non-matching batches", async () => {
+		// Arrange
+		const earlyNonMatching = root.factories.game
+			.buildList(2000) // Big sample because I paid for 100% of my RAM, so I might as well use it all
+			.map((g) => ({ ...g, Playnite: { ...g.Playnite!, Name: "Another Game" } }));
+
+		const lateUpdatedAt = faker.date.past();
+		const matchingLate: Game = {
+			...root.factories.game.build(),
+			Playnite: {
+				...root.factories.game.build().Playnite!,
+				Name: "Grim Dawn",
+			},
+			SourceUpdatedAt: lateUpdatedAt,
+			SourceUpdatedAtMs: lateUpdatedAt.getTime(),
+		};
+
+		await api.GameLibrary.Command.SyncGames.executeAsync({
+			games: [...earlyNonMatching, matchingLate],
+		});
+
+		// Act
+		const result = await api.GameLibrary.Query.GetGames.executeAsync({
+			limit: 10,
+			sort: "recent",
+			filter: { search: "Grim" },
+		});
+
+		// Assert
+		expect(result.items).toHaveLength(1);
+		expect(result.items[0].Playnite?.Name).toBe("Grim Dawn");
+	});
+
+	it("find game matching search query in between multiple other games in a big list", async () => {
+		// Arrange
+		const nonMatching = root.factories.game
+			.buildList(2000)
+			.map((g) => ({ ...g, Playnite: { ...g.Playnite!, Name: "Another Game" } }));
+
+		const olderUpdatedAt = new Date("2026-01-01");
+		const older = nonMatching.slice(0, 1500).map((g) => ({
+			...g,
+			SourceUpdatedAt: olderUpdatedAt,
+			SourceUpdatedAtMs: olderUpdatedAt.getTime(),
+		}));
+
+		const newerUpdatedAt = new Date("2026-01-03");
+		const newer = nonMatching.slice(1500).map((g) => ({
+			...g,
+			SourceUpdatedAt: newerUpdatedAt,
+			SourceUpdatedAtMs: newerUpdatedAt.getTime(),
+		}));
+
+		const sourceUpdatedAt = new Date("2026-01-02");
+		const matchingGame: Game = {
+			...root.factories.game.build(),
+			Playnite: {
+				...root.factories.game.build().Playnite!,
+				Name: "Grim Dawn",
+			},
+			SourceUpdatedAt: sourceUpdatedAt,
+			SourceUpdatedAtMs: sourceUpdatedAt.getTime(),
+		};
+
+		await api.GameLibrary.Command.SyncGames.executeAsync({
+			games: [...older, matchingGame, ...newer],
+		});
+
+		// Act
+		const result = await api.GameLibrary.Query.GetGames.executeAsync({
+			limit: 10,
+			sort: "recent",
+			filter: { search: "Grim" },
+		});
+
+		// Assert
+		expect(result.items).toHaveLength(1);
+		expect(result.items[0].Playnite?.Name).toBe("Grim Dawn");
+	});
 });

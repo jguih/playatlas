@@ -62,6 +62,7 @@ import {
 	type IGetCompaniesByIdsQueryHandlerPort,
 	type IGetCompletionStatusesByIdsQueryHandlerPort,
 	type IGetGamesByIdsQueryHandlerPort,
+	type IGetGamesQueryHandlerFilterBuilderProps,
 	type IGetGamesQueryHandlerPort,
 	type IGetGenreByIdQueryHandlerPort,
 	type IGetGenresByIdsQueryHandlerPort,
@@ -70,6 +71,7 @@ import {
 	GetCompletionStatusesByIdsQueryHandler,
 	GetGamesByIdsQueryHandler,
 	GetGamesQueryHandler,
+	GetGamesQueryHandlerFilterBuilder,
 	GetGenresByIdQueryHandler,
 	GetGenresByIdsQueryHandler,
 	GetPlatformsByIdsQueryHandler,
@@ -86,6 +88,7 @@ export type ClientGameLibraryModuleDeps = {
 export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameMapper: IGameMapperPort;
 	readonly gameRepository: IGameRepositoryPort;
+	readonly getGamesQueryHandlerFilterBuilder: IGetGamesQueryHandlerFilterBuilderProps;
 	readonly getGamesQueryHandler: IGetGamesQueryHandlerPort;
 	readonly getGamesByIdsQueryHandler: IGetGamesByIdsQueryHandlerPort;
 	readonly syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
@@ -132,7 +135,11 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 
 		this.gameMapper = new GameMapper({ clock });
 		this.gameRepository = new GameRepository({ dbSignal, gameMapper: this.gameMapper });
-		this.getGamesQueryHandler = new GetGamesQueryHandler({ gameRepository: this.gameRepository });
+		this.getGamesQueryHandlerFilterBuilder = new GetGamesQueryHandlerFilterBuilder();
+		this.getGamesQueryHandler = new GetGamesQueryHandler({
+			gameRepository: this.gameRepository,
+			filterBuilder: this.getGamesQueryHandlerFilterBuilder,
+		});
 		this.getGamesByIdsQueryHandler = new GetGamesByIdsQueryHandler({
 			gameRepository: this.gameRepository,
 		});
