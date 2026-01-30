@@ -8,15 +8,10 @@ export type SyncProgressEvent =
 
 export type SyncProgressEventType = SyncProgressEvent["type"];
 
-type SyncProgressSignal =
-	| {
-			running: true;
-			activeFlow: SyncFlowKey;
-	  }
-	| {
-			running: false;
-			activeFlow: null;
-	  };
+type SyncProgressSignal = {
+	running: boolean;
+	activeFlow: SyncFlowKey | null;
+};
 
 export interface ISyncProgressReporterPort {
 	get progressSignal(): SyncProgressSignal;

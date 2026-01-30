@@ -4,7 +4,7 @@ import { m } from "$lib/paraglide/messages";
 export class SyncProgressViewModel {
 	constructor() {}
 
-	static getSyncProgressLabel = (activeFlow: SyncFlowKey) => {
+	static getSyncProgressLabel = (activeFlow: SyncFlowKey | null) => {
 		switch (activeFlow) {
 			case "games":
 				return m["progress.syncing_games"]();
@@ -14,6 +14,8 @@ export class SyncProgressViewModel {
 				return m["progress.syncing_companies"]();
 			case "genres":
 				return m["progress.syncing_genres"]();
+			default:
+				return m["progress.syncing_library"]();
 		}
 	};
 }
