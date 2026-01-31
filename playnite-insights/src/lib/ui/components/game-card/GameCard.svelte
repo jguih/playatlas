@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
+	import { cubicInOut } from "svelte/easing";
+	import { fade } from "svelte/transition";
 	import type { GameCardProps } from "./game-card.projection";
 
 	const { game }: GameCardProps = $props();
@@ -20,6 +22,7 @@
 		"focus-within:border-primary-light-selected-fg",
 		"transition-colors-default",
 	]}
+	transition:fade={{ duration: 120, easing: cubicInOut }}
 >
 	<a
 		href={resolve("/game/[gameId]", { gameId: game.id })}

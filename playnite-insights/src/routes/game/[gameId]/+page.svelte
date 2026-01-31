@@ -10,7 +10,6 @@
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
-	import Spinner from "$lib/ui/components/Spinner.svelte";
 	import { GameAssets, PlaytimeFormatter } from "$lib/ui/utils";
 	import { ArrowLeftIcon, ClockIcon, NotebookPenIcon } from "@lucide/svelte";
 	import { onMount, tick } from "svelte";
@@ -19,6 +18,7 @@
 	import ActionButtonContainer from "./page/components/ActionButtonContainer.svelte";
 	import ActionButtonLabel from "./page/components/ActionButtonLabel.svelte";
 	import CompletionStatusButton from "./page/components/CompletionStatusButton.svelte";
+	import GameDetailSkeleton from "./page/components/GameDetailSkeleton.svelte";
 	import GameInfoSection from "./page/components/GameInfoSection.svelte";
 	import { GameAggregateStore } from "./page/game-aggregate-store.svelte";
 	import { GameViewModel } from "./page/game-view-model.svelte";
@@ -30,6 +30,7 @@
 	const store = new GameAggregateStore({ api, getGameId });
 	const vm = new GameViewModel({ gameAggregateStore: store });
 	const initPromise = store.initAsync();
+	let loading: boolean = $state(true);
 	let heroTitleEl: HTMLElement | undefined = $state();
 	let showHeaderTitle = $state(false);
 
@@ -45,10 +46,13 @@
 			},
 		);
 
-		void initPromise.then(async () => {
-			await tick();
-			if (heroTitleEl) observer.observe(heroTitleEl);
-		});
+		void initPromise
+			.then(async () => {
+				await tick();
+				if (heroTitleEl) observer.observe(heroTitleEl);
+				loading = false;
+			})
+			.catch(() => (loading = false));
 
 		return () => observer.disconnect();
 	});
@@ -86,12 +90,12 @@
 
 <AppLayout>
 	<Main class="p-0!">
-		{#await initPromise}
-			<Spinner size="lg" />
-		{:then}
-			{#if !store.game}
-				<p class="text-error-light-fg">Game not found</p>
-			{:else}
+		{#if loading}
+			<GameDetailSkeleton />
+		{:else if !store.game}
+			<p class="text-error-light-fg">Game not found</p>
+		{:else}
+			<div transition:fade={{ duration: 150, easing: cubicInOut }}>
 				<div class="relative">
 					<div class="h-[50dvh] w-full overflow-hidden">
 						<img
@@ -281,7 +285,7 @@
 						{@render detailSection("Last Sync", store.game.Sync.LastSyncedAt.toLocaleString())}
 					</GameInfoSection>
 				</div>
-			{/if}
-		{/await}
+			</div>
+		{/if}
 	</Main>
 </AppLayout>
