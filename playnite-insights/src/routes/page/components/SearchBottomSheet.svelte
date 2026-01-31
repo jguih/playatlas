@@ -47,9 +47,10 @@
 				class="w-full"
 			>
 				<Input
-					variant="neutral"
+					variant="primary"
 					enterkeyhint="done"
 					class="w-full"
+					placeholder="Search..."
 					bind:input
 					bind:value
 					oninput={handleInput}

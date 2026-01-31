@@ -4,6 +4,7 @@
 	import BottomNav from "$lib/ui/components/BottomNav.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import GameCard from "$lib/ui/components/game-card/GameCard.svelte";
+	import GameCardSkeleton from "$lib/ui/components/game-card/GameCardSkeleton.svelte";
 	import Header from "$lib/ui/components/header/Header.svelte";
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
@@ -132,8 +133,8 @@
 <AppLayout>
 	{#snippet header()}
 		<Header>
-			<div class="flex justify-between items-center">
-				<div class="min-w-16 flex gap-2 text-sm">
+			<div class="flex justify-between items-center flex-nowrap">
+				<div class="min-w-16 flex gap-2 text-xs flex-nowrap">
 					{#if syncProgress.running}
 						<Spinner
 							size="sm"
@@ -144,15 +145,21 @@
 						</p>
 					{/if}
 				</div>
-				<div>
+				<div class="flex flex-nowrap">
 					<LightButton
 						variant="neutral"
-						iconOnly
+						iconOnly={!homePageFiltersSignal.search}
 						onclick={search.open}
+						class="flex items-center gap-1 px-2!"
 					>
 						<Icon>
 							<SearchIcon />
 						</Icon>
+						{#if homePageFiltersSignal.search}
+							<span class="text-xs text-foreground/60 truncate max-w-12">
+								{homePageFiltersSignal.search}
+							</span>
+						{/if}
 					</LightButton>
 					<LightButton
 						variant="neutral"
@@ -181,13 +188,13 @@
 			{#each pager.pagerStateSignal.games as game (game.id)}
 				<GameCard {game} />
 			{/each}
-		</ul>
 
-		{#if pager.pagerStateSignal.loading}
-			<div class="w-fit block mx-auto">
-				<Spinner />
-			</div>
-		{/if}
+			{#if pager.pagerStateSignal.loading}
+				{#each Array.from({ length: 12 }, () => crypto.randomUUID()) as id (id)}
+					<GameCardSkeleton />
+				{/each}
+			{/if}
+		</ul>
 		<div
 			bind:this={sentinel}
 			style="height: 1px;"
