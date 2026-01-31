@@ -80,8 +80,8 @@ export class GameRepository
 						return;
 					}
 
-					const game: Game = cursor.value;
-					items.push(game);
+					const game: GameModel = cursor.value;
+					items.push(this.mapper.toDomain(game));
 					keys.set(game.Id, cursor.key);
 					lastKey = cursor.key;
 

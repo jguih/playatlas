@@ -1,17 +1,6 @@
 import type { IAsyncQueryHandlerPort } from "$lib/modules/common/common";
+import type { GetGamesQuery } from "$lib/modules/common/queries";
 import type { Game } from "../../domain/game.entity";
-
-export type GetGamesQueryFilter = {
-	installed?: boolean;
-	search?: string;
-};
-
-export type GetGamesQuery = {
-	sort: "recent" | "name";
-	filter?: GetGamesQueryFilter;
-	cursor?: IDBValidKey | null;
-	limit: number;
-};
 
 export type GetGamesQueryResult = {
 	items: Game[];

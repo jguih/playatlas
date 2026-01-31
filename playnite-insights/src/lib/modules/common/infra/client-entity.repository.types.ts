@@ -6,4 +6,5 @@ export type ClientRepositoryStoreName =
 	| "companies"
 	| "platforms"
 	| "completion-status"
-	| "session-id";
+	| "session-id"
+	| "game-library-filters";

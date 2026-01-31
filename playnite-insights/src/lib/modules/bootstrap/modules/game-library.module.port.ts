@@ -1,6 +1,7 @@
 import type {
 	ICompanyMapperPort,
 	ICompletionStatusMapperPort,
+	IGameLibraryFilterMapperPort,
 	IGameLibrarySyncManagerPort,
 	IGameLibrarySyncStatePort,
 	IGameMapperPort,
@@ -24,6 +25,7 @@ import type {
 import type {
 	ICompanyRepositoryPort,
 	ICompletionStatusRepositoryPort,
+	IGameLibraryFilterRepositoryPort,
 	IGameRepositoryPort,
 	IGenreRepositoryPort,
 	IPlatformRepositoryPort,
@@ -78,4 +80,7 @@ export interface IClientGameLibraryModulePort {
 	get gameLibrarySyncManager(): IGameLibrarySyncManagerPort;
 
 	get syncProgressReporter(): ISyncProgressReporterPort;
+
+	get gameLibraryFilterMapper(): IGameLibraryFilterMapperPort;
+	get gameLibraryFilterRepository(): IGameLibraryFilterRepositoryPort;
 }

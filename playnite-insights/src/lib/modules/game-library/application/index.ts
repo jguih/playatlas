@@ -2,6 +2,8 @@ export * from "./company.mapper";
 export type * from "./company.mapper.port";
 export * from "./completion-status.mapper";
 export type * from "./completion-status.mapper.port";
+export * from "./game-library-filter.mapper";
+export type * from "./game-library-filter.mapper.port";
 export * from "./game-library-sync-manager";
 export type * from "./game-library-sync-manager.port";
 export type * from "./game-library-sync-state.port";

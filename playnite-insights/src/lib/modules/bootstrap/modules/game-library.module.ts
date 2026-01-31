@@ -3,6 +3,7 @@ import type { IClockPort } from "$lib/modules/common/application/clock.port";
 import {
 	type ICompanyMapperPort,
 	type ICompletionStatusMapperPort,
+	type IGameLibraryFilterMapperPort,
 	type IGameLibrarySyncManagerPort,
 	type IGameLibrarySyncStatePort,
 	type IGameMapperPort,
@@ -16,6 +17,7 @@ import {
 	type ISyncPlatformsFlowPort,
 	CompanyMapper,
 	CompletionStatusMapper,
+	GameLibraryFilterMapper,
 	GameLibrarySyncManager,
 	GameMapper,
 	GenreMapper,
@@ -48,11 +50,13 @@ import {
 import {
 	type ICompanyRepositoryPort,
 	type ICompletionStatusRepositoryPort,
+	type IGameLibraryFilterRepositoryPort,
 	type IGameRepositoryPort,
 	type IGenreRepositoryPort,
 	type IPlatformRepositoryPort,
 	CompanyRepository,
 	CompletionStatusRepository,
+	GameLibraryFilterRepository,
 	GameRepository,
 	GenreRepository,
 	PlatformRepository,
@@ -123,6 +127,9 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
 	readonly gameLibrarySyncManager: IGameLibrarySyncManagerPort;
 	readonly syncProgressReporter: ISyncProgressReporterPort;
+
+	readonly gameLibraryFilterMapper: IGameLibraryFilterMapperPort;
+	readonly gameLibraryFilterRepository: IGameLibraryFilterRepositoryPort;
 
 	constructor({ dbSignal, httpClient, clock, eventBus }: ClientGameLibraryModuleDeps) {
 		this.playAtlasClient = new PlayAtlasClient({ httpClient });
@@ -231,6 +238,12 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			progressReporter: this.syncProgressReporter,
 			clock,
 			eventBus,
+		});
+
+		this.gameLibraryFilterMapper = new GameLibraryFilterMapper();
+		this.gameLibraryFilterRepository = new GameLibraryFilterRepository({
+			dbSignal,
+			gameLibraryFilterMapper: this.gameLibraryFilterMapper,
 		});
 	}
 }
