@@ -11,12 +11,18 @@
 		"./testing": "./src/testing/index.ts"
 	},
 	"devDependencies": {
-		"@types/busboy": "^1.5.4"
+		"@types/node": "catalog:",
+		"@types/busboy": "catalog:busboy1",
+		"@faker-js/faker": "catalog:",
+		"vitest": "catalog:"
 	},
 	"dependencies": {
 		"@playatlas/common": "workspace:*",
 		"@playatlas/game-library": "workspace:*",
 		"@playatlas/system": "workspace:*",
-		"busboy": "^1.6.0"
+		"busboy": "catalog:busboy1",
+		"zod": "catalog:",
+		"sharp": "catalog:",
+		"ulid": "catalog:"
 	}
 }

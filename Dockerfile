@@ -1,62 +1,39 @@
-FROM node:24.3-alpine AS base
+FROM node:24.3-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-RUN apk add tzdata
-# Add build dependencies for sharp
-RUN apk add --no-cache build-base vips-dev fftw-dev libc6-compat python3
 
 FROM base AS deps
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm test:unit
 
 FROM deps AS build
-RUN pnpm run -r build
-RUN pnpm deploy --filter=playnite-insights /prod/playnite-insights
-RUN pnpm deploy --filter=@playnite-insights/infra /prod/infra
-
-FROM node:24.3 AS dev
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
-
-WORKDIR /app
-ENV PLAYATLAS_WORK_DIR=/app
-ENV PLAYATLAS_DATA_DIR=/app/data
-ENV NODE_ENV='development'
-ENV BODY_SIZE_LIMIT=128M
-
-RUN apt update && apt install sqlite3 -y 
-RUN mkdir -p /app/data/files /app/data/tmp
-RUN chown -R node:node /app/data
-COPY --chown=node:node ./playnite-insights/static/placeholder /app/data/files/placeholder
-COPY --chown=node:node ./packages/@playnite-insights/infra/migrations /app/infra/migrations
-
-EXPOSE 3000
-
-USER node
-
-CMD [ "sleep", "infinity" ]
+RUN pnpm build
+RUN pnpm deploy --filter=playnite-insights --prod /prod/playatlas
+RUN pnpm deploy --filter=@playatlas/system --prod /prod/system
 
 FROM base AS prod
 WORKDIR /app
-ENV PLAYATLAS_WORK_DIR=/app
+ENV PLAYATLAS_DATA_DIR=/app/data
 ENV NODE_ENV='production'
 ENV BODY_SIZE_LIMIT=128M
 
-RUN addgroup -S playnite-insights && adduser -S -G playnite-insights playnite-insights
-RUN mkdir -p /app/data/files /app/data/tmp
-RUN chown -R playnite-insights:playnite-insights /app/data
-COPY --from=build --chown=playnite-insights:playnite-insights /prod/playnite-insights/node_modules /app/node_modules
-COPY --from=build --chown=playnite-insights:playnite-insights /prod/playnite-insights/build /app/build
-COPY --from=build --chown=playnite-insights:playnite-insights /prod/playnite-insights/package.json /app/package.json
-COPY --from=build --chown=playnite-insights:playnite-insights /prod/infra/migrations /app/infra/migrations
+RUN groupadd --system playatlas \
+ && useradd  --system --gid playatlas --create-home playatlas
+RUN mkdir $PLAYATLAS_DATA_DIR \
+  && chown playatlas:playatlas $PLAYATLAS_DATA_DIR \
+  && chmod 744 $PLAYATLAS_DATA_DIR
+
+COPY --from=build --chown=playatlas:playatlas /prod/playatlas/node_modules /app/node_modules
+COPY --from=build --chown=playatlas:playatlas /prod/playatlas/build /app/build
+COPY --from=build --chown=playatlas:playatlas /prod/playatlas/package.json /app/package.json
+COPY --from=build --chown=playatlas:playatlas /prod/playatlas/pnpm-lock.yaml /app/pnpm-lock.yaml
+COPY --from=build --chown=playatlas:playatlas /prod/system/src/infra/database/migrations /app/infra/migrations
 
 EXPOSE 3000
 
-USER playnite-insights
+USER playatlas
 
 ENTRYPOINT ["node", "build"]
 

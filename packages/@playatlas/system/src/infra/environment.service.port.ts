@@ -1,5 +1,5 @@
 export type IEnvironmentServicePort = {
-	getWorkDir: () => string;
+	getDataDir: () => string;
 	getMigrationsDir: () => string | null;
 	getLogLevel: () => number | null;
 	getUseInMemoryDb: () => boolean;

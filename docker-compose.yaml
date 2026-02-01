@@ -14,13 +14,14 @@ services:
     container_name: app-prod
     restart: always
     volumes:
-      - playnite-insights-prod-data:/app/data
+      - playatlas-prod-data:/app/data
+    environment:
+      TZ: "America/Sao_Paulo"
+      PLAYATLAS_LOG_LEVEL: 0
     logging:
       driver: journald
       options:
         tag: playatlas
 
 volumes:
-  playnite-insights-dev-data:
-  playnite-insights-prod-data:
-  playatlas-playwright-results:
+  playatlas-prod-data:

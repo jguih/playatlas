@@ -1,21 +1,23 @@
 ### Login instance (returns sessionId)
 # @name login
+# @prompt password
 POST {{protocol}}://{{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "password": "test123"
+  "password": "{{password}}"
 }
 
 ###
 
 ### Register instance
 # @name register
+# @prompt password
 POST {{protocol}}://{{host}}/api/auth/register
 Content-Type: {{contentType}}
 
 {
-  "password": "test123"
+  "password": "{{password}}"
 }
 
 ###

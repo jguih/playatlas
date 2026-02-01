@@ -3,27 +3,27 @@ import type { IEnvironmentServicePort } from "./environment.service.port";
 import type { EnvServiceDeps } from "./environment.service.types";
 
 export const makeEnvService = ({ env }: EnvServiceDeps): IEnvironmentServicePort => {
-	const _work_dir = env.PLAYATLAS_WORK_DIR;
-	if (!_work_dir || _work_dir === "")
+	const dataDir = env.PLAYATLAS_DATA_DIR;
+	if (!dataDir || dataDir === "")
 		throw new InvalidEnvironmentVariableValueError(
-			`Work directory environment variable is empty or undefined`,
-			{ envName: "PLAYATLAS_WORK_DIR" },
+			`Data directory environment variable is empty or undefined`,
+			{ envName: "PLAYATLAS_DATA_DIR" },
 		);
 
-	const _migrations_dir =
+	const migrationsDir =
 		env.PLAYATLAS_MIGRATIONS_DIR && env.PLAYATLAS_MIGRATIONS_DIR !== ""
 			? env.PLAYATLAS_MIGRATIONS_DIR
 			: null;
-	const _log_level = Number.isInteger(Number(env.PLAYATLAS_LOG_LEVEL))
+	const logLevel = Number.isInteger(Number(env.PLAYATLAS_LOG_LEVEL))
 		? Number(env.PLAYATLAS_LOG_LEVEL)
 		: null;
-	const _use_in_memory_db =
+	const useInMemoryDb =
 		env.PLAYATLAS_USE_IN_MEMORY_DB === "true" || env.PLAYATLAS_USE_IN_MEMORY_DB === "1";
 
 	return {
-		getWorkDir: () => _work_dir,
-		getMigrationsDir: () => _migrations_dir,
-		getLogLevel: () => _log_level,
-		getUseInMemoryDb: () => _use_in_memory_db,
+		getDataDir: () => dataDir,
+		getMigrationsDir: () => migrationsDir,
+		getLogLevel: () => logLevel,
+		getUseInMemoryDb: () => useInMemoryDb,
 	};
 };

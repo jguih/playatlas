@@ -147,9 +147,9 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 	};
 
 	const cleanup = async () => {
-		const workDir = system.getEnvService().getWorkDir();
-		backendLogService.warning(`Deleting integration test work dir at ${workDir}`);
-		await infra.getFsService().rm(workDir, { force: true, recursive: true });
+		const dataDir = system.getEnvService().getDataDir();
+		backendLogService.warning(`Deleting integration test data dir at ${dataDir}`);
+		await infra.getFsService().rm(dataDir, { force: true, recursive: true });
 	};
 
 	const seedCompany = (company: Company | Company[]) => {

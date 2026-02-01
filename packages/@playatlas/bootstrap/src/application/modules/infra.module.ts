@@ -23,9 +23,9 @@ export const makeInfraModule = ({
 	systemConfig,
 }: InfraModuleDeps): IInfraModulePort => {
 	const logService = logServiceFactory.build("Infra");
-	const _fs_service = makeFileSystemService();
-	const _signature_service = makeSignatureService({
-		fileSystemService: _fs_service,
+	const fs = makeFileSystemService();
+	const signatureService = makeSignatureService({
+		fileSystemService: fs,
 		getSecurityDir: systemConfig.getSecurityDir,
 		logService: logServiceFactory.build("SignatureService"),
 	});
@@ -33,8 +33,8 @@ export const makeInfraModule = ({
 	let _db: DatabaseSync | null = null;
 
 	const infra: IInfraModulePort = {
-		getFsService: () => _fs_service,
-		getSignatureService: () => _signature_service,
+		getFsService: () => fs,
+		getSignatureService: () => signatureService,
 		getDb: () => {
 			if (!_db) throw new InvalidServerConfigurationError(`Database not initialized`);
 			return _db;
@@ -49,13 +49,13 @@ export const makeInfraModule = ({
 
 			return initDatabase({
 				db: _db,
-				fileSystemService: _fs_service,
+				fileSystemService: fs,
 				logService: logServiceFactory.build("InitDatabase"),
 				migrationsDir: systemConfig.getMigrationsDir(),
 			});
 		},
 		initEnvironment: async () => {
-			if (!_fs_service.isDir(systemConfig.getMigrationsDir()))
+			if (!fs.isDir(systemConfig.getMigrationsDir()))
 				throw new InvalidServerConfigurationError(
 					`Migrations folder (${systemConfig.getMigrationsDir()}) is not a valid directory`,
 				);
@@ -68,9 +68,9 @@ export const makeInfraModule = ({
 			];
 
 			try {
-				await Promise.all(
-					dirs.map((dir) => _fs_service.mkdir(dir, { recursive: true, mode: "0755" })),
-				);
+				for (const dir of dirs) {
+					await fs.mkdir(dir, { recursive: true, mode: 0o755 });
+				}
 			} catch (error) {
 				throw new InvalidServerConfigurationError(
 					"Failed to create required environment directories",
@@ -79,7 +79,7 @@ export const makeInfraModule = ({
 			}
 
 			try {
-				await _signature_service.generateAsymmetricKeyPair();
+				await signatureService.generateAsymmetricKeyPair();
 			} catch (error) {
 				throw new InvalidServerConfigurationError("Failed to generate asymmetric key pair", error);
 			}

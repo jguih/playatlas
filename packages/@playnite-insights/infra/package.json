@@ -11,18 +11,18 @@
 	},
 	"devDependencies": {
 		"@types/bcrypt": "^6.0.0",
-		"@types/node": "^24.0.14"
+		"@types/busboy": "catalog:busboy1",
+		"@types/node": "catalog:"
 	},
 	"dependencies": {
-		"@faker-js/faker": "^9.9.0",
-		"vitest": "^3.2.4",
+		"@faker-js/faker": "catalog:",
+		"vitest": "catalog:",
 		"@playnite-insights/core": "workspace:*",
 		"@playnite-insights/lib": "workspace:*",
 		"@playnite-insights/testing": "workspace:*",
-		"@types/busboy": "^1.5.4",
-		"busboy": "^1.6.0",
-		"sharp": "^0.34.3",
-		"zod": "^3.25.76"
+		"busboy": "catalog:busboy1",
+		"sharp": "catalog:",
+		"zod": "catalog:"
 	},
 	"engines": {
 		"node": "^24.3.0",

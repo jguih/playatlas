@@ -10,5 +10,14 @@
 		"./common": "./src/common/index.ts",
 		"./testing": "./src/testing/index.ts",
 		"./dtos": "./src/dtos/index.ts"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"@faker-js/faker": "catalog:",
+		"vitest": "catalog:"
+	},
+	"dependencies": {
+		"zod": "catalog:",
+		"ulid": "catalog:"
 	}
 }

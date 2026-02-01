@@ -8,6 +8,11 @@
 		"test:integration": "vitest run",
 		"test:watch": "vitest --watch"
 	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"@faker-js/faker": "catalog:",
+		"vitest": "catalog:"
+	},
 	"dependencies": {
 		"@playatlas/auth": "workspace:*",
 		"@playatlas/bootstrap": "workspace:*",
@@ -15,6 +20,9 @@
 		"@playatlas/game-library": "workspace:*",
 		"@playatlas/game-session": "workspace:*",
 		"@playatlas/playnite-integration": "workspace:*",
-		"@playatlas/system": "workspace:*"
+		"@playatlas/system": "workspace:*",
+		"zod": "catalog:",
+		"sharp": "catalog:",
+		"ulid": "catalog:"
 	}
 }

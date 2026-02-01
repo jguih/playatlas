@@ -243,6 +243,10 @@ sw.addEventListener("fetch", async (event) => {
 
 	const url = new URL(event.request.url);
 
+	if (url.pathname.endsWith("manifest.webmanifest")) {
+		return;
+	}
+
 	// Always return cached assets
 	if (ASSETS.includes(url.pathname)) {
 		const serveCachedAssets = async () => {

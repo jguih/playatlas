@@ -6,7 +6,7 @@ export const root = makeTestCompositionRoot({
 		PLAYATLAS_LOG_LEVEL: process.env.PLAYATLAS_LOG_LEVEL,
 		PLAYATLAS_MIGRATIONS_DIR: process.env.PLAYATLAS_MIGRATIONS_DIR,
 		PLAYATLAS_USE_IN_MEMORY_DB: process.env.PLAYATLAS_USE_IN_MEMORY_DB,
-		PLAYATLAS_WORK_DIR: process.env.PLAYATLAS_WORK_DIR,
+		PLAYATLAS_DATA_DIR: process.env.PLAYATLAS_DATA_DIR,
 	},
 });
 export const factory = root.factory;

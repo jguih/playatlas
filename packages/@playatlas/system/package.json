@@ -8,7 +8,14 @@
 		"./domain": "./src/domain/index.ts",
 		"./infra": "./src/infra/index.ts"
 	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"@faker-js/faker": "catalog:",
+		"vitest": "catalog:"
+	},
 	"dependencies": {
-		"@playatlas/common": "workspace:*"
+		"@playatlas/common": "workspace:*",
+		"zod": "catalog:",
+		"ulid": "catalog:"
 	}
 }
