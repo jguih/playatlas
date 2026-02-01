@@ -19,6 +19,7 @@
 		"test:integration": "vitest run --project integration"
 	},
 	"devDependencies": {
+		"@faker-js/faker": "catalog:",
 		"@types/node": "catalog:",
 		"svelte": "catalog:svelte5",
 		"svelte-check": "catalog:svelte5",
