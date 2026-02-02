@@ -47,7 +47,7 @@ export const makeCloseGameSessionCommandHandler = ({
 
 				const closed = makeClosedGameSession({
 					sessionId: command.sessionId,
-					gameId: command.gameId,
+					gameId: gameInfo.id,
 					gameName: gameInfo.name,
 					startTime: startTime,
 					endTime: endTime,
@@ -61,7 +61,7 @@ export const makeCloseGameSessionCommandHandler = ({
 					id: crypto.randomUUID(),
 					name: "closed-game-session",
 					occurredAt: new Date(serverUtcNow),
-					payload: { gameId: command.gameId, sessionId: closed.getSessionId() },
+					payload: { gameId: gameInfo.id, sessionId: closed.getSessionId() },
 				});
 
 				return {
@@ -92,7 +92,7 @@ export const makeCloseGameSessionCommandHandler = ({
 				id: crypto.randomUUID(),
 				name: "closed-game-session",
 				occurredAt: new Date(serverUtcNow),
-				payload: { gameId: command.gameId, sessionId: session.getSessionId() },
+				payload: { gameId: gameInfo.id, sessionId: session.getSessionId() },
 			});
 
 			return {

@@ -1,3 +1,5 @@
+import type { GameId, PlayniteGameId } from "@playatlas/common/domain";
+
 export interface GameInfoProvider {
-	getGameInfo(gameId: string): { name: string | null } | null;
+	getGameInfo(gameId: PlayniteGameId): { id: GameId; name: string | null } | null;
 }

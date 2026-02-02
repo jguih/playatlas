@@ -8,7 +8,6 @@ import {
 	type CloseGameSessionRequestDto,
 	type OpenGameSessionRequestDto,
 } from "@playatlas/game-session/commands";
-import { ulid } from "ulid";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { recordDomainEvents } from "../test.lib";
 import { api, factory, root } from "../vitest.global.setup";
@@ -34,7 +33,7 @@ describe("Game Sessions", () => {
 		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
 		const now = root.clock.now().toISOString();
 
-		const gameId = game.getId();
+		const gameId = game.getPlayniteSnapshot()!.id;
 		const sessionId = faker.string.uuid();
 
 		const requestDto: OpenGameSessionRequestDto = {
@@ -57,7 +56,7 @@ describe("Game Sessions", () => {
 			expect.objectContaining({
 				name: "opened-game-session",
 				payload: {
-					gameId,
+					gameId: game.getId(),
 					sessionId: GameSessionIdParser.fromExternal(sessionId),
 				},
 			} satisfies Partial<DomainEvent>),
@@ -69,7 +68,7 @@ describe("Game Sessions", () => {
 		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
 		const now = root.clock.now();
 
-		const gameId = ulid();
+		const gameId = faker.string.uuid();
 		const sessionId = faker.string.uuid();
 
 		const requestDto: OpenGameSessionRequestDto = {
@@ -95,7 +94,7 @@ describe("Game Sessions", () => {
 		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
 		const now = root.clock.now().toISOString();
 
-		const gameId = game.getId();
+		const gameId = game.getPlayniteSnapshot()!.id;
 		const sessionId = faker.string.uuid();
 
 		const openRequestDto: OpenGameSessionRequestDto = {
@@ -137,14 +136,14 @@ describe("Game Sessions", () => {
 			expect.objectContaining({
 				name: "opened-game-session",
 				payload: {
-					gameId,
+					gameId: game.getId(),
 					sessionId: GameSessionIdParser.fromExternal(sessionId),
 				},
 			} satisfies Partial<DomainEvent>),
 			expect.objectContaining({
 				name: "closed-game-session",
 				payload: {
-					gameId,
+					gameId: game.getId(),
 					sessionId: GameSessionIdParser.fromExternal(sessionId),
 				},
 			} satisfies Partial<DomainEvent>),
@@ -156,7 +155,7 @@ describe("Game Sessions", () => {
 		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
 		const now = root.clock.now().toISOString();
 
-		const gameId = game.getId();
+		const gameId = game.getPlayniteSnapshot()!.id;
 		const sessionId = faker.string.uuid();
 
 		const closeRequestDto: CloseGameSessionRequestDto = {
@@ -183,7 +182,7 @@ describe("Game Sessions", () => {
 			expect.objectContaining({
 				name: "closed-game-session",
 				payload: {
-					gameId,
+					gameId: game.getId(),
 					sessionId: GameSessionIdParser.fromExternal(sessionId),
 				},
 			} satisfies Partial<DomainEvent>),
@@ -195,7 +194,7 @@ describe("Game Sessions", () => {
 		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
 		const now = root.clock.now().toISOString();
 
-		const gameId = game.getId();
+		const gameId = game.getPlayniteSnapshot()!.id;
 		const sessionId = faker.string.uuid();
 
 		const closeRequestDto: CloseGameSessionRequestDto = {
@@ -228,7 +227,7 @@ describe("Game Sessions", () => {
 			expect.objectContaining({
 				name: "closed-game-session",
 				payload: {
-					gameId,
+					gameId: game.getId(),
 					sessionId: GameSessionIdParser.fromExternal(sessionId),
 				},
 			} satisfies Partial<DomainEvent>),

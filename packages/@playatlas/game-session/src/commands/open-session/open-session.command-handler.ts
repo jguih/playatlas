@@ -35,7 +35,7 @@ export const makeOpenGameSessionCommandHandler = ({
 			const session = makeGameSession({
 				sessionId: command.sessionId,
 				startTime: now,
-				gameId: command.gameId,
+				gameId: gameInfo.id,
 				gameName: gameInfo.name,
 			});
 
@@ -47,7 +47,7 @@ export const makeOpenGameSessionCommandHandler = ({
 				id: crypto.randomUUID(),
 				name: "opened-game-session",
 				occurredAt: now,
-				payload: { gameId: command.gameId, sessionId: session.getSessionId() },
+				payload: { gameId: gameInfo.id, sessionId: session.getSessionId() },
 			});
 
 			return {

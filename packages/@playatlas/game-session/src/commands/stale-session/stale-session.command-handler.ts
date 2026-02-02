@@ -47,7 +47,7 @@ export const makeStaleGameSessionCommandHandler = ({
 
 				const stale = makeStaleGameSession({
 					sessionId: command.sessionId,
-					gameId: command.gameId,
+					gameId: gameInfo.id,
 					gameName: gameInfo.name,
 					startTime: startTime,
 				});
@@ -59,7 +59,7 @@ export const makeStaleGameSessionCommandHandler = ({
 					id: crypto.randomUUID(),
 					name: "staled-game-session",
 					occurredAt: new Date(serverUtcNow),
-					payload: { gameId: command.gameId, sessionId: command.sessionId },
+					payload: { gameId: gameInfo.id, sessionId: command.sessionId },
 				});
 
 				return {
@@ -95,7 +95,7 @@ export const makeStaleGameSessionCommandHandler = ({
 				id: crypto.randomUUID(),
 				name: "staled-game-session",
 				occurredAt: new Date(serverUtcNow),
-				payload: { gameId: command.gameId, sessionId: session.getSessionId() },
+				payload: { gameId: gameInfo.id, sessionId: session.getSessionId() },
 			});
 
 			return {

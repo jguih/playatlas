@@ -1,15 +1,15 @@
 import {
-	GameIdParser,
 	GameSessionIdParser,
-	type GameId,
+	PlayniteGameIdParser,
 	type GameSessionId,
+	type PlayniteGameId,
 } from "@playatlas/common/domain";
 import type { StaleGameSessionRequestDto } from "./stale-session.request.dto";
 
 export type StaleGameSessionCommand = {
 	clientUtcNow: Date;
 	sessionId: GameSessionId;
-	gameId: GameId;
+	gameId: PlayniteGameId;
 	startTime: Date;
 	endTime?: Date | null;
 	duration?: number | null;
@@ -21,7 +21,7 @@ export const makeStaleGameSessionCommand = (
 	return {
 		clientUtcNow: new Date(requestDto.ClientUtcNow),
 		sessionId: GameSessionIdParser.fromExternal(requestDto.SessionId),
-		gameId: GameIdParser.fromExternal(requestDto.GameId),
+		gameId: PlayniteGameIdParser.fromExternal(requestDto.GameId),
 		startTime: new Date(requestDto.StartTime),
 		endTime: requestDto.EndTime ? new Date(requestDto.EndTime) : null,
 		duration: requestDto.Duration,

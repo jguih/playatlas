@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { InvalidStateError } from "../error";
 
-export const gameIdSchema = z.string().min(1, "GameId cannot be empty").ulid();
+export const gameIdSchema = z.ulid();
 
 export type GameId = z.infer<typeof gameIdSchema> & {
 	readonly __brand: "GameId";
@@ -10,7 +10,7 @@ export type GameId = z.infer<typeof gameIdSchema> & {
 export const GameIdParser = {
 	fromExternal(value: string): GameId {
 		const { success, data } = gameIdSchema.safeParse(value);
-		if (!success) throw new InvalidStateError(`GameId must be a valid UUID`);
+		if (!success) throw new InvalidStateError(`GameId must be a valid ULID`);
 		return data as GameId;
 	},
 

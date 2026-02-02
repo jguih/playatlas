@@ -1,15 +1,15 @@
 import {
-	type GameId,
-	GameIdParser,
 	type GameSessionId,
 	GameSessionIdParser,
+	type PlayniteGameId,
+	PlayniteGameIdParser,
 } from "@playatlas/common/domain";
 import type { CloseGameSessionRequestDto } from "./close-session.request.dto";
 
 export type CloseGameSessionCommand = {
 	clientUtcNow: Date;
 	sessionId: GameSessionId;
-	gameId: GameId;
+	gameId: PlayniteGameId;
 	startTime: Date;
 	endTime: Date;
 	duration: number;
@@ -21,7 +21,7 @@ export const makeCloseGameSessionCommand = (
 	return {
 		clientUtcNow: new Date(requestDto.ClientUtcNow),
 		sessionId: GameSessionIdParser.fromExternal(requestDto.SessionId),
-		gameId: GameIdParser.fromExternal(requestDto.GameId),
+		gameId: PlayniteGameIdParser.fromExternal(requestDto.GameId),
 		startTime: new Date(requestDto.StartTime),
 		endTime: new Date(requestDto.EndTime),
 		duration: requestDto.Duration,

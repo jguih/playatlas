@@ -1,7 +1,7 @@
 import z from "zod";
 import { InvalidStateError } from "../error";
 
-export const genreIdSchema = z.string().min(1, "GenreId cannot be empty").ulid();
+export const genreIdSchema = z.ulid();
 
 export type GenreId = string & {
 	readonly __brand: "GenreId";
