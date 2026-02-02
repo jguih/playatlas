@@ -1,0 +1,6 @@
+---
+playatlas_image: docker.io/library/playatlas
+playatlas_port: 3000
+playatlas_protocols:
+  - tcp
+  - udp

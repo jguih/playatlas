@@ -1,0 +1,80 @@
+--- 
+- name: Show PlayAtlas variables
+  ansible.builtin.debug:
+    msg: 
+      version: "{{ playatlas_version }}"
+      service_name: "{{ playatlas_service_name }}"
+      log_level: "{{ playatlas_log_level }}"
+      timezone: "{{ playatlas_tz }}"
+      bind_ipv4_addresses: "{{ playatlas_bind_ipv4_addresses }}"
+      bind_ipv6_addresses: "{{ playatlas_bind_ipv6_addresses }}"
+
+- name: Initialize port bindings
+  ansible.builtin.set_fact:
+    playatlas_port_bindings: []
+
+- name: Add IPv4 port bindings
+  ansible.builtin.set_fact:
+    playatlas_port_bindings: "{{ playatlas_port_bindings + [item ~ ':' ~ playatlas_port ~ ':' ~ playatlas_port ~ '/' ~ proto] }}"
+  loop: "{{ playatlas_bind_ipv4_addresses | product(playatlas_protocols) }}"
+  loop_control:
+    loop_var: item_proto
+  vars:
+    item: "{{ item_proto.0 }}"
+    proto: "{{ item_proto.1 }}"
+
+- name: Add IPv6 port bindings
+  ansible.builtin.set_fact:
+    playatlas_port_bindings: "{{ playatlas_port_bindings + ['[' ~ item ~ ']:' ~ playatlas_port ~ ':' ~ playatlas_port ~ '/' ~ proto] }}"
+  loop: "{{ playatlas_bind_ipv6_addresses | product(playatlas_protocols) }}"
+  loop_control:
+    loop_var: item_proto
+  vars:
+    item: "{{ item_proto.0 }}"
+    proto: "{{ item_proto.1 }}"
+
+- name: Create PlayAtlas data volume
+  containers.podman.podman_volume:
+    state: quadlet
+    name: playatlas-data
+
+- name: Create PlayAtlas quadlet
+  containers.podman.podman_container:
+    name: "{{ playatlas_service_name }}"
+    image: "{{ playatlas_image }}:{{ playatlas_version }}"
+    state: quadlet
+    quadlet_filename: "{{ playatlas_service_name }}"
+    volumes:
+      - playatlas-data:/app/data
+    env:
+      TZ: "{{ playatlas_tz }}"
+      PLAYATLAS_LOG_LEVEL: "{{ playatlas_log_level }}"
+    ports: "{{ playatlas_port_bindings }}"
+    quadlet_options:
+      - "Network={{ playatlas_container_network }}"
+      - AutoUpdate=local
+      - |
+        [Unit]
+        Description=PlayAtlas Podman container
+        StartLimitBurst=5
+        StartLimitIntervalSec=90
+      - |
+        [Install]
+        WantedBy=default.target
+      - |
+        [Service]
+        Restart=on-failure
+        RestartSec=2
+  notify: 
+    - PlayAtlas reload systemd daemon
+    - Restart PlayAtlas service
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Ensure PlayAtlas service is started
+  ansible.builtin.systemd_service:
+    scope: "{{ playatlas_scope }}"
+    name: "{{ playatlas_service_name }}"
+    state: started
+  ignore_errors: "{{ ansible_check_mode }}"

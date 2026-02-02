@@ -1,0 +1,12 @@
+---
+- name: PlayAtlas reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+    scope: "{{ playatlas_scope }}"
+
+- name: Restart PlayAtlas service
+  ansible.builtin.systemd_service:
+    scope: "{{ playatlas_scope }}"
+    name: "{{ playatlas_service_name }}"
+    state: restarted
+  ignore_errors: "{{ ansible_check_mode }}"
