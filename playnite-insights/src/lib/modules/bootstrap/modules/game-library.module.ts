@@ -36,11 +36,13 @@ import {
 	SyncRunner,
 } from "$lib/modules/game-library/application/sync-runner";
 import {
+	type ICreateGameLibraryCommandHandler,
 	type ISyncCompaniesCommandHandlerPort,
 	type ISyncCompletionStatusesCommandHandlerPort,
 	type ISyncGamesCommandHandlerPort,
 	type ISyncGenresCommandHandlerPort,
 	type ISyncPlatformsCommandHandlerPort,
+	CreateGameLibraryFilterCommandHandler,
 	SyncCompaniesCommandHandler,
 	SyncCompletionStatusesCommandHandler,
 	SyncGamesCommandHandler,
@@ -50,12 +52,14 @@ import {
 import {
 	type ICompanyRepositoryPort,
 	type ICompletionStatusRepositoryPort,
+	type IGameLibraryFilterHasherPort,
 	type IGameLibraryFilterRepositoryPort,
 	type IGameRepositoryPort,
 	type IGenreRepositoryPort,
 	type IPlatformRepositoryPort,
 	CompanyRepository,
 	CompletionStatusRepository,
+	GameLibraryFilterHasher,
 	GameLibraryFilterRepository,
 	GameLibrarySyncState,
 	GameRepository,
@@ -130,6 +134,8 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 
 	readonly gameLibraryFilterMapper: IGameLibraryFilterMapperPort;
 	readonly gameLibraryFilterRepository: IGameLibraryFilterRepositoryPort;
+	readonly gameLibraryFilterHasher: IGameLibraryFilterHasherPort;
+	readonly createGameLibraryFilterCommandHandler: ICreateGameLibraryCommandHandler;
 
 	constructor({ dbSignal, httpClient, clock, eventBus }: ClientGameLibraryModuleDeps) {
 		this.playAtlasClient = new PlayAtlasClient({ httpClient });
@@ -244,6 +250,12 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.gameLibraryFilterRepository = new GameLibraryFilterRepository({
 			dbSignal,
 			gameLibraryFilterMapper: this.gameLibraryFilterMapper,
+		});
+		this.gameLibraryFilterHasher = new GameLibraryFilterHasher();
+		this.createGameLibraryFilterCommandHandler = new CreateGameLibraryFilterCommandHandler({
+			clock,
+			gameLibraryFilterRepository: this.gameLibraryFilterRepository,
+			hasher: this.gameLibraryFilterHasher,
 		});
 	}
 }

@@ -1,3 +1,4 @@
+export * from "./create-game-library-filter";
 export * from "./sync-companies";
 export * from "./sync-completion-statuses";
 export * from "./sync-games";

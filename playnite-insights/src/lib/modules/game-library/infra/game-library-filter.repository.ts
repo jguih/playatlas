@@ -33,40 +33,32 @@ export class GameLibraryFilterRepository
 		});
 	}
 
-	getByLastUsedAtAsync: IGameLibraryFilterRepositoryPort["getByLastUsedAtAsync"] = async (props: {
-		limit: number;
-	}) => {
-		const { limit } = props;
+	getByLastUsedAtDescAsync: IGameLibraryFilterRepositoryPort["getByLastUsedAtDescAsync"] =
+		async () => {
+			return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
+				const store = tx.objectStore(this.storeName);
+				const idx = store.index(gameLibraryFilterRepositoryMeta.index.byLastUsedAt);
+				const items: GameLibraryFilter[] = [];
 
-		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
-			const store = tx.objectStore(this.storeName);
-			const idx = store.index(gameLibraryFilterRepositoryMeta.index.byLastUsedAt);
-			const items: GameLibraryFilter[] = [];
+				return await new Promise<GameLibraryFilter[]>((resolve, reject) => {
+					const request = idx.openCursor(null, "prev");
 
-			return await new Promise<GameLibraryFilter[]>((resolve, reject) => {
-				const request = idx.openCursor(null, "prev");
+					request.onerror = () => reject(request.error);
 
-				request.onerror = () => reject(request.error);
+					request.onsuccess = () => {
+						const cursor = request.result;
 
-				request.onsuccess = () => {
-					const cursor = request.result;
+						if (!cursor) {
+							resolve(items);
+							return;
+						}
 
-					if (!cursor) {
-						resolve(items);
-						return;
-					}
+						const gameLibraryFilter: GameLibraryFilterModel = cursor.value;
+						items.push(this.mapper.toDomain(gameLibraryFilter));
 
-					const gameLibraryFilter: GameLibraryFilterModel = cursor.value;
-					items.push(this.mapper.toDomain(gameLibraryFilter));
-
-					if (items.length === limit) {
-						resolve(items);
-						return;
-					}
-
-					cursor.continue();
-				};
+						cursor.continue();
+					};
+				});
 			});
-		});
-	};
+		};
 }

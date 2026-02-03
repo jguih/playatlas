@@ -8,6 +8,7 @@ import {
 import {
 	companyRepositorySchema,
 	completionStatusRepositorySchema,
+	gameLibraryFilterRepositorySchema,
 	gameRepositorySchema,
 	genreRepositorySchema,
 	platformRepositorySchema,
@@ -16,6 +17,7 @@ import {
 	CompanyFactory,
 	CompletionStatusFactory,
 	GameFactory,
+	GameLibraryFilterFactory,
 	GenreFactory,
 	PlatformFactory,
 } from "$lib/modules/game-library/testing";
@@ -51,6 +53,7 @@ export class TestCompositionRoot {
 		company: new CompanyFactory(),
 		platform: new PlatformFactory(),
 		completionStatus: new CompletionStatusFactory(),
+		gameLibraryFilters: new GameLibraryFilterFactory(),
 	};
 
 	private readonly eventBus: IDomainEventBusPort = new EventBus();
@@ -65,6 +68,7 @@ export class TestCompositionRoot {
 				platformRepositorySchema,
 				sessionIdRepositorySchema,
 				completionStatusRepositorySchema,
+				gameLibraryFilterRepositorySchema,
 			],
 		});
 		await infra.initializeAsync();

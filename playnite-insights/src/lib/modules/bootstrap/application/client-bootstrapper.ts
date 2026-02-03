@@ -46,6 +46,7 @@ export class ClientBootstrapper {
 					SyncCompanies: this.gameLibrary.syncCompaniesCommandHandler,
 					SyncPlatforms: this.gameLibrary.syncPlatformsCommandHandler,
 					SyncCompletionStatuses: this.gameLibrary.syncCompletionStatusesCommandHandler,
+					CreateGameLibraryFilter: this.gameLibrary.createGameLibraryFilterCommandHandler,
 				},
 				SyncManager: this.gameLibrary.gameLibrarySyncManager,
 				SyncProgressReporter: this.gameLibrary.syncProgressReporter,

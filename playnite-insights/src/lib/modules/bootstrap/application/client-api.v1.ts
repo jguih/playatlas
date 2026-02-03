@@ -5,6 +5,7 @@ import type {
 	ISyncProgressReporterPort,
 } from "$lib/modules/game-library/application";
 import type {
+	ICreateGameLibraryCommandHandler,
 	ISyncCompaniesCommandHandlerPort,
 	ISyncCompletionStatusesCommandHandlerPort,
 	ISyncGamesCommandHandlerPort,
@@ -38,6 +39,7 @@ export interface ClientApiV1 {
 			SyncCompanies: ISyncCompaniesCommandHandlerPort;
 			SyncPlatforms: ISyncPlatformsCommandHandlerPort;
 			SyncCompletionStatuses: ISyncCompletionStatusesCommandHandlerPort;
+			CreateGameLibraryFilter: ICreateGameLibraryCommandHandler;
 		};
 		SyncManager: IGameLibrarySyncManagerPort;
 		SyncProgressReporter: ISyncProgressReporterPort;

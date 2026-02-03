@@ -5,5 +5,5 @@ export type IGameLibraryFilterRepositoryPort = IClientEntityRepository<
 	GameLibraryFilter,
 	GameLibraryFilterId
 > & {
-	getByLastUsedAtAsync: (props: { limit: number }) => Promise<GameLibraryFilter[]>;
+	getByLastUsedAtDescAsync: () => Promise<GameLibraryFilter[]>;
 };

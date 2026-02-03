@@ -24,16 +24,41 @@ export type CreateGameLibraryFilterCommandHandlerDeps = {
 
 export class CreateGameLibraryFilterCommandHandler implements ICreateGameLibraryCommandHandler {
 	private static readonly QUERY_VERSION: number = 1;
+	private static readonly MAX_FILTERS: number = 100;
 
 	constructor(private readonly deps: CreateGameLibraryFilterCommandHandlerDeps) {}
 
 	executeAsync: ICreateGameLibraryCommandHandler["executeAsync"] = async (command) => {
 		const now = this.deps.clock.now();
+		const existingFilters = await this.deps.gameLibraryFilterRepository.getByLastUsedAtDescAsync();
 
 		const query = command.query;
 		const queryVersion = CreateGameLibraryFilterCommandHandler.QUERY_VERSION;
-
 		const hash = this.deps.hasher.computeHash({ query, queryVersion });
+
+		const existingFilter = existingFilters.find((f) => f.Hash === hash);
+
+		if (existingFilter) {
+			existingFilter.LastUsedAt = now;
+			existingFilter.UseCount += 1;
+			existingFilter.SourceUpdatedAt = now;
+			existingFilter.SourceUpdatedAtMs = now.getTime();
+
+			await this.deps.gameLibraryFilterRepository.putAsync(existingFilter);
+			return;
+		}
+
+		const MAX_FILTERS = CreateGameLibraryFilterCommandHandler.MAX_FILTERS;
+
+		if (existingFilters.length >= MAX_FILTERS) {
+			const toEvictCount = existingFilters.length - (MAX_FILTERS - 1);
+
+			const toEvict = existingFilters.slice(existingFilters.length - toEvictCount);
+
+			for (const filter of toEvict) {
+				await this.deps.gameLibraryFilterRepository.deleteAsync(filter.Id);
+			}
+		}
 
 		const gameLibraryFilter: GameLibraryFilter = {
 			Id: GameLibraryFilterIdParser.fromTrusted(crypto.randomUUID()),
