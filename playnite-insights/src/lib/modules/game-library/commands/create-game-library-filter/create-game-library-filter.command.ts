@@ -1,7 +1,7 @@
-import type { GetGamesQuery } from "$lib/modules/common/queries";
+import type { GameLibraryFilterQuery } from "../../domain/game-library-filter";
 
 export type CreateGameLibraryFilterCommand = {
-	query: GetGamesQuery;
+	query: GameLibraryFilterQuery;
 };
 
 export type CreateGameLibraryFilterCommandResult = void;

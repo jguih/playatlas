@@ -69,6 +69,7 @@ import {
 import {
 	type IGetCompaniesByIdsQueryHandlerPort,
 	type IGetCompletionStatusesByIdsQueryHandlerPort,
+	type IGetGameLibraryFiltersQueryHandlerPort,
 	type IGetGamesByIdsQueryHandlerPort,
 	type IGetGamesQueryHandlerFilterBuilderProps,
 	type IGetGamesQueryHandlerPort,
@@ -77,6 +78,7 @@ import {
 	type IGetPlatformsByIdsQueryHandlerPort,
 	GetCompaniesByIdsQueryHandler,
 	GetCompletionStatusesByIdsQueryHandler,
+	GetGameLibraryFiltersQueryHandler,
 	GetGamesByIdsQueryHandler,
 	GetGamesQueryHandler,
 	GetGamesQueryHandlerFilterBuilder,
@@ -136,6 +138,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameLibraryFilterRepository: IGameLibraryFilterRepositoryPort;
 	readonly gameLibraryFilterHasher: IGameLibraryFilterHasherPort;
 	readonly createGameLibraryFilterCommandHandler: ICreateGameLibraryCommandHandler;
+	readonly getGameLibraryFiltersQueryHandler: IGetGameLibraryFiltersQueryHandlerPort;
 
 	constructor({ dbSignal, httpClient, clock, eventBus }: ClientGameLibraryModuleDeps) {
 		this.playAtlasClient = new PlayAtlasClient({ httpClient });
@@ -256,6 +259,9 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			clock,
 			gameLibraryFilterRepository: this.gameLibraryFilterRepository,
 			hasher: this.gameLibraryFilterHasher,
+		});
+		this.getGameLibraryFiltersQueryHandler = new GetGameLibraryFiltersQueryHandler({
+			gameLibraryFilterRepository: this.gameLibraryFilterRepository,
 		});
 	}
 }

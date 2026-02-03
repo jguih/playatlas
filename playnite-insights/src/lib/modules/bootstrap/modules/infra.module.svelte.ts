@@ -1,7 +1,6 @@
 import type { IClockPort, ILogServicePort } from "$lib/modules/common/application";
 import { IndexedDBNotInitializedError } from "$lib/modules/common/errors";
 import {
-	Clock,
 	INDEXEDDB_CURRENT_VERSION,
 	INDEXEDDB_NAME,
 	type IIndexedDbSchema,
@@ -13,14 +12,14 @@ export type IndexedDbSignal = { db: IDBDatabase | null; dbReady: boolean };
 export type ClientInfraModuleDeps = {
 	logService: ILogServicePort;
 	schemas: IIndexedDbSchema[];
+	clock: IClockPort;
 };
 
 export class ClientInfraModule implements IClientInfraModulePort {
 	private readonly indexedDbSignal: IndexedDbSignal;
 	private readonly logService: ILogServicePort;
 	private readonly schemas: IIndexedDbSchema[];
-
-	readonly clock: IClockPort;
+	private readonly clock: IClockPort;
 
 	get dbSignal(): IDBDatabase {
 		if (!this.indexedDbSignal.dbReady || !this.indexedDbSignal.db)
@@ -28,10 +27,10 @@ export class ClientInfraModule implements IClientInfraModulePort {
 		return this.indexedDbSignal.db;
 	}
 
-	constructor({ logService, schemas }: ClientInfraModuleDeps) {
+	constructor({ logService, schemas, clock }: ClientInfraModuleDeps) {
 		this.logService = logService;
 		this.schemas = schemas;
-		this.clock = new Clock();
+		this.clock = clock;
 
 		this.indexedDbSignal = $state({
 			db: null,

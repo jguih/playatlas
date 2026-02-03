@@ -1,5 +1,5 @@
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
-import type { GetGamesQuery } from "$lib/modules/common/queries";
+import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
 import type { IGameLibraryFilterMapperPort } from "../application/game-library-filter.mapper.port";
 import type { GameLibraryFilter, GameLibraryFilterId } from "../domain/game-library-filter";
 import type { IGameLibraryFilterRepositoryPort } from "./game-library-filter.repository.port";
@@ -9,7 +9,10 @@ export type GameLibraryFilterModel = {
 	Id: GameLibraryFilterId;
 	SourceUpdatedAt: Date;
 	SourceUpdatedAtMs: number;
-	Query: GetGamesQuery;
+	Query: {
+		Sort: GetGamesQuerySort;
+		Filter?: GetGamesQueryFilter | null;
+	};
 	QueryVersion: number;
 	Hash: string;
 	LastUsedAt: Date;

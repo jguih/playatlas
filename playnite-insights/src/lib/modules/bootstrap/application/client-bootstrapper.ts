@@ -39,6 +39,7 @@ export class ClientBootstrapper {
 					GetCompaniesByIds: this.gameLibrary.getCompaniesByIdsQueryHandler,
 					GetPlatformsByIds: this.gameLibrary.getPlatformsByIdsQueryHandler,
 					GetCompletionStatusesByIds: this.gameLibrary.getCompletionStatusesByIdsQueryHandler,
+					GetGameLibraryFilters: this.gameLibrary.getGameLibraryFiltersQueryHandler,
 				},
 				Command: {
 					SyncGames: this.gameLibrary.syncGamesCommandHandler,

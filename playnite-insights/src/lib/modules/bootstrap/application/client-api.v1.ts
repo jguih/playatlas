@@ -15,6 +15,7 @@ import type {
 import type {
 	IGetCompaniesByIdsQueryHandlerPort,
 	IGetCompletionStatusesByIdsQueryHandlerPort,
+	IGetGameLibraryFiltersQueryHandlerPort,
 	IGetGamesByIdsQueryHandlerPort,
 	IGetGamesQueryHandlerPort,
 	IGetGenreByIdQueryHandlerPort,
@@ -32,6 +33,7 @@ export interface ClientApiV1 {
 			GetCompaniesByIds: IGetCompaniesByIdsQueryHandlerPort;
 			GetPlatformsByIds: IGetPlatformsByIdsQueryHandlerPort;
 			GetCompletionStatusesByIds: IGetCompletionStatusesByIdsQueryHandlerPort;
+			GetGameLibraryFilters: IGetGameLibraryFiltersQueryHandlerPort;
 		};
 		Command: {
 			SyncGames: ISyncGamesCommandHandlerPort;

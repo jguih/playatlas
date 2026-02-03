@@ -24,7 +24,7 @@ export type CreateGameLibraryFilterCommandHandlerDeps = {
 
 export class CreateGameLibraryFilterCommandHandler implements ICreateGameLibraryCommandHandler {
 	private static readonly QUERY_VERSION: number = 1;
-	private static readonly MAX_FILTERS: number = 100;
+	public static readonly MAX_FILTERS: number = 100;
 
 	constructor(private readonly deps: CreateGameLibraryFilterCommandHandlerDeps) {}
 

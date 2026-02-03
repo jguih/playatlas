@@ -4,9 +4,11 @@ import {
 	EventBus,
 	HttpClient,
 	LogService,
+	type IClockPort,
 	type IDomainEventBusPort,
 	type ILogServicePort,
 } from "$lib/modules/common/application";
+import { Clock } from "$lib/modules/common/infra";
 import {
 	companyRepositorySchema,
 	completionStatusRepositorySchema,
@@ -28,6 +30,7 @@ import { ClientBootstrapper } from "./client-bootstrapper";
 export class ClientCompositionRoot {
 	private readonly logService: ILogServicePort = new LogService();
 	private readonly eventBus: IDomainEventBusPort = new EventBus();
+	private readonly clock: IClockPort = new Clock();
 
 	constructor() {}
 
@@ -42,6 +45,7 @@ export class ClientCompositionRoot {
 				sessionIdRepositorySchema,
 				completionStatusRepositorySchema,
 			],
+			clock: this.clock,
 		});
 		await infra.initializeAsync();
 
@@ -49,7 +53,7 @@ export class ClientCompositionRoot {
 		const auth: IAuthModulePort = new AuthModule({
 			httpClient: authHttpClient,
 			dbSignal: infra.dbSignal,
-			clock: infra.clock,
+			clock: this.clock,
 			logService: this.logService,
 			eventBus: this.eventBus,
 		});
@@ -62,7 +66,7 @@ export class ClientCompositionRoot {
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			dbSignal: infra.dbSignal,
 			httpClient: playAtlasHttpClient,
-			clock: infra.clock,
+			clock: this.clock,
 			eventBus: this.eventBus,
 		});
 

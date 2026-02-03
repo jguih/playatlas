@@ -35,6 +35,7 @@ import type {
 import type {
 	IGetCompaniesByIdsQueryHandlerPort,
 	IGetCompletionStatusesByIdsQueryHandlerPort,
+	IGetGameLibraryFiltersQueryHandlerPort,
 	IGetGamesByIdsQueryHandlerPort,
 	IGetGamesQueryHandlerPort,
 	IGetGenreByIdQueryHandlerPort,
@@ -87,4 +88,5 @@ export interface IClientGameLibraryModulePort {
 	get gameLibraryFilterRepository(): IGameLibraryFilterRepositoryPort;
 	get gameLibraryFilterHasher(): IGameLibraryFilterHasherPort;
 	get createGameLibraryFilterCommandHandler(): ICreateGameLibraryCommandHandler;
+	get getGameLibraryFiltersQueryHandler(): IGetGameLibraryFiltersQueryHandlerPort;
 }

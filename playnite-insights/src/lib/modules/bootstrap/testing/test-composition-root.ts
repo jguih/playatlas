@@ -17,7 +17,7 @@ import {
 	CompanyFactory,
 	CompletionStatusFactory,
 	GameFactory,
-	GameLibraryFilterFactory,
+	GameLibraryFilterQueryFactory,
 	GenreFactory,
 	PlatformFactory,
 } from "$lib/modules/game-library/testing";
@@ -29,6 +29,7 @@ import { ClientGameLibraryModule } from "../modules/game-library.module";
 import type { IClientGameLibraryModulePort } from "../modules/game-library.module.port";
 import type { IClientInfraModulePort } from "../modules/infra.module.port";
 import { ClientInfraModule } from "../modules/infra.module.svelte";
+import { TestClock, type ITestClockPort } from "./test-clock";
 
 export class TestCompositionRoot {
 	readonly mocks = {
@@ -53,10 +54,16 @@ export class TestCompositionRoot {
 		company: new CompanyFactory(),
 		platform: new PlatformFactory(),
 		completionStatus: new CompletionStatusFactory(),
-		gameLibraryFilters: new GameLibraryFilterFactory(),
+		gameLibraryFilterQuery: new GameLibraryFilterQueryFactory(),
 	};
 
+	readonly clock: ITestClockPort;
+
 	private readonly eventBus: IDomainEventBusPort = new EventBus();
+
+	constructor() {
+		this.clock = new TestClock();
+	}
 
 	buildAsync = async (): Promise<ClientApiV1> => {
 		const infra: IClientInfraModulePort = new ClientInfraModule({
@@ -70,6 +77,7 @@ export class TestCompositionRoot {
 				completionStatusRepositorySchema,
 				gameLibraryFilterRepositorySchema,
 			],
+			clock: this.clock,
 		});
 		await infra.initializeAsync();
 
