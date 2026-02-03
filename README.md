@@ -39,7 +39,7 @@ podman run -d \
   -v playatlas-data:/app/data \
   -e TZ=America/Sao_Paulo \
   -e PLAYATLAS_LOG_LEVEL=0 \
-  -p 3000:3000/tcp \
-  -p 3000:3000/udp \
+  -p 127.0.0.1:3000:3000/tcp \
+  -p 127.0.0.1:3000:3000/udp \
   docker.io/library/playatlas
 ```

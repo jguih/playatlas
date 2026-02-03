@@ -7,7 +7,6 @@ export class GameLibraryFilterMapper implements IGameLibraryFilterMapperPort {
 			Hash: model.Hash,
 			UseCount: model.UseCount,
 			LastUsedAt: model.LastUsedAt,
-			LastUsedAtMs: model.LastUsedAtMs,
 			Query: model.Query,
 			QueryVersion: model.QueryVersion,
 			SourceUpdatedAt: model.SourceUpdatedAt,

@@ -1,5 +1,10 @@
 import { sessionIdRepositorySchema } from "$lib/modules/auth/infra";
-import type { IHttpClientPort, ILogServicePort } from "$lib/modules/common/application";
+import {
+	EventBus,
+	type IDomainEventBusPort,
+	type IHttpClientPort,
+	type ILogServicePort,
+} from "$lib/modules/common/application";
 import {
 	companyRepositorySchema,
 	completionStatusRepositorySchema,
@@ -48,6 +53,8 @@ export class TestCompositionRoot {
 		completionStatus: new CompletionStatusFactory(),
 	};
 
+	private readonly eventBus: IDomainEventBusPort = new EventBus();
+
 	buildAsync = async (): Promise<ClientApiV1> => {
 		const infra: IClientInfraModulePort = new ClientInfraModule({
 			logService: this.mocks.logService,
@@ -67,6 +74,7 @@ export class TestCompositionRoot {
 			dbSignal: infra.dbSignal,
 			clock: infra.clock,
 			logService: this.mocks.logService,
+			eventBus: this.eventBus,
 		});
 		await auth.initializeAsync();
 
@@ -74,9 +82,13 @@ export class TestCompositionRoot {
 			dbSignal: infra.dbSignal,
 			httpClient: this.mocks.httpClient,
 			clock: infra.clock,
+			eventBus: this.eventBus,
 		});
 
-		const bootstrapper = new ClientBootstrapper({ modules: { infra, gameLibrary, auth } });
+		const bootstrapper = new ClientBootstrapper({
+			modules: { infra, gameLibrary, auth },
+			eventBus: this.eventBus,
+		});
 		return bootstrapper.bootstrap();
 	};
 

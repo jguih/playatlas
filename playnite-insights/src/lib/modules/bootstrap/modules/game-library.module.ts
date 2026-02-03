@@ -57,11 +57,11 @@ import {
 	CompanyRepository,
 	CompletionStatusRepository,
 	GameLibraryFilterRepository,
+	GameLibrarySyncState,
 	GameRepository,
 	GenreRepository,
 	PlatformRepository,
 } from "$lib/modules/game-library/infra";
-import { GameLibrarySyncState } from "$lib/modules/game-library/infra/game-library-sync-state";
 import {
 	type IGetCompaniesByIdsQueryHandlerPort,
 	type IGetCompletionStatusesByIdsQueryHandlerPort,
