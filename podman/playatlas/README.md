@@ -1,4 +1,4 @@
-# PlayAtlas Ansible Podman Quadlet Role
+# PlayAtlas Ansible Role
 
 This Ansible role deploys **PlayAtlas** using **Podman Quadlets**. It handles:
 

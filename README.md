@@ -14,7 +14,7 @@ Then, open a browser and navigate to **http://localhost:3001**.
 
 ## Building Container Image
 
-To build the Svelte application container, run the following command at the project's root:
+To build the Svelte application container image, run the following command at the project's root:
 
 ```bash
 docker build --tag playatlas:latest --target prod .
@@ -28,7 +28,7 @@ If you want to run a local Podman container to test the final image, transfer it
 docker save playatlas | podman load
 ```
 
-You can deploy the built container using the example Ansible role at `podman/playatlas`.
+You can deploy the container using the example Ansible role at `podman/playatlas`.
 
 Alternatively, you may use this Podman Run command:
 
