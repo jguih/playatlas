@@ -7,9 +7,13 @@ export const GameLibraryFilterIdParser = {
 	fromTrusted: (value: string) => value as GameLibraryFilterId,
 };
 
+export type StoredGameLibraryFilter = GetGamesQueryFilter & {
+	searchNormalized?: string;
+};
+
 export type GameLibraryFilterQuery = {
 	Sort: GetGamesQuerySort;
-	Filter: GetGamesQueryFilter | null;
+	Filter: StoredGameLibraryFilter | null;
 };
 
 export type GameLibraryFilter = ClientEntity<GameLibraryFilterId> & {

@@ -3,6 +3,7 @@
 	import { getClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
 	import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
 	import type { CreateGameLibraryFilterCommand } from "$lib/modules/game-library/commands";
+	import type { GameLibraryFilter } from "$lib/modules/game-library/domain";
 	import BottomNav from "$lib/ui/components/BottomNav.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import GameCard from "$lib/ui/components/game-card/GameCard.svelte";
@@ -38,6 +39,7 @@
 	const filters = new HomePageFilters();
 	const search = new HomePageSearch();
 	const syncProgress = $derived(api().GameLibrary.SyncProgressReporter.progressSignal);
+	const libraryFilterItems = $state<{ items: GameLibraryFilter[] }>({ items: [] });
 	let reloadPagerTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);
 	let main = $state<HTMLElement | undefined>(undefined);
@@ -61,6 +63,8 @@
 			reloadPagerAsync({ filter: query.Filter ?? undefined, sort: query.Sort }),
 			api().GameLibrary.Command.CreateGameLibraryFilter.executeAsync(command),
 		]);
+
+		await loadLibraryFiltersAsync();
 	};
 
 	const reloadPagerDebounced = () => {
@@ -75,6 +79,16 @@
 			void reloadPagerAsync();
 			reloadPagerTimeout = undefined;
 		}, 1_000);
+	};
+
+	const loadLibraryFiltersAsync = async () => {
+		const { gameLibraryFilters } = await api().GameLibrary.Query.GetGameLibraryFilters.executeAsync(
+			{
+				sort: "recentlyUsed",
+				sortOrder: "desc",
+			},
+		);
+		libraryFilterItems.items = gameLibraryFilters;
 	};
 
 	onMount(() => {
@@ -107,6 +121,10 @@
 		});
 
 		return () => unsubscribe();
+	});
+
+	onMount(() => {
+		void loadLibraryFiltersAsync();
 	});
 
 	beforeNavigate(() => {
@@ -151,6 +169,12 @@
 		}}
 		bind:value={homePageFiltersSignal.search}
 		onChange={reloadPagerDebounced}
+		libraryFilterItems={libraryFilterItems.items}
+		onApplyFilterItem={(item) => {
+			homePageFiltersSignal.search = item.Query.Filter?.search;
+			search.close();
+			void reloadPagerAsync();
+		}}
 	/>
 {/if}
 

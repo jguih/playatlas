@@ -31,7 +31,7 @@
 		!iconOnly && [
 			size === "sm" && "h-8 gap-1.5 px-3 text-sm",
 			size === "md" && "h-10 gap-2 px-5 text-base",
-			size === "lg" && "h-12 gap-2.5 px-5 text-base",
+			size === "lg" && "h-12 gap-2.5 px-5 text-lg",
 		],
 		"relative inline-flex cursor-pointer select-none items-center whitespace-nowrap",
 		"transition-colors-default",

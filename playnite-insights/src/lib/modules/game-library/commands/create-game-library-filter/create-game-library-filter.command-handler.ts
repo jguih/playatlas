@@ -43,6 +43,7 @@ export class CreateGameLibraryFilterCommandHandler implements ICreateGameLibrary
 			existingFilter.UseCount += 1;
 			existingFilter.SourceUpdatedAt = now;
 			existingFilter.SourceUpdatedAtMs = now.getTime();
+			existingFilter.Query = query;
 
 			await this.deps.gameLibraryFilterRepository.putAsync(existingFilter);
 			return;

@@ -1,3 +1,4 @@
+import { normalize } from "$lib/modules/common/common";
 import type { IGameLibraryFilterMapperPort } from "./game-library-filter.mapper.port";
 
 export class GameLibraryFilterMapper implements IGameLibraryFilterMapperPort {
@@ -23,7 +24,16 @@ export class GameLibraryFilterMapper implements IGameLibraryFilterMapperPort {
 			Key: entity.Key,
 			LastUsedAt: entity.LastUsedAt,
 			LastUsedAtMs: entity.LastUsedAt.getTime(),
-			Query: entity.Query,
+			Query: {
+				Sort: entity.Query.Sort,
+				Filter: {
+					installed: entity.Query.Filter?.installed,
+					search: entity.Query.Filter?.search,
+					searchNormalized: entity.Query.Filter?.search
+						? normalize(entity.Query.Filter?.search)
+						: undefined,
+				},
+			},
 			QueryVersion: entity.QueryVersion,
 			SourceUpdatedAt: entity.SourceUpdatedAt,
 			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,

@@ -1,7 +1,11 @@
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
-import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
+import type { GetGamesQuerySort } from "$lib/modules/common/queries";
 import type { IGameLibraryFilterMapperPort } from "../application/game-library-filter.mapper.port";
-import type { GameLibraryFilter, GameLibraryFilterId } from "../domain/game-library-filter";
+import type {
+	GameLibraryFilter,
+	GameLibraryFilterId,
+	StoredGameLibraryFilter,
+} from "../domain/game-library-filter";
 import type { IGameLibraryFilterRepositoryPort } from "./game-library-filter.repository.port";
 import { gameLibraryFilterRepositoryMeta } from "./game-library-filter.repository.schema";
 
@@ -11,7 +15,7 @@ export type GameLibraryFilterModel = {
 	SourceUpdatedAtMs: number;
 	Query: {
 		Sort: GetGamesQuerySort;
-		Filter?: GetGamesQueryFilter | null;
+		Filter?: StoredGameLibraryFilter | null;
 	};
 	QueryVersion: number;
 	Key: string;
