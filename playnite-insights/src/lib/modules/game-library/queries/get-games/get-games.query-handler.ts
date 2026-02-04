@@ -1,3 +1,4 @@
+import type { GetGamesQuerySortDirection } from "$lib/modules/common/queries";
 import type { Game } from "../../domain/game.entity";
 import type { IGameRepositoryPort } from "../../infra/game.repository.port";
 import type { IGetGamesQueryHandlerFilterBuilderProps } from "./get-games.query-handler.filter-builder";
@@ -23,6 +24,7 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 		limit: number;
 		filters: GameFilter | GameFilter[];
 		scanSourceAsync: ScanSourceAsyncFn;
+		direction?: GetGamesQuerySortDirection;
 		cursor?: IDBValidKey | null;
 	}): Promise<GetGamesQueryResult> => {
 		const { limit, scanSourceAsync: queryAsync } = params;
@@ -60,18 +62,29 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 		return { items: collected, nextKey };
 	};
 
-	private recentScanSource: ScanSourceAsyncFn = async ({ batchSize, cursor }) => {
+	private recentScanSource: ScanSourceAsyncFn = async ({
+		batchSize,
+		cursor,
+		direction = "desc",
+	}) => {
+		const range = cursor
+			? direction === "desc"
+				? IDBKeyRange.upperBound(cursor, true)
+				: IDBKeyRange.lowerBound(cursor, true)
+			: null;
+		const queryDirection: IDBCursorDirection = direction === "desc" ? "prev" : "next";
+
 		const { items, keys } = await this.deps.gameRepository.queryAsync({
 			index: "bySourceUpdatedAt",
-			direction: "prev",
-			range: cursor ? IDBKeyRange.upperBound(cursor, true) : null,
+			direction: queryDirection,
+			range: range,
 			limit: batchSize,
 		});
 		return { items, keys };
 	};
 
 	executeAsync: IGetGamesQueryHandlerPort["executeAsync"] = async (query) => {
-		if (query.sort === "recent" && query.filter?.search) {
+		if (query.sort.type === "recent" && query.filter?.search) {
 			return await this.scanGamesUntilLimit({
 				limit: query.limit,
 				cursor: query.cursor,
@@ -80,7 +93,7 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 			});
 		}
 
-		if (query.sort === "recent") {
+		if (query.sort.type === "recent") {
 			return await this.scanGamesUntilLimit({
 				limit: query.limit,
 				cursor: query.cursor,

@@ -62,7 +62,9 @@ describe("Game Library / Game Library Filters", () => {
 		const first = queries.at(0)!;
 		const second = queries.at(1)!;
 
+		root.clock.setCurrent(new Date("2026-02-03"));
 		await api.GameLibrary.Command.CreateGameLibraryFilter.executeAsync({ query: first });
+		root.clock.advance(10_000);
 		await api.GameLibrary.Command.CreateGameLibraryFilter.executeAsync({ query: second });
 
 		// Act
@@ -72,8 +74,8 @@ describe("Game Library / Game Library Filters", () => {
 
 		// Assert
 		expect(gameLibraryFilters).toHaveLength(2);
-		expect(gameLibraryFilters[0].Query).toMatchObject(first);
-		expect(gameLibraryFilters[1].Query).toMatchObject(second);
+		expect(gameLibraryFilters[0].Query).toMatchObject(second);
+		expect(gameLibraryFilters[1].Query).toMatchObject(first);
 	});
 
 	it.each([{ n: 1 }, { n: 2 }, { n: 101 }])(
@@ -96,7 +98,7 @@ describe("Game Library / Game Library Filters", () => {
 		},
 	);
 
-	it.only("does not evict filters that were recently reused", async () => {
+	it("does not evict filters that were recently reused", async () => {
 		// Arrange
 		const totalFilters = 100;
 		const overflow = 5;

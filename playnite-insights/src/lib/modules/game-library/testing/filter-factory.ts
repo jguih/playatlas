@@ -14,7 +14,7 @@ export class GameLibraryFilterQueryFactory
 {
 	private buildFilterQuery = (): GameLibraryFilterQuery => {
 		return {
-			Sort: this.pickOne("name", "recent"),
+			Sort: { type: this.pickOne("name", "recent") },
 			Filter: {
 				installed: this.pickOne(faker.datatype.boolean(), undefined),
 				search: this.pickOne(faker.lorem.words({ min: 1, max: 3 }), undefined),
@@ -23,7 +23,7 @@ export class GameLibraryFilterQueryFactory
 	};
 
 	private buildUniqueQuery = (i: number): GameLibraryFilterQuery => ({
-		Sort: this.pickOne("name", "recent"),
+		Sort: { type: this.pickOne("name", "recent") },
 		Filter: {
 			installed: i % 2 === 0,
 			search: `search-${i}`,

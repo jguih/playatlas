@@ -49,8 +49,9 @@
 		void initPromise
 			.then(async () => {
 				await tick();
-				if (heroTitleEl) observer.observe(heroTitleEl);
 				loading = false;
+				await tick();
+				if (heroTitleEl) observer.observe(heroTitleEl);
 			})
 			.catch(() => (loading = false));
 

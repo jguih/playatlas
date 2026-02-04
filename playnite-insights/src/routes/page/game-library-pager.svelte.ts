@@ -39,7 +39,7 @@ export class GameLibraryPager {
 
 			const result = await this.api().GameLibrary.Query.GetGames.executeAsync({
 				limit: 50,
-				sort: "recent",
+				sort: { type: "recent", direction: "desc" },
 				cursor: snapshot.nextKey,
 				filter: homePageFiltersSignal,
 			});

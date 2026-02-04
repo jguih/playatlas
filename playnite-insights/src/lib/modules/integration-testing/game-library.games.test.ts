@@ -27,7 +27,7 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const { items } = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 200,
-			sort: "recent",
+			sort: { type: "recent" },
 		});
 
 		// Assert
@@ -47,7 +47,7 @@ describe("GameLibrary / Games", () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 100,
-			sort: "recent",
+			sort: { type: "recent" },
 		});
 
 		// Assert
@@ -77,7 +77,7 @@ describe("GameLibrary / Games", () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: "recent",
+			sort: { type: "recent" },
 		});
 
 		// Assert
@@ -87,7 +87,7 @@ describe("GameLibrary / Games", () => {
 	it("returns empty result when no games exist", async () => {
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: "recent",
+			sort: { type: "recent" },
 		});
 
 		expect(result.items).toHaveLength(0);
@@ -103,7 +103,7 @@ describe("GameLibrary / Games", () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 1000,
-			sort: "recent",
+			sort: { type: "recent" },
 		});
 
 		// Assert
@@ -128,7 +128,10 @@ describe("GameLibrary / Games", () => {
 				SourceUpdatedAt: new Date("2026-01-01"),
 			},
 		});
-		const stored = await api.GameLibrary.Query.GetGames.executeAsync({ limit: 1, sort: "recent" });
+		const stored = await api.GameLibrary.Query.GetGames.executeAsync({
+			limit: 1,
+			sort: { type: "recent" },
+		});
 
 		// Assert
 		expect(stored.items[0].Playnite?.Name).toBe(game.Playnite?.Name);
@@ -151,7 +154,7 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 100,
-			sort: "recent",
+			sort: { type: "recent" },
 		});
 
 		// Assert
@@ -176,7 +179,7 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 200,
-			sort: "recent",
+			sort: { type: "recent" },
 		});
 
 		// Assert
@@ -205,7 +208,7 @@ describe("GameLibrary / Games", () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: "recent",
+			sort: { type: "recent" },
 		});
 
 		// Assert
@@ -224,7 +227,7 @@ describe("GameLibrary / Games", () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 20,
-			sort: "recent",
+			sort: { type: "recent" },
 		});
 
 		// Assert
@@ -267,7 +270,7 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: "recent",
+			sort: { type: "recent" },
 			filter: { search: "Grim" },
 		});
 
@@ -303,7 +306,7 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: "recent",
+			sort: { type: "recent" },
 			filter: { search: "Grim" },
 		});
 
@@ -350,7 +353,7 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: "recent",
+			sort: { type: "recent" },
 			filter: { search: "Grim" },
 		});
 

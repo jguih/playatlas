@@ -1,59 +1,75 @@
-import { createHash, Hash } from "crypto";
 import type { GameLibraryFilter } from "../domain/game-library-filter";
 
 export type IGameLibraryFilterHasherPort = {
 	computeHash: (props: {
 		query: GameLibraryFilter["Query"];
 		queryVersion: GameLibraryFilter["QueryVersion"];
-	}) => string;
+	}) => Promise<string>;
 };
 
 export class GameLibraryFilterHasher implements IGameLibraryFilterHasherPort {
-	private readonly SEP = Buffer.from([0]);
+	private static readonly SEP = 0x00;
+	private readonly encoder = new TextEncoder();
 
-	private appendStringToHash = (hash: Hash, value: string | null) => {
-		hash.update(Buffer.from(value ?? "", "utf-8"));
-		hash.update(this.SEP);
-	};
+	private appendBytes(chunks: Uint8Array[], bytes: Uint8Array) {
+		chunks.push(bytes);
+		chunks.push(Uint8Array.of(GameLibraryFilterHasher.SEP));
+	}
 
-	private appendBoolToHash = (hash: Hash, value: boolean | null) => {
-		this.appendStringToHash(hash, value === null ? null : value ? "1" : "0");
-	};
+	private appendString(chunks: Uint8Array[], value: string | null) {
+		this.appendBytes(chunks, value === null ? new Uint8Array() : this.encoder.encode(value));
+	}
 
-	private appendNumberToHash = (hash: Hash, value: number | null) => {
-		this.appendStringToHash(hash, value === null ? null : value.toString());
-	};
+	private appendBool(chunks: Uint8Array[], value: boolean | null) {
+		this.appendString(chunks, value === null ? null : value ? "1" : "0");
+	}
 
-	/**
-	 * Canonical hash format (v1):
-	 *
-	 * [QueryVersion]\0
-	 * [sort]\0
-	 * [installed]\0
-	 * [search(lowercased, trimmed)]\0
-	 *
-	 * Notes:
-	 * - search is case-insensitive
-	 * - absence is encoded as empty string
-	 */
-	computeHash: IGameLibraryFilterHasherPort["computeHash"] = ({ query, queryVersion }) => {
-		const hash = createHash("sha256");
+	private appendNumber(chunks: Uint8Array[], value: number | null) {
+		this.appendString(chunks, value === null ? null : value.toString());
+	}
 
-		const appendString = (value: string | null) => this.appendStringToHash(hash, value);
-		const appendBool = (value: boolean | null) => this.appendBoolToHash(hash, value);
-		const appendNumber = (value: number | null) => this.appendNumberToHash(hash, value);
+	private buildPayload(chunks: Uint8Array[]): Uint8Array {
+		const totalLength = chunks.reduce((sum, c) => sum + c.length, 0);
+		const buffer = new Uint8Array(totalLength);
 
-		appendNumber(queryVersion);
-		appendString(query.Sort);
-
-		if (query.Filter) {
-			appendBool(query.Filter.installed ?? null);
-			appendString(query.Filter.search?.trim().toLocaleLowerCase("en-US") ?? null);
-		} else {
-			appendString(null);
-			appendString(null);
+		let offset = 0;
+		for (const chunk of chunks) {
+			buffer.set(chunk, offset);
+			offset += chunk.length;
 		}
 
-		return hash.digest("base64");
-	};
+		return buffer;
+	}
+
+	async computeHash({
+		query,
+		queryVersion,
+	}: Parameters<IGameLibraryFilterHasherPort["computeHash"]>[0]): Promise<string> {
+		const chunks: Uint8Array[] = [];
+
+		this.appendNumber(chunks, queryVersion);
+
+		this.appendString(chunks, query.Sort.type);
+		this.appendString(chunks, query.Sort.direction ?? null);
+
+		if (query.Filter) {
+			this.appendBool(chunks, query.Filter.installed ?? null);
+			this.appendString(chunks, query.Filter.search?.trim().toLocaleLowerCase("en-US") ?? null);
+		} else {
+			this.appendString(chunks, null);
+			this.appendString(chunks, null);
+		}
+
+		const payload = this.buildPayload(chunks);
+		const digest = await crypto.subtle.digest("SHA-256", payload);
+
+		return this.toBase64(digest);
+	}
+
+	private toBase64(buffer: ArrayBuffer): string {
+		const bytes = new Uint8Array(buffer);
+		let binary = "";
+		for (const b of bytes) binary += String.fromCharCode(b);
+		return btoa(binary);
+	}
 }
