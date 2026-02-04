@@ -15,7 +15,6 @@
 		"preversion": "npm run test",
 		"test": "vitest run",
 		"test:watch": "vitest run -w",
-		"test:unit": "vitest run --project unit",
 		"test:integration": "vitest run --project integration"
 	},
 	"devDependencies": {

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { afterNavigate, beforeNavigate } from "$app/navigation";
 	import { getClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
+	import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
+	import type { CreateGameLibraryFilterCommand } from "$lib/modules/game-library/commands";
 	import BottomNav from "$lib/ui/components/BottomNav.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import GameCard from "$lib/ui/components/game-card/GameCard.svelte";
@@ -21,7 +23,12 @@
 	import { onMount, tick } from "svelte";
 	import SearchBottomSheet from "./page/components/SearchBottomSheet.svelte";
 	import { GameLibraryPager } from "./page/game-library-pager.svelte";
-	import { HomePageFilters, homePageFiltersSignal } from "./page/home-page-filters.svelte";
+	import type { GameLibraryPagerLoadMoreProps } from "./page/game-library-pager.types";
+	import {
+		HomePageFilters,
+		homePageFiltersSignal,
+		homePageSortSignal,
+	} from "./page/home-page-filters.svelte";
 	import { homePageScrollState } from "./page/home-page-scroll-position.svelte";
 	import { HomePageSearch } from "./page/home-page-search.svelte";
 	import { SyncProgressViewModel } from "./page/sync-progress.view-model";
@@ -35,9 +42,9 @@
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);
 	let main = $state<HTMLElement | undefined>(undefined);
 
-	const reloadPager = () => {
+	const reloadPagerAsync = async (props: GameLibraryPagerLoadMoreProps = {}) => {
 		pager.invalidateSignal();
-		void pager.loadMore();
+		await pager.loadMore(props);
 	};
 
 	const clearReloadPagerTimeout = () => {
@@ -47,16 +54,25 @@
 		}
 	};
 
+	const commitSearchAsync = async (command: CreateGameLibraryFilterCommand) => {
+		const query = command.query;
+
+		await Promise.allSettled([
+			reloadPagerAsync({ filter: query.Filter ?? undefined, sort: query.Sort }),
+			api().GameLibrary.Command.CreateGameLibraryFilter.executeAsync(command),
+		]);
+	};
+
 	const reloadPagerDebounced = () => {
 		clearReloadPagerTimeout();
 
 		if (!homePageFiltersSignal.search) {
-			reloadPager();
+			void reloadPagerAsync();
 			return;
 		}
 
 		reloadPagerTimeout = setTimeout(() => {
-			reloadPager();
+			void reloadPagerAsync();
 			reloadPagerTimeout = undefined;
 		}, 1_000);
 	};
@@ -86,7 +102,7 @@
 	onMount(() => {
 		const unsubscribe = api().EventBus.on("sync-finished", () => {
 			if (pager.pagerStateSignal.games.length === 0) {
-				reloadPager();
+				void reloadPagerAsync();
 			}
 		});
 
@@ -122,8 +138,16 @@
 	<SearchBottomSheet
 		onClose={() => {
 			clearReloadPagerTimeout();
-			reloadPager();
+
+			const command: CreateGameLibraryFilterCommand = {
+				query: {
+					Filter: $state.snapshot(homePageFiltersSignal) as unknown as GetGamesQueryFilter,
+					Sort: $state.snapshot(homePageSortSignal) as unknown as GetGamesQuerySort,
+				},
+			};
+
 			search.close();
+			void commitSearchAsync(command);
 		}}
 		bind:value={homePageFiltersSignal.search}
 		onChange={reloadPagerDebounced}

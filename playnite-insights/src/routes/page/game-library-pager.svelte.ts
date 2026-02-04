@@ -1,6 +1,8 @@
 import type { ClientApiGetter } from "$lib/modules/bootstrap/application";
+import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
 import type { GameCardProjection } from "../../lib/ui/components/game-card/game-card.projection";
-import { homePageFiltersSignal } from "./home-page-filters.svelte";
+import type { GameLibraryPagerLoadMoreProps } from "./game-library-pager.types";
+import { homePageFiltersSignal, homePageSortSignal } from "./home-page-filters.svelte";
 
 export type GameLibraryPagerState = {
 	games: GameCardProjection[];
@@ -29,19 +31,28 @@ export class GameLibraryPager {
 		this.api = api;
 	}
 
-	loadMore = async () => {
+	loadMore = async (props: GameLibraryPagerLoadMoreProps = {}) => {
 		if (this.pagerStateSignal.loading || this.pagerStateSignal.exhausted) return;
+
+		const { filter, sort } = props;
 
 		this.pagerStateSignal.loading = true;
 
 		try {
-			const snapshot = $state.snapshot(this.pagerStateSignal) as unknown as GameLibraryPagerState;
+			const pagerSnapshot = $state.snapshot(
+				this.pagerStateSignal,
+			) as unknown as GameLibraryPagerState;
+			const filterSnapshot =
+				filter ?? ($state.snapshot(homePageFiltersSignal) as unknown as GetGamesQueryFilter);
+			const sortSnapshot =
+				sort ?? ($state.snapshot(homePageSortSignal) as unknown as GetGamesQuerySort);
+			const cursor = pagerSnapshot.nextKey;
 
 			const result = await this.api().GameLibrary.Query.GetGames.executeAsync({
 				limit: 50,
-				sort: { type: "recent", direction: "desc" },
-				cursor: snapshot.nextKey,
-				filter: homePageFiltersSignal,
+				sort: sortSnapshot,
+				cursor,
+				filter: filterSnapshot,
 			});
 
 			const cardProjectionItems = result.items.map(

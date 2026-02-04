@@ -27,7 +27,7 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const { items } = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 200,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 		});
 
 		// Assert
@@ -47,7 +47,7 @@ describe("GameLibrary / Games", () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 100,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 		});
 
 		// Assert
@@ -77,7 +77,7 @@ describe("GameLibrary / Games", () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 		});
 
 		// Assert
@@ -87,7 +87,7 @@ describe("GameLibrary / Games", () => {
 	it("returns empty result when no games exist", async () => {
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 		});
 
 		expect(result.items).toHaveLength(0);
@@ -103,7 +103,7 @@ describe("GameLibrary / Games", () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 1000,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 		});
 
 		// Assert
@@ -130,7 +130,7 @@ describe("GameLibrary / Games", () => {
 		});
 		const stored = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 1,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 		});
 
 		// Assert
@@ -154,7 +154,7 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 100,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 		});
 
 		// Assert
@@ -179,7 +179,7 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 200,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 		});
 
 		// Assert
@@ -208,7 +208,7 @@ describe("GameLibrary / Games", () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 		});
 
 		// Assert
@@ -227,7 +227,7 @@ describe("GameLibrary / Games", () => {
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 20,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 		});
 
 		// Assert
@@ -270,7 +270,7 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 			filter: { search: "Grim" },
 		});
 
@@ -306,7 +306,7 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 			filter: { search: "Grim" },
 		});
 
@@ -353,12 +353,52 @@ describe("GameLibrary / Games", () => {
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
-			sort: { type: "recent" },
+			sort: { type: "recentlyUpdated" },
 			filter: { search: "Grim" },
 		});
 
 		// Assert
 		expect(result.items).toHaveLength(1);
 		expect(result.items[0].Playnite?.Name).toBe("Grim Dawn");
+	});
+
+	it("order games by recently updated ascending", async () => {
+		// Arrange
+		const games = root.factories.game.buildList(2000);
+
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
+
+		// Act
+		const result = await api.GameLibrary.Query.GetGames.executeAsync({
+			limit: 50,
+			sort: { type: "recentlyUpdated", direction: "asc" },
+		});
+
+		// Assert
+		expect(
+			result.items.every(
+				(game, index, arr) => index === 0 || game.SourceUpdatedAt >= arr[index - 1].SourceUpdatedAt,
+			),
+		);
+	});
+
+	it("order games by recently updated descending", async () => {
+		// Arrange
+		const games = root.factories.game.buildList(2000);
+
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
+
+		// Act
+		const result = await api.GameLibrary.Query.GetGames.executeAsync({
+			limit: 50,
+			sort: { type: "recentlyUpdated", direction: "asc" },
+		});
+
+		// Assert
+		expect(
+			result.items.every(
+				(game, index, arr) => index === 0 || game.SourceUpdatedAt <= arr[index - 1].SourceUpdatedAt,
+			),
+		);
 	});
 });

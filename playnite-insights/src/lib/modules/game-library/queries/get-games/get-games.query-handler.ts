@@ -27,7 +27,7 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 		direction?: GetGamesQuerySortDirection;
 		cursor?: IDBValidKey | null;
 	}): Promise<GetGamesQueryResult> => {
-		const { limit, scanSourceAsync: queryAsync } = params;
+		const { limit, scanSourceAsync, direction } = params;
 
 		const batchSize = Math.min(limit * 3, 200);
 		const collected: Game[] = [];
@@ -40,7 +40,7 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 		let nextKey: IDBValidKey | null = null;
 
 		while (collected.length < limit) {
-			const result = await queryAsync({ batchSize, cursor });
+			const result = await scanSourceAsync({ batchSize, cursor, direction });
 
 			if (result.items.length === 0) break;
 
@@ -84,19 +84,21 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 	};
 
 	executeAsync: IGetGamesQueryHandlerPort["executeAsync"] = async (query) => {
-		if (query.sort.type === "recent" && query.filter?.search) {
+		if (query.sort.type === "recentlyUpdated" && query.filter?.search) {
 			return await this.scanGamesUntilLimit({
 				limit: query.limit,
 				cursor: query.cursor,
+				direction: query.sort.direction,
 				scanSourceAsync: this.recentScanSource,
 				filters: this.deps.filterBuilder.createNameFilter(query.filter.search),
 			});
 		}
 
-		if (query.sort.type === "recent") {
+		if (query.sort.type === "recentlyUpdated") {
 			return await this.scanGamesUntilLimit({
 				limit: query.limit,
 				cursor: query.cursor,
+				direction: query.sort.direction,
 				scanSourceAsync: this.recentScanSource,
 				filters: [],
 			});

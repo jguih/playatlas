@@ -6,7 +6,7 @@ export type GetGamesQueryFilter = {
 export type GetGamesQuerySortDirection = "asc" | "desc";
 
 export type GetGamesQuerySort =
-	| { type: "recent"; direction?: GetGamesQuerySortDirection }
+	| { type: "recentlyUpdated"; direction?: GetGamesQuerySortDirection }
 	| { type: "name"; direction?: GetGamesQuerySortDirection }
 	| { type: "playtime"; direction?: GetGamesQuerySortDirection };
 

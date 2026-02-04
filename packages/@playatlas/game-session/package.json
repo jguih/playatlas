@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"test": "vitest run",
-		"test:unit": "vitest run",
+		"test:unit": "vitest run --project unit",
 		"test:watch": "vitest --watch"
 	},
 	"exports": {

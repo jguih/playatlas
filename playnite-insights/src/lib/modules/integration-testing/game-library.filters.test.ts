@@ -34,6 +34,7 @@ describe("Game Library / Game Library Filters", () => {
 
 		// Assert
 		expect(gameLibraryFilters).toHaveLength(1);
+		expect(gameLibraryFilters[0].UseCount).toBe(1);
 	});
 
 	it("does not create a duplicate filter for the same query", async () => {
@@ -53,7 +54,7 @@ describe("Game Library / Game Library Filters", () => {
 
 		// Assert
 		expect(gameLibraryFilters).toHaveLength(1);
-		expect(gameLibraryFilters[0].UseCount).toBe(1);
+		expect(gameLibraryFilters[0].UseCount).toBe(2);
 	});
 
 	it("updates LastUsedAt when an existing filter is reused", async () => {

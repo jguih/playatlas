@@ -1,8 +1,12 @@
 import { pushState } from "$app/navigation";
 import { page } from "$app/state";
-import type { GetGamesQueryFilter } from "$lib/modules/game-library/queries";
+import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
 
 export const homePageFiltersSignal: GetGamesQueryFilter = $state({});
+export const homePageSortSignal: GetGamesQuerySort = $state({
+	type: "recentlyUpdated",
+	direction: "desc",
+});
 
 export class HomePageFilters {
 	open = () => {

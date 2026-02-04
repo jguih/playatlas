@@ -67,7 +67,7 @@ export class CreateGameLibraryFilterCommandHandler implements ICreateGameLibrary
 			Query: query,
 			SourceUpdatedAt: now,
 			SourceUpdatedAtMs: now.getTime(),
-			UseCount: 0,
+			UseCount: 1,
 			Key: hash,
 		};
 

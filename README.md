@@ -10,7 +10,7 @@ To start the local development server, run:
 pnpm dev
 ```
 
-Open your favorite browser and navigate to **http://localhost:3001**.
+Then, open a browser and navigate to **http://localhost:3001**.
 
 ## Building Container Image
 
@@ -42,4 +42,24 @@ podman run -d \
   -p 127.0.0.1:3000:3000/tcp \
   -p 127.0.0.1:3000:3000/udp \
   docker.io/library/playatlas
+```
+
+## Running Tests
+
+To run all unit and integration tests:
+
+```bash
+pnpm test
+```
+
+To run all unit tests:
+
+```bash
+pnpm test:unit
+```
+
+To run all integration tests:
+
+```bash
+pnpm test:integration
 ```
