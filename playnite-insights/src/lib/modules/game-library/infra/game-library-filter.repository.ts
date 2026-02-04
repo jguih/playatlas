@@ -14,7 +14,7 @@ export type GameLibraryFilterModel = {
 		Filter?: GetGamesQueryFilter | null;
 	};
 	QueryVersion: number;
-	Hash: string;
+	Key: string;
 	LastUsedAt: Date;
 	LastUsedAtMs: number;
 	UseCount: number;

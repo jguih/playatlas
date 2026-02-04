@@ -15,7 +15,7 @@ export type GameLibraryFilterQuery = {
 export type GameLibraryFilter = ClientEntity<GameLibraryFilterId> & {
 	Query: GameLibraryFilterQuery;
 	QueryVersion: number;
-	Hash: string;
+	Key: string;
 	LastUsedAt: Date;
 	UseCount: number;
 };

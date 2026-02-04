@@ -36,7 +36,7 @@ export class CreateGameLibraryFilterCommandHandler implements ICreateGameLibrary
 		const queryVersion = CreateGameLibraryFilterCommandHandler.QUERY_VERSION;
 		const hash = this.deps.hasher.computeHash({ query, queryVersion });
 
-		const existingFilter = existingFilters.find((f) => f.Hash === hash);
+		const existingFilter = existingFilters.find((f) => f.Key === hash);
 
 		if (existingFilter) {
 			existingFilter.LastUsedAt = now;
@@ -68,7 +68,7 @@ export class CreateGameLibraryFilterCommandHandler implements ICreateGameLibrary
 			SourceUpdatedAt: now,
 			SourceUpdatedAtMs: now.getTime(),
 			UseCount: 0,
-			Hash: hash,
+			Key: hash,
 		};
 
 		await this.deps.gameLibraryFilterRepository.putAsync(gameLibraryFilter);

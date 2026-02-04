@@ -64,18 +64,18 @@ describe("Game Library / Game Library Filters", () => {
 
 		root.clock.setCurrent(new Date("2026-02-03"));
 		await api.GameLibrary.Command.CreateGameLibraryFilter.executeAsync({ query: first });
-		root.clock.advance(10_000);
 		await api.GameLibrary.Command.CreateGameLibraryFilter.executeAsync({ query: second });
 
 		// Act
+		root.clock.advance(10_000);
 		await api.GameLibrary.Command.CreateGameLibraryFilter.executeAsync({ query: first });
 
 		const { gameLibraryFilters } = await getFiltersAsync();
 
 		// Assert
 		expect(gameLibraryFilters).toHaveLength(2);
-		expect(gameLibraryFilters[0].Query).toMatchObject(second);
-		expect(gameLibraryFilters[1].Query).toMatchObject(first);
+		expect(gameLibraryFilters[0].Query).toMatchObject(first);
+		expect(gameLibraryFilters[1].Query).toMatchObject(second);
 	});
 
 	it.each([{ n: 1 }, { n: 2 }, { n: 101 }])(

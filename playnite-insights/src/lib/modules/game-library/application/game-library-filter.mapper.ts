@@ -4,7 +4,7 @@ export class GameLibraryFilterMapper implements IGameLibraryFilterMapperPort {
 	toDomain: IGameLibraryFilterMapperPort["toDomain"] = (model) => {
 		return {
 			Id: model.Id,
-			Hash: model.Hash,
+			Key: model.Key,
 			UseCount: model.UseCount,
 			LastUsedAt: model.LastUsedAt,
 			Query: {
@@ -20,7 +20,7 @@ export class GameLibraryFilterMapper implements IGameLibraryFilterMapperPort {
 	toPersistence: IGameLibraryFilterMapperPort["toPersistence"] = (entity) => {
 		return {
 			Id: entity.Id,
-			Hash: entity.Hash,
+			Key: entity.Key,
 			LastUsedAt: entity.LastUsedAt,
 			LastUsedAtMs: entity.LastUsedAt.getTime(),
 			Query: entity.Query,
