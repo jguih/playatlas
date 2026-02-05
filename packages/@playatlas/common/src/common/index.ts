@@ -5,7 +5,6 @@ export type * from "./domain-filter.types";
 export * from "./game-assets.constants";
 export * from "./game-assets.utils";
 export type * from "./game.types";
-export * from "./query-handler";
 export * from "./relationship";
 export * from "./soft-deletable";
 export * from "./string.utils";

@@ -1,4 +1,5 @@
-import { computeNextSyncCursor, type QueryHandler } from "@playatlas/common/common";
+import type { IQueryHandlerPort } from "@playatlas/common/application";
+import { computeNextSyncCursor } from "@playatlas/common/common";
 import type { CompanyRepositoryFilters } from "../../infra/company.repository.types";
 import type { GetAllCompaniesQuery } from "./get-all-companies.query";
 import type {
@@ -6,7 +7,7 @@ import type {
 	GetAllCompaniesQueryResult,
 } from "./get-all-companies.query.types";
 
-export type IGetAllCompaniesQueryHandlerPort = QueryHandler<
+export type IGetAllCompaniesQueryHandlerPort = IQueryHandlerPort<
 	GetAllCompaniesQuery,
 	GetAllCompaniesQueryResult
 >;
