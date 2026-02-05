@@ -1,5 +1,5 @@
 import type { DomainEvent } from "@playatlas/common/application";
-import type { SyncCursor } from "@playatlas/common/common";
+import type { SyncCursor } from "@playatlas/common/infra";
 import { api } from "./vitest.global.setup";
 
 export const recordDomainEvents = () => {

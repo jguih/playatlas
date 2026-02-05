@@ -1,6 +1,5 @@
 import type { ILogServicePort } from "@playatlas/common/application";
-import type { SyncCursor } from "@playatlas/common/common";
-import type { IClockPort } from "@playatlas/common/infra";
+import type { IClockPort, SyncCursor } from "@playatlas/common/infra";
 import type { ICompanyMapperPort } from "../../application";
 import type { CompanyResponseDto } from "../../dtos/company.response.dto";
 import type { ICompanyRepositoryPort } from "../../infra";

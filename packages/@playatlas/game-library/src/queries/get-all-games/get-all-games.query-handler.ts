@@ -1,5 +1,5 @@
 import type { IQueryHandlerPort } from "@playatlas/common/application";
-import { computeNextSyncCursor } from "@playatlas/common/common";
+import { computeNextSyncCursor } from "@playatlas/common/infra";
 import type { GameFilters } from "../../infra/game.repository.types";
 import type { GetAllGamesQuery } from "./get-all-games.query";
 import type {

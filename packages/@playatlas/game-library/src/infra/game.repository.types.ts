@@ -1,5 +1,5 @@
-import type { SyncCursor } from "@playatlas/common/common";
 import type { GameId } from "@playatlas/common/domain";
+import type { SyncCursor } from "@playatlas/common/infra";
 import type { GameRelationship, GameRelationshipMap } from "../domain/game.entity.types";
 
 export type GetRelationshipsForFn = {

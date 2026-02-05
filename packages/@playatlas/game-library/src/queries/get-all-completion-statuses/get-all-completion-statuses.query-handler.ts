@@ -1,5 +1,5 @@
 import type { IQueryHandlerPort } from "@playatlas/common/application";
-import { computeNextSyncCursor } from "@playatlas/common/common";
+import { computeNextSyncCursor } from "@playatlas/common/infra";
 import type { CompletionStatusRepositoryFilters } from "../../infra/completion-status.repository.types";
 import type { GetAllCompletionStatusesQuery } from "./get-all-completion-statuses.query";
 import type {

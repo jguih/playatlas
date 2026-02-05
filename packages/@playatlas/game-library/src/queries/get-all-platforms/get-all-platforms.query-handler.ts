@@ -1,5 +1,5 @@
 import type { IQueryHandlerPort } from "@playatlas/common/application";
-import { computeNextSyncCursor } from "@playatlas/common/common";
+import { computeNextSyncCursor } from "@playatlas/common/infra";
 import type { PlatformRepositoryFilters } from "../../infra/platform.repository.types";
 import type { GetAllPlatformsQuery } from "./get-all-platforms.query";
 import type {
