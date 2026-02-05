@@ -9,3 +9,4 @@ export * from "./genre.factory";
 export * from "./genre.mapper";
 export * from "./platform.factory";
 export * from "./platform.mapper";
+export * from "./scoring-engine";

@@ -1,4 +1,3 @@
-import type { Relationship } from "@playatlas/common/common";
 import type {
 	CompanyId,
 	CompletionStatusId,
@@ -6,6 +5,7 @@ import type {
 	GenreId,
 	PlatformId,
 	PlayniteGameId,
+	Relationship,
 } from "@playatlas/common/domain";
 import type { IClockPort } from "@playatlas/common/infra";
 
