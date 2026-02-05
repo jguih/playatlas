@@ -1,4 +1,4 @@
-import { InvalidStateError } from "../domain/error";
+import { InvalidStateError } from "./error";
 
 export type Relationship<R> = {
 	/**

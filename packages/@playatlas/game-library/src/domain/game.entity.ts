@@ -1,15 +1,13 @@
 import { validation } from "@playatlas/common/application";
 import {
 	createRelationship,
-	makeSoftDeletable,
-	type EntitySoftDeleteProps,
-	type GameImageType,
-} from "@playatlas/common/common";
-import {
 	InvalidStateError,
+	makeSoftDeletable,
 	type BaseEntity,
 	type CompletionStatusId,
+	type EntitySoftDeleteProps,
 	type GameId,
+	type GameImageType,
 } from "@playatlas/common/domain";
 import type {
 	GameRelationshipProps,

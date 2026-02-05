@@ -1,4 +1,4 @@
-import { InvalidStateError } from "../domain";
+import { InvalidStateError } from ".";
 import type { IClockPort } from "../infra";
 
 export type EntitySoftDeleteProps = {

@@ -1,6 +1,11 @@
 import { validation } from "@playatlas/common/application";
-import { makeSoftDeletable, type EntitySoftDeleteProps } from "@playatlas/common/common";
-import { InvalidStateError, type BaseEntity, type PlatformId } from "@playatlas/common/domain";
+import {
+	InvalidStateError,
+	makeSoftDeletable,
+	type BaseEntity,
+	type EntitySoftDeleteProps,
+	type PlatformId,
+} from "@playatlas/common/domain";
 import type {
 	MakePlatformDeps,
 	MakePlatformProps,
