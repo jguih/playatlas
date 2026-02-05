@@ -9,4 +9,5 @@ export type * from "./game.types";
 export * from "./query-handler";
 export * from "./relationship";
 export * from "./soft-deletable";
+export * from "./string.utils";
 export * from "./sync-cursor";
