@@ -1,4 +1,4 @@
-import type { ICommandHandlerPort } from "@playatlas/common/common";
+import type { ICommandHandlerPort } from "@playatlas/common/application";
 import { makeClosedGameSession } from "../../domain/game-session.entity";
 import type { CloseGameSessionCommand } from "./close-session.command";
 import type {

@@ -1,4 +1,4 @@
-import { type ICommandHandlerPort } from "@playatlas/common/common";
+import { type ICommandHandlerPort } from "@playatlas/common/application";
 import { makeStaleGameSession } from "../../domain/game-session.entity";
 import type { StaleGameSessionCommand } from "./stale-session.command";
 import type {

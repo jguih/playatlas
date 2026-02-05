@@ -1,5 +1,8 @@
-import { type IDomainEventBusPort, type ILogServicePort } from "@playatlas/common/application";
-import { type ICommandHandlerPort } from "@playatlas/common/common";
+import {
+	type ICommandHandlerPort,
+	type IDomainEventBusPort,
+	type ILogServicePort,
+} from "@playatlas/common/application";
 import { type IExtensionRegistrationRepositoryPort } from "../../infra/extension-registration.repository.port";
 import { type RemoveExtensionRegistrationCommand } from "./remove-extension-registration.command";
 

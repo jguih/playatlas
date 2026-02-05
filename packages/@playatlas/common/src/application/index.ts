@@ -1,3 +1,4 @@
+export type * from "./command-handler.port";
 export type * from "./entity-mapper.port";
 export type * from "./entity.factory.port";
 export * from "./event-bus";
