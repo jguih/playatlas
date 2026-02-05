@@ -1,5 +1,5 @@
 import type { IFileSystemServicePort, ILogServicePort } from "@playatlas/common/application";
-import { type GameImageType } from "@playatlas/common/common";
+import { type GameImageType } from "@playatlas/common/domain";
 import type { ISystemConfigPort } from "@playatlas/common/infra";
 import type { PlayniteMediaFileStreamResult } from "./playnite-media-files-handler.types";
 

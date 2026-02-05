@@ -1,4 +1,4 @@
-import { GAME_MEDIA_PRESETS } from "@playatlas/common/common";
+import { GAME_MEDIA_PRESETS } from "@playatlas/common/domain";
 import * as fsAsync from "fs/promises";
 import { extname, join } from "path";
 import sharp from "sharp";

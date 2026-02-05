@@ -1,9 +1,11 @@
 import { type IFileSystemServicePort, type ILogServicePort } from "@playatlas/common/application";
-import { GAME_MEDIA_PRESETS, isValidFileName, type GameImageType } from "@playatlas/common/common";
 import {
+	GAME_MEDIA_PRESETS,
 	InvalidFileTypeError,
 	InvalidStateError,
+	isValidFileName,
 	PlayniteGameIdParser,
+	type GameImageType,
 } from "@playatlas/common/domain";
 import type {
 	GameAssetsContext,

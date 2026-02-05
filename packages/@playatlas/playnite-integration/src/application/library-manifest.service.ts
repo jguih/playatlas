@@ -1,4 +1,4 @@
-import { CONTENT_HASH_FILE_NAME } from "@playatlas/common/common";
+import { CONTENT_HASH_FILE_NAME } from "@playatlas/common/domain";
 import { join } from "path";
 import type { LibraryManifest } from "./library-manifest";
 import { libraryManifestSchema } from "./library-manifest.schema";

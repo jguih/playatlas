@@ -1,5 +1,5 @@
 import type { IFileSystemServicePort, ILogServicePort } from "@playatlas/common/application";
-import { CONTENT_HASH_FILE_NAME, type GameImageType } from "@playatlas/common/common";
+import { CONTENT_HASH_FILE_NAME, type GameImageType } from "@playatlas/common/domain";
 import path, { basename } from "path";
 import sharp from "sharp";
 import type { PlayniteGameSnapshot } from "../domain";
