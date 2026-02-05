@@ -1,5 +1,5 @@
 import { instanceAuthMiddleware } from "$lib/server/api/middleware/auth.middleware";
-import { deserializeSyncCursor, serializeSyncCursor } from "@playatlas/common/common";
+import { deserializeSyncCursor, serializeSyncCursor } from "@playatlas/common/infra";
 import type { GetCompletionStatusesResponseDto } from "@playatlas/game-library/dtos";
 import { json, type RequestHandler } from "@sveltejs/kit";
 

@@ -1,6 +1,5 @@
 import { makeEventBus } from "@playatlas/common/application";
-import type { AppEnvironmentVariables } from "@playatlas/common/common";
-import { makeClock } from "@playatlas/common/infra";
+import { makeClock, type AppEnvironmentVariables } from "@playatlas/common/infra";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapV1 } from "./bootstrap.service";
 import { makeAuthModule, makeGameLibraryModule, makeSystemModule } from "./modules";

@@ -1,5 +1,5 @@
 import { makeEventBus } from "@playatlas/common/application";
-import type { AppEnvironmentVariables } from "@playatlas/common/common";
+import type { AppEnvironmentVariables } from "@playatlas/common/infra";
 import type {
 	Company,
 	CompletionStatus,

@@ -1,4 +1,5 @@
 export * from "./base-entity";
+export type * from "./domain-filter.types";
 export * from "./entity-relationship";
 export * from "./entity-soft-deletable";
 export * from "./error";
