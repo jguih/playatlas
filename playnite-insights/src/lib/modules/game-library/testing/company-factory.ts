@@ -6,12 +6,10 @@ export type ICompanyFactoryPort = IClientEntityFactoryPort<Company>;
 
 export class CompanyFactory implements ICompanyFactoryPort {
 	private buildCompany = (): Company => {
-		const SourceUpdatedAt = faker.date.recent();
 		return {
 			Id: CompanyIdParser.fromTrusted(faker.string.ulid()),
 			Name: faker.word.noun(),
-			SourceUpdatedAt,
-			SourceUpdatedAtMs: SourceUpdatedAt.getTime(),
+			SourceLastUpdatedAt: faker.date.recent(),
 			Sync: {
 				Status: "synced",
 				ErrorMessage: null,

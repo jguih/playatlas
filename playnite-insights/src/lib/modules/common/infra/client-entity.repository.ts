@@ -113,8 +113,10 @@ export class ClientEntityRepository<
 			const store = tx.objectStore(this.storeName);
 
 			for (const entity of entities) {
-				const existing = await this.runRequest<TEntity | undefined>(store.get(entity.Id));
-				if (!existing || new Date(entity.SourceUpdatedAt) > new Date(existing.SourceUpdatedAt)) {
+				const existing = await this.runRequest<TModel | undefined>(store.get(entity.Id));
+				const existingEntity = existing ? this.mapper.toDomain(existing) : null;
+
+				if (!existingEntity || entity.SourceLastUpdatedAt > existingEntity.SourceLastUpdatedAt) {
 					const model = this.mapper.toPersistence(entity);
 					await this.runRequest(store.put(model));
 				}

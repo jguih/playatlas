@@ -13,8 +13,8 @@ export type GameRepositoryDeps = ClientEntityRepositoryDeps & {
 
 export type GameModel = {
 	Id: GameId;
-	SourceUpdatedAt: Date;
-	SourceUpdatedAtMs: number;
+	SourceLastUpdatedAt: Date;
+	SourceLastUpdatedAtMs: number;
 	DeletedAt?: Date | null;
 	DeleteAfter?: Date | null;
 

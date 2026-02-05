@@ -9,9 +9,8 @@ export type SessionIdRepositoryDeps = ClientEntityRepositoryDeps & {
 };
 
 export type SessionIdModel = {
-	Id: string;
-	SourceUpdatedAt: Date;
-	SourceUpdatedAtMs: number;
+	SourceLastUpdatedAt: Date;
+	SourceLastUpdatedAtMs: number;
 	SessionId: string;
 };
 

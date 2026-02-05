@@ -1,5 +1,4 @@
 export type ClientEntity<TEntityKey> = {
-	Id: TEntityKey;
-	SourceUpdatedAt: Date;
-	SourceUpdatedAtMs: number;
+	get Id(): TEntityKey;
+	get SourceLastUpdatedAt(): Date;
 };

@@ -27,7 +27,7 @@
 		const uniqueItems: GameLibraryFilter[] = [];
 
 		items.forEach((i) => {
-			const search = i.Query.Filter?.searchNormalized;
+			const search = i.Query.filter?.searchNormalized;
 			if (!search || search === "") return;
 			if (itemsSearchKeys.has(search)) return;
 			uniqueItems.push(i);
@@ -95,7 +95,7 @@
 								<Icon size="lg">
 									<HistoryIcon />
 								</Icon>
-								<span>{item.Query.Filter?.search}</span>
+								<span>{item.Query.filter?.search}</span>
 							</div>
 						</LightButton>
 					</li>

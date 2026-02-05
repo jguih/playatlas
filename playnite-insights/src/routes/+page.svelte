@@ -60,7 +60,7 @@
 		const query = command.query;
 
 		await Promise.allSettled([
-			reloadPagerAsync({ filter: query.Filter ?? undefined, sort: query.Sort }),
+			reloadPagerAsync({ filter: query.filter ?? undefined, sort: query.sort }),
 			api().GameLibrary.Command.CreateGameLibraryFilter.executeAsync(command),
 		]);
 
@@ -159,8 +159,8 @@
 
 			const command: CreateGameLibraryFilterCommand = {
 				query: {
-					Filter: $state.snapshot(homePageFiltersSignal) as unknown as GetGamesQueryFilter,
-					Sort: $state.snapshot(homePageSortSignal) as unknown as GetGamesQuerySort,
+					filter: $state.snapshot(homePageFiltersSignal) as unknown as GetGamesQueryFilter,
+					sort: $state.snapshot(homePageSortSignal) as unknown as GetGamesQuerySort,
 				},
 			};
 
@@ -171,7 +171,7 @@
 		onChange={reloadPagerDebounced}
 		libraryFilterItems={libraryFilterItems.items}
 		onApplyFilterItem={(item) => {
-			homePageFiltersSignal.search = item.Query.Filter?.search;
+			homePageFiltersSignal.search = item.Query.filter?.search;
 			search.close();
 			void reloadPagerAsync();
 		}}

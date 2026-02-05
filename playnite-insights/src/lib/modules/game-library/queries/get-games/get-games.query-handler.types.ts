@@ -1,8 +1,7 @@
 import type { GetGamesQuerySortDirection } from "$lib/modules/common/queries";
 import type { Game, GameId } from "../../domain/game.entity";
-import type { GameModel } from "../../infra/game.repository";
 
-export type GameFilter = (game: GameModel) => boolean;
+export type GameFilter = (game: Game) => boolean;
 
 export type ScanSourceAsyncFn = (props: {
 	batchSize: number;

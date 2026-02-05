@@ -10,8 +10,10 @@ export const sessionIdRepositoryMeta = {
 
 export const sessionIdRepositorySchema: IIndexedDbSchema = {
 	define: ({ db }) => {
-		if (!db.objectStoreNames.contains(sessionIdRepositoryMeta.storeName)) {
-			db.createObjectStore(sessionIdRepositoryMeta.storeName, { keyPath: "SessionId" });
+		const { storeName } = sessionIdRepositoryMeta;
+
+		if (!db.objectStoreNames.contains(storeName)) {
+			db.createObjectStore(storeName, { keyPath: "SessionId" });
 		}
 	},
 };

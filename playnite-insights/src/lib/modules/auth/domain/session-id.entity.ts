@@ -6,6 +6,4 @@ export const SessionIdParser = {
 	fromTrusted: (value: string) => value as SessionId,
 };
 
-export type SessionIdAggregate = ClientEntity<SessionId> & {
-	SessionId: SessionId;
-};
+export type SessionIdAggregate = ClientEntity<SessionId> & {};

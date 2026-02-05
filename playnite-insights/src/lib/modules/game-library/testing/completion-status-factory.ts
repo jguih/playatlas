@@ -9,12 +9,10 @@ export type ICompletionStatusFactoryPort = IClientEntityFactoryPort<CompletionSt
 
 export class CompletionStatusFactory implements ICompletionStatusFactoryPort {
 	private buildCompletionStatus = (): CompletionStatus => {
-		const SourceUpdatedAt = faker.date.recent();
 		return {
 			Id: CompletionStatusIdParser.fromTrusted(faker.string.ulid()),
 			Name: faker.word.noun(),
-			SourceUpdatedAt,
-			SourceUpdatedAtMs: SourceUpdatedAt.getTime(),
+			SourceLastUpdatedAt: faker.date.recent(),
 			Sync: {
 				Status: "synced",
 				LastSyncedAt: faker.date.recent(),

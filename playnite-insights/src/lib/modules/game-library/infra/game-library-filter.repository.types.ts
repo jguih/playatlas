@@ -1,7 +1,7 @@
 import type { ClientRepositoryStoreName } from "$lib/modules/common/infra";
 
 export type GameLibraryFilterRepositoryIndex =
-	| "bySourceUpdatedAt"
+	| "bySourceLastUpdatedAt"
 	| "byLastUsedAt"
 	| "byUseCount"
 	| "byHash";

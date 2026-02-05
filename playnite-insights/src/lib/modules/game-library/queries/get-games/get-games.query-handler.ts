@@ -67,15 +67,19 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 		cursor,
 		direction = "desc",
 	}) => {
-		const range = cursor
-			? direction === "desc"
-				? IDBKeyRange.upperBound(cursor, true)
-				: IDBKeyRange.lowerBound(cursor, true)
-			: null;
-		const queryDirection: IDBCursorDirection = direction === "desc" ? "prev" : "next";
+		let range: IDBKeyRange | null = null;
+		let queryDirection: IDBCursorDirection = "prev";
+
+		if (direction === "desc") {
+			if (cursor) range = IDBKeyRange.upperBound(cursor, true);
+			queryDirection = "prev";
+		} else {
+			if (cursor) range = IDBKeyRange.lowerBound(cursor, true);
+			queryDirection = "next";
+		}
 
 		const { items, keys } = await this.deps.gameRepository.queryAsync({
-			index: "bySourceUpdatedAt",
+			index: "bySourceLastUpdatedAt",
 			direction: queryDirection,
 			range: range,
 			limit: batchSize,

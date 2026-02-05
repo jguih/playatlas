@@ -1,10 +1,10 @@
 import { normalize } from "$lib/modules/common/common";
-import type { GameLibraryFilter } from "../domain/game-library-filter";
+import type { GameLibraryFilterAggregate } from "../domain/game-library-filter";
 
 export type IGameLibraryFilterHasherPort = {
 	computeHash: (props: {
-		query: GameLibraryFilter["Query"];
-		queryVersion: GameLibraryFilter["QueryVersion"];
+		query: GameLibraryFilterAggregate["Query"];
+		queryVersion: GameLibraryFilterAggregate["QueryVersion"];
 	}) => string;
 };
 
@@ -13,13 +13,13 @@ export class GameLibraryFilterHasher implements IGameLibraryFilterHasherPort {
 		const canonical = {
 			v: queryVersion,
 			sort: {
-				type: query.Sort.type,
-				direction: query.Sort.direction ?? null,
+				type: query.sort.type,
+				direction: query.sort.direction ?? null,
 			},
-			filter: query.Filter
+			filter: query.filter
 				? {
-						installed: query.Filter.installed ?? null,
-						search: query.Filter.search ? normalize(query.Filter.search) : null,
+						installed: query.filter.installed ?? null,
+						search: query.filter.search ? normalize(query.filter.search) : null,
 					}
 				: null,
 		};

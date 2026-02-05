@@ -6,12 +6,10 @@ export type IGenreFactoryPort = IClientEntityFactoryPort<Genre>;
 
 export class GenreFactory implements IGenreFactoryPort {
 	private buildGenre = (): Genre => {
-		const SourceUpdatedAt = faker.date.recent();
 		return {
 			Id: GenreIdParser.fromTrusted(faker.string.ulid()),
 			Name: faker.word.noun(),
-			SourceUpdatedAt,
-			SourceUpdatedAtMs: SourceUpdatedAt.getTime(),
+			SourceLastUpdatedAt: faker.date.recent(),
 			Sync: {
 				Status: "synced",
 				LastSyncedAt: faker.date.recent(),

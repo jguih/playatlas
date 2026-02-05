@@ -132,13 +132,13 @@ describe("Game Library / Game Library Filters", () => {
 
 		// Act
 		const { gameLibraryFilters } = await getFiltersAsync();
-		const addedFiltersSearch = gameLibraryFilters.map((f) => f.Query.Filter?.search);
+		const addedFiltersSearch = gameLibraryFilters.map((f) => f.Query.filter?.search);
 
 		// Assert
 		expect(gameLibraryFilters).toHaveLength(MAX_FILTERS);
 
 		// Note: the factory guarantees the search value to be unique
-		expect(recentlyUsed.every((q) => addedFiltersSearch.includes(q.Filter?.search))).toBe(true);
-		expect(oldestQueries.every((q) => !addedFiltersSearch.includes(q.Filter?.search))).toBe(true);
+		expect(recentlyUsed.every((q) => addedFiltersSearch.includes(q.filter?.search))).toBe(true);
+		expect(oldestQueries.every((q) => !addedFiltersSearch.includes(q.filter?.search))).toBe(true);
 	});
 });

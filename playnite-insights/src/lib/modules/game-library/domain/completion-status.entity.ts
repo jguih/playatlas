@@ -6,8 +6,9 @@ export const CompletionStatusIdParser = {
 	fromTrusted: (value: string): CompletionStatusId => value as CompletionStatusId,
 };
 
-export type CompletionStatus = ClientEntity<CompletionStatusId> & {
-	Name: string | null;
-	// Front-end specific
-	Sync: EntitySyncStateProps;
-};
+export type CompletionStatus = ClientEntity<CompletionStatusId> &
+	Readonly<{
+		Name: string | null;
+		// Front-end specific
+		Sync: EntitySyncStateProps;
+	}>;

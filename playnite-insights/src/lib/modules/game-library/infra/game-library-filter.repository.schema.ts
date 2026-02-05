@@ -1,11 +1,15 @@
 import type { IIndexedDbSchema } from "$lib/modules/common/infra";
-import type { GameLibraryFilterRepositoryMeta } from "./game-library-filter.repository.types";
+import type { GameLibraryFilterModel } from "./game-library-filter.repository";
+import type {
+	GameLibraryFilterRepositoryIndex,
+	GameLibraryFilterRepositoryMeta,
+} from "./game-library-filter.repository.types";
 
 export const gameLibraryFilterRepositoryMeta = {
 	storeName: "game-library-filters",
 	index: {
 		byLastUsedAt: "byLastUsedAt",
-		bySourceUpdatedAt: "bySourceUpdatedAt",
+		bySourceLastUpdatedAt: "bySourceLastUpdatedAt",
 		byUseCount: "byUseCount",
 		byHash: "byHash",
 	},
@@ -13,17 +17,23 @@ export const gameLibraryFilterRepositoryMeta = {
 
 export const gameLibraryFilterRepositorySchema: IIndexedDbSchema = {
 	define: ({ db }) => {
-		if (!db.objectStoreNames.contains(gameLibraryFilterRepositoryMeta.storeName)) {
-			const store = db.createObjectStore(gameLibraryFilterRepositoryMeta.storeName, {
+		const { storeName, index } = gameLibraryFilterRepositoryMeta;
+
+		const createIndex = (
+			store: IDBObjectStore,
+			name: GameLibraryFilterRepositoryIndex,
+			keyPath: (keyof GameLibraryFilterModel)[] | keyof GameLibraryFilterModel,
+			options?: IDBIndexParameters,
+		) => store.createIndex(name, keyPath, options);
+
+		if (!db.objectStoreNames.contains(storeName)) {
+			const store = db.createObjectStore(storeName, {
 				keyPath: "Id",
 			});
-			store.createIndex(gameLibraryFilterRepositoryMeta.index.bySourceUpdatedAt, [
-				"SourceUpdatedAtMs",
-				"Id",
-			]);
-			store.createIndex(gameLibraryFilterRepositoryMeta.index.byLastUsedAt, ["LastUsedAtMs", "Id"]);
-			store.createIndex(gameLibraryFilterRepositoryMeta.index.byUseCount, ["UseCount", "Id"]);
-			store.createIndex(gameLibraryFilterRepositoryMeta.index.byHash, "Hash", { unique: true });
+			createIndex(store, index.bySourceLastUpdatedAt, ["SourceLastUpdatedAtMs", "Id"]);
+			createIndex(store, index.byLastUsedAt, ["LastUsedAtMs", "Id"]);
+			createIndex(store, index.byUseCount, ["UseCount", "Id"]);
+			createIndex(store, index.byHash, "Key", { unique: true });
 		}
 	},
 };

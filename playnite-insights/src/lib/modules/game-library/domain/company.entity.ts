@@ -6,8 +6,9 @@ export const CompanyIdParser = {
 	fromTrusted: (value: string) => value as CompanyId,
 };
 
-export type Company = ClientEntity<CompanyId> & {
-	Name: string;
-	// Front-end specific
-	Sync: EntitySyncStateProps;
-};
+export type Company = ClientEntity<CompanyId> &
+	Readonly<{
+		Name: string;
+		// Front-end specific
+		Sync: EntitySyncStateProps;
+	}>;

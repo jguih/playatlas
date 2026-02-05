@@ -55,8 +55,7 @@ export class GameMapper implements IGameMapperPort {
 			Publishers: dto.Publishers.map(CompanyIdParser.fromTrusted),
 			Genres: dto.Genres.map(GenreIdParser.fromTrusted),
 			Platforms: dto.Platforms.map(PlatformIdParser.fromTrusted),
-			SourceUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
-			SourceUpdatedAtMs: new Date(dto.Sync.LastUpdatedAt).getTime(),
+			SourceLastUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
 			DeletedAt: dto.Sync.DeletedAt ? new Date(dto.Sync.DeletedAt) : null,
 			DeleteAfter: dto.Sync.DeleteAfter ? new Date(dto.Sync.DeleteAfter) : null,
 			Sync: {
@@ -99,8 +98,7 @@ export class GameMapper implements IGameMapperPort {
 			Publishers: model.Publishers,
 			Genres: model.Genres,
 			Platforms: model.Platforms,
-			SourceUpdatedAt: model.SourceUpdatedAt,
-			SourceUpdatedAtMs: model.SourceUpdatedAtMs,
+			SourceLastUpdatedAt: model.SourceLastUpdatedAt,
 			DeletedAt: model.DeletedAt ?? null,
 			DeleteAfter: model.DeleteAfter ?? null,
 			Sync: {
@@ -114,8 +112,8 @@ export class GameMapper implements IGameMapperPort {
 	toPersistence: IGameMapperPort["toPersistence"] = (entity) => {
 		return {
 			Id: entity.Id,
-			SourceUpdatedAt: entity.SourceUpdatedAt,
-			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,
+			SourceLastUpdatedAt: entity.SourceLastUpdatedAt,
+			SourceLastUpdatedAtMs: entity.SourceLastUpdatedAt.getTime(),
 			DeleteAfter: entity.DeleteAfter,
 			DeletedAt: entity.DeletedAt,
 

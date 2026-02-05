@@ -22,8 +22,8 @@ export class SessionIdProvider implements ISessionIdProviderPort {
 	async getAsync(): Promise<SessionId | null> {
 		if (this.sessionIdSignal) return this.sessionIdSignal;
 
-		const sessionIdObject = await this.sessionIdRepository.getAsync();
-		return sessionIdObject ? sessionIdObject.SessionId : null;
+		const aggregate = await this.sessionIdRepository.getAsync();
+		return aggregate ? aggregate.Id : null;
 	}
 
 	async setAsync(sessionId: SessionId): Promise<void> {
@@ -31,9 +31,7 @@ export class SessionIdProvider implements ISessionIdProviderPort {
 
 		const sessionIdAggregate: SessionIdAggregate = {
 			Id: sessionId,
-			SessionId: sessionId,
-			SourceUpdatedAt: now,
-			SourceUpdatedAtMs: now.getTime(),
+			SourceLastUpdatedAt: now,
 		};
 
 		await this.sessionIdRepository.setAsync(sessionIdAggregate);
@@ -42,7 +40,7 @@ export class SessionIdProvider implements ISessionIdProviderPort {
 	}
 
 	async loadFromDbAsync(): Promise<void> {
-		const sessionIdObject = await this.sessionIdRepository.getAsync();
-		if (sessionIdObject) this.sessionIdSignal = sessionIdObject.SessionId;
+		const aggregate = await this.sessionIdRepository.getAsync();
+		if (aggregate) this.sessionIdSignal = aggregate.Id;
 	}
 }

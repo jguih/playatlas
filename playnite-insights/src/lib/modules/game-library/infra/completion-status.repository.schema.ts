@@ -1,21 +1,31 @@
 import type { IIndexedDbSchema } from "$lib/modules/common/infra";
-import type { CompletionStatusRepositoryMeta } from "./completion-status.repository.types";
+import type { CompletionStatusModel } from "./completion-status.repository";
+import type {
+	CompletionStatusRepositoryIndex,
+	CompletionStatusRepositoryMeta,
+} from "./completion-status.repository.types";
 
 export const completionStatusRepositoryMeta = {
 	storeName: "completion-status",
-	index: { bySourceUpdatedAt: "bySourceUpdatedAt" },
+	index: { bySourceLastUpdatedAt: "bySourceLastUpdatedAt" },
 } as const satisfies CompletionStatusRepositoryMeta;
 
 export const completionStatusRepositorySchema: IIndexedDbSchema = {
 	define({ db }) {
-		if (!db.objectStoreNames.contains(completionStatusRepositoryMeta.storeName)) {
-			const store = db.createObjectStore(completionStatusRepositoryMeta.storeName, {
+		const { storeName, index } = completionStatusRepositoryMeta;
+
+		const createIndex = (
+			store: IDBObjectStore,
+			name: CompletionStatusRepositoryIndex,
+			keyPath: (keyof CompletionStatusModel)[] | keyof CompletionStatusModel,
+			options?: IDBIndexParameters,
+		) => store.createIndex(name, keyPath, options);
+
+		if (!db.objectStoreNames.contains(storeName)) {
+			const store = db.createObjectStore(storeName, {
 				keyPath: "Id",
 			});
-			store.createIndex(completionStatusRepositoryMeta.index.bySourceUpdatedAt, [
-				"SourceUpdatedAtMs",
-				"Id",
-			]);
+			createIndex(store, index.bySourceLastUpdatedAt, ["SourceLastUpdatedAtMs", "Id"]);
 		}
 	},
 };

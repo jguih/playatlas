@@ -16,8 +16,8 @@ export type PlatformModel = {
 		Id: PlaynitePlatformId | null;
 		SpecificationId: string | null;
 	};
-	SourceUpdatedAt: Date;
-	SourceUpdatedAtMs: number;
+	SourceLastUpdatedAt: Date;
+	SourceLastUpdatedAtMs: number;
 	DeletedAt?: Date | null;
 	DeleteAfter?: Date | null;
 

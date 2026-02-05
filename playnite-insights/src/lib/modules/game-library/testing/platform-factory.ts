@@ -10,8 +10,6 @@ export type IPlatformFactoryPort = IClientEntityFactoryPort<Platform>;
 
 export class PlatformFactory implements IPlatformFactoryPort {
 	private buildPlatform = (): Platform => {
-		const SourceUpdatedAt = faker.date.recent();
-
 		return {
 			Id: PlatformIdParser.fromTrusted(faker.string.ulid()),
 			Name: faker.word.noun(),
@@ -19,8 +17,7 @@ export class PlatformFactory implements IPlatformFactoryPort {
 				Id: PlaynitePlatformIdParser.fromTrusted(faker.string.uuid()),
 				SpecificationId: faker.string.uuid(),
 			},
-			SourceUpdatedAt,
-			SourceUpdatedAtMs: SourceUpdatedAt.getTime(),
+			SourceLastUpdatedAt: faker.date.recent(),
 			Sync: {
 				Status: "synced",
 				LastSyncedAt: faker.date.recent(),

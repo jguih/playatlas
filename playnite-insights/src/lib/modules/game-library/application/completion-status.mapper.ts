@@ -17,8 +17,7 @@ export class CompletionStatusMapper implements ICompletionStatusMapperPort {
 		return {
 			Id: CompletionStatusIdParser.fromTrusted(dto.Id),
 			Name: dto.Name,
-			SourceUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
-			SourceUpdatedAtMs: new Date(dto.Sync.LastUpdatedAt).getTime(),
+			SourceLastUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
 			Sync: {
 				Status: "synced",
 				LastSyncedAt: lastSync ?? this.clock.now(),
@@ -31,8 +30,7 @@ export class CompletionStatusMapper implements ICompletionStatusMapperPort {
 		return {
 			Id: model.Id,
 			Name: model.Name,
-			SourceUpdatedAt: model.SourceUpdatedAt,
-			SourceUpdatedAtMs: model.SourceUpdatedAtMs,
+			SourceLastUpdatedAt: model.SourceLastUpdatedAt,
 			Sync: model.Sync,
 		};
 	};
@@ -41,8 +39,8 @@ export class CompletionStatusMapper implements ICompletionStatusMapperPort {
 		return {
 			Id: entity.Id,
 			Name: entity.Name,
-			SourceUpdatedAt: entity.SourceUpdatedAt,
-			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,
+			SourceLastUpdatedAt: entity.SourceLastUpdatedAt,
+			SourceLastUpdatedAtMs: entity.SourceLastUpdatedAt.getTime(),
 			DeleteAfter: null,
 			DeletedAt: null,
 			Sync: entity.Sync,

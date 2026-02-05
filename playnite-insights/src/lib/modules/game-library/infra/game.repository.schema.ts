@@ -1,20 +1,29 @@
 import type { IIndexedDbSchema } from "$lib/modules/common/infra";
-import type { GameRepositoryMeta } from "./game.repository.types";
+import type { GameModel } from "./game.repository";
+import type { GameRepositoryIndex, GameRepositoryMeta } from "./game.repository.types";
 
 export const gameRepositoryMeta: GameRepositoryMeta = {
 	storeName: "games",
 	index: {
-		bySourceUpdatedAt: "bySourceUpdatedAt",
+		bySourceLastUpdatedAt: "bySourceLastUpdatedAt",
 		byDeletedAt: "byDeletedAt",
 	},
 };
 
 export const gameRepositorySchema: IIndexedDbSchema = {
 	define({ db }) {
-		if (!db.objectStoreNames.contains(gameRepositoryMeta.storeName)) {
-			const store = db.createObjectStore(gameRepositoryMeta.storeName, { keyPath: "Id" });
-			store.createIndex(gameRepositoryMeta.index.bySourceUpdatedAt, ["SourceUpdatedAtMs", "Id"]);
-			store.createIndex(gameRepositoryMeta.index.byDeletedAt, ["DeletedAt", "Id"]);
+		const { storeName, index } = gameRepositoryMeta;
+
+		const createIndex = (
+			store: IDBObjectStore,
+			name: GameRepositoryIndex,
+			keyPath: (keyof GameModel)[],
+		) => store.createIndex(name, keyPath);
+
+		if (!db.objectStoreNames.contains(storeName)) {
+			const store = db.createObjectStore(storeName, { keyPath: "Id" });
+			createIndex(store, index.bySourceLastUpdatedAt, ["SourceLastUpdatedAtMs", "Id"]);
+			createIndex(store, index.byDeletedAt, ["DeletedAt", "Id"]);
 		}
 	},
 };

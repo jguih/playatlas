@@ -1,3 +1,4 @@
+import { SessionIdParser } from "../domain";
 import type { ISessionIdMapperPort } from "./session-id.mapper.port";
 
 export class SessionIdMapper implements ISessionIdMapperPort {
@@ -5,19 +6,16 @@ export class SessionIdMapper implements ISessionIdMapperPort {
 
 	toDomain: ISessionIdMapperPort["toDomain"] = (model) => {
 		return {
-			Id: model.Id,
-			SourceUpdatedAt: model.SourceUpdatedAt,
-			SourceUpdatedAtMs: model.SourceUpdatedAtMs,
-			SessionId: model.SessionId,
+			Id: SessionIdParser.fromTrusted(model.SessionId),
+			SourceLastUpdatedAt: model.SourceLastUpdatedAt,
 		};
 	};
 
 	toPersistence: ISessionIdMapperPort["toPersistence"] = (entity) => {
 		return {
-			Id: entity.Id,
-			SourceUpdatedAt: entity.SourceUpdatedAt,
-			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,
-			SessionId: entity.SessionId,
+			SessionId: entity.Id,
+			SourceLastUpdatedAt: entity.SourceLastUpdatedAt,
+			SourceLastUpdatedAtMs: entity.SourceLastUpdatedAt.getTime(),
 		};
 	};
 }

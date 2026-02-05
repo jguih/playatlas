@@ -12,12 +12,13 @@ export const PlaynitePlatformIdParser = {
 	fromTrusted: (value: string) => value as PlaynitePlatformId,
 };
 
-export type Platform = ClientEntity<PlatformId> & {
-	Name: string;
-	Playnite: {
-		Id: PlaynitePlatformId | null;
-		SpecificationId: string | null;
-	};
-	// Front-end specific
-	Sync: EntitySyncStateProps;
-};
+export type Platform = ClientEntity<PlatformId> &
+	Readonly<{
+		Name: string;
+		Playnite: {
+			Id: PlaynitePlatformId | null;
+			SpecificationId: string | null;
+		};
+		// Front-end specific
+		Sync: EntitySyncStateProps;
+	}>;

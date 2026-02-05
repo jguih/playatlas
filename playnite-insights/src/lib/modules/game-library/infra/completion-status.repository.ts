@@ -11,8 +11,8 @@ export type CompletionStatusRepositoryDeps = ClientEntityRepositoryDeps & {
 export type CompletionStatusModel = {
 	Id: CompletionStatusId;
 	Name: string | null;
-	SourceUpdatedAt: Date;
-	SourceUpdatedAtMs: number;
+	SourceLastUpdatedAt: Date;
+	SourceLastUpdatedAtMs: number;
 	DeletedAt?: Date | null;
 	DeleteAfter?: Date | null;
 

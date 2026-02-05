@@ -1,6 +1,6 @@
 import type { ClientRepositoryStoreName } from "$lib/modules/common/infra";
 
-export type PlatformRepositoryIndex = "bySourceUpdatedAt";
+export type PlatformRepositoryIndex = "bySourceLastUpdatedAt";
 
 export type PlatformRepositoryMeta = {
 	storeName: ClientRepositoryStoreName;

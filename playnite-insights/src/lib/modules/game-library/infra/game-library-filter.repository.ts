@@ -1,22 +1,25 @@
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
-import type { GetGamesQuerySort } from "$lib/modules/common/queries";
+import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
 import type { IGameLibraryFilterMapperPort } from "../application/game-library-filter.mapper.port";
-import type {
-	GameLibraryFilter,
-	GameLibraryFilterId,
-	StoredGameLibraryFilter,
-} from "../domain/game-library-filter";
+import type { GameLibraryFilter } from "../domain/game-library-filter";
+import type { GameLibraryFilterId } from "../domain/value-object/game-library-filter-id";
 import type { IGameLibraryFilterRepositoryPort } from "./game-library-filter.repository.port";
 import { gameLibraryFilterRepositoryMeta } from "./game-library-filter.repository.schema";
 
+type StoredGameLibraryFilter = GetGamesQueryFilter & {
+	searchNormalized?: string;
+};
+
+type GameLibraryFilterModelQuery = {
+	sort: GetGamesQuerySort;
+	filter: StoredGameLibraryFilter | null;
+};
+
 export type GameLibraryFilterModel = {
 	Id: GameLibraryFilterId;
-	SourceUpdatedAt: Date;
-	SourceUpdatedAtMs: number;
-	Query: {
-		Sort: GetGamesQuerySort;
-		Filter?: StoredGameLibraryFilter | null;
-	};
+	SourceLastUpdatedAt: Date;
+	SourceLastUpdatedAtMs: number;
+	Query: GameLibraryFilterModelQuery;
 	QueryVersion: number;
 	Key: string;
 	LastUsedAt: Date;

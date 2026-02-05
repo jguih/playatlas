@@ -6,8 +6,9 @@ export const GenreIdParser = {
 	fromTrusted: (value: string): GenreId => value as GenreId,
 };
 
-export type Genre = ClientEntity<GenreId> & {
-	Name: string;
-	// Front-end specific
-	Sync: EntitySyncStateProps;
-};
+export type Genre = ClientEntity<GenreId> &
+	Readonly<{
+		Name: string;
+		// Front-end specific
+		Sync: EntitySyncStateProps;
+	}>;

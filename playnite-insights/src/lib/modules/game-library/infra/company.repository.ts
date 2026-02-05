@@ -12,8 +12,8 @@ export type CompanyRepositoryDeps = ClientEntityRepositoryDeps & {
 export type CompanyModel = {
 	Id: CompanyId;
 	Name: string;
-	SourceUpdatedAt: Date;
-	SourceUpdatedAtMs: number;
+	SourceLastUpdatedAt: Date;
+	SourceLastUpdatedAtMs: number;
 	DeletedAt?: Date | null;
 	DeleteAfter?: Date | null;
 

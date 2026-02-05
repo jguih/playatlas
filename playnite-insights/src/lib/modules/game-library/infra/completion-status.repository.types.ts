@@ -1,6 +1,6 @@
 import type { ClientRepositoryStoreName } from "$lib/modules/common/infra";
 
-export type CompletionStatusRepositoryIndex = "bySourceUpdatedAt";
+export type CompletionStatusRepositoryIndex = "bySourceLastUpdatedAt";
 
 export type CompletionStatusRepositoryMeta = {
 	storeName: ClientRepositoryStoreName;

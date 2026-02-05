@@ -1,9 +1,7 @@
 import type { IClockPort } from "$lib/modules/common/application";
 import type { IAsyncCommandHandlerPort } from "$lib/modules/common/common";
-import {
-	GameLibraryFilterIdParser,
-	type GameLibraryFilter,
-} from "../../domain/game-library-filter";
+import { GameLibraryFilterAggregate } from "../../domain/game-library-filter";
+import { GameLibraryFilterIdParser } from "../../domain/value-object/game-library-filter-id";
 import type { IGameLibraryFilterHasherPort } from "../../infra/game-library-filter.hasher";
 import type { IGameLibraryFilterRepositoryPort } from "../../infra/game-library-filter.repository.port";
 import type {
@@ -39,11 +37,7 @@ export class CreateGameLibraryFilterCommandHandler implements ICreateGameLibrary
 		const existingFilter = existingFilters.find((f) => f.Key === hash);
 
 		if (existingFilter) {
-			existingFilter.LastUsedAt = now;
-			existingFilter.UseCount += 1;
-			existingFilter.SourceUpdatedAt = now;
-			existingFilter.SourceUpdatedAtMs = now.getTime();
-			existingFilter.Query = query;
+			existingFilter.updateQuery({ now, query });
 
 			await this.deps.gameLibraryFilterRepository.putAsync(existingFilter);
 			return;
@@ -61,16 +55,15 @@ export class CreateGameLibraryFilterCommandHandler implements ICreateGameLibrary
 			}
 		}
 
-		const gameLibraryFilter: GameLibraryFilter = {
-			Id: GameLibraryFilterIdParser.fromTrusted(crypto.randomUUID()),
-			LastUsedAt: now,
-			QueryVersion: queryVersion,
-			Query: query,
-			SourceUpdatedAt: now,
-			SourceUpdatedAtMs: now.getTime(),
-			UseCount: 1,
-			Key: hash,
-		};
+		const gameLibraryFilter = new GameLibraryFilterAggregate({
+			id: GameLibraryFilterIdParser.fromTrusted(crypto.randomUUID()),
+			lastUsedAt: now,
+			queryVersion: queryVersion,
+			query: query,
+			sourceLastUpdatedAt: now,
+			useCount: 1,
+			key: hash,
+		});
 
 		await this.deps.gameLibraryFilterRepository.putAsync(gameLibraryFilter);
 	};

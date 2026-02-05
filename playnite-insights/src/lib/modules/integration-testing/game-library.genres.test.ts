@@ -109,7 +109,7 @@ describe("GameLibrary / Genres", () => {
 		const updatedGenre: Genre = {
 			...genre,
 			Name: `${genre.Name} (Updated)`,
-			SourceUpdatedAt: faker.date.future(),
+			SourceLastUpdatedAt: faker.date.future(),
 		};
 
 		// Act

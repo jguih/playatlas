@@ -16,34 +16,35 @@ export const PlayniteGameIdParser = {
 	fromTrusted: (value: string) => value as PlayniteGameId,
 };
 
-export type Game = ClientEntity<GameId> & {
-	Playnite: {
-		Id: PlayniteGameId;
-		Name: string | null;
-		Description: string | null;
-		ReleaseDate: Date | null;
-		Playtime: number;
-		LastActivity: Date | null;
-		Added: Date | null;
-		InstallDirectory: string | null;
-		IsInstalled: boolean;
-		Hidden: boolean;
+export type Game = ClientEntity<GameId> &
+	Readonly<{
+		Playnite: {
+			Id: PlayniteGameId;
+			Name: string | null;
+			Description: string | null;
+			ReleaseDate: Date | null;
+			Playtime: number;
+			LastActivity: Date | null;
+			Added: Date | null;
+			InstallDirectory: string | null;
+			IsInstalled: boolean;
+			Hidden: boolean;
+			CompletionStatusId: CompletionStatusId | null;
+			BackgroundImagePath: string | null;
+			CoverImagePath: string | null;
+			IconImagePath: string | null;
+		} | null;
+
+		SearchName: string | null;
 		CompletionStatusId: CompletionStatusId | null;
-		BackgroundImagePath: string | null;
-		CoverImagePath: string | null;
-		IconImagePath: string | null;
-	} | null;
+		ContentHash: string;
+		Developers: CompanyId[];
+		Publishers: CompanyId[];
+		Genres: GenreId[];
+		Platforms: PlatformId[];
+		DeletedAt: Date | null;
+		DeleteAfter: Date | null;
 
-	SearchName: string | null;
-	CompletionStatusId: CompletionStatusId | null;
-	ContentHash: string;
-	Developers: CompanyId[];
-	Publishers: CompanyId[];
-	Genres: GenreId[];
-	Platforms: PlatformId[];
-	DeletedAt: Date | null;
-	DeleteAfter: Date | null;
-
-	// Front-end specific
-	Sync: EntitySyncStateProps;
-};
+		// Front-end specific
+		Sync: EntitySyncStateProps;
+	}>;

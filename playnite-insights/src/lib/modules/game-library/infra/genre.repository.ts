@@ -8,8 +8,8 @@ import { genreRepositoryMeta } from "./genre.repository.schema";
 export type GenreModel = {
 	Id: GenreId;
 	Name: string;
-	SourceUpdatedAt: Date;
-	SourceUpdatedAtMs: number;
+	SourceLastUpdatedAt: Date;
+	SourceLastUpdatedAtMs: number;
 	DeletedAt?: Date | null;
 	DeleteAfter?: Date | null;
 

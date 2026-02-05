@@ -33,7 +33,7 @@ describe("GameLibrary / Games", () => {
 		// Assert
 		expect(items).toHaveLength(200);
 		for (let i = 1; i < items.length; i++) {
-			expect(items[i - 1].SourceUpdatedAt >= items[i].SourceUpdatedAt).toBe(true);
+			expect(items[i - 1].SourceLastUpdatedAt >= items[i].SourceLastUpdatedAt).toBe(true);
 		}
 	});
 
@@ -69,7 +69,7 @@ describe("GameLibrary / Games", () => {
 						Name: `${g.Playnite?.Name} (updated)`,
 					}
 				: null,
-			SourceUpdatedAt: now,
+			SourceLastUpdatedAt: now,
 		}));
 
 		// Act
@@ -112,7 +112,10 @@ describe("GameLibrary / Games", () => {
 
 	it("does not overwrite newer local data with older server data", async () => {
 		// Arrange
-		const game: Game = { ...root.factories.game.build(), SourceUpdatedAt: new Date("2026-01-02") };
+		const game: Game = {
+			...root.factories.game.build(),
+			SourceLastUpdatedAt: new Date("2026-01-02"),
+		};
 		await api.GameLibrary.Command.SyncGames.executeAsync({ games: game });
 
 		// Act
@@ -125,7 +128,7 @@ describe("GameLibrary / Games", () => {
 							Name: "Old name",
 						}
 					: null,
-				SourceUpdatedAt: new Date("2026-01-01"),
+				SourceLastUpdatedAt: new Date("2026-01-01"),
 			},
 		});
 		const stored = await api.GameLibrary.Query.GetGames.executeAsync({
@@ -147,7 +150,7 @@ describe("GameLibrary / Games", () => {
 			games: {
 				...game,
 				DeletedAt: null,
-				SourceUpdatedAt: faker.date.future(),
+				SourceLastUpdatedAt: faker.date.future(),
 			},
 		});
 
@@ -187,12 +190,12 @@ describe("GameLibrary / Games", () => {
 		expect(result.items.every((g) => g.DeletedAt === null)).toBe(true);
 	});
 
-	it("does not revive deleted game with older SourceUpdatedAt", async () => {
+	it("does not revive deleted game with older SourceLastUpdatedAt", async () => {
 		// Arrange
 		const game: Game = {
 			...root.factories.game.build(),
 			DeletedAt: faker.date.recent(),
-			SourceUpdatedAt: faker.date.future(),
+			SourceLastUpdatedAt: faker.date.future(),
 		};
 
 		await api.GameLibrary.Command.SyncGames.executeAsync({ games: game });
@@ -202,7 +205,7 @@ describe("GameLibrary / Games", () => {
 			games: {
 				...game,
 				DeletedAt: null,
-				SourceUpdatedAt: faker.date.past(),
+				SourceLastUpdatedAt: faker.date.past(),
 			},
 		});
 
@@ -248,8 +251,7 @@ describe("GameLibrary / Games", () => {
 				...root.factories.game.build().Playnite!,
 				Name: "Grim Dawn",
 			},
-			SourceUpdatedAt: oldUpdatedAt,
-			SourceUpdatedAtMs: oldUpdatedAt.getTime(), // Index uses this one instead of SourceUpdatedAt
+			SourceLastUpdatedAt: oldUpdatedAt,
 		};
 
 		const newUpdatedAt = new Date("2026-01-01");
@@ -259,8 +261,7 @@ describe("GameLibrary / Games", () => {
 				...root.factories.game.build().Playnite!,
 				Name: "Grim Dawn Definitive Edition",
 			},
-			SourceUpdatedAt: newUpdatedAt,
-			SourceUpdatedAtMs: newUpdatedAt.getTime(),
+			SourceLastUpdatedAt: newUpdatedAt,
 		};
 
 		await api.GameLibrary.Command.SyncGames.executeAsync({
@@ -279,7 +280,7 @@ describe("GameLibrary / Games", () => {
 		expect(result.items[0].Playnite?.Name).toContain("Grim");
 		expect(result.items[1].Playnite?.Name).toContain("Grim");
 
-		expect(result.items[0].SourceUpdatedAt >= result.items[1].SourceUpdatedAt).toBe(true);
+		expect(result.items[0].SourceLastUpdatedAt >= result.items[1].SourceLastUpdatedAt).toBe(true);
 	});
 
 	it("continues scanning past full non-matching batches", async () => {
@@ -295,8 +296,7 @@ describe("GameLibrary / Games", () => {
 				...root.factories.game.build().Playnite!,
 				Name: "Grim Dawn",
 			},
-			SourceUpdatedAt: lateUpdatedAt,
-			SourceUpdatedAtMs: lateUpdatedAt.getTime(),
+			SourceLastUpdatedAt: lateUpdatedAt,
 		};
 
 		await api.GameLibrary.Command.SyncGames.executeAsync({
@@ -324,26 +324,23 @@ describe("GameLibrary / Games", () => {
 		const olderUpdatedAt = new Date("2026-01-01");
 		const older = nonMatching.slice(0, 1500).map((g) => ({
 			...g,
-			SourceUpdatedAt: olderUpdatedAt,
-			SourceUpdatedAtMs: olderUpdatedAt.getTime(),
+			SourceLastUpdatedAt: olderUpdatedAt,
 		}));
 
 		const newerUpdatedAt = new Date("2026-01-03");
 		const newer = nonMatching.slice(1500).map((g) => ({
 			...g,
-			SourceUpdatedAt: newerUpdatedAt,
-			SourceUpdatedAtMs: newerUpdatedAt.getTime(),
+			SourceLastUpdatedAt: newerUpdatedAt,
 		}));
 
-		const sourceUpdatedAt = new Date("2026-01-02");
+		const SourceLastUpdatedAt = new Date("2026-01-02");
 		const matchingGame: Game = {
 			...root.factories.game.build(),
 			Playnite: {
 				...root.factories.game.build().Playnite!,
 				Name: "Grim Dawn",
 			},
-			SourceUpdatedAt: sourceUpdatedAt,
-			SourceUpdatedAtMs: sourceUpdatedAt.getTime(),
+			SourceLastUpdatedAt: SourceLastUpdatedAt,
 		};
 
 		await api.GameLibrary.Command.SyncGames.executeAsync({
@@ -377,7 +374,8 @@ describe("GameLibrary / Games", () => {
 		// Assert
 		expect(
 			result.items.every(
-				(game, index, arr) => index === 0 || game.SourceUpdatedAt >= arr[index - 1].SourceUpdatedAt,
+				(game, index, arr) =>
+					index === 0 || game.SourceLastUpdatedAt >= arr[index - 1].SourceLastUpdatedAt,
 			),
 		);
 	});
@@ -397,7 +395,8 @@ describe("GameLibrary / Games", () => {
 		// Assert
 		expect(
 			result.items.every(
-				(game, index, arr) => index === 0 || game.SourceUpdatedAt <= arr[index - 1].SourceUpdatedAt,
+				(game, index, arr) =>
+					index === 0 || game.SourceLastUpdatedAt <= arr[index - 1].SourceLastUpdatedAt,
 			),
 		);
 	});

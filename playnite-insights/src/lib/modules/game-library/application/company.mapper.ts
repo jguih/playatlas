@@ -17,8 +17,7 @@ export class CompanyMapper implements ICompanyMapperPort {
 		return {
 			Id: CompanyIdParser.fromTrusted(dto.Id),
 			Name: dto.Name,
-			SourceUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
-			SourceUpdatedAtMs: new Date(dto.Sync.LastUpdatedAt).getTime(),
+			SourceLastUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
 			Sync: {
 				Status: "synced",
 				LastSyncedAt: lastSync ?? this.clock.now(),
@@ -31,8 +30,7 @@ export class CompanyMapper implements ICompanyMapperPort {
 		return {
 			Id: model.Id,
 			Name: model.Name,
-			SourceUpdatedAt: model.SourceUpdatedAt,
-			SourceUpdatedAtMs: model.SourceUpdatedAtMs,
+			SourceLastUpdatedAt: model.SourceLastUpdatedAt,
 			Sync: {
 				Status: model.Sync.Status,
 				ErrorMessage: model.Sync.ErrorMessage ?? null,
@@ -45,8 +43,8 @@ export class CompanyMapper implements ICompanyMapperPort {
 		return {
 			Id: entity.Id,
 			Name: entity.Name,
-			SourceUpdatedAt: entity.SourceUpdatedAt,
-			SourceUpdatedAtMs: entity.SourceUpdatedAtMs,
+			SourceLastUpdatedAt: entity.SourceLastUpdatedAt,
+			SourceLastUpdatedAtMs: entity.SourceLastUpdatedAt.getTime(),
 			DeleteAfter: null,
 			DeletedAt: null,
 			Sync: entity.Sync,
