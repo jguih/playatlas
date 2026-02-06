@@ -20,6 +20,7 @@ export const makeClassificationMapper = ({
 				category: model.Category,
 				description: model.Description,
 				displayName: model.DisplayName,
+				version: model.Version,
 				createdAt: new Date(model.CreatedAt),
 				lastUpdatedAt: new Date(model.LastUpdatedAt),
 			});
@@ -32,6 +33,7 @@ export const makeClassificationMapper = ({
 				DisplayName: entity.getDisplayName(),
 				Description: entity.getDescription(),
 				Category: entity.getCategory(),
+				Version: entity.getVersion(),
 			};
 			return model;
 		},

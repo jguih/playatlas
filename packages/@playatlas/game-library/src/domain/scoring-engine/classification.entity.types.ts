@@ -12,6 +12,7 @@ type BaseProps = {
 	displayName: string;
 	description: string;
 	category: ClassificationCategory;
+	version: string;
 };
 
 export type MakeClassificationProps = Partial<SyncProps> & BaseProps;

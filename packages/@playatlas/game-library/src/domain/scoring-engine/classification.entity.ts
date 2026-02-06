@@ -13,6 +13,7 @@ export type Classification = BaseEntity<ClassificationId> &
 		getDisplayName: () => string;
 		getDescription: () => string;
 		getCategory: () => ClassificationCategory;
+		getVersion: () => string;
 	}>;
 
 export const makeClassificationAggregate = (
@@ -25,6 +26,7 @@ export const makeClassificationAggregate = (
 	const displayName = props.displayName;
 	const description = props.description;
 	const category = props.category;
+	const version = props.version;
 	const lastUpdatedAt = props.lastUpdatedAt ?? now;
 	const createdAt = props.createdAt ?? now;
 
@@ -33,6 +35,8 @@ export const makeClassificationAggregate = (
 			throw new InvalidStateError(validation.message.isNullOrEmptyString("displayName"));
 		if (validation.isNullOrEmptyString(description))
 			throw new InvalidStateError(validation.message.isNullOrEmptyString("description"));
+		if (validation.isNullOrEmptyString(version))
+			throw new InvalidStateError(validation.message.isNullOrEmptyString("version"));
 	};
 
 	_validate();
@@ -45,6 +49,7 @@ export const makeClassificationAggregate = (
 		getDisplayName: () => displayName,
 		getDescription: () => description,
 		getCategory: () => category,
+		getVersion: () => version,
 		validate: _validate,
 	};
 	return Object.freeze(aggregate);

@@ -18,6 +18,7 @@ export const classificationSchema = z.object({
 	DisplayName: z.string().min(1),
 	Category: classificationCategorySchema,
 	Description: z.string().min(1),
+	Version: z.string().min(1),
 	CreatedAt: ISODateSchema,
 	LastUpdatedAt: ISODateSchema,
 });
@@ -41,6 +42,7 @@ export const makeClassificationRepository = ({
 		"DisplayName",
 		"Category",
 		"Description",
+		"Version",
 		"CreatedAt",
 		"LastUpdatedAt",
 	];
