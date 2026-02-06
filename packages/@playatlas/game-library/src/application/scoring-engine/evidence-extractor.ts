@@ -1,22 +1,28 @@
 import { normalize } from "@playatlas/common/common";
-import type { GenreName } from "../../../domain/genre.entity";
-import type { IEvidenceExtractorPort } from "../genre-scorer.ports";
-import { HORROR_GENRE_SIGNALS, HORROR_TEXT_SIGNALS } from "./horror.signals";
-import type { HorrorEvidence, HorrorEvidenceGroup } from "./horror.types";
+import type { GenreName } from "../../domain/genre.entity";
+import type { IEvidenceExtractorPort } from "./genre-scorer.ports";
+import type { TaxonomySignalItem, TextSignalItem } from "./genre-scorer.signals";
+import type { Evidence } from "./genre-scorer.types";
 
-export type IHorrorEvidenceExtractorPort = IEvidenceExtractorPort<HorrorEvidenceGroup>;
+export type EvidenceExtractorDeps<TGroup> = {
+	taxonomySignals: Array<TaxonomySignalItem<TGroup>>;
+	textSignals: Array<TextSignalItem<TGroup>>;
+};
 
-export const makeHorrorEvidenceExtractor = (): IHorrorEvidenceExtractorPort => {
+export const makeEvidenceExtractor = <TGroup extends string>({
+	taxonomySignals,
+	textSignals,
+}: EvidenceExtractorDeps<TGroup>): IEvidenceExtractorPort<TGroup> => {
 	const extractFromTaxonomy = (props: {
 		genres: GenreName[];
-		add: (e: HorrorEvidence) => void;
+		add: (e: Evidence<TGroup>) => void;
 	}) => {
 		const { genres, add } = props;
 		const normalizedGenres = genres.map(normalize);
 
 		const hasGenre = (x: string) => normalizedGenres.includes(x);
 
-		for (const signal of HORROR_GENRE_SIGNALS) {
+		for (const signal of taxonomySignals) {
 			if (Array.isArray(signal.name)) {
 				if (signal.name.every(hasGenre))
 					add({
@@ -45,14 +51,14 @@ export const makeHorrorEvidenceExtractor = (): IHorrorEvidenceExtractorPort => {
 
 	const extractFromText = (props: {
 		description?: string | null;
-		add: (e: HorrorEvidence) => void;
+		add: (e: Evidence<TGroup>) => void;
 	}) => {
 		const { description, add } = props;
 		if (!description) return 0;
 
 		const text = normalize(description);
 
-		for (const signal of HORROR_TEXT_SIGNALS) {
+		for (const signal of textSignals) {
 			const phrase = normalize(signal.phrase);
 
 			if (text.includes(phrase)) {
@@ -71,10 +77,10 @@ export const makeHorrorEvidenceExtractor = (): IHorrorEvidenceExtractorPort => {
 
 	return {
 		extract: (game, { genres }) => {
-			const evidence: HorrorEvidence[] = [];
+			const evidence: Evidence<TGroup>[] = [];
 			const gameGenres: GenreName[] = [];
 
-			const add = (e: HorrorEvidence) => evidence.push(e);
+			const add = (e: Evidence<TGroup>) => evidence.push(e);
 
 			if (game.relationships.genres.isLoaded())
 				game.relationships.genres.get().forEach((gId) => {

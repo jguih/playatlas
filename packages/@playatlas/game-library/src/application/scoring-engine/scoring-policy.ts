@@ -129,7 +129,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 		return {
 			contribution: penalty,
 			type: "no_gate",
-			details: `${ratio * 100}% of ${strongestEvidence.weight}`,
+			details: `${ratio * 100}% of ${strongestEvidence.weight} from group ${strongestEvidence.group}`,
 		};
 	};
 

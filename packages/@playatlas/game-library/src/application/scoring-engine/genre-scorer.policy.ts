@@ -8,6 +8,11 @@ export type GroupPolicy = {
 export type GenreGroupPolicy<TGroup extends string> = Record<TGroup, GroupPolicy>;
 
 export type NoGatePolicy = {
+	/**
+	 * Penalty applied when no gates were found.
+	 * In this case, only the strongest evidence is considered by the engine.
+	 * The `tierPenalty` defines a penalty applied to the chosen evidence weight based on its `tier`.
+	 */
 	tierPenalty: Record<EvidenceTier, number>;
 };
 

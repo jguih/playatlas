@@ -1,5 +1,4 @@
-import type { GenreGroupPolicy } from "../genre-scorer.policy";
-import type { GenreSignalItem, TextSignalItem } from "../genre-scorer.signals";
+import type { TaxonomySignalItem, TextSignalItem } from "../genre-scorer.signals";
 import type { HorrorEvidenceGroup } from "./horror.types";
 
 export const HORROR_TEXT_SIGNALS = [
@@ -34,7 +33,7 @@ export const HORROR_TEXT_SIGNALS = [
 	{ phrase: "nightmarish", weight: 12, group: "psychological_horror", tier: "C", isGate: false },
 ] as const satisfies Array<TextSignalItem<HorrorEvidenceGroup>>;
 
-export const HORROR_GENRE_SIGNALS = [
+export const HORROR_TAXONOMY_SIGNALS = [
 	// Tier A: authoritative genre metadata
 	{ name: "horror", weight: 55, group: "core_horror", tier: "A", isGate: true },
 	{ name: "terror", weight: 55, group: "core_horror", tier: "A", isGate: true },
@@ -56,13 +55,4 @@ export const HORROR_GENRE_SIGNALS = [
 	},
 	// Tier B: weak standalone signals
 	{ name: "survival", weight: 8, group: "survival_horror", tier: "B", isGate: false },
-] as const satisfies Array<GenreSignalItem<HorrorEvidenceGroup>>;
-
-export const HORROR_GROUP_POLICY: GenreGroupPolicy<HorrorEvidenceGroup> = {
-	core_horror: { cap: 45 },
-	survival_horror: { cap: 55 },
-	psychological_horror: { cap: 55 },
-	atmospheric_horror: { cap: 30 },
-	cosmic_horror: { cap: 25 },
-	synergy: { cap: 10 },
-};
+] as const satisfies Array<TaxonomySignalItem<HorrorEvidenceGroup>>;

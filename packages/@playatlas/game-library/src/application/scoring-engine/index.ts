@@ -1,3 +1,4 @@
+export * from "./evidence-extractor";
 export * from "./genre-scorer.constants";
 export * from "./genre-scorer.policy";
 export type * from "./genre-scorer.ports";

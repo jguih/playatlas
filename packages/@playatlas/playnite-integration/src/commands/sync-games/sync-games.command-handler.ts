@@ -1,11 +1,8 @@
 import { InvalidStateError, type GenreId } from "@playatlas/common/domain";
 import {
-	DEFAULT_GATE_STACK_POLICY,
-	DEFAULT_NO_GATE_POLICY,
-	HORROR_GROUP_POLICY,
 	makeHorrorEvidenceExtractor,
 	makeHorrorScorer,
-	makeScoringPolicy,
+	makeHorrorScoringPolicy,
 	type CanonicalGenreId,
 	type HorrorEvidenceGroup,
 	type ScoreResult,
@@ -28,12 +25,7 @@ export const makeSyncGamesCommandHandler = ({
 	gameLibraryUnitOfWork: gameLibraryUow,
 }: SyncGamesServiceDeps): ISyncGamesCommandHandlerPort => {
 	const horrorEvidenceExtractor = makeHorrorEvidenceExtractor();
-	const horrorScoringPolicy = makeScoringPolicy({
-		maxScore: 100,
-		groupPolicies: HORROR_GROUP_POLICY,
-		noGatePolicy: DEFAULT_NO_GATE_POLICY,
-		gateStackPolicy: DEFAULT_GATE_STACK_POLICY,
-	});
+	const horrorScoringPolicy = makeHorrorScoringPolicy();
 	const horrorScorer = makeHorrorScorer({ horrorEvidenceExtractor, horrorScoringPolicy });
 
 	// TODO: Remove

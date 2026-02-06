@@ -8,7 +8,7 @@ export type TextSignalItem<TGroup> = {
 	isGate: boolean;
 };
 
-export type GenreSignalItem<TGroup> = {
+export type TaxonomySignalItem<TGroup> = {
 	name: string | string[];
 	weight: number;
 	group: TGroup;

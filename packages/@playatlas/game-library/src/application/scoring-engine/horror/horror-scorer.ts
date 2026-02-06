@@ -1,6 +1,6 @@
 import type { ICanonicalGenreScorerPort } from "../genre-scorer.ports";
-import type { IHorrorScoringPolicyPort } from "../scoring-policy";
-import type { IHorrorEvidenceExtractorPort } from "./horror-evidence-extractor";
+import type { IHorrorEvidenceExtractorPort } from "./horror.evidence-extractor";
+import type { IHorrorScoringPolicyPort } from "./horror.policy";
 import type { HorrorEvidenceGroup } from "./horror.types";
 
 export type IHorrorScorerPort = ICanonicalGenreScorerPort<HorrorEvidenceGroup>;
