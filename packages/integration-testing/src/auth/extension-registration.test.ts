@@ -6,10 +6,10 @@ import type {
 	RevokeExtensionRegistrationCommand,
 } from "@playatlas/auth/commands";
 import type { ExtensionRegistration } from "@playatlas/auth/domain";
+import type { ExtensionRegistrationResponseDto } from "@playatlas/auth/dtos";
 import type { DomainEvent } from "@playatlas/common/application";
 import { ExtensionRegistrationIdParser } from "@playatlas/common/domain";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import type { ExtensionRegistrationResponseDto } from "../../../@playatlas/auth/src/dtos/extension-registration.response";
 import { recordDomainEvents } from "../test.lib";
 import { api, factory } from "../vitest.global.setup";
 

@@ -1,5 +1,5 @@
+import { classificationIds } from "../../../../common/src/domain/value-object/classification-id";
 import type { MakeClassificationProps } from "../../domain/scoring-engine/classification.entity.types";
-import { classificationIds } from "../../domain/value-object/classification-id";
 
 export const DEFAULT_CLASSIFICATION_VERSION =
 	"v1.0.0" as const satisfies MakeClassificationProps["version"];

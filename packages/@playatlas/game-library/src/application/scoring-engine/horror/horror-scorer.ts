@@ -1,4 +1,4 @@
-import { ClassificationIdParser } from "../../../domain/value-object/classification-id";
+import { ClassificationIdParser } from "@playatlas/common/domain";
 import type { IClassificationScorerPort } from "../scorer.ports";
 import type { IHorrorEvidenceExtractorPort } from "./horror.evidence-extractor";
 import type { IHorrorScoringPolicyPort } from "./horror.policy";

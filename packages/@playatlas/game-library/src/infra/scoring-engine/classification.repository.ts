@@ -1,5 +1,10 @@
 import { ISODateSchema } from "@playatlas/common/common";
 import {
+	classificationCategorySchema,
+	classificationIdSchema,
+	type ClassificationId,
+} from "@playatlas/common/domain";
+import {
 	makeBaseRepository,
 	type BaseRepositoryDeps,
 	type IEntityRepositoryPort,
@@ -7,11 +12,6 @@ import {
 import z from "zod";
 import type { IClassificationMapperPort } from "../../application/scoring-engine/classification.mapper";
 import type { Classification } from "../../domain/scoring-engine/classification.entity";
-import { classificationCategorySchema } from "../../domain/value-object/classification-category";
-import {
-	classificationIdSchema,
-	type ClassificationId,
-} from "../../domain/value-object/classification-id";
 import type { ClassificationRepositoryFilters } from "./classification.repository.types";
 
 export const classificationSchema = z.object({

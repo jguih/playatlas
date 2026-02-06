@@ -1,4 +1,4 @@
-import type { QueryHandler } from "@playatlas/common/common";
+import type { IQueryHandlerPort } from "@playatlas/common/application";
 import { createHashForObject } from "@playatlas/common/infra";
 import type { GetAllExtensionRegistrationQuery } from "./get-all-extension-registration.query";
 import type {
@@ -6,7 +6,7 @@ import type {
 	GetAllExtensionRegistrationsResult,
 } from "./get-all-extension-registration.query.types";
 
-export type IGetAllExtensionRegistrationsQueryHandlerPort = QueryHandler<
+export type IGetAllExtensionRegistrationsQueryHandlerPort = IQueryHandlerPort<
 	GetAllExtensionRegistrationQuery,
 	GetAllExtensionRegistrationsResult
 >;

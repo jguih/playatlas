@@ -9,4 +9,3 @@ export type * from "./genre.entity.types";
 export * from "./platform.entity";
 export * from "./platform.entity.types";
 export * from "./scoring-engine";
-export * from "./value-object";

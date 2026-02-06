@@ -111,6 +111,7 @@ CREATE TABLE IF NOT EXISTS `game_publisher` (
 );
 
 CREATE TABLE IF NOT EXISTS `game_classification` (
+  `Id` TEXT PRIMARY KEY,
   `GameId` TEXT NOT NULL,
   `ClassificationId` TEXT NOT NULL,
   `Score` INTEGER NOT NULL,
@@ -120,7 +121,6 @@ CREATE TABLE IF NOT EXISTS `game_classification` (
   `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `DeletedAt` DATETIME DEFAULT NULL,
   `DeleteAfter` DATETIME DEFAULT NULL,
-  PRIMARY KEY (`GameId`, `ClassificationId`),
   FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`),
   FOREIGN KEY (`ClassificationId`) REFERENCES `classification`(`Id`)
 );

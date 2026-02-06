@@ -1,6 +1,5 @@
+import type { ClassificationCategory, ClassificationId } from "@playatlas/common/domain";
 import type { IClockPort } from "@playatlas/common/infra";
-import type { ClassificationId } from "../value-object";
-import type { ClassificationCategory } from "../value-object/classification-category";
 
 type SyncProps = {
 	lastUpdatedAt: Date;

@@ -3,10 +3,10 @@ import {
 	InvalidStateError,
 	makeSoftDeletable,
 	type BaseEntity,
+	type ClassificationCategory,
+	type ClassificationId,
 	type EntitySoftDeleteProps,
 } from "@playatlas/common/domain";
-import type { ClassificationId } from "../value-object";
-import type { ClassificationCategory } from "../value-object/classification-category";
 import type {
 	MakeClassificationDeps,
 	MakeClassificationProps,

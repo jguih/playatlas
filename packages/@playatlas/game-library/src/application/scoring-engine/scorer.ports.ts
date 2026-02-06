@@ -1,7 +1,6 @@
-import type { GenreId } from "@playatlas/common/domain";
+import type { ClassificationId, GenreId } from "@playatlas/common/domain";
 import type { Game } from "../../domain/game.entity";
 import type { Genre } from "../../domain/genre.entity";
-import type { ClassificationId } from "../../domain/value-object/classification-id";
 import type { Evidence, ScoreResult, ScoringInput } from "./scorer.types";
 
 export type IClassificationScorerPort<TGroup extends string> = {

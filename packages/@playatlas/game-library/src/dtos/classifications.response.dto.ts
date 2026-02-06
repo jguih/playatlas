@@ -1,11 +1,10 @@
 import { ISODateSchema } from "@playatlas/common/common";
+import { classificationCategorySchema, classificationIdSchema } from "@playatlas/common/domain";
 import {
 	defaultFailedResponseDtoSchema,
 	defaultSuccessResponseDtoSchema,
 } from "@playatlas/common/dtos";
 import z from "zod";
-import { classificationIdSchema } from "../domain";
-import { classificationCategorySchema } from "../domain/value-object/classification-category";
 
 export const classificationResponseDtoSchema = z.object({
 	Id: classificationIdSchema,
