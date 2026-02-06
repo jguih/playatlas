@@ -9,10 +9,10 @@ describe("Game Library / Score Engine Classifications", () => {
 		root.testApi.gameLibrary.commands
 			.getApplyDefaultClassificationsCommandHandler()
 			.execute({ type: "default" });
-		const { classifications } = api.gameLibrary.queries
+		const { data: classifications } = api.gameLibrary.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute();
-		const classificationIds = classifications.map((c) => c.getId());
+		const classificationIds = classifications.map((c) => c.Id);
 
 		// Assert
 		expect(classifications).toHaveLength(DEFAULT_CLASSIFICATIONS.length);
@@ -32,7 +32,7 @@ describe("Game Library / Score Engine Classifications", () => {
 		handler.execute({ type: "default" });
 		handler.execute({ type: "default" });
 
-		const { classifications } = api.gameLibrary.queries
+		const { data: classifications } = api.gameLibrary.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute();
 
@@ -85,20 +85,19 @@ describe("Game Library / Score Engine Classifications", () => {
 			.execute();
 
 		// Assert
-		expect(firstQueryResult.classifications).toHaveLength(secondQueryResult.classifications.length);
+		expect(firstQueryResult.data).toHaveLength(secondQueryResult.data.length);
 
-		for (const c of firstQueryResult.classifications) {
-			expect(c.getVersion()).toBe(v1);
+		for (const c of firstQueryResult.data) {
+			expect(c.Version).toBe(v1);
 		}
 
-		for (const c of secondQueryResult.classifications) {
-			expect(c.getVersion()).toBe(v2);
+		for (const c of secondQueryResult.data) {
+			expect(c.Version).toBe(v2);
 		}
 	});
 
 	it("soft delete existing classifications if missing from default list", () => {
 		// Arrange
-
 		const handler =
 			root.testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
 
@@ -121,11 +120,11 @@ describe("Game Library / Score Engine Classifications", () => {
 			.execute();
 
 		// Assert
-		expect(firstQueryResult.classifications).toHaveLength(DEFAULT_CLASSIFICATIONS.length);
-		expect(secondQueryResult.classifications).toHaveLength(DEFAULT_CLASSIFICATIONS.length);
+		expect(firstQueryResult.data).toHaveLength(DEFAULT_CLASSIFICATIONS.length);
+		expect(secondQueryResult.data).toHaveLength(DEFAULT_CLASSIFICATIONS.length);
 
-		for (const classification of secondQueryResult.classifications) {
-			expect(classification.isDeleted()).toBe(true);
+		for (const classification of secondQueryResult.data) {
+			expect(classification.Sync.DeletedAt).not.toBe(null);
 		}
 	});
 
@@ -147,10 +146,10 @@ describe("Game Library / Score Engine Classifications", () => {
 		const result = api.gameLibrary.queries.getGetAllClassificationsQueryHandler().execute();
 
 		// Assert
-		expect(result.classifications).toHaveLength(DEFAULT_CLASSIFICATIONS.length);
+		expect(result.data).toHaveLength(DEFAULT_CLASSIFICATIONS.length);
 
-		for (const classification of result.classifications) {
-			expect(classification.isDeleted()).toBe(false);
+		for (const classification of result.data) {
+			expect(classification.Sync.DeletedAt).toBe(null);
 		}
 	});
 });

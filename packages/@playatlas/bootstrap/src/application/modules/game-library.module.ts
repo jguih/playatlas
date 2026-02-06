@@ -169,6 +169,9 @@ export const makeGameLibraryModule = ({
 	});
 	const getAllClassificationsQueryHandler = makeGetAllClassificationsQueryHandler({
 		classificationRepository,
+		classificationMapper,
+		logService: buildLog("GetAllClassificationsQueryHandler"),
+		clock,
 	});
 
 	const gameLibrary: IGameLibraryModulePort = {

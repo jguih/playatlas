@@ -1,10 +1,15 @@
 import type { EntityMapper } from "@playatlas/common/application";
 import { ClassificationIdParser } from "../../domain";
 import type { Classification } from "../../domain/scoring-engine/classification.entity";
+import type { ClassificationResponseDto } from "../../dtos";
 import type { ClassificationModel } from "../../infra/scoring-engine/classification.repository";
 import type { IClassificationFactoryPort } from "./classification.factory";
 
-export type IClassificationMapperPort = EntityMapper<Classification, ClassificationModel>;
+export type IClassificationMapperPort = EntityMapper<
+	Classification,
+	ClassificationModel,
+	ClassificationResponseDto
+>;
 
 export type ClassificationMapperDeps = {
 	classificationFactory: IClassificationFactoryPort;
@@ -13,6 +18,21 @@ export type ClassificationMapperDeps = {
 export const makeClassificationMapper = ({
 	classificationFactory,
 }: ClassificationMapperDeps): IClassificationMapperPort => {
+	const _toDto: IClassificationMapperPort["toDto"] = (entity) => {
+		return {
+			Id: entity.getId(),
+			DisplayName: entity.getDisplayName(),
+			Description: entity.getDescription(),
+			Category: entity.getCategory(),
+			Version: entity.getVersion(),
+			Sync: {
+				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
+				DeletedAt: entity.getDeletedAt()?.toISOString() ?? null,
+				DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,
+			},
+		};
+	};
+
 	return {
 		toDomain: (model) => {
 			return classificationFactory.rehydrate({
@@ -40,6 +60,10 @@ export const makeClassificationMapper = ({
 				DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,
 			};
 			return model;
+		},
+		toDto: _toDto,
+		toDtoList: (entities) => {
+			return entities.map(_toDto);
 		},
 	};
 };

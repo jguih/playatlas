@@ -12,6 +12,7 @@ import {
 	classificationIdSchema,
 	type ClassificationId,
 } from "../../domain/value-object/classification-id";
+import type { ClassificationRepositoryFilters } from "./classification.repository.types";
 
 export const classificationSchema = z.object({
 	Id: classificationIdSchema,
@@ -27,7 +28,11 @@ export const classificationSchema = z.object({
 
 export type ClassificationModel = z.infer<typeof classificationSchema>;
 
-export type IClassificationRepositoryPort = IEntityRepositoryPort<ClassificationId, Classification>;
+export type IClassificationRepositoryPort = IEntityRepositoryPort<
+	ClassificationId,
+	Classification,
+	ClassificationRepositoryFilters
+>;
 
 export type ClassificationRepositoryDeps = BaseRepositoryDeps & {
 	classificationMapper: IClassificationMapperPort;
@@ -51,6 +56,31 @@ export const makeClassificationRepository = ({
 		"DeleteAfter",
 	];
 
+	const getWhereClauseAndParamsFromFilters = (filters?: ClassificationRepositoryFilters) => {
+		const where: string[] = [];
+		const params: (string | number)[] = [];
+
+		if (!filters) {
+			return { where: "", params };
+		}
+
+		if (filters.syncCursor) {
+			const syncCursor = filters.syncCursor;
+
+			where.push(`(LastUpdatedAt > ? OR (LastUpdatedAt = ? AND Id > ?))`);
+			params.push(
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.id,
+			);
+		}
+
+		return {
+			where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
+			params,
+		};
+	};
+
 	const base = makeBaseRepository({
 		getDb,
 		logService,
@@ -61,6 +91,7 @@ export const makeClassificationRepository = ({
 			updateColumns: COLUMNS.filter((c) => c !== "Id"),
 			mapper: classificationMapper,
 			modelSchema: classificationSchema,
+			getWhereClauseAndParamsFromFilters,
 			getOrderBy: () => `ORDER BY LastUpdatedAt ASC, Id ASC`,
 		},
 	});

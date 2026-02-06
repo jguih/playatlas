@@ -1,5 +1,7 @@
-import type { Classification } from "../../domain/scoring-engine/classification.entity";
+import type { SyncCursor } from "@playatlas/common/infra";
+import type { ClassificationResponseDto } from "../../dtos";
 
 export type GetAllClassificationsQueryResult = {
-	classifications: Classification[];
+	nextCursor: SyncCursor;
+	data: ClassificationResponseDto[];
 };

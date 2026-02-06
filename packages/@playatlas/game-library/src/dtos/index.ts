@@ -1,3 +1,4 @@
+export * from "./classifications.response.dto";
 export * from "./company.response.dto";
 export * from "./completion-status.response.dto";
 export * from "./game.response.dto";
