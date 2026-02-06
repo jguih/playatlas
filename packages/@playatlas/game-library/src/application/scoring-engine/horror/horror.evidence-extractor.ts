@@ -1,5 +1,5 @@
 import { makeEvidenceExtractor } from "../evidence-extractor";
-import type { IEvidenceExtractorPort } from "../genre-scorer.ports";
+import type { IEvidenceExtractorPort } from "../scorer.ports";
 import { HORROR_TAXONOMY_SIGNALS, HORROR_TEXT_SIGNALS } from "./horror.signals";
 import type { HorrorEvidenceGroup } from "./horror.types";
 

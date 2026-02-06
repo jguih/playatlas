@@ -1,11 +1,11 @@
-import type { EvidenceTier } from "./genre-scorer.types";
+import type { EvidenceTier } from "./scorer.types";
 
 export type GroupPolicy = {
 	cap?: number;
 	multiplier?: number;
 };
 
-export type GenreGroupPolicy<TGroup extends string> = Record<TGroup, GroupPolicy>;
+export type ClassificationGroupPolicy<TGroup extends string> = Record<TGroup, GroupPolicy>;
 
 export type NoGatePolicy = {
 	/**

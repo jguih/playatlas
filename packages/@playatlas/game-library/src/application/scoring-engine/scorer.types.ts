@@ -53,8 +53,6 @@ export type ScoreResult<TGroup> = {
 	breakdown: ScoreBreakdown<TGroup>;
 };
 
-export type CanonicalGenreId = "HORROR" | "SIMULATION";
-
 export type ScoringInput = {
 	game: Game;
 	readonly genresSnapshot: ReadonlyMap<GenreId, Genre>;

@@ -1,9 +1,10 @@
-import type { ICanonicalGenreScorerPort } from "../genre-scorer.ports";
+import { ClassificationIdParser } from "../../../domain/value-object/classification-id";
+import type { IClassificationScorerPort } from "../scorer.ports";
 import type { IHorrorEvidenceExtractorPort } from "./horror.evidence-extractor";
 import type { IHorrorScoringPolicyPort } from "./horror.policy";
 import type { HorrorEvidenceGroup } from "./horror.types";
 
-export type IHorrorScorerPort = ICanonicalGenreScorerPort<HorrorEvidenceGroup>;
+export type IHorrorScorerPort = IClassificationScorerPort<HorrorEvidenceGroup>;
 
 export type HorrorScorerDeps = {
 	horrorEvidenceExtractor: IHorrorEvidenceExtractorPort;
@@ -15,7 +16,7 @@ export const makeHorrorScorer = ({
 	horrorScoringPolicy,
 }: HorrorScorerDeps): IHorrorScorerPort => {
 	return {
-		id: "HORROR",
+		id: ClassificationIdParser.fromTrusted("HORROR"),
 		score: ({ game, genresSnapshot }) => {
 			const evidence = horrorEvidenceExtractor.extract(game, { genres: genresSnapshot });
 			const result = horrorScoringPolicy.apply(evidence);

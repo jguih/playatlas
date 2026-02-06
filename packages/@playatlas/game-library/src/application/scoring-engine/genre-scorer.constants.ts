@@ -1,4 +1,4 @@
-import type { GateStackPolicy, NoGatePolicy } from "./genre-scorer.policy";
+import type { GateStackPolicy, NoGatePolicy } from "./scorer.policy";
 
 export const DEFAULT_NO_GATE_POLICY = {
 	tierPenalty: {

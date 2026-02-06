@@ -1,12 +1,12 @@
-import type { GateStackPolicy, GenreGroupPolicy, NoGatePolicy } from "./genre-scorer.policy";
-import type { IGenreScoringPolicyPort } from "./genre-scorer.ports";
+import type { ClassificationGroupPolicy, GateStackPolicy, NoGatePolicy } from "./scorer.policy";
+import type { IClassificationScoringPolicyPort } from "./scorer.ports";
 import type {
 	Evidence,
 	EvidenceSource,
 	Penalty,
 	ScoreBreakdown,
 	StoredEvidence,
-} from "./genre-scorer.types";
+} from "./scorer.types";
 
 type SynergyContext = {
 	groupCount: number;
@@ -14,7 +14,7 @@ type SynergyContext = {
 };
 
 export type ScoringPolicyDeps<TGroup extends string> = {
-	groupPolicies: GenreGroupPolicy<TGroup>;
+	groupPolicies: ClassificationGroupPolicy<TGroup>;
 	noGatePolicy: NoGatePolicy;
 	gateStackPolicy: GateStackPolicy;
 	maxScore: number;
@@ -25,7 +25,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 	maxScore,
 	noGatePolicy,
 	gateStackPolicy,
-}: ScoringPolicyDeps<TGroup>): IGenreScoringPolicyPort<TGroup> => {
+}: ScoringPolicyDeps<TGroup>): IClassificationScoringPolicyPort<TGroup> => {
 	const joinByGroup = (evidence: Evidence<TGroup>[]): Map<TGroup, Evidence<TGroup>[]> => {
 		const evidenceMap = new Map<TGroup, Evidence<TGroup>[]>();
 

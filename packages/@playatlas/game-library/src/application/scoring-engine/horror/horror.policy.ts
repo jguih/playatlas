@@ -1,10 +1,10 @@
 import { DEFAULT_GATE_STACK_POLICY, DEFAULT_NO_GATE_POLICY } from "../genre-scorer.constants";
-import type { GenreGroupPolicy } from "../genre-scorer.policy";
-import type { IGenreScoringPolicyPort } from "../genre-scorer.ports";
+import type { ClassificationGroupPolicy } from "../scorer.policy";
+import type { IClassificationScoringPolicyPort } from "../scorer.ports";
 import { makeScoringPolicy } from "../scoring-policy";
 import type { HorrorEvidenceGroup } from "./horror.types";
 
-export const HORROR_GROUP_POLICY: GenreGroupPolicy<HorrorEvidenceGroup> = {
+export const HORROR_GROUP_POLICY: ClassificationGroupPolicy<HorrorEvidenceGroup> = {
 	core_horror: { cap: 45 },
 	survival_horror: { cap: 55 },
 	psychological_horror: { cap: 55 },
@@ -13,7 +13,7 @@ export const HORROR_GROUP_POLICY: GenreGroupPolicy<HorrorEvidenceGroup> = {
 	synergy: { cap: 10 },
 };
 
-export type IHorrorScoringPolicyPort = IGenreScoringPolicyPort<HorrorEvidenceGroup>;
+export type IHorrorScoringPolicyPort = IClassificationScoringPolicyPort<HorrorEvidenceGroup>;
 
 export const makeHorrorScoringPolicy = (): IHorrorScoringPolicyPort =>
 	makeScoringPolicy({

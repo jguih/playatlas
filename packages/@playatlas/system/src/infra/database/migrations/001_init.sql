@@ -66,6 +66,15 @@ CREATE TABLE IF NOT EXISTS `genre` (
   `DeleteAfter` DATETIME DEFAULT NULL
 );
 
+CREATE TABLE IF NOT EXISTS `classification` (
+  `Id` TEXT PRIMARY KEY,
+  `DisplayName` TEXT NOT NULL,
+  `Category` TEXT NOT NULL,
+  `Description` TEXT DEFAULT NULL,
+  `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS `game_developer` (
   `GameId` TEXT NOT NULL,
   `DeveloperId` TEXT NOT NULL,
@@ -97,6 +106,19 @@ CREATE TABLE IF NOT EXISTS `game_publisher` (
   FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
   FOREIGN KEY (`PublisherId`) REFERENCES `company`(`Id`) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS `game_classification` (
+  `GameId` TEXT NOT NULL,
+  `ClassificationId` TEXT NOT NULL,
+  `Score` INTEGER NOT NULL,
+  `EngineVersion` TEXT NOT NULL,
+  `BreakdownJson` TEXT NOT NULL,
+  `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`GameId`, `ClassificationId`),
+  FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`) ON DELETE CASCADE,
+  FOREIGN KEY (`ClassificationId`) REFERENCES `classification`(`Id`) ON DELETE CASCADE
+)
 
 CREATE TABLE IF NOT EXISTS `game_session` (
   `SessionId` TEXT NOT NULL PRIMARY KEY,
