@@ -35,13 +35,18 @@ export const makeApplyDefaultClassificationsCommandHandler = ({
 				props.type === "override"
 					? props.buildDefaultClassificationsOverride({ classificationFactory })
 					: buildDefaultClassifications({ classificationFactory });
+			const defaultClassificationsMap = new Map(defaultClassifications.map((c) => [c.getId(), c]));
+			const existingClassifications = classificationRepository.all();
+			const existingClassificationsMap = new Map(
+				existingClassifications.map((c) => [c.getId(), c]),
+			);
 
 			logService.info(
 				`Applying default classifications [${defaultClassifications.length} entry(s)]`,
 			);
 
 			for (const classification of defaultClassifications) {
-				const existing = classificationRepository.getById(classification.getId());
+				const existing = existingClassificationsMap.get(classification.getId());
 
 				if (existing) {
 					const didUpdate = existing.update({
@@ -55,6 +60,16 @@ export const makeApplyDefaultClassificationsCommandHandler = ({
 				}
 
 				classificationRepository.add(classification);
+			}
+
+			for (const [id, classification] of existingClassificationsMap) {
+				const defaultClassification = defaultClassificationsMap.get(id);
+
+				if (!defaultClassification) {
+					classification.delete();
+					logService.warning(`Classification ${classification.getSafeId()} was marked as deleted`);
+					classificationRepository.update(classification);
+				}
 			}
 
 			logService.success(`Default classifications applied successfully`);

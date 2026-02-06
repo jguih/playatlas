@@ -73,6 +73,11 @@ export const makeClassificationAggregate = (
 		update: (value) => {
 			let didUpdate = false;
 
+			if (softDelete.isDeleted()) {
+				softDelete.restore();
+				didUpdate = true;
+			}
+
 			if (version !== value.version) didUpdate = true;
 
 			if (!didUpdate) return didUpdate;

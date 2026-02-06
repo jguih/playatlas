@@ -95,4 +95,62 @@ describe("Game Library / Score Engine Classifications", () => {
 			expect(c.getVersion()).toBe(v2);
 		}
 	});
+
+	it("soft delete existing classifications if missing from default list", () => {
+		// Arrange
+
+		const handler =
+			root.testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
+
+		handler.execute({
+			type: "default",
+		});
+
+		const firstQueryResult = api.gameLibrary.queries
+			.getGetAllClassificationsQueryHandler()
+			.execute();
+
+		// Act
+		handler.execute({
+			type: "override",
+			buildDefaultClassificationsOverride: () => [],
+		});
+
+		const secondQueryResult = api.gameLibrary.queries
+			.getGetAllClassificationsQueryHandler()
+			.execute();
+
+		// Assert
+		expect(firstQueryResult.classifications).toHaveLength(DEFAULT_CLASSIFICATIONS.length);
+		expect(secondQueryResult.classifications).toHaveLength(DEFAULT_CLASSIFICATIONS.length);
+
+		for (const classification of secondQueryResult.classifications) {
+			expect(classification.isDeleted()).toBe(true);
+		}
+	});
+
+	it("restores soft-deleted classifications if they reappear", () => {
+		// Arrange
+		const handler =
+			root.testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
+
+		handler.execute({ type: "default" });
+
+		handler.execute({
+			type: "override",
+			buildDefaultClassificationsOverride: () => [],
+		});
+
+		// Act
+		handler.execute({ type: "default" });
+
+		const result = api.gameLibrary.queries.getGetAllClassificationsQueryHandler().execute();
+
+		// Assert
+		expect(result.classifications).toHaveLength(DEFAULT_CLASSIFICATIONS.length);
+
+		for (const classification of result.classifications) {
+			expect(classification.isDeleted()).toBe(false);
+		}
+	});
 });

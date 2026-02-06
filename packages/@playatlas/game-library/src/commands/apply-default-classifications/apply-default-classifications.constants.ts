@@ -16,4 +16,11 @@ export const DEFAULT_CLASSIFICATIONS = [
 		displayName: "Horror",
 		version: DEFAULT_CLASSIFICATION_VERSION,
 	},
+	{
+		id: "SIMULATION",
+		category: "genre",
+		description: "Simulation games",
+		displayName: "Simulation",
+		version: DEFAULT_CLASSIFICATION_VERSION,
+	},
 ] as const satisfies MakeClassificationPropsWithoutBrandedId[];
