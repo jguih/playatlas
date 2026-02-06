@@ -1,4 +1,4 @@
-import type { ICommandHandlerPort } from "@playatlas/common/application";
+import type { ICommandHandlerPort, ILogServicePort } from "@playatlas/common/application";
 import type { IClassificationFactoryPort } from "../../application";
 import type { Classification } from "../../domain/scoring-engine/classification.entity";
 import type { IClassificationRepositoryPort } from "../../infra";
@@ -21,11 +21,13 @@ export type IApplyDefaultClassificationsCommandHandlerPort = ICommandHandlerPort
 export type ApplyDefaultClassificationsCommandHandlerDeps = {
 	classificationRepository: IClassificationRepositoryPort;
 	classificationFactory: IClassificationFactoryPort;
+	logService: ILogServicePort;
 };
 
 export const makeApplyDefaultClassificationsCommandHandler = ({
 	classificationRepository,
 	classificationFactory,
+	logService,
 }: ApplyDefaultClassificationsCommandHandlerDeps): IApplyDefaultClassificationsCommandHandlerPort => {
 	return {
 		execute: (props) => {
@@ -33,6 +35,10 @@ export const makeApplyDefaultClassificationsCommandHandler = ({
 				props.type === "override"
 					? props.buildDefaultClassificationsOverride({ classificationFactory })
 					: buildDefaultClassifications({ classificationFactory });
+
+			logService.info(
+				`Applying default classifications [${defaultClassifications.length} entry(s)]`,
+			);
 
 			for (const classification of defaultClassifications) {
 				const existing = classificationRepository.getById(classification.getId());
@@ -50,6 +56,8 @@ export const makeApplyDefaultClassificationsCommandHandler = ({
 
 				classificationRepository.add(classification);
 			}
+
+			logService.success(`Default classifications applied successfully`);
 		},
 	};
 };

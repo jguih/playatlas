@@ -165,6 +165,7 @@ export const makeGameLibraryModule = ({
 	const applyDefaultClassificationsQueryHandler = makeApplyDefaultClassificationsCommandHandler({
 		classificationFactory,
 		classificationRepository,
+		logService: buildLog("ApplyDefaultClassificationsQueryHandler"),
 	});
 	const getAllClassificationsQueryHandler = makeGetAllClassificationsQueryHandler({
 		classificationRepository,

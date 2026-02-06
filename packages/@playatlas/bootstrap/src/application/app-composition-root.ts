@@ -68,6 +68,9 @@ export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot
 		backendLogService.info("Initializing database");
 		await infra.initDb();
 		await playniteIntegration.getLibraryManifestService().write();
+
+		backendLogService.info(`Initializing game library module`);
+		gameLibrary.init();
 	};
 
 	const buildAsync = async (): Promise<PlayAtlasApiV1> => {
