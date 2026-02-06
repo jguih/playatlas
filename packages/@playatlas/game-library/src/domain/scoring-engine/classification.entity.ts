@@ -6,6 +6,7 @@ import type {
 	MakeClassificationDeps,
 	MakeClassificationProps,
 	RehydrateClassificationProps,
+	UpdateClassificationProps,
 } from "./classification.entity.types";
 
 export type Classification = BaseEntity<ClassificationId> &
@@ -14,6 +15,7 @@ export type Classification = BaseEntity<ClassificationId> &
 		getDescription: () => string;
 		getCategory: () => ClassificationCategory;
 		getVersion: () => string;
+		update: (value: UpdateClassificationProps) => boolean;
 	}>;
 
 export const makeClassificationAggregate = (
@@ -23,12 +25,16 @@ export const makeClassificationAggregate = (
 	const now = clock.now();
 
 	const id = props.id;
-	const displayName = props.displayName;
-	const description = props.description;
-	const category = props.category;
-	const version = props.version;
-	const lastUpdatedAt = props.lastUpdatedAt ?? now;
+	let displayName = props.displayName;
+	let description = props.description;
+	let category = props.category;
+	let version = props.version;
+	let lastUpdatedAt = props.lastUpdatedAt ?? now;
 	const createdAt = props.createdAt ?? now;
+
+	const _touch = () => {
+		lastUpdatedAt = clock.now();
+	};
 
 	const _validate = () => {
 		if (validation.isNullOrEmptyString(displayName))
@@ -50,6 +56,22 @@ export const makeClassificationAggregate = (
 		getDescription: () => description,
 		getCategory: () => category,
 		getVersion: () => version,
+		update: (value) => {
+			let didUpdate = false;
+
+			if (version !== value.version) didUpdate = true;
+
+			if (!didUpdate) return didUpdate;
+
+			displayName = value.displayName;
+			description = value.description;
+			category = value.category;
+			version = value.version;
+
+			_touch();
+			_validate();
+			return didUpdate;
+		},
 		validate: _validate,
 	};
 	return Object.freeze(aggregate);

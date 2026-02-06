@@ -13,6 +13,7 @@ import type {
 	IPlatformFactoryPort,
 	IPlatformMapperPort,
 } from "@playatlas/game-library/application";
+import type { ICreateDefaultClassificationsCommandHandlerPort } from "@playatlas/game-library/commands";
 import type {
 	IClassificationRepositoryPort,
 	ICompanyRepositoryPort,
@@ -24,6 +25,7 @@ import type {
 	IPlatformRepositoryPort,
 } from "@playatlas/game-library/infra";
 import type {
+	IGetAllClassificationsQueryHandler,
 	IGetAllCompaniesQueryHandlerPort,
 	IGetAllCompletionStatusesQueryHandlerPort,
 	IGetAllGamesQueryHandlerPort,
@@ -33,11 +35,16 @@ import type {
 
 export type IGameLibraryModulePort = Readonly<{
 	queries: {
+		getGetAllClassificationsQueryHandler: () => IGetAllClassificationsQueryHandler;
 		getGetAllGamesQueryHandler: () => IGetAllGamesQueryHandlerPort;
 		getGetAllCompaniesQueryHandler: () => IGetAllCompaniesQueryHandlerPort;
 		getGetAllPlatformsQueryHandler: () => IGetAllPlatformsQueryHandlerPort;
 		getGetAllGenresQueryHandler: () => IGetAllGenresQueryHandlerPort;
 		getGetAllCompletionStatusesQueryHandler: () => IGetAllCompletionStatusesQueryHandlerPort;
+	};
+
+	commands: {
+		getCreateDefaultClassificationsCommandHandler: () => ICreateDefaultClassificationsCommandHandlerPort;
 	};
 
 	getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
@@ -68,4 +75,6 @@ export type IGameLibraryModulePort = Readonly<{
 	getClassificationMapper: () => IClassificationMapperPort;
 	getClassificationFactory: () => IClassificationFactoryPort;
 	getClassificationRepository: () => IClassificationRepositoryPort;
+
+	init: () => void;
 }>;

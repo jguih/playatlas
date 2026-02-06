@@ -1,3 +1,4 @@
+export * from "./get-all-classifications";
 export * from "./get-all-companies";
 export * from "./get-all-completion-statuses";
 export * from "./get-all-games";

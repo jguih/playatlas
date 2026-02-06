@@ -13,11 +13,13 @@ import type {
 import type { IGetAllExtensionRegistrationsQueryHandlerPort } from "@playatlas/auth/queries";
 import type { IDomainEventBusPort, ILogServicePort } from "@playatlas/common/application";
 import type { ISystemConfigPort } from "@playatlas/common/infra";
+import type { ICreateDefaultClassificationsCommandHandlerPort } from "@playatlas/game-library/commands";
 import type {
 	IGameAssetsContextFactoryPort,
 	IGameAssetsReindexerPort,
 } from "@playatlas/game-library/infra";
 import type {
+	IGetAllClassificationsQueryHandler,
 	IGetAllCompaniesQueryHandlerPort,
 	IGetAllCompletionStatusesQueryHandlerPort,
 	IGetAllGamesQueryHandlerPort,
@@ -42,11 +44,15 @@ export type PlayAtlasApiV1 = {
 	};
 	gameLibrary: {
 		queries: {
+			getGetAllClassificationsQueryHandler: () => IGetAllClassificationsQueryHandler;
 			getGetAllGamesQueryHandler: () => IGetAllGamesQueryHandlerPort;
 			getGetAllCompaniesQueryHandler: () => IGetAllCompaniesQueryHandlerPort;
 			getGetAllPlatformsQueryHandler: () => IGetAllPlatformsQueryHandlerPort;
 			getGetAllGenresQueryHandler: () => IGetAllGenresQueryHandlerPort;
 			getGetAllCompletionStatusesQueryHandler: () => IGetAllCompletionStatusesQueryHandlerPort;
+		};
+		commands: {
+			getCreateDefaultClassificationsCommandHandler: () => ICreateDefaultClassificationsCommandHandlerPort;
 		};
 		getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
 		getGameAssetsReindexer: () => IGameAssetsReindexerPort;

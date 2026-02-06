@@ -17,6 +17,7 @@ import {
 	makePlatformFactory,
 	makePlatformMapper,
 } from "@playatlas/game-library/application";
+import { makeCreateDefaultClassificationsCommandHandler } from "@playatlas/game-library/commands";
 import {
 	makeClassificationRepository,
 	makeCompanyRepository,
@@ -30,6 +31,7 @@ import {
 	makePlatformRepository,
 } from "@playatlas/game-library/infra";
 import {
+	makeGetAllClassificationsQueryHandler,
 	makeGetAllCompaniesQueryHandler,
 	makeGetAllCompletionStatusesQueryHandler,
 	makeGetAllGamesQueryHandler,
@@ -160,6 +162,13 @@ export const makeGameLibraryModule = ({
 		getDb,
 		logService: buildLog("ClassificationRepository"),
 	});
+	const createDefaultClassificationsQueryHandler = makeCreateDefaultClassificationsCommandHandler({
+		classificationFactory,
+		classificationRepository,
+	});
+	const getAllClassificationsQueryHandler = makeGetAllClassificationsQueryHandler({
+		classificationRepository,
+	});
 
 	const gameLibrary: IGameLibraryModulePort = {
 		getCompanyRepository: () => companyRepository,
@@ -169,11 +178,16 @@ export const makeGameLibraryModule = ({
 		getCompletionStatusRepository: () => completionStatusRepository,
 
 		queries: {
+			getGetAllClassificationsQueryHandler: () => getAllClassificationsQueryHandler,
 			getGetAllGamesQueryHandler: () => queryHandlerGetAllGames,
 			getGetAllCompaniesQueryHandler: () => queryHandlerGetAllCompanies,
 			getGetAllPlatformsQueryHandler: () => queryHandlerGetAllPlatforms,
 			getGetAllGenresQueryHandler: () => queryHandlerGetAllGenres,
 			getGetAllCompletionStatusesQueryHandler: () => queryHandlerGetAllCompletionStatuses,
+		},
+
+		commands: {
+			getCreateDefaultClassificationsCommandHandler: () => createDefaultClassificationsQueryHandler,
 		},
 
 		getGameAssetsContextFactory: () => gameAssetsContextFactory,
@@ -199,6 +213,10 @@ export const makeGameLibraryModule = ({
 		getClassificationMapper: () => classificationMapper,
 		getClassificationFactory: () => classificationFactory,
 		getClassificationRepository: () => classificationRepository,
+
+		init: () => {
+			createDefaultClassificationsQueryHandler.execute();
+		},
 	};
 	return Object.freeze(gameLibrary);
 };

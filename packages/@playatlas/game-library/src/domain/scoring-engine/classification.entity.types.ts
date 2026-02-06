@@ -22,3 +22,5 @@ export type RehydrateClassificationProps = SyncProps & BaseProps;
 export type MakeClassificationDeps = {
 	clock: IClockPort;
 };
+
+export type UpdateClassificationProps = Omit<BaseProps, "id">;

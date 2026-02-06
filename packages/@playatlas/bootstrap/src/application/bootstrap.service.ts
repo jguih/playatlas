@@ -29,12 +29,18 @@ export const bootstrapV1 = ({
 		},
 		gameLibrary: {
 			queries: {
+				getGetAllClassificationsQueryHandler:
+					gameLibrary.queries.getGetAllClassificationsQueryHandler,
 				getGetAllGamesQueryHandler: gameLibrary.queries.getGetAllGamesQueryHandler,
 				getGetAllCompaniesQueryHandler: gameLibrary.queries.getGetAllCompaniesQueryHandler,
 				getGetAllPlatformsQueryHandler: gameLibrary.queries.getGetAllPlatformsQueryHandler,
 				getGetAllGenresQueryHandler: gameLibrary.queries.getGetAllGenresQueryHandler,
 				getGetAllCompletionStatusesQueryHandler:
 					gameLibrary.queries.getGetAllCompletionStatusesQueryHandler,
+			},
+			commands: {
+				getCreateDefaultClassificationsCommandHandler:
+					gameLibrary.commands.getCreateDefaultClassificationsCommandHandler,
 			},
 			getGameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory,
 			getGameAssetsReindexer: gameLibrary.getGameAssetsReindexer,
