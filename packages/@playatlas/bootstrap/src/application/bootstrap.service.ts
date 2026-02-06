@@ -38,10 +38,6 @@ export const bootstrapV1 = ({
 				getGetAllCompletionStatusesQueryHandler:
 					gameLibrary.queries.getGetAllCompletionStatusesQueryHandler,
 			},
-			commands: {
-				getCreateDefaultClassificationsCommandHandler:
-					gameLibrary.commands.getCreateDefaultClassificationsCommandHandler,
-			},
 			getGameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory,
 			getGameAssetsReindexer: gameLibrary.getGameAssetsReindexer,
 		},

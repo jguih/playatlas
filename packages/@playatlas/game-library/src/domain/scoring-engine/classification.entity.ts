@@ -1,5 +1,10 @@
 import { validation } from "@playatlas/common/application";
-import { InvalidStateError, type BaseEntity } from "@playatlas/common/domain";
+import {
+	InvalidStateError,
+	makeSoftDeletable,
+	type BaseEntity,
+	type EntitySoftDeleteProps,
+} from "@playatlas/common/domain";
 import type { ClassificationId } from "../value-object";
 import type { ClassificationCategory } from "../value-object/classification-category";
 import type {
@@ -10,6 +15,7 @@ import type {
 } from "./classification.entity.types";
 
 export type Classification = BaseEntity<ClassificationId> &
+	EntitySoftDeleteProps &
 	Readonly<{
 		getDisplayName: () => string;
 		getDescription: () => string;
@@ -47,6 +53,14 @@ export const makeClassificationAggregate = (
 
 	_validate();
 
+	const softDelete = makeSoftDeletable(
+		{
+			deletedAt: props.deletedAt,
+			deleteAfter: props.deleteAfter,
+		},
+		{ clock, touch: _touch, validate: _validate },
+	);
+
 	const aggregate: Classification = {
 		getId: () => id,
 		getSafeId: () => id,
@@ -73,6 +87,7 @@ export const makeClassificationAggregate = (
 			return didUpdate;
 		},
 		validate: _validate,
+		...softDelete,
 	};
 	return Object.freeze(aggregate);
 };

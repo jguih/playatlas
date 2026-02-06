@@ -21,6 +21,8 @@ export const classificationSchema = z.object({
 	Version: z.string().min(1),
 	CreatedAt: ISODateSchema,
 	LastUpdatedAt: ISODateSchema,
+	DeletedAt: ISODateSchema.nullable(),
+	DeleteAfter: ISODateSchema.nullable(),
 });
 
 export type ClassificationModel = z.infer<typeof classificationSchema>;
@@ -45,6 +47,8 @@ export const makeClassificationRepository = ({
 		"Version",
 		"CreatedAt",
 		"LastUpdatedAt",
+		"DeletedAt",
+		"DeleteAfter",
 	];
 
 	const base = makeBaseRepository({

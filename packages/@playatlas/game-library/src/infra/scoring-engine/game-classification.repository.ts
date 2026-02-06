@@ -10,6 +10,8 @@ export const gameClassificationSchema = z.object({
 	BreakdownJson: z.string().min(1),
 	LastUpdatedAt: ISODateSchema,
 	CreatedAt: ISODateSchema,
+	DeletedAt: ISODateSchema.nullable(),
+	DeleteAfter: ISODateSchema.nullable(),
 });
 
 export type GameClassificationModel = z.infer<typeof gameClassificationSchema>;

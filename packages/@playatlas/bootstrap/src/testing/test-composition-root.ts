@@ -16,6 +16,7 @@ import { makeInfraModule } from "../application/modules/infra.module";
 import { makePlayniteIntegrationModule } from "../application/modules/playnite-integration.module";
 import { makeTestClock, type TestClock } from "./test-clock";
 import { type ITestFactoryModulePort, makeTestFactoryModule } from "./test-factory.module";
+import type { PlayAtlasTestApiV1 } from "./test.api.v1";
 
 export type TestCompositionRootDeps = {
 	env: AppEnvironmentVariables;
@@ -37,6 +38,7 @@ export type TestRoot = {
 		genreList: Genre[];
 		platformList: Platform[];
 	};
+	testApi: PlayAtlasTestApiV1;
 	resetDbAsync: () => Promise<void>;
 	clock: TestClock;
 };
@@ -199,5 +201,14 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		gameRelationshipOptions,
 		resetDbAsync,
 		clock,
+		testApi: {
+			clock,
+			gameLibrary: {
+				commands: {
+					getApplyDefaultClassificationsCommandHandler:
+						gameLibrary.commands.getApplyDefaultClassificationsCommandHandler,
+				},
+			},
+		},
 	};
 };

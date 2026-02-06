@@ -1,7 +1,7 @@
 import type { IClassificationFactoryPort } from "../../application";
 import { ClassificationIdParser } from "../../domain";
 import type { Classification } from "../../domain/scoring-engine/classification.entity";
-import { DEFAULT_CLASSIFICATIONS } from "./create-default-classifications.constants";
+import { DEFAULT_CLASSIFICATIONS } from "./apply-default-classifications.constants";
 
 export type DefaultClassificationsBuilderDeps = {
 	classificationFactory: IClassificationFactoryPort;

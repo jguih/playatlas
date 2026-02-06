@@ -23,6 +23,8 @@ export const makeClassificationMapper = ({
 				version: model.Version,
 				createdAt: new Date(model.CreatedAt),
 				lastUpdatedAt: new Date(model.LastUpdatedAt),
+				deletedAt: model.DeletedAt ? new Date(model.DeletedAt) : null,
+				deleteAfter: model.DeleteAfter ? new Date(model.DeleteAfter) : null,
 			});
 		},
 		toPersistence: (entity) => {
@@ -34,6 +36,8 @@ export const makeClassificationMapper = ({
 				Description: entity.getDescription(),
 				Category: entity.getCategory(),
 				Version: entity.getVersion(),
+				DeletedAt: entity.getDeletedAt()?.toISOString() ?? null,
+				DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,
 			};
 			return model;
 		},

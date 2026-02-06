@@ -17,7 +17,7 @@ import {
 	makePlatformFactory,
 	makePlatformMapper,
 } from "@playatlas/game-library/application";
-import { makeCreateDefaultClassificationsCommandHandler } from "@playatlas/game-library/commands";
+import { makeApplyDefaultClassificationsCommandHandler } from "@playatlas/game-library/commands";
 import {
 	makeClassificationRepository,
 	makeCompanyRepository,
@@ -162,7 +162,7 @@ export const makeGameLibraryModule = ({
 		getDb,
 		logService: buildLog("ClassificationRepository"),
 	});
-	const createDefaultClassificationsQueryHandler = makeCreateDefaultClassificationsCommandHandler({
+	const applyDefaultClassificationsQueryHandler = makeApplyDefaultClassificationsCommandHandler({
 		classificationFactory,
 		classificationRepository,
 	});
@@ -187,7 +187,7 @@ export const makeGameLibraryModule = ({
 		},
 
 		commands: {
-			getCreateDefaultClassificationsCommandHandler: () => createDefaultClassificationsQueryHandler,
+			getApplyDefaultClassificationsCommandHandler: () => applyDefaultClassificationsQueryHandler,
 		},
 
 		getGameAssetsContextFactory: () => gameAssetsContextFactory,
@@ -215,7 +215,7 @@ export const makeGameLibraryModule = ({
 		getClassificationRepository: () => classificationRepository,
 
 		init: () => {
-			createDefaultClassificationsQueryHandler.execute();
+			applyDefaultClassificationsQueryHandler.execute({ type: "default" });
 		},
 	};
 	return Object.freeze(gameLibrary);

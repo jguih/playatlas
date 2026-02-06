@@ -13,7 +13,7 @@ import type {
 	IPlatformFactoryPort,
 	IPlatformMapperPort,
 } from "@playatlas/game-library/application";
-import type { ICreateDefaultClassificationsCommandHandlerPort } from "@playatlas/game-library/commands";
+import type { IApplyDefaultClassificationsCommandHandlerPort } from "@playatlas/game-library/commands";
 import type {
 	IClassificationRepositoryPort,
 	ICompanyRepositoryPort,
@@ -44,7 +44,7 @@ export type IGameLibraryModulePort = Readonly<{
 	};
 
 	commands: {
-		getCreateDefaultClassificationsCommandHandler: () => ICreateDefaultClassificationsCommandHandlerPort;
+		getApplyDefaultClassificationsCommandHandler: () => IApplyDefaultClassificationsCommandHandlerPort;
 	};
 
 	getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;

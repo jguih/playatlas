@@ -1,1 +1,1 @@
-export * from "./create-default-classifications";
+export * from "./apply-default-classifications";

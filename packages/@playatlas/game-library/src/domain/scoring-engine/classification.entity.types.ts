@@ -7,6 +7,11 @@ type SyncProps = {
 	createdAt: Date;
 };
 
+type SoftDeleteProps = {
+	deletedAt: Date | null;
+	deleteAfter: Date | null;
+};
+
 type BaseProps = {
 	id: ClassificationId;
 	displayName: string;
@@ -15,9 +20,9 @@ type BaseProps = {
 	version: string;
 };
 
-export type MakeClassificationProps = Partial<SyncProps> & BaseProps;
+export type MakeClassificationProps = Partial<SyncProps> & BaseProps & Partial<SoftDeleteProps>;
 
-export type RehydrateClassificationProps = SyncProps & BaseProps;
+export type RehydrateClassificationProps = SyncProps & BaseProps & SoftDeleteProps;
 
 export type MakeClassificationDeps = {
 	clock: IClockPort;
