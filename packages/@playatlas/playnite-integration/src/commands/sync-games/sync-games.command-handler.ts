@@ -1,9 +1,13 @@
 import { InvalidStateError, type GenreId } from "@playatlas/common/domain";
 import {
+	DEFAULT_GATE_STACK_POLICY,
+	DEFAULT_NO_GATE_POLICY,
+	HORROR_GROUP_POLICY,
 	makeHorrorEvidenceExtractor,
 	makeHorrorScorer,
-	makeHorrorScoringPolicy,
+	makeScoringPolicy,
 	type CanonicalGenreId,
+	type HorrorEvidenceGroup,
 	type ScoreResult,
 } from "@playatlas/game-library/application";
 import type { Genre } from "@playatlas/game-library/domain";
@@ -24,7 +28,12 @@ export const makeSyncGamesCommandHandler = ({
 	gameLibraryUnitOfWork: gameLibraryUow,
 }: SyncGamesServiceDeps): ISyncGamesCommandHandlerPort => {
 	const horrorEvidenceExtractor = makeHorrorEvidenceExtractor();
-	const horrorScoringPolicy = makeHorrorScoringPolicy();
+	const horrorScoringPolicy = makeScoringPolicy({
+		maxScore: 100,
+		groupPolicies: HORROR_GROUP_POLICY,
+		noGatePolicy: DEFAULT_NO_GATE_POLICY,
+		gateStackPolicy: DEFAULT_GATE_STACK_POLICY,
+	});
 	const horrorScorer = makeHorrorScorer({ horrorEvidenceExtractor, horrorScoringPolicy });
 
 	// TODO: Remove
@@ -38,7 +47,7 @@ export const makeSyncGamesCommandHandler = ({
 				name?: string | null;
 				genres: string[];
 			};
-			result: ScoreResult;
+			result: ScoreResult<HorrorEvidenceGroup>;
 		}> = [];
 
 		for (const game of sample) {

@@ -1,5 +1,6 @@
-import type { EvidenceTier } from "../genre-scorer.types";
-import type { HorrorEvidenceGroup, HorrorGroupPolicy } from "./horror.types";
+import type { GenreGroupPolicy } from "../genre-scorer.policy";
+import type { GenreSignalItem, TextSignalItem } from "../genre-scorer.signals";
+import type { HorrorEvidenceGroup } from "./horror.types";
 
 export const HORROR_TEXT_SIGNALS = [
 	// Tier A: explicit genre labeling
@@ -10,11 +11,11 @@ export const HORROR_TEXT_SIGNALS = [
 		tier: "A",
 		isGate: true,
 	},
-	{ phrase: "survival horror", weight: 55, group: "survival_horror", tier: "A", isGate: true },
-	{ phrase: "cosmic horror", weight: 55, group: "cosmic_horror", tier: "A", isGate: true },
-	{ phrase: "horror game", weight: 45, group: "core_horror", tier: "A", isGate: true },
-	{ phrase: "horror adventure", weight: 40, group: "core_horror", tier: "A", isGate: true },
-	{ phrase: "adventure horror", weight: 40, group: "core_horror", tier: "A", isGate: true },
+	{ phrase: "survival horror", weight: 45, group: "survival_horror", tier: "A", isGate: true },
+	{ phrase: "cosmic horror", weight: 45, group: "cosmic_horror", tier: "A", isGate: true },
+	{ phrase: "horror game", weight: 35, group: "core_horror", tier: "A", isGate: true },
+	{ phrase: "horror adventure", weight: 35, group: "core_horror", tier: "A", isGate: true },
+	{ phrase: "adventure horror", weight: 35, group: "core_horror", tier: "A", isGate: true },
 	// Tier B: atmospheric horror
 	{ phrase: "creeping dread", weight: 25, group: "atmospheric_horror", tier: "B", isGate: true },
 	{ phrase: "dread", weight: 25, group: "atmospheric_horror", tier: "B", isGate: false },
@@ -31,13 +32,7 @@ export const HORROR_TEXT_SIGNALS = [
 	{ phrase: "unsettling", weight: 12, group: "atmospheric_horror", tier: "C", isGate: false },
 	{ phrase: "nightmare", weight: 12, group: "psychological_horror", tier: "C", isGate: false },
 	{ phrase: "nightmarish", weight: 12, group: "psychological_horror", tier: "C", isGate: false },
-] as const satisfies Array<{
-	phrase: string;
-	weight: number;
-	group: HorrorEvidenceGroup;
-	tier: EvidenceTier;
-	isGate: boolean;
-}>;
+] as const satisfies Array<TextSignalItem<HorrorEvidenceGroup>>;
 
 export const HORROR_GENRE_SIGNALS = [
 	// Tier A: authoritative genre metadata
@@ -61,19 +56,13 @@ export const HORROR_GENRE_SIGNALS = [
 	},
 	// Tier B: weak standalone signals
 	{ name: "survival", weight: 8, group: "survival_horror", tier: "B", isGate: false },
-] as const satisfies Array<{
-	name: string | string[];
-	weight: number;
-	group: HorrorEvidenceGroup;
-	tier: EvidenceTier;
-	isGate: boolean;
-}>;
+] as const satisfies Array<GenreSignalItem<HorrorEvidenceGroup>>;
 
-export const HORROR_GROUP_POLICY: HorrorGroupPolicy = {
-	core_horror: { cap: 40 },
-	survival_horror: { cap: 40 },
-	psychological_horror: { cap: 30 },
-	atmospheric_horror: { cap: 20 },
+export const HORROR_GROUP_POLICY: GenreGroupPolicy<HorrorEvidenceGroup> = {
+	core_horror: { cap: 45 },
+	survival_horror: { cap: 55 },
+	psychological_horror: { cap: 55 },
+	atmospheric_horror: { cap: 30 },
 	cosmic_horror: { cap: 25 },
 	synergy: { cap: 10 },
 };

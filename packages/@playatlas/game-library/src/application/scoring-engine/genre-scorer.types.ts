@@ -10,7 +10,7 @@ export type EvidenceSource =
 
 export type EvidenceTier = "A" | "B" | "C";
 
-export type Evidence<TGroup extends string> = {
+export type Evidence<TGroup> = {
 	source: EvidenceSource;
 	sourceHint?: string;
 	match: string | number;
@@ -21,16 +21,36 @@ export type Evidence<TGroup extends string> = {
 	isGate: boolean;
 };
 
-export type GroupPolicy = {
-	cap?: number;
-	multiplier?: number;
+export type StoredEvidence<TGroup> = Evidence<TGroup> & {
+	status: "used" | "ignored";
+	contribution: number;
 };
 
-export type GenreGroupPolicy<TGroup extends string> = Record<TGroup, GroupPolicy>;
+export type Penalty = {
+	type: "no_gate" | "multiple_gates";
+	contribution: number;
+	details: string;
+};
 
-export type ScoreResult<TGroup extends string> = {
+export type ScoreBreakdown<TGroup> = {
+	mode: "with_gate" | "without_gate";
+	groups: {
+		group: TGroup;
+		evidences: StoredEvidence<TGroup>[];
+		contribution: number;
+	}[];
+	synergy: {
+		contribution: number;
+		details: string;
+	};
+	subtotal: number;
+	penalties: Array<Penalty>;
+	total: number;
+};
+
+export type ScoreResult<TGroup> = {
 	score: number;
-	evidence: Evidence<TGroup>[];
+	breakdown: ScoreBreakdown<TGroup>;
 };
 
 export type CanonicalGenreId = "HORROR" | "SIMULATION";
