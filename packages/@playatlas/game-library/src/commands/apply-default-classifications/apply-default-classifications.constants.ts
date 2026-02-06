@@ -4,11 +4,18 @@ import { classificationIds } from "../../domain/value-object/classification-id";
 export const DEFAULT_CLASSIFICATION_VERSION =
 	"v1.0.0" as const satisfies MakeClassificationProps["version"];
 
-type MakeClassificationPropsWithoutBrandedId = Omit<MakeClassificationProps, "id"> & {
+export type MakeClassificationPropsWithoutBrandedId = Omit<MakeClassificationProps, "id"> & {
 	id: (typeof classificationIds)[number];
 };
 
 export const DEFAULT_CLASSIFICATIONS = [
+	{
+		id: "RPG",
+		category: "genre",
+		description: "Horror games",
+		displayName: "Horror",
+		version: DEFAULT_CLASSIFICATION_VERSION,
+	},
 	{
 		id: "HORROR",
 		category: "genre",
@@ -17,7 +24,7 @@ export const DEFAULT_CLASSIFICATIONS = [
 		version: DEFAULT_CLASSIFICATION_VERSION,
 	},
 	{
-		id: "SIMULATION",
+		id: "SURVIVAL",
 		category: "genre",
 		description: "Simulation games",
 		displayName: "Simulation",
