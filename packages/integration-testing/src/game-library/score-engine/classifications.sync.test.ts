@@ -1,8 +1,8 @@
+import { ClassificationIdParser } from "@playatlas/common/domain";
 import {
 	DEFAULT_CLASSIFICATIONS,
 	type MakeClassificationPropsWithoutBrandedId,
 } from "@playatlas/game-library/commands";
-import { ClassificationIdParser } from "@playatlas/game-library/domain";
 import { describe, expect, it } from "vitest";
 import { isCursorAfter, isCursorEqual } from "../../test.lib";
 import { api, root } from "../../vitest.global.setup";
