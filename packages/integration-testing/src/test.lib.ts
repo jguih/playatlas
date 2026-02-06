@@ -15,3 +15,7 @@ export const isCursorAfter = (a: SyncCursor, b: SyncCursor): boolean => {
 
 	return a.id > b.id;
 };
+
+export const isCursorEqual = (a: SyncCursor, b: SyncCursor): boolean => {
+	return a.lastUpdatedAt.getTime() === b.lastUpdatedAt.getTime() && a.id === b.id;
+};

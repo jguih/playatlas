@@ -53,7 +53,7 @@ describe("Game Library Synchronization / Game", () => {
 			secondGames.every((g) => firstQueryIds.has(g.Id)),
 			"Query must return updated versions of previously-synced items",
 		).toBe(true);
-		expect(secondGames.every((g) => g.Playnite.Name?.match(/(updated)/i))).toBe(true);
+		expect(secondGames.every((g) => g.Playnite!.Name?.match(/(updated)/i))).toBe(true);
 		expect(secondGames.every((g) => g.ContentHash?.match(/updated/i))).toBe(true);
 	});
 });
