@@ -1,4 +1,6 @@
 import type {
+	IClassificationFactoryPort,
+	IClassificationMapperPort,
 	ICompanyFactoryPort,
 	ICompanyMapperPort,
 	ICompletionStatusFactoryPort,
@@ -12,6 +14,7 @@ import type {
 	IPlatformMapperPort,
 } from "@playatlas/game-library/application";
 import type {
+	IClassificationRepositoryPort,
 	ICompanyRepositoryPort,
 	ICompletionStatusRepositoryPort,
 	IGameAssetsContextFactoryPort,
@@ -48,9 +51,9 @@ export type IGameLibraryModulePort = Readonly<{
 	getCompanyFactory: () => ICompanyFactoryPort;
 	getCompanyRepository: () => ICompanyRepositoryPort;
 
-	getCompletionStatusRepository: () => ICompletionStatusRepositoryPort;
-	getCompletionStatusFactory: () => ICompletionStatusFactoryPort;
 	getCompletionStatusMapper: () => ICompletionStatusMapperPort;
+	getCompletionStatusFactory: () => ICompletionStatusFactoryPort;
+	getCompletionStatusRepository: () => ICompletionStatusRepositoryPort;
 
 	getPlatformMapper: () => IPlatformMapperPort;
 	getPlatformFactory: () => IPlatformFactoryPort;
@@ -61,4 +64,8 @@ export type IGameLibraryModulePort = Readonly<{
 	getGenreRepository: () => IGenreRepositoryPort;
 
 	getGameLibraryUnitOfWork: () => IGameLibraryUnitOfWorkPort;
+
+	getClassificationMapper: () => IClassificationMapperPort;
+	getClassificationFactory: () => IClassificationFactoryPort;
+	getClassificationRepository: () => IClassificationRepositoryPort;
 }>;

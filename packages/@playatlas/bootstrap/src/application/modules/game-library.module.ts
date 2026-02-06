@@ -4,6 +4,8 @@ import {
 } from "@playatlas/common/application";
 import type { DbGetter, IClockPort, ISystemConfigPort } from "@playatlas/common/infra";
 import {
+	makeClassificationFactory,
+	makeClassificationMapper,
 	makeCompanyFactory,
 	makeCompanyMapper,
 	makeCompletionStatusFactory,
@@ -16,6 +18,7 @@ import {
 	makePlatformMapper,
 } from "@playatlas/game-library/application";
 import {
+	makeClassificationRepository,
 	makeCompanyRepository,
 	makeCompletionStatusRepository,
 	makeGameAssetsContextFactory,
@@ -150,6 +153,14 @@ export const makeGameLibraryModule = ({
 		getDb,
 	});
 
+	const classificationFactory = makeClassificationFactory({ clock });
+	const classificationMapper = makeClassificationMapper({ classificationFactory });
+	const classificationRepository = makeClassificationRepository({
+		classificationMapper,
+		getDb,
+		logService: buildLog("ClassificationRepository"),
+	});
+
 	const gameLibrary: IGameLibraryModulePort = {
 		getCompanyRepository: () => companyRepository,
 		getGameRepository: () => gameRepository,
@@ -184,6 +195,10 @@ export const makeGameLibraryModule = ({
 		getGenreMapper: () => genreMapper,
 
 		getGameLibraryUnitOfWork: () => gameLibraryUnitOfWork,
+
+		getClassificationMapper: () => classificationMapper,
+		getClassificationFactory: () => classificationFactory,
+		getClassificationRepository: () => classificationRepository,
 	};
 	return Object.freeze(gameLibrary);
 };

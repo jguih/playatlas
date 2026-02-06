@@ -1,7 +1,9 @@
+export * from "./classification.factory";
+export * from "./classification.mapper";
 export * from "./evidence-extractor";
-export * from "./genre-scorer.constants";
 export * from "./horror";
 export * from "./horror/horror-scorer";
+export * from "./scorer.constants";
 export * from "./scorer.policy";
 export type * from "./scorer.ports";
 export * from "./scorer.signals";

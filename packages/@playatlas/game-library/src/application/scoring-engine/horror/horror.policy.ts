@@ -1,4 +1,4 @@
-import { DEFAULT_GATE_STACK_POLICY, DEFAULT_NO_GATE_POLICY } from "../genre-scorer.constants";
+import { DEFAULT_GATE_STACK_POLICY, DEFAULT_NO_GATE_POLICY } from "../scorer.constants";
 import type { ClassificationGroupPolicy } from "../scorer.policy";
 import type { IClassificationScoringPolicyPort } from "../scorer.ports";
 import { makeScoringPolicy } from "../scoring-policy";

@@ -1,6 +1,7 @@
 import { InvalidStateError } from "@playatlas/common/domain";
 import { z } from "zod";
-import { classificationIds } from "./classification-id.constants";
+
+export const classificationIds = ["HORROR", "SIMULATION"] as const satisfies string[];
 
 export const classificationIdSchema = z.enum(classificationIds);
 
