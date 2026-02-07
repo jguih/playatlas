@@ -6,13 +6,16 @@ import {
 } from "@playatlas/playnite-integration/commands";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { recordDomainEvents } from "../test.lib";
-import { api, factory } from "../vitest.global.setup";
+import { api, factory, root } from "../vitest.global.setup";
 
 describe("Game Library Sync", () => {
 	let unsubscribe: () => void;
 	let events: DomainEvent[];
 
 	beforeEach(() => {
+		root.testApi.gameLibrary.commands
+			.getApplyDefaultClassificationsCommandHandler()
+			.execute({ type: "default" });
 		({ events, unsubscribe } = recordDomainEvents());
 	});
 
@@ -20,9 +23,10 @@ describe("Game Library Sync", () => {
 		unsubscribe();
 	});
 
-	it("adds games", async () => {
+	it.only("adds games", async () => {
 		// Arrange
-		const addedItems = factory.getSyncGameRequestDtoFactory().buildList(5000);
+		const sampleSize = 5000;
+		const addedItems = factory.getSyncGameRequestDtoFactory().buildList(sampleSize);
 
 		const requestDto: SyncGamesRequestDto = {
 			AddedItems: addedItems,
@@ -43,7 +47,7 @@ describe("Game Library Sync", () => {
 		expect(commandResult.success).toBe(true);
 		expect(commandResult.reason_code).toBe("game_library_synchronized");
 
-		expect(new Set(games.map((g) => g.Id)).size).toBe(5000);
+		expect(new Set(games.map((g) => g.Id)).size).toBe(sampleSize);
 
 		expect(events).toHaveLength(1);
 
@@ -51,7 +55,7 @@ describe("Game Library Sync", () => {
 		const syncEvent = event && event.name === "game-library-synchronized" ? event : null;
 
 		expect(syncEvent).not.toBeNull();
-		expect(syncEvent!.payload.added).toHaveLength(5000);
+		expect(syncEvent!.payload.added).toHaveLength(sampleSize);
 		expect(syncEvent!.payload.deleted).toHaveLength(0);
 		expect(syncEvent!.payload.updated).toHaveLength(0);
 	});

@@ -149,8 +149,11 @@ export const makeBaseRepository = <
 					const model = (options.toPersistence ?? mapper.toPersistence)(entity);
 					const params = insertColumns.map((col) => model[col]);
 					const { lastInsertRowid } = stmt.run(...(params as SQLInputValue[]));
+
 					results.push([entity, model, { lastInsertRowid }]);
-					logService.debug(`Added record with id ${lastInsertRowid}`);
+
+					const id = autoIncrementId ? lastInsertRowid : entity.getSafeId();
+					logService.debug(`Added record with id ${id}`);
 				}
 				return results;
 			});
@@ -166,7 +169,9 @@ export const makeBaseRepository = <
 			const stmt = db.prepare(updateSql);
 			const model = (options.toPersistence ?? mapper.toPersistence)(entity);
 			const params = updateColumns.map((col) => model[col]);
+
 			stmt.run(...(params as SQLInputValue[]), entity.getId());
+
 			logService.debug(`Updated record with id ${entity.getSafeId()}`);
 			return model;
 		}, `update(${entity.getSafeId()})`);
@@ -247,7 +252,9 @@ export const makeBaseRepository = <
 					const model = (options.toPersistence ?? mapper.toPersistence)(entity);
 					const params = insertColumns.map((col) => model[col]);
 					const { lastInsertRowid } = stmt.run(...(params as SQLInputValue[]));
+
 					results.push([entity, model, { lastInsertRowid }]);
+
 					const id = autoIncrementId ? lastInsertRowid : entity.getSafeId();
 					logService.debug(`Updated or added record with id ${id}`);
 				}

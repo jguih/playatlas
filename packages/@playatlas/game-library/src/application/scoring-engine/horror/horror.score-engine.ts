@@ -3,8 +3,8 @@ import { ScoreEngineSerializationError } from "../../../domain";
 import { scoreBreakdownSchema, type ScoreBreakdown } from "../score-breakdown";
 import type { IScoreEnginePort } from "../score-engine.port";
 import type { IHorrorEvidenceExtractorPort } from "./horror.evidence-extractor";
-import type { HorrorEvidenceGroup } from "./horror.groups";
 import type { IHorrorScoringPolicyPort } from "./horror.policy";
+import { HORROR_ENGINE_VERSION, type HorrorEvidenceGroup } from "./horror.score-engine.meta";
 
 export type IHorrorScoreEnginePort = IScoreEnginePort<HorrorEvidenceGroup>;
 
@@ -17,11 +17,11 @@ export const makeHorrorScoreEngine = ({
 	horrorEvidenceExtractor,
 	horrorScoringPolicy,
 }: HorrorScoreEngineDeps): IHorrorScoreEnginePort => {
-	const engineVersion = "v1.0.0" as const;
 	const classificationId = ClassificationIdParser.fromTrusted("HORROR");
 
 	return {
 		id: classificationId,
+		version: HORROR_ENGINE_VERSION,
 		score: ({ game, genresSnapshot }) => {
 			const evidence = horrorEvidenceExtractor.extract(game, { genres: genresSnapshot });
 			const result = horrorScoringPolicy.apply(evidence);
@@ -32,7 +32,7 @@ export const makeHorrorScoreEngine = ({
 			if (!success)
 				throw new ScoreEngineSerializationError(
 					"Failed to deserialize score engine breakdown JSON string",
-					{ engineVersion, classificationId },
+					{ engineVersion: HORROR_ENGINE_VERSION, classificationId },
 					error,
 				);
 			return breakdown as unknown as ScoreBreakdown<HorrorEvidenceGroup>;

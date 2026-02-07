@@ -1,7 +1,30 @@
+import type { ClassificationGroupPolicy } from "../engine.policy";
 import type { TaxonomySignalItem, TextSignalItem } from "../engine.signals";
-import type { HorrorEvidenceGroup } from "./horror.groups";
+import type { ScoreEngineVersion } from "../score-engine.port";
 
-export const HORROR_TEXT_SIGNALS = [
+export const HORROR_ENGINE_VERSION = "v1.0.0" as const satisfies ScoreEngineVersion;
+
+export const HORROR_ENGINE_EVIDENCE_GROUPS = [
+	"core_horror",
+	"survival_horror",
+	"psychological_horror",
+	"cosmic_horror",
+	"atmospheric_horror",
+	"synergy",
+] as const satisfies string[];
+
+export type HorrorEvidenceGroup = (typeof HORROR_ENGINE_EVIDENCE_GROUPS)[number];
+
+export const HORROR_ENGINE_GROUP_POLICY: ClassificationGroupPolicy<HorrorEvidenceGroup> = {
+	core_horror: { cap: 45 },
+	survival_horror: { cap: 55 },
+	psychological_horror: { cap: 55 },
+	atmospheric_horror: { cap: 30 },
+	cosmic_horror: { cap: 25 },
+	synergy: { cap: 10 },
+};
+
+export const HORROR_ENGINE_TEXT_SIGNALS = [
 	// Tier A: explicit genre labeling
 	{
 		phrase: "psychological horror",
@@ -33,7 +56,7 @@ export const HORROR_TEXT_SIGNALS = [
 	{ phrase: "nightmarish", weight: 12, group: "psychological_horror", tier: "C", isGate: false },
 ] as const satisfies Array<TextSignalItem<HorrorEvidenceGroup>>;
 
-export const HORROR_TAXONOMY_SIGNALS = [
+export const HORROR_ENGINE_TAXONOMY_SIGNALS = [
 	// Tier A: authoritative genre metadata
 	{ name: "horror", weight: 55, group: "core_horror", tier: "A", isGate: true },
 	{ name: "terror", weight: 55, group: "core_horror", tier: "A", isGate: true },

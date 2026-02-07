@@ -139,7 +139,15 @@ export const makeGameClassificationScoreService = ({
 				const duration = performance.now() - start;
 				logService.success(
 					`Classification score calculation completed after ${duration.toFixed(1)}ms.`,
-					{ skipped, created },
+					{
+						totalGames: games.length,
+						totalClassifications: classificationIds.length,
+						expectedOperations: games.length * classificationIds.length,
+						skipped,
+						created,
+						formula: "games x classifications - skipped",
+						durationMs: duration,
+					},
 				);
 			} catch (error) {
 				const duration = performance.now() - start;

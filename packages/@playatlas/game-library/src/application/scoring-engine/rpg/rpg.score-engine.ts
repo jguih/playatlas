@@ -1,20 +1,42 @@
 import { ClassificationIdParser } from "@playatlas/common/domain";
+import { ScoreEngineSerializationError } from "../../../domain";
+import { scoreBreakdownSchema, type ScoreBreakdown } from "../score-breakdown";
 import type { IScoreEnginePort } from "../score-engine.port";
-import type { RpgEvidenceGroup } from "./rpg.groups";
+import { RPG_ENGINE_VERSION, type RpgEvidenceGroup } from "./rpg.score-engine.meta";
 
 export type IRPGScoreEnginePort = IScoreEnginePort<RpgEvidenceGroup>;
 
 export const makeRPGScoreEngine = (): IRPGScoreEnginePort => {
+	const classificationId = ClassificationIdParser.fromTrusted("RPG");
+
 	return {
-		id: ClassificationIdParser.fromTrusted("RPG"),
+		id: classificationId,
+		version: RPG_ENGINE_VERSION,
 		score: () => {
-			throw new Error("Not Implemented");
+			return {
+				score: 0,
+				breakdown: {
+					mode: "without_gate",
+					groups: [],
+					synergy: { contribution: 0, details: "" },
+					penalties: [],
+					subtotal: 0,
+					total: 0,
+				},
+			};
 		},
-		deserializeBreakdown: () => {
-			throw new Error("Not Implemented");
+		deserializeBreakdown: (json) => {
+			const { success, data: breakdown, error } = scoreBreakdownSchema.safeParse(JSON.parse(json));
+			if (!success)
+				throw new ScoreEngineSerializationError(
+					"Failed to deserialize score engine breakdown JSON string",
+					{ engineVersion: RPG_ENGINE_VERSION, classificationId },
+					error,
+				);
+			return breakdown as unknown as ScoreBreakdown<RpgEvidenceGroup>;
 		},
-		serializeBreakdown: () => {
-			throw new Error("Not Implemented");
+		serializeBreakdown: (breakdown) => {
+			return JSON.stringify(breakdown, null, 2);
 		},
 	};
 };

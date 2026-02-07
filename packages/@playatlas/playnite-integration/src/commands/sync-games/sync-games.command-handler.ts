@@ -21,68 +21,72 @@ export const makeSyncGamesCommandHandler = ({
 				`Syncing game library (add: ${payload.toAdd.length} games, update: ${payload.toUpdate.length} games, delete: ${payload.toRemove.length} games)`,
 			);
 
-			return gameLibraryUow.runAsync(async ({ factories, repositories }) => {
-				const now = clock.now();
+			return gameLibraryUow.runAsync(
+				async ({ factories, repositories, gameClassificationScoreService }) => {
+					const now = clock.now();
 
-				const {
-					companyRepository,
-					completionStatusRepository,
-					gameRepository,
-					genreRepository,
-					platformRepository,
-				} = repositories;
+					const {
+						companyRepository,
+						completionStatusRepository,
+						gameRepository,
+						genreRepository,
+						platformRepository,
+					} = repositories;
 
-				let extracted: ExtractedSyncData;
+					let extracted: ExtractedSyncData;
 
-				const context = buildGameLibrarySyncContext({ ...repositories });
+					const context = buildGameLibrarySyncContext({ ...repositories });
 
-				try {
-					extracted = extractSyncData({
-						command,
-						now,
-						context,
-						...factories,
-					});
-				} catch (error) {
-					if (error instanceof InvalidStateError) {
-						logService.error("Game library sync rejected by domain rules", error);
-						return {
-							success: false,
-							reason_code: "domain_rejected_sync",
-							reason: error.message,
-						};
+					try {
+						extracted = extractSyncData({
+							command,
+							now,
+							context,
+							...factories,
+						});
+					} catch (error) {
+						if (error instanceof InvalidStateError) {
+							logService.error("Game library sync rejected by domain rules", error);
+							return {
+								success: false,
+								reason_code: "domain_rejected_sync",
+								reason: error.message,
+							};
+						}
+
+						throw error;
 					}
 
-					throw error;
-				}
+					genreRepository.upsert(extracted.genres);
+					platformRepository.upsert(extracted.platforms);
+					companyRepository.upsert(extracted.companies);
+					completionStatusRepository.upsert(extracted.completionStatuses);
+					gameRepository.upsert(extracted.games);
 
-				genreRepository.upsert(extracted.genres);
-				platformRepository.upsert(extracted.platforms);
-				companyRepository.upsert(extracted.companies);
-				completionStatusRepository.upsert(extracted.completionStatuses);
-				gameRepository.upsert(extracted.games);
+					gameClassificationScoreService.rescoreGames(extracted.games);
 
-				await libraryManifestService.write();
+					await libraryManifestService.write();
 
-				logService.success(`Game library synchronized`);
+					logService.success(`Game library synchronized`);
 
-				eventBus.emit({
-					id: crypto.randomUUID(),
-					name: "game-library-synchronized",
-					occurredAt: now,
-					payload: {
-						added: extracted.added,
-						updated: extracted.updated,
-						deleted: extracted.deleted,
-					},
-				});
+					eventBus.emit({
+						id: crypto.randomUUID(),
+						name: "game-library-synchronized",
+						occurredAt: now,
+						payload: {
+							added: extracted.added,
+							updated: extracted.updated,
+							deleted: extracted.deleted,
+						},
+					});
 
-				return {
-					reason: "Game library synchronized",
-					reason_code: "game_library_synchronized",
-					success: true,
-				};
-			});
+					return {
+						reason: "Game library synchronized",
+						reason_code: "game_library_synchronized",
+						success: true,
+					};
+				},
+			);
 		},
 	};
 };
