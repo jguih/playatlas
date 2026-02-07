@@ -3,7 +3,6 @@ import { paraglideMiddleware } from "$lib/paraglide/server";
 import { makeServerServices, type ServerServices } from "$lib/server/setup-services";
 import { makeAppCompositionRoot, type PlayAtlasApiV1 } from "@playatlas/bootstrap/application";
 import { type Handle, type ServerInit } from "@sveltejs/kit";
-import { randomUUID } from "crypto";
 
 let _services: ServerServices;
 let _api: PlayAtlasApiV1;
@@ -13,29 +12,12 @@ export const init: ServerInit = async () => {
 	_api = await root.buildAsync();
 
 	_services = makeServerServices({
-		getDb: () => root.unsafe.infra.getDb(),
+		getDb: () => root.unsafe.getInfra().getDb(),
 		env: {
 			DATA_DIR: _api.system.getSystemConfig().getDataDir(),
 			PLAYNITE_HOST_ADDRESS: env.PLAYATLAS_PLAYNITE_HOST_ADDRESS,
 		},
 	});
-
-	const now = new Date();
-	try {
-		const syncId = _services.synchronizationIdRepository.get();
-		if (!syncId) {
-			const syncId = randomUUID();
-			_services.synchronizationIdRepository.set({
-				Id: 1,
-				SyncId: randomUUID(),
-				CreatedAt: now.toISOString(),
-				LastUsedAt: now.toISOString(),
-			});
-			_services.logService.info(`Created synchronization id: ${syncId}`);
-		}
-	} catch (error) {
-		_services.logService.error(`Failed to create synchronization id`, error);
-	}
 };
 
 const handleParaglide: Handle = ({ event, resolve }) =>

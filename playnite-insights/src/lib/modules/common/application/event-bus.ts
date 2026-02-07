@@ -3,14 +3,19 @@ import type { DomainEvent, Listener } from "./event-bus.types";
 
 export class EventBus implements IDomainEventBusPort {
 	private readonly listeners = new Set<Listener>();
-	private readonly nameListeners = new Map<DomainEvent["name"], Listener>();
+	private readonly nameListeners = new Map<DomainEvent["name"], Set<Listener>>();
 
 	emit: IDomainEventBusPort["emit"] = (event) => {
-		for (const listener of this.listeners) {
-			listener(event);
-		}
-		for (const [name, listener] of this.nameListeners) {
-			if (event.name === name) listener(event);
+		const notifyListeners = (listeners: Set<Listener>) => {
+			for (const listener of listeners) {
+				listener(event);
+			}
+		};
+
+		notifyListeners(this.listeners);
+
+		for (const [name, listeners] of this.nameListeners) {
+			if (event.name === name) notifyListeners(listeners);
 		}
 	};
 
@@ -23,10 +28,12 @@ export class EventBus implements IDomainEventBusPort {
 	};
 
 	on: IDomainEventBusPort["on"] = (name, listener) => {
-		this.nameListeners.set(name, listener);
+		const listeners = this.nameListeners.get(name);
+		if (!listeners) this.nameListeners.set(name, new Set());
+		this.nameListeners.get(name)!.add(listener);
 
 		return () => {
-			this.nameListeners.delete(name);
+			this.nameListeners.get(name)!.delete(listener);
 		};
 	};
 }
