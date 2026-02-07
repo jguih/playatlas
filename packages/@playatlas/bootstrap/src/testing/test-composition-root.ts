@@ -208,6 +208,11 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 					getApplyDefaultClassificationsCommandHandler:
 						gameLibrary.commands.getApplyDefaultClassificationsCommandHandler,
 				},
+				seed: {
+					gameClassification: (entity) => {
+						gameLibrary.getGameClassificationRepository().upsert(entity);
+					},
+				},
 			},
 		},
 	};
