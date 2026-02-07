@@ -9,6 +9,7 @@ export * from "./evidence-extractor";
 export * from "./evidence-extractor.port";
 export * from "./game-classification.factory";
 export * from "./game-classification.mapper";
+export * from "./game-classification.score-service";
 export * from "./horror";
 export * from "./horror/horror.score-engine";
 export * from "./penalty";

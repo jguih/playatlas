@@ -7,6 +7,7 @@ import type {
 	ICompletionStatusMapperPort,
 	IGameClassificationFactoryPort,
 	IGameClassificationMapperPort,
+	IGameClassificationScoreServicePort,
 	IGameFactoryPort,
 	IGameLibraryUnitOfWorkPort,
 	IGameMapperPort,
@@ -14,6 +15,7 @@ import type {
 	IGenreMapperPort,
 	IPlatformFactoryPort,
 	IPlatformMapperPort,
+	IScoreEngineRegistryPort,
 } from "@playatlas/game-library/application";
 import type { IApplyDefaultClassificationsCommandHandlerPort } from "@playatlas/game-library/commands";
 import type {
@@ -75,13 +77,18 @@ export type IGameLibraryModulePort = Readonly<{
 
 	getGameLibraryUnitOfWork: () => IGameLibraryUnitOfWorkPort;
 
-	getClassificationMapper: () => IClassificationMapperPort;
-	getClassificationFactory: () => IClassificationFactoryPort;
-	getClassificationRepository: () => IClassificationRepositoryPort;
+	scoreEngine: {
+		getClassificationMapper: () => IClassificationMapperPort;
+		getClassificationFactory: () => IClassificationFactoryPort;
+		getClassificationRepository: () => IClassificationRepositoryPort;
 
-	getGameClassificationMapper: () => IGameClassificationMapperPort;
-	getGameClassificationFactory: () => IGameClassificationFactoryPort;
-	getGameClassificationRepository: () => IGameClassificationRepositoryPort;
+		getGameClassificationMapper: () => IGameClassificationMapperPort;
+		getGameClassificationFactory: () => IGameClassificationFactoryPort;
+		getGameClassificationRepository: () => IGameClassificationRepositoryPort;
+
+		getScoreEngineRegistry: () => IScoreEngineRegistryPort;
+		getGameClassificationScoreService: () => IGameClassificationScoreServicePort;
+	};
 
 	init: () => void;
 }>;

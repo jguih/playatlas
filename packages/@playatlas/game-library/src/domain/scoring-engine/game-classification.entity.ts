@@ -19,6 +19,7 @@ export type GameClassification = BaseEntity<GameClassificationId> &
 	Readonly<{
 		getGameId: () => GameId;
 		getClassificationId: () => ClassificationId;
+		getScore: () => number;
 		getEngineVersion: () => string;
 		getBreakdownJson: () => string;
 	}>;
@@ -32,6 +33,7 @@ export const makeGameClassificationAggregate = (
 	const id = props.id;
 	const gameId = props.gameId;
 	const classificationId = props.classificationId;
+	const score = props.score;
 	const engineVersion = props.engineVersion;
 	const breakdownJson = props.breakdownJson;
 	const createdAt = props.createdAt ?? now;
@@ -46,6 +48,7 @@ export const makeGameClassificationAggregate = (
 			throw new InvalidStateError(validation.message.isNullOrEmptyString("engineVersion"));
 		if (validation.isNullOrEmptyString(breakdownJson))
 			throw new InvalidStateError(validation.message.isNullOrEmptyString("breakdownJson"));
+		if (score < 0) throw new InvalidStateError("Score must be a positive integer");
 	};
 
 	_validate();
@@ -62,6 +65,7 @@ export const makeGameClassificationAggregate = (
 		getId: () => id,
 		getSafeId: () => id,
 		getLastUpdatedAt: () => lastUpdatedAt,
+		getScore: () => score,
 		getCreatedAt: () => createdAt,
 		getGameId: () => gameId,
 		getClassificationId: () => classificationId,

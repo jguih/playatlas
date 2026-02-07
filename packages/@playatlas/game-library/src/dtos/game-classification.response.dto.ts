@@ -15,6 +15,7 @@ export const gameClassificationResponseDtoSchema = z.object({
 	Id: gameClassificationIdSchema,
 	GameId: gameIdSchema,
 	ClassificationId: classificationIdSchema,
+	Score: z.number(),
 	Breakdown: scoreBreakdownSchema,
 	Sync: z.object({
 		LastUpdatedAt: ISODateSchema,

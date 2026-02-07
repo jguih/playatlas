@@ -10,6 +10,7 @@ import type { ICompletionStatusFactoryPort } from "./completion-status.factory";
 import type { IGameFactoryPort } from "./game.factory";
 import type { IGenreFactoryPort } from "./genre.factory";
 import type { IPlatformFactoryPort } from "./platform.factory";
+import type { IGameClassificationScoreServicePort } from "./scoring-engine";
 
 export type GameLibraryUnitOfWorkContext = {
 	repositories: {
@@ -26,6 +27,7 @@ export type GameLibraryUnitOfWorkContext = {
 		companyFactory: ICompanyFactoryPort;
 		completionStatusFactory: ICompletionStatusFactoryPort;
 	};
+	gameClassificationScoreService: IGameClassificationScoreServicePort;
 };
 
 export type IGameLibraryUnitOfWorkPort = {

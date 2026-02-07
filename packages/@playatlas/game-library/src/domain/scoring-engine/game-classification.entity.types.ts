@@ -15,6 +15,7 @@ type BaseProps = {
 	id: GameClassificationId;
 	gameId: GameId;
 	classificationId: ClassificationId;
+	score: number;
 	engineVersion: string;
 	breakdownJson: string;
 };

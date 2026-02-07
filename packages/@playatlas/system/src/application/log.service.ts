@@ -27,25 +27,31 @@ export const makeLogService = (
 		else console.warn(`[${getDateTimeString()}] [WARNING] [${source}] ${message}`);
 	};
 
-	const logDebug = (message: string): void => {
+	const logDebug: ILogServicePort["debug"] = (message, details): void => {
 		if (getCurrentLogLevel() > logLevel.debug) {
 			return;
 		}
-		console.debug(`[${getDateTimeString()}] [DEBUG] [${source}] ${message}`);
+		console.debug(
+			`[${getDateTimeString()}] [DEBUG] [${source}] ${message} ${details ? JSON.stringify(details, null, 2) : ""}`,
+		);
 	};
 
-	const logSuccess = (message: string): void => {
+	const logSuccess: ILogServicePort["success"] = (message, details) => {
 		if (getCurrentLogLevel() > logLevel.success) {
 			return;
 		}
-		console.log(`[${getDateTimeString()}] [SUCCESS] [${source}] ${message}`);
+		console.log(
+			`[${getDateTimeString()}] [SUCCESS] [${source}] ${message} ${details ? JSON.stringify(details, null, 2) : ""}`,
+		);
 	};
 
-	const logInfo = (message: string): void => {
+	const logInfo: ILogServicePort["info"] = (message, details): void => {
 		if (getCurrentLogLevel() > logLevel.info) {
 			return;
 		}
-		console.info(`[${getDateTimeString()}] [INFO] [${source}] ${message}`);
+		console.info(
+			`[${getDateTimeString()}] [INFO] [${source}] ${message} ${details ? JSON.stringify(details, null, 2) : ""}`,
+		);
 	};
 
 	const getRequestDescription: ILogServicePort["getRequestDescription"] = (request) => {

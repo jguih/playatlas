@@ -14,6 +14,7 @@ export type ScoringInput = {
 
 export type IScoreEnginePort<TGroup extends string> = {
 	get id(): ClassificationId;
+	get version(): string;
 	score(input: ScoringInput): ScoreResult<TGroup>;
 	serializeBreakdown: (breakdown: ScoreBreakdown<TGroup>) => string;
 	deserializeBreakdown: (json: string) => ScoreBreakdown<TGroup>;

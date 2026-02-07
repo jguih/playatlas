@@ -41,6 +41,7 @@ export const makeGameClassificationMapper = ({
 			Id: entity.getId(),
 			GameId: entity.getGameId(),
 			ClassificationId: entity.getClassificationId(),
+			Score: entity.getScore(),
 			Breakdown: publicBreakdown,
 			Sync: {
 				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
@@ -56,6 +57,7 @@ export const makeGameClassificationMapper = ({
 				id: GameClassificationIdParser.fromTrusted(model.Id),
 				gameId: GameIdParser.fromTrusted(model.GameId),
 				classificationId: ClassificationIdParser.fromTrusted(model.ClassificationId),
+				score: model.Score,
 				breakdownJson: model.BreakdownJson,
 				engineVersion: model.EngineVersion,
 				createdAt: new Date(model.CreatedAt),
@@ -69,6 +71,7 @@ export const makeGameClassificationMapper = ({
 				Id: entity.getId(),
 				GameId: entity.getGameId(),
 				ClassificationId: entity.getClassificationId(),
+				Score: entity.getScore(),
 				BreakdownJson: entity.getBreakdownJson(),
 				EngineVersion: entity.getEngineVersion(),
 				CreatedAt: entity.getCreatedAt().toISOString(),
