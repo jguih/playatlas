@@ -43,9 +43,9 @@ export const makeGameClassificationAggregate = (
 
 	const _validate = () => {
 		if (validation.isNullOrEmptyString(engineVersion))
-			throw new InvalidStateError(validation.message.isNullOrEmptyString("displayName"));
+			throw new InvalidStateError(validation.message.isNullOrEmptyString("engineVersion"));
 		if (validation.isNullOrEmptyString(breakdownJson))
-			throw new InvalidStateError(validation.message.isNullOrEmptyString("description"));
+			throw new InvalidStateError(validation.message.isNullOrEmptyString("breakdownJson"));
 	};
 
 	_validate();

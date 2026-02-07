@@ -1,12 +1,8 @@
-import type { ClassificationGroupPolicy, GateStackPolicy, NoGatePolicy } from "./scorer.policy";
-import type { IClassificationScoringPolicyPort } from "./scorer.ports";
-import type {
-	Evidence,
-	EvidenceSource,
-	Penalty,
-	ScoreBreakdown,
-	StoredEvidence,
-} from "./scorer.types";
+import type { ClassificationGroupPolicy, GateStackPolicy, NoGatePolicy } from "./engine.policy";
+import type { Evidence, EvidenceSource, StoredEvidence } from "./evidence";
+import type { Penalty } from "./penalty";
+import type { ScoreBreakdown } from "./score-breakdown";
+import type { IScoringPolicyPort } from "./scoring-policy.port";
 
 type SynergyContext = {
 	groupCount: number;
@@ -25,7 +21,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 	maxScore,
 	noGatePolicy,
 	gateStackPolicy,
-}: ScoringPolicyDeps<TGroup>): IClassificationScoringPolicyPort<TGroup> => {
+}: ScoringPolicyDeps<TGroup>): IScoringPolicyPort<TGroup> => {
 	const joinByGroup = (evidence: Evidence<TGroup>[]): Map<TGroup, Evidence<TGroup>[]> => {
 		const evidenceMap = new Map<TGroup, Evidence<TGroup>[]>();
 

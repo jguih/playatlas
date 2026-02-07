@@ -1,4 +1,4 @@
-import type { TaxonomySignalItem, TextSignalItem } from "../scorer.signals";
+import type { TaxonomySignalItem, TextSignalItem } from "../engine.signals";
 import type { HorrorEvidenceGroup } from "./horror.types";
 
 export const HORROR_TEXT_SIGNALS = [

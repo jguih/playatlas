@@ -1,20 +1,20 @@
 import { ClassificationIdParser } from "@playatlas/common/domain";
-import type { IClassificationScorerPort } from "../scorer.ports";
+import type { IScoreEnginePort } from "../score-engine.port";
 import type { IHorrorEvidenceExtractorPort } from "./horror.evidence-extractor";
 import type { IHorrorScoringPolicyPort } from "./horror.policy";
 import type { HorrorEvidenceGroup } from "./horror.types";
 
-export type IHorrorScorerPort = IClassificationScorerPort<HorrorEvidenceGroup>;
+export type IHorrorScoreEnginePort = IScoreEnginePort<HorrorEvidenceGroup>;
 
-export type HorrorScorerDeps = {
+export type HorrorScoreEngineDeps = {
 	horrorEvidenceExtractor: IHorrorEvidenceExtractorPort;
 	horrorScoringPolicy: IHorrorScoringPolicyPort;
 };
 
-export const makeHorrorScorer = ({
+export const makeHorrorScoreEngine = ({
 	horrorEvidenceExtractor,
 	horrorScoringPolicy,
-}: HorrorScorerDeps): IHorrorScorerPort => {
+}: HorrorScoreEngineDeps): IHorrorScoreEnginePort => {
 	return {
 		id: ClassificationIdParser.fromTrusted("HORROR"),
 		score: ({ game, genresSnapshot }) => {

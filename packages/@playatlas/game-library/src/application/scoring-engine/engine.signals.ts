@@ -1,4 +1,4 @@
-import type { EvidenceTier } from "./scorer.types";
+import type { EvidenceTier } from "./evidence";
 
 export type TextSignalItem<TGroup> = {
 	phrase: string;
