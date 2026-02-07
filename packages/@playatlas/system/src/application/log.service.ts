@@ -11,47 +11,67 @@ export const makeLogService = (
 		return now.toLocaleString();
 	};
 
+	const replacer = (_: string, value: unknown) => {
+		if (value instanceof Error) {
+			return {
+				name: value.name,
+				message: value.message,
+				stack: value.stack,
+				cause: value.cause,
+			};
+		}
+
+		if (value instanceof Date) {
+			return value.toISOString();
+		}
+
+		return value;
+	};
+
 	const logError = (message: string, error?: unknown): void => {
 		if (getCurrentLogLevel() > logLevel.error) {
 			return;
 		}
-		if (error) console.error(`[${getDateTimeString()}] [ERROR] [${source}] ${message}`, error);
-		else console.error(`[${getDateTimeString()}] [ERROR] [${source}] ${message}`);
+		const baseMessage = `[${getDateTimeString()}] [ERROR] [${source}] ${message}`;
+		const errorMessage = JSON.stringify(error, replacer);
+		if (error) console.error(baseMessage, `${errorMessage}`);
+		else console.error(baseMessage);
 	};
 
 	const logWarning = (message: string, details?: unknown): void => {
 		if (getCurrentLogLevel() > logLevel.warning) {
 			return;
 		}
-		if (details) console.warn(`[${getDateTimeString()}] [WARNING] [${source}] ${message}`, details);
-		else console.warn(`[${getDateTimeString()}] [WARNING] [${source}] ${message}`);
+		const baseMessage = `[${getDateTimeString()}] [WARNING] [${source}] ${message}`;
+		if (details) console.warn(baseMessage, `${JSON.stringify(details, replacer)}`);
+		else console.warn(baseMessage);
 	};
 
 	const logDebug: ILogServicePort["debug"] = (message, details): void => {
 		if (getCurrentLogLevel() > logLevel.debug) {
 			return;
 		}
-		console.debug(
-			`[${getDateTimeString()}] [DEBUG] [${source}] ${message} ${details ? JSON.stringify(details, null, 2) : ""}`,
-		);
+		const baseMessage = `[${getDateTimeString()}] [DEBUG] [${source}] ${message}`;
+		if (details) console.debug(baseMessage, `${JSON.stringify(details, replacer)}`);
+		else console.debug(baseMessage);
 	};
 
 	const logSuccess: ILogServicePort["success"] = (message, details) => {
 		if (getCurrentLogLevel() > logLevel.success) {
 			return;
 		}
-		console.log(
-			`[${getDateTimeString()}] [SUCCESS] [${source}] ${message} ${details ? JSON.stringify(details, null, 2) : ""}`,
-		);
+		const baseMessage = `[${getDateTimeString()}] [INFO] [${source}] ${message}`;
+		if (details) console.info(baseMessage, `${JSON.stringify(details, replacer)}`);
+		else console.info(baseMessage);
 	};
 
 	const logInfo: ILogServicePort["info"] = (message, details): void => {
 		if (getCurrentLogLevel() > logLevel.info) {
 			return;
 		}
-		console.info(
-			`[${getDateTimeString()}] [INFO] [${source}] ${message} ${details ? JSON.stringify(details, null, 2) : ""}`,
-		);
+		const baseMessage = `[${getDateTimeString()}] [INFO] [${source}] ${message}`;
+		if (details) console.info(baseMessage, `${JSON.stringify(details, replacer)}`);
+		else console.info(baseMessage);
 	};
 
 	const getRequestDescription: ILogServicePort["getRequestDescription"] = (request) => {

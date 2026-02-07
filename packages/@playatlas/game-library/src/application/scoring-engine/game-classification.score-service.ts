@@ -58,8 +58,8 @@ export const makeGameClassificationScoreService = ({
 				let skipped = 0;
 				let created = 0;
 
-				logService.info(`Operation summary: `, {
-					totalClassifications: classificationIds.length,
+				logService.info(`Operation summary:`, {
+					totalExistingClassifications: classificationIds.length,
 					existingRecords: gameClassifications.length,
 					genresSnapshotSize: genresSnapshot.size,
 				});

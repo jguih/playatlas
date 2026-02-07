@@ -32,6 +32,7 @@ export type TestRoot = {
 	seedPlatform: (platform: Platform | Platform[]) => void;
 	seedCompletionStatus: (completionStatus: CompletionStatus | CompletionStatus[]) => void;
 	seedGameRelationships: () => void;
+	seedDefaultClassifications: () => void;
 	gameRelationshipOptions: {
 		completionStatusList: CompletionStatus[];
 		companyList: Company[];
@@ -183,6 +184,12 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		gameLibrary.getPlatformRepository().upsert(platformList);
 	};
 
+	const seedDefaultClassifications = () => {
+		gameLibrary.commands
+			.getApplyDefaultClassificationsCommandHandler()
+			.execute({ type: "default" });
+	};
+
 	const resetDbAsync = async () => {
 		infra.getDb().close();
 		await infra.initDb();
@@ -198,6 +205,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		seedPlatform,
 		seedCompletionStatus,
 		seedGameRelationships,
+		seedDefaultClassifications,
 		gameRelationshipOptions,
 		resetDbAsync,
 		clock,
@@ -209,8 +217,8 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 						gameLibrary.commands.getApplyDefaultClassificationsCommandHandler,
 				},
 				seed: {
-					gameClassification: (entity) => {
-						gameLibrary.getGameClassificationRepository().upsert(entity);
+					gameClassification: (classification) => {
+						gameLibrary.scoreEngine.getGameClassificationRepository().upsert(classification);
 					},
 				},
 			},

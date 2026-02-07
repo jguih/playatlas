@@ -13,9 +13,7 @@ describe("Game Library Sync", () => {
 	let events: DomainEvent[];
 
 	beforeEach(() => {
-		root.testApi.gameLibrary.commands
-			.getApplyDefaultClassificationsCommandHandler()
-			.execute({ type: "default" });
+		root.seedDefaultClassifications();
 		({ events, unsubscribe } = recordDomainEvents());
 	});
 

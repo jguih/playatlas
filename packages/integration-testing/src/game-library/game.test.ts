@@ -7,6 +7,7 @@ import { api, factory, root } from "../vitest.global.setup";
 describe("Game Library / Game", () => {
 	beforeEach(() => {
 		root.seedGameRelationships();
+		root.seedDefaultClassifications();
 	});
 
 	it("persists games", () => {
