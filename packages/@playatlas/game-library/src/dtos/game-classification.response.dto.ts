@@ -23,7 +23,7 @@ export const gameClassificationResponseDtoSchema = z.object({
 	}),
 });
 
-export type GameClassificationResponseDto = z.infer<typeof gameClassificationIdSchema>;
+export type GameClassificationResponseDto = z.infer<typeof gameClassificationResponseDtoSchema>;
 
 const successResponse = z.object({
 	...defaultSuccessResponseDtoSchema.shape,

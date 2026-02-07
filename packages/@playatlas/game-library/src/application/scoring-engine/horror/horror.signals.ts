@@ -1,5 +1,5 @@
 import type { TaxonomySignalItem, TextSignalItem } from "../engine.signals";
-import type { HorrorEvidenceGroup } from "./horror.types";
+import type { HorrorEvidenceGroup } from "./horror.groups";
 
 export const HORROR_TEXT_SIGNALS = [
 	// Tier A: explicit genre labeling

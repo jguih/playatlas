@@ -5,7 +5,7 @@ import {
 } from "../engine.policy";
 import { makeScoringPolicy } from "../scoring-policy";
 import type { IScoringPolicyPort } from "../scoring-policy.port";
-import type { HorrorEvidenceGroup } from "./horror.types";
+import type { HorrorEvidenceGroup } from "./horror.groups";
 
 export const HORROR_GROUP_POLICY: ClassificationGroupPolicy<HorrorEvidenceGroup> = {
 	core_horror: { cap: 45 },

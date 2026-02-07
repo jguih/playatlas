@@ -73,7 +73,7 @@ export const makeGameClassificationAggregate = (
 	return Object.freeze(aggregate);
 };
 
-export const rehydrateGameClassification = (
+export const rehydrateGameClassificationAggregate = (
 	props: RehydrateGameClassificationProps,
 	deps: MakeGameClassificationDeps,
 ) => makeGameClassificationAggregate(props, deps);
