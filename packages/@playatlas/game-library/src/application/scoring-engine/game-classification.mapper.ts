@@ -12,7 +12,7 @@ import type { IScoreEngineRegistryPort } from "./engine.registry";
 import type { IGameClassificationFactoryPort } from "./game-classification.factory";
 import { scoreBreakdownSchema } from "./score-breakdown";
 
-export type IGameClassificationMapper = EntityMapper<
+export type IGameClassificationMapperPort = EntityMapper<
 	GameClassification,
 	GameClassificationModel,
 	GameClassificationResponseDto
@@ -26,8 +26,8 @@ export type GameClassificationMapperDeps = {
 export const makeGameClassificationMapper = ({
 	gameClassificationFactory,
 	scoreEngineRegistry,
-}: GameClassificationMapperDeps): IGameClassificationMapper => {
-	const _toDto: IGameClassificationMapper["toDto"] = (entity) => {
+}: GameClassificationMapperDeps): IGameClassificationMapperPort => {
+	const _toDto: IGameClassificationMapperPort["toDto"] = (entity) => {
 		const engine = scoreEngineRegistry.get(entity.getClassificationId());
 		const breakdown = engine.deserializeBreakdown(entity.getBreakdownJson());
 		const { success, data: publicBreakdown } = scoreBreakdownSchema.safeParse(breakdown);

@@ -10,12 +10,20 @@ import {
 	makeCompanyMapper,
 	makeCompletionStatusFactory,
 	makeCompletionStatusMapper,
+	makeGameClassificationFactory,
+	makeGameClassificationMapper,
 	makeGameFactory,
 	makeGameMapper,
 	makeGenreFactory,
 	makeGenreMapper,
+	makeHorrorEvidenceExtractor,
+	makeHorrorScoreEngine,
+	makeHorrorScoringPolicy,
 	makePlatformFactory,
 	makePlatformMapper,
+	makeRPGScoreEngine,
+	makeScoreEngineRegistry,
+	makeSurvivalScoreEngine,
 } from "@playatlas/game-library/application";
 import { makeApplyDefaultClassificationsCommandHandler } from "@playatlas/game-library/commands";
 import {
@@ -24,6 +32,7 @@ import {
 	makeCompletionStatusRepository,
 	makeGameAssetsContextFactory,
 	makeGameAssetsReindexer,
+	makeGameClassificationRepository,
 	makeGameLibraryUnitOfWork,
 	makeGameRelationshipStore,
 	makeGameRepository,
@@ -174,6 +183,30 @@ export const makeGameLibraryModule = ({
 		clock,
 	});
 
+	const horrorEvidenceExtractor = makeHorrorEvidenceExtractor();
+	const horrorScoringPolicy = makeHorrorScoringPolicy();
+	const horrorScoreEngine = makeHorrorScoreEngine({ horrorEvidenceExtractor, horrorScoringPolicy });
+
+	const rpgScoreEngine = makeRPGScoreEngine();
+	const survivalScoreEngine = makeSurvivalScoreEngine();
+
+	const scoreEngineRegistry = makeScoreEngineRegistry({
+		horrorScoreEngine,
+		rpgScoreEngine,
+		survivalScoreEngine,
+	});
+
+	const gameClassificationFactory = makeGameClassificationFactory({ clock });
+	const gameClassificationMapper = makeGameClassificationMapper({
+		gameClassificationFactory,
+		scoreEngineRegistry,
+	});
+	const gameClassificationRepository = makeGameClassificationRepository({
+		gameClassificationMapper,
+		getDb,
+		logService: buildLog("GameClassificationRepository"),
+	});
+
 	const gameLibrary: IGameLibraryModulePort = {
 		getCompanyRepository: () => companyRepository,
 		getGameRepository: () => gameRepository,
@@ -217,6 +250,10 @@ export const makeGameLibraryModule = ({
 		getClassificationMapper: () => classificationMapper,
 		getClassificationFactory: () => classificationFactory,
 		getClassificationRepository: () => classificationRepository,
+
+		getGameClassificationMapper: () => gameClassificationMapper,
+		getGameClassificationFactory: () => gameClassificationFactory,
+		getGameClassificationRepository: () => gameClassificationRepository,
 
 		init: () => {
 			applyDefaultClassificationsQueryHandler.execute({ type: "default" });

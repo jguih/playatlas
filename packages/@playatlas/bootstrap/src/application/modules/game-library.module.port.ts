@@ -5,6 +5,8 @@ import type {
 	ICompanyMapperPort,
 	ICompletionStatusFactoryPort,
 	ICompletionStatusMapperPort,
+	IGameClassificationFactoryPort,
+	IGameClassificationMapperPort,
 	IGameFactoryPort,
 	IGameLibraryUnitOfWorkPort,
 	IGameMapperPort,
@@ -20,6 +22,7 @@ import type {
 	ICompletionStatusRepositoryPort,
 	IGameAssetsContextFactoryPort,
 	IGameAssetsReindexerPort,
+	IGameClassificationRepositoryPort,
 	IGameRepositoryPort,
 	IGenreRepositoryPort,
 	IPlatformRepositoryPort,
@@ -75,6 +78,10 @@ export type IGameLibraryModulePort = Readonly<{
 	getClassificationMapper: () => IClassificationMapperPort;
 	getClassificationFactory: () => IClassificationFactoryPort;
 	getClassificationRepository: () => IClassificationRepositoryPort;
+
+	getGameClassificationMapper: () => IGameClassificationMapperPort;
+	getGameClassificationFactory: () => IGameClassificationFactoryPort;
+	getGameClassificationRepository: () => IGameClassificationRepositoryPort;
 
 	init: () => void;
 }>;
