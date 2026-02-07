@@ -185,7 +185,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 	};
 
 	const seedDefaultClassifications = () => {
-		gameLibrary.commands
+		gameLibrary.scoreEngine.commands
 			.getApplyDefaultClassificationsCommandHandler()
 			.execute({ type: "default" });
 	};
@@ -214,7 +214,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			gameLibrary: {
 				commands: {
 					getApplyDefaultClassificationsCommandHandler:
-						gameLibrary.commands.getApplyDefaultClassificationsCommandHandler,
+						gameLibrary.scoreEngine.commands.getApplyDefaultClassificationsCommandHandler,
 				},
 				seed: {
 					gameClassification: (classification) => {

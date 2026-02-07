@@ -29,8 +29,6 @@ export const bootstrapV1 = ({
 		},
 		gameLibrary: {
 			queries: {
-				getGetAllClassificationsQueryHandler:
-					gameLibrary.queries.getGetAllClassificationsQueryHandler,
 				getGetAllGamesQueryHandler: gameLibrary.queries.getGetAllGamesQueryHandler,
 				getGetAllCompaniesQueryHandler: gameLibrary.queries.getGetAllCompaniesQueryHandler,
 				getGetAllPlatformsQueryHandler: gameLibrary.queries.getGetAllPlatformsQueryHandler,
@@ -40,6 +38,14 @@ export const bootstrapV1 = ({
 			},
 			getGameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory,
 			getGameAssetsReindexer: gameLibrary.getGameAssetsReindexer,
+			scoreEngine: {
+				queries: {
+					getGetAllClassificationsQueryHandler:
+						gameLibrary.scoreEngine.queries.getGetAllClassificationsQueryHandler,
+					getGetAllGameClassificationsQueryHandler:
+						gameLibrary.scoreEngine.queries.getGetAllGameClassificationsQueryHandler,
+				},
+			},
 		},
 		auth: {
 			getExtensionAuthService: auth.getExtensionAuthService,

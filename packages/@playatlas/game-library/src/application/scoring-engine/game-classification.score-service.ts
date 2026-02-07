@@ -46,6 +46,23 @@ export const makeGameClassificationScoreService = ({
 
 			logService.info(`Calculating classification scores for ${games.length} game(s).`);
 
+			if (games.length === 0) {
+				const duration = performance.now() - start;
+				logService.success(
+					`Classification score calculation completed after ${duration.toFixed(1)}ms.`,
+					{
+						totalGames: games.length,
+						totalClassifications: classificationIds.length,
+						expectedOperations: games.length * classificationIds.length,
+						skipped: 0,
+						created: 0,
+						formula: "games x classifications - skipped",
+						durationMs: duration,
+					},
+				);
+				return;
+			}
+
 			try {
 				const ulid = monotonicFactory();
 				const genres = genreRepository.all();
@@ -59,7 +76,7 @@ export const makeGameClassificationScoreService = ({
 				let created = 0;
 
 				logService.info(`Operation summary:`, {
-					totalExistingClassifications: classificationIds.length,
+					totalClassifications: classificationIds.length,
 					existingRecords: gameClassifications.length,
 					genresSnapshotSize: genresSnapshot.size,
 				});

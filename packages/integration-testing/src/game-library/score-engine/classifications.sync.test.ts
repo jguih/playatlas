@@ -33,7 +33,7 @@ describe("Game Library Synchronization / Classifications", () => {
 				);
 			},
 		});
-		const firstQueryResult = api.gameLibrary.queries
+		const firstQueryResult = api.gameLibrary.scoreEngine.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute();
 		const firstIds = firstQueryResult.data.map((c) => c.Id);
@@ -56,7 +56,7 @@ describe("Game Library Synchronization / Classifications", () => {
 		});
 
 		// Act
-		const secondQueryResult = api.gameLibrary.queries
+		const secondQueryResult = api.gameLibrary.scoreEngine.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute();
 
@@ -79,12 +79,12 @@ describe("Game Library Synchronization / Classifications", () => {
 		root.testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler().execute({
 			type: "default",
 		});
-		const firstQueryResult = api.gameLibrary.queries
+		const firstQueryResult = api.gameLibrary.scoreEngine.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute();
 
 		// Act
-		const secondQueryResult = api.gameLibrary.queries
+		const secondQueryResult = api.gameLibrary.scoreEngine.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute({ lastCursor: firstQueryResult.nextCursor });
 
@@ -128,7 +128,9 @@ describe("Game Library Synchronization / Classifications", () => {
 		});
 
 		// Act
-		const result = api.gameLibrary.queries.getGetAllClassificationsQueryHandler().execute();
+		const result = api.gameLibrary.scoreEngine.queries
+			.getGetAllClassificationsQueryHandler()
+			.execute();
 		const returnedIds = result.data.map((c) => c.Id);
 
 		// Assert

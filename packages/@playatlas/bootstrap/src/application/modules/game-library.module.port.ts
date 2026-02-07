@@ -33,6 +33,7 @@ import type {
 	IGetAllClassificationsQueryHandler,
 	IGetAllCompaniesQueryHandlerPort,
 	IGetAllCompletionStatusesQueryHandlerPort,
+	IGetAllGameClassificationsQueryHandlerPort,
 	IGetAllGamesQueryHandlerPort,
 	IGetAllGenresQueryHandlerPort,
 	IGetAllPlatformsQueryHandlerPort,
@@ -40,16 +41,11 @@ import type {
 
 export type IGameLibraryModulePort = Readonly<{
 	queries: {
-		getGetAllClassificationsQueryHandler: () => IGetAllClassificationsQueryHandler;
 		getGetAllGamesQueryHandler: () => IGetAllGamesQueryHandlerPort;
 		getGetAllCompaniesQueryHandler: () => IGetAllCompaniesQueryHandlerPort;
 		getGetAllPlatformsQueryHandler: () => IGetAllPlatformsQueryHandlerPort;
 		getGetAllGenresQueryHandler: () => IGetAllGenresQueryHandlerPort;
 		getGetAllCompletionStatusesQueryHandler: () => IGetAllCompletionStatusesQueryHandlerPort;
-	};
-
-	commands: {
-		getApplyDefaultClassificationsCommandHandler: () => IApplyDefaultClassificationsCommandHandlerPort;
 	};
 
 	getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
@@ -78,6 +74,15 @@ export type IGameLibraryModulePort = Readonly<{
 	getGameLibraryUnitOfWork: () => IGameLibraryUnitOfWorkPort;
 
 	scoreEngine: {
+		queries: {
+			getGetAllClassificationsQueryHandler: () => IGetAllClassificationsQueryHandler;
+			getGetAllGameClassificationsQueryHandler: () => IGetAllGameClassificationsQueryHandlerPort;
+		};
+
+		commands: {
+			getApplyDefaultClassificationsCommandHandler: () => IApplyDefaultClassificationsCommandHandlerPort;
+		};
+
 		getClassificationMapper: () => IClassificationMapperPort;
 		getClassificationFactory: () => IClassificationFactoryPort;
 		getClassificationRepository: () => IClassificationRepositoryPort;

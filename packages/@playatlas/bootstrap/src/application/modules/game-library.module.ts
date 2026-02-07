@@ -45,6 +45,7 @@ import {
 	makeGetAllClassificationsQueryHandler,
 	makeGetAllCompaniesQueryHandler,
 	makeGetAllCompletionStatusesQueryHandler,
+	makeGetAllGameClassificationsQueryHandler,
 	makeGetAllGamesQueryHandler,
 	makeGetAllGenresQueryHandler,
 	makeGetAllPlatformQueryHandler,
@@ -121,6 +122,12 @@ const makeGameLibraryScoreEngineModule = ({
 		scoreEngineRegistry,
 		logService: buildLog("GameClassificationScoreService"),
 	});
+	const getAllGameClassificationsQueryHandler = makeGetAllGameClassificationsQueryHandler({
+		gameClassificationRepository,
+		gameClassificationMapper,
+		clock,
+		logService: buildLog("GetAllGameClassificationsQueryHandler"),
+	});
 
 	return {
 		horrorEvidenceExtractor,
@@ -148,6 +155,7 @@ const makeGameLibraryScoreEngineModule = ({
 
 		query: {
 			getAllClassificationsQueryHandler,
+			getAllGameClassificationsQueryHandler,
 		},
 	};
 };
@@ -265,18 +273,11 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 		getCompletionStatusRepository: () => completionStatusRepository,
 
 		queries: {
-			getGetAllClassificationsQueryHandler: () =>
-				scoreEngine.query.getAllClassificationsQueryHandler,
 			getGetAllGamesQueryHandler: () => queryHandlerGetAllGames,
 			getGetAllCompaniesQueryHandler: () => queryHandlerGetAllCompanies,
 			getGetAllPlatformsQueryHandler: () => queryHandlerGetAllPlatforms,
 			getGetAllGenresQueryHandler: () => queryHandlerGetAllGenres,
 			getGetAllCompletionStatusesQueryHandler: () => queryHandlerGetAllCompletionStatuses,
-		},
-
-		commands: {
-			getApplyDefaultClassificationsCommandHandler: () =>
-				scoreEngine.command.applyDefaultClassificationsCommandHandler,
 		},
 
 		getGameAssetsContextFactory: () => gameAssetsContextFactory,
@@ -300,6 +301,18 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 		getGameLibraryUnitOfWork: () => gameLibraryUnitOfWork,
 
 		scoreEngine: {
+			queries: {
+				getGetAllClassificationsQueryHandler: () =>
+					scoreEngine.query.getAllClassificationsQueryHandler,
+				getGetAllGameClassificationsQueryHandler: () =>
+					scoreEngine.query.getAllGameClassificationsQueryHandler,
+			},
+
+			commands: {
+				getApplyDefaultClassificationsCommandHandler: () =>
+					scoreEngine.command.applyDefaultClassificationsCommandHandler,
+			},
+
 			getClassificationMapper: () => scoreEngine.classificationMapper,
 			getClassificationFactory: () => scoreEngine.classificationFactory,
 			getClassificationRepository: () => scoreEngine.classificationRepository,

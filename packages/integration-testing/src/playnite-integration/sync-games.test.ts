@@ -21,7 +21,7 @@ describe("Game Library Sync", () => {
 		unsubscribe();
 	});
 
-	it.only("adds games", async () => {
+	it("adds games", async () => {
 		// Arrange
 		const sampleSize = 5000;
 		const addedItems = factory.getSyncGameRequestDtoFactory().buildList(sampleSize);

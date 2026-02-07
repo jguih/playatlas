@@ -9,7 +9,7 @@ describe("Game Library / Score Engine Classifications", () => {
 		root.testApi.gameLibrary.commands
 			.getApplyDefaultClassificationsCommandHandler()
 			.execute({ type: "default" });
-		const { data: classifications } = api.gameLibrary.queries
+		const { data: classifications } = api.gameLibrary.scoreEngine.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute();
 		const classificationIds = classifications.map((c) => c.Id);
@@ -32,7 +32,7 @@ describe("Game Library / Score Engine Classifications", () => {
 		handler.execute({ type: "default" });
 		handler.execute({ type: "default" });
 
-		const { data: classifications } = api.gameLibrary.queries
+		const { data: classifications } = api.gameLibrary.scoreEngine.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute();
 
@@ -61,7 +61,7 @@ describe("Game Library / Score Engine Classifications", () => {
 			},
 		});
 
-		const firstQueryResult = api.gameLibrary.queries
+		const firstQueryResult = api.gameLibrary.scoreEngine.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute();
 
@@ -80,7 +80,7 @@ describe("Game Library / Score Engine Classifications", () => {
 			},
 		});
 
-		const secondQueryResult = api.gameLibrary.queries
+		const secondQueryResult = api.gameLibrary.scoreEngine.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute();
 
@@ -105,7 +105,7 @@ describe("Game Library / Score Engine Classifications", () => {
 			type: "default",
 		});
 
-		const firstQueryResult = api.gameLibrary.queries
+		const firstQueryResult = api.gameLibrary.scoreEngine.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute();
 
@@ -115,7 +115,7 @@ describe("Game Library / Score Engine Classifications", () => {
 			buildDefaultClassificationsOverride: () => [],
 		});
 
-		const secondQueryResult = api.gameLibrary.queries
+		const secondQueryResult = api.gameLibrary.scoreEngine.queries
 			.getGetAllClassificationsQueryHandler()
 			.execute();
 
@@ -143,7 +143,9 @@ describe("Game Library / Score Engine Classifications", () => {
 		// Act
 		handler.execute({ type: "default" });
 
-		const result = api.gameLibrary.queries.getGetAllClassificationsQueryHandler().execute();
+		const result = api.gameLibrary.scoreEngine.queries
+			.getGetAllClassificationsQueryHandler()
+			.execute();
 
 		// Assert
 		expect(result.data).toHaveLength(DEFAULT_CLASSIFICATIONS.length);

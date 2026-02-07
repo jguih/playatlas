@@ -21,6 +21,7 @@ import type {
 	IGetAllClassificationsQueryHandler,
 	IGetAllCompaniesQueryHandlerPort,
 	IGetAllCompletionStatusesQueryHandlerPort,
+	IGetAllGameClassificationsQueryHandlerPort,
 	IGetAllGamesQueryHandlerPort,
 	IGetAllGenresQueryHandlerPort,
 	IGetAllPlatformsQueryHandlerPort,
@@ -43,7 +44,6 @@ export type PlayAtlasApiV1 = {
 	};
 	gameLibrary: {
 		queries: {
-			getGetAllClassificationsQueryHandler: () => IGetAllClassificationsQueryHandler;
 			getGetAllGamesQueryHandler: () => IGetAllGamesQueryHandlerPort;
 			getGetAllCompaniesQueryHandler: () => IGetAllCompaniesQueryHandlerPort;
 			getGetAllPlatformsQueryHandler: () => IGetAllPlatformsQueryHandlerPort;
@@ -52,6 +52,12 @@ export type PlayAtlasApiV1 = {
 		};
 		getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
 		getGameAssetsReindexer: () => IGameAssetsReindexerPort;
+		scoreEngine: {
+			queries: {
+				getGetAllClassificationsQueryHandler: () => IGetAllClassificationsQueryHandler;
+				getGetAllGameClassificationsQueryHandler: () => IGetAllGameClassificationsQueryHandlerPort;
+			};
+		};
 	};
 	auth: {
 		getExtensionAuthService: () => IExtensionAuthServicePort;
