@@ -6,7 +6,7 @@ import { api, factory, root } from "../../vitest.global.setup";
 describe("Game Library Synchronization / Genre", () => {
 	it("Sync cursor invariant: correctly returns updated items across distinct timestamps", () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
 		const genres = factory.getGenreFactory().buildList(500);
 		root.seedGenre(genres);
 
@@ -15,7 +15,7 @@ describe("Game Library Synchronization / Genre", () => {
 		const firstData = firstResult.data;
 		const firstIds = new Set(firstData.map((g) => g.Id));
 
-		root.clock.advance(1000);
+		root.testApi.getClock().advance(1000);
 		const newGenres = factory
 			.getGenreFactory()
 			.buildList(500, { name: `${faker.book.genre()} (New)` });

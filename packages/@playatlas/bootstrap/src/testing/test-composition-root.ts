@@ -1,4 +1,4 @@
-import { makeEventBus } from "@playatlas/common/application";
+import { makeEventBus, type ILogServicePort } from "@playatlas/common/application";
 import type { AppEnvironmentVariables } from "@playatlas/common/infra";
 import type {
 	Company,
@@ -10,12 +10,22 @@ import type {
 import { makeTestGameFactory } from "@playatlas/game-library/testing";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapV1, type PlayAtlasApiV1 } from "../application";
-import { makeAuthModule, makeGameLibraryModule, makeSystemModule } from "../application/modules";
+import {
+	makeAuthModule,
+	makeGameLibraryModule,
+	makeSystemModule,
+	type IAuthModulePort,
+	type IGameLibraryModulePort,
+	type IInfraModulePort,
+	type IPlayniteIntegrationModulePort,
+	type ISystemModulePort,
+} from "../application/modules";
 import { makeGameSessionModule } from "../application/modules/game-session.module";
+import type { IGameSessionModulePort } from "../application/modules/game-session.module.port";
 import { makeInfraModule } from "../application/modules/infra.module";
 import { makePlayniteIntegrationModule } from "../application/modules/playnite-integration.module";
 import { makeTestClock, type TestClock } from "./test-clock";
-import { type ITestFactoryModulePort, makeTestFactoryModule } from "./test-factory.module";
+import { makeTestFactoryModule, type ITestFactoryModulePort } from "./test-factory.module";
 import type { PlayAtlasTestApiV1 } from "./test.api.v1";
 
 export type TestCompositionRootDeps = {
@@ -25,7 +35,7 @@ export type TestCompositionRootDeps = {
 export type TestRoot = {
 	buildAsync: () => Promise<PlayAtlasApiV1>;
 	cleanup: () => Promise<void>;
-	factory: ITestFactoryModulePort;
+	getFactory: () => ITestFactoryModulePort;
 	seedCompany: (company: Company | Company[]) => void;
 	seedGame: (game: Game | Game[]) => void;
 	seedGenre: (genre: Genre | Genre[]) => void;
@@ -33,7 +43,7 @@ export type TestRoot = {
 	seedCompletionStatus: (completionStatus: CompletionStatus | CompletionStatus[]) => void;
 	seedGameRelationships: () => void;
 	seedDefaultClassifications: () => void;
-	gameRelationshipOptions: {
+	getGameRelationshipOptions: () => {
 		completionStatusList: CompletionStatus[];
 		companyList: Company[];
 		genreList: Genre[];
@@ -41,83 +51,104 @@ export type TestRoot = {
 	};
 	testApi: PlayAtlasTestApiV1;
 	resetDbAsync: () => Promise<void>;
+};
+
+type Self = {
+	system: ISystemModulePort;
+	infra: IInfraModulePort;
+	gameLibrary: IGameLibraryModulePort;
+	auth: IAuthModulePort;
+	playniteIntegration: IPlayniteIntegrationModulePort;
+	gameSession: IGameSessionModulePort;
+	backendLogService: ILogServicePort;
+	factory: ITestFactoryModulePort;
+	gameRelationshipOptions: {
+		completionStatusList: CompletionStatus[];
+		companyList: Company[];
+		genreList: Genre[];
+		platformList: Platform[];
+	};
 	clock: TestClock;
 };
 
 export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestRoot => {
-	const system = makeSystemModule({ env });
+	let self: Self | null = null;
 
-	const logServiceFactory = makeLogServiceFactory({
-		getCurrentLogLevel: () => system.getSystemConfig().getLogLevel(),
-	});
-	const backendLogService = logServiceFactory.build("SvelteBackend");
-
-	const eventBus = makeEventBus({
-		logService: logServiceFactory.build("EventBus"),
-	});
-
-	const clock = makeTestClock();
-
-	const infra = makeInfraModule({
-		logServiceFactory,
-		envService: system.getEnvService(),
-		systemConfig: system.getSystemConfig(),
-	});
-
-	const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus, clock };
-
-	const gameLibrary = makeGameLibraryModule({
-		...baseDeps,
-		fileSystemService: infra.getFsService(),
-		systemConfig: system.getSystemConfig(),
-	});
-
-	const auth = makeAuthModule({
-		...baseDeps,
-		signatureService: infra.getSignatureService(),
-	});
-
-	const factory = makeTestFactoryModule({
-		companyFactory: gameLibrary.getCompanyFactory(),
-		completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
-		platformFactory: gameLibrary.getPlatformFactory(),
-		genreFactory: gameLibrary.getGenreFactory(),
-		extensionRegistrationFactory: auth.getExtensionRegistrationFactory(),
-		clock,
-	});
-
-	const gameRelationshipOptions = {
-		completionStatusList: factory.getCompletionStatusFactory().buildDefaultList(),
-		companyList: factory.getCompanyFactory().buildList(200),
-		genreList: factory.getGenreFactory().buildList(200),
-		platformList: factory.getPlatformFactory().buildList(30),
+	const withSelf = <T>(fn: (self: Self) => T): T => {
+		if (!self) throw new Error("Test root not built. Call buildAsync() first.");
+		return fn(self);
 	};
 
-	const setupGameFactory = () => {
-		const { companyList, completionStatusList, genreList, platformList } = gameRelationshipOptions;
+	const setupGameFactory = (self: Self) => {
+		const { companyList, completionStatusList, genreList, platformList } =
+			self.gameRelationshipOptions;
 
 		const completionStatusOptions = completionStatusList.map((c) => c.getId());
 		const companyOptions = companyList.map((c) => c.getId());
 		const genreOptions = genreList.map((g) => g.getId());
 		const platformOptions = platformList.map((p) => p.getId());
 
-		factory.setGameFactory(
+		self.factory.setGameFactory(
 			makeTestGameFactory({
 				companyOptions,
 				completionStatusOptions,
 				genreOptions,
 				platformOptions,
-				gameFactory: gameLibrary.getGameFactory(),
-				gameMapper: gameLibrary.getGameMapper(),
+				gameFactory: self.gameLibrary.getGameFactory(),
+				gameMapper: self.gameLibrary.getGameMapper(),
 			}),
 		);
 	};
 
+	const initEnvironmentAsync = async (self: Self) => {
+		self.backendLogService.info("Initializing environment");
+		await self.infra.initEnvironment();
+		self.backendLogService.info("Initializing database");
+		await self.infra.initDb();
+		await self.playniteIntegration.getLibraryManifestService().write();
+	};
+
 	const buildAsync = async (): Promise<PlayAtlasApiV1> => {
-		backendLogService.info("Initializing environment");
-		await infra.initEnvironment();
-		backendLogService.info("Initializing database");
-		await infra.initDb();
+		const system = makeSystemModule({ env });
+
+		const logServiceFactory = makeLogServiceFactory({
+			getCurrentLogLevel: () => system.getSystemConfig().getLogLevel(),
+		});
+		const backendLogService = logServiceFactory.build("SvelteBackend");
+
+		const eventBus = makeEventBus({
+			logService: logServiceFactory.build("EventBus"),
+		});
+
+		const clock = makeTestClock();
+
+		const infra = makeInfraModule({
+			logServiceFactory,
+			envService: system.getEnvService(),
+			systemConfig: system.getSystemConfig(),
+		});
+
+		const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus, clock };
+
+		const gameLibrary = makeGameLibraryModule({
+			...baseDeps,
+			fileSystemService: infra.getFsService(),
+			systemConfig: system.getSystemConfig(),
+		});
+
+		const auth = makeAuthModule({
+			...baseDeps,
+			signatureService: infra.getSignatureService(),
+		});
+
+		const factory = makeTestFactoryModule({
+			companyFactory: gameLibrary.getCompanyFactory(),
+			completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
+			platformFactory: gameLibrary.getPlatformFactory(),
+			genreFactory: gameLibrary.getGenreFactory(),
+			extensionRegistrationFactory: auth.getExtensionRegistrationFactory(),
+			clock,
+		});
 
 		const playniteIntegration = makePlayniteIntegrationModule({
 			...baseDeps,
@@ -133,7 +164,27 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			gameRepository: gameLibrary.getGameRepository(),
 		});
 
-		setupGameFactory();
+		self = {
+			auth,
+			backendLogService,
+			gameLibrary,
+			gameSession,
+			infra,
+			playniteIntegration,
+			system,
+			factory,
+			gameRelationshipOptions: {
+				completionStatusList: factory.getCompletionStatusFactory().buildDefaultList(),
+				companyList: factory.getCompanyFactory().buildList(200),
+				genreList: factory.getGenreFactory().buildList(200),
+				platformList: factory.getPlatformFactory().buildList(30),
+			},
+			clock,
+		};
+
+		setupGameFactory(self);
+
+		await initEnvironmentAsync(self);
 
 		return bootstrapV1({
 			backendLogService,
@@ -150,54 +201,75 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 	};
 
 	const cleanup = async () => {
-		const dataDir = system.getEnvService().getDataDir();
-		backendLogService.warning(`Deleting integration test data dir at ${dataDir}`);
-		await infra.getFsService().rm(dataDir, { force: true, recursive: true });
+		await withSelf(async ({ system, backendLogService, infra }) => {
+			const dataDir = system.getEnvService().getDataDir();
+			backendLogService.warning(`Deleting integration test data dir at ${dataDir}`);
+			await infra.getFsService().rm(dataDir, { force: true, recursive: true });
+		});
 	};
 
 	const seedCompany = (company: Company | Company[]) => {
-		gameLibrary.getCompanyRepository().upsert(company);
+		withSelf(({ gameLibrary }) => {
+			gameLibrary.getCompanyRepository().upsert(company);
+		});
 	};
 
 	const seedGame = (game: Game | Game[]) => {
-		gameLibrary.getGameRepository().upsert(game);
+		withSelf(({ gameLibrary }) => {
+			gameLibrary.getGameRepository().upsert(game);
+		});
 	};
 
 	const seedGenre = (genre: Genre | Genre[]) => {
-		gameLibrary.getGenreRepository().upsert(genre);
+		withSelf(({ gameLibrary }) => {
+			gameLibrary.getGenreRepository().upsert(genre);
+		});
 	};
 
 	const seedPlatform = (platform: Platform | Platform[]) => {
-		gameLibrary.getPlatformRepository().upsert(platform);
+		withSelf(({ gameLibrary }) => {
+			gameLibrary.getPlatformRepository().upsert(platform);
+		});
 	};
 
 	const seedCompletionStatus = (completionStatus: CompletionStatus | CompletionStatus[]) => {
-		gameLibrary.getCompletionStatusRepository().upsert(completionStatus);
+		withSelf(({ gameLibrary }) => {
+			gameLibrary.getCompletionStatusRepository().upsert(completionStatus);
+		});
 	};
 
 	const seedGameRelationships = () => {
-		const { companyList, completionStatusList, genreList, platformList } = gameRelationshipOptions;
+		withSelf(({ gameLibrary, gameRelationshipOptions }) => {
+			const { companyList, completionStatusList, genreList, platformList } =
+				gameRelationshipOptions;
 
-		gameLibrary.getCompletionStatusRepository().upsert(completionStatusList);
-		gameLibrary.getCompanyRepository().upsert(companyList);
-		gameLibrary.getGenreRepository().upsert(genreList);
-		gameLibrary.getPlatformRepository().upsert(platformList);
+			gameLibrary.getCompletionStatusRepository().upsert(completionStatusList);
+			gameLibrary.getCompanyRepository().upsert(companyList);
+			gameLibrary.getGenreRepository().upsert(genreList);
+			gameLibrary.getPlatformRepository().upsert(platformList);
+		});
 	};
 
 	const seedDefaultClassifications = () => {
-		gameLibrary.scoreEngine.commands
-			.getApplyDefaultClassificationsCommandHandler()
-			.execute({ type: "default" });
+		withSelf(({ gameLibrary }) => {
+			gameLibrary.scoreEngine.commands
+				.getApplyDefaultClassificationsCommandHandler()
+				.execute({ type: "default" });
+		});
 	};
 
 	const resetDbAsync = async () => {
-		infra.getDb().close();
-		await infra.initDb();
+		await withSelf(async ({ infra }) => {
+			infra.getDb().close();
+			await infra.initDb();
+		});
 	};
 
 	return {
 		buildAsync,
-		factory,
+		getFactory: () => {
+			return withSelf(({ factory }) => factory);
+		},
 		cleanup,
 		seedCompany,
 		seedGame,
@@ -206,19 +278,18 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		seedCompletionStatus,
 		seedGameRelationships,
 		seedDefaultClassifications,
-		gameRelationshipOptions,
+		getGameRelationshipOptions: () => {
+			return withSelf(({ gameRelationshipOptions }) => gameRelationshipOptions);
+		},
 		resetDbAsync,
-		clock,
 		testApi: {
-			clock,
+			getClock: () => withSelf(({ clock }) => clock),
 			gameLibrary: {
 				commands: {
-					getApplyDefaultClassificationsCommandHandler:
-						gameLibrary.scoreEngine.commands.getApplyDefaultClassificationsCommandHandler,
-				},
-				seed: {
-					gameClassification: (classification) => {
-						gameLibrary.scoreEngine.getGameClassificationRepository().upsert(classification);
+					getApplyDefaultClassificationsCommandHandler: () => {
+						return withSelf(({ gameLibrary }) =>
+							gameLibrary.scoreEngine.commands.getApplyDefaultClassificationsCommandHandler(),
+						);
 					},
 				},
 			},

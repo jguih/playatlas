@@ -1,14 +1,14 @@
 import type { ClassificationId } from "@playatlas/common/domain";
 import { ScoreEngineSerializationError } from "../../../domain";
 import { scoreBreakdownSchema, type ScoreBreakdown } from "../score-breakdown";
-import type { IScoreEnginePort } from "../score-engine.port";
+import type { IScoreEnginePort, ScoreEngineBaseDeps } from "../score-engine.port";
 import type { IHorrorEvidenceExtractorPort } from "./horror.evidence-extractor";
 import type { IHorrorScoringPolicyPort } from "./horror.policy";
 import { HORROR_ENGINE_VERSION, type HorrorEvidenceGroup } from "./horror.score-engine.meta";
 
 export type IHorrorScoreEnginePort = IScoreEnginePort<HorrorEvidenceGroup>;
 
-export type HorrorScoreEngineDeps = {
+export type HorrorScoreEngineDeps = ScoreEngineBaseDeps & {
 	horrorEvidenceExtractor: IHorrorEvidenceExtractorPort;
 	horrorScoringPolicy: IHorrorScoringPolicyPort;
 };
@@ -16,12 +16,14 @@ export type HorrorScoreEngineDeps = {
 export const makeHorrorScoreEngine = ({
 	horrorEvidenceExtractor,
 	horrorScoringPolicy,
+	engineVersion,
 }: HorrorScoreEngineDeps): IHorrorScoreEnginePort => {
 	const classificationId: ClassificationId = "HORROR";
+	const version = engineVersion ?? HORROR_ENGINE_VERSION;
 
 	return {
 		id: classificationId,
-		version: HORROR_ENGINE_VERSION,
+		version,
 		score: ({ game, genresSnapshot }) => {
 			const evidence = horrorEvidenceExtractor.extract(game, { genres: genresSnapshot });
 			const result = horrorScoringPolicy.apply(evidence);
@@ -32,7 +34,7 @@ export const makeHorrorScoreEngine = ({
 			if (!success)
 				throw new ScoreEngineSerializationError(
 					"Failed to deserialize score engine breakdown JSON string",
-					{ engineVersion: HORROR_ENGINE_VERSION, classificationId },
+					{ engineVersion: version, classificationId },
 					error,
 				);
 			return breakdown as unknown as ScoreBreakdown<HorrorEvidenceGroup>;

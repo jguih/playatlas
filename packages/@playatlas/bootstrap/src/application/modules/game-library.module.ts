@@ -25,6 +25,7 @@ import {
 	makeRPGScoreEngine,
 	makeScoreEngineRegistry,
 	makeSurvivalScoreEngine,
+	type EnginesMap,
 } from "@playatlas/game-library/application";
 import { makeApplyDefaultClassificationsCommandHandler } from "@playatlas/game-library/commands";
 import {
@@ -39,6 +40,7 @@ import {
 	makeGameRepository,
 	makeGenreRepository,
 	makePlatformRepository,
+	type IGameRepositoryPort,
 	type IGenreRepositoryPort,
 } from "@playatlas/game-library/infra";
 import {
@@ -52,7 +54,13 @@ import {
 } from "@playatlas/game-library/queries";
 import type { IGameLibraryModulePort } from "./game-library.module.port";
 
-export type GameLibraryModuleDeps = {
+export type GameLibraryModuleScoreEngineDeps = {
+	scoreEngine?: {
+		engineOverride?: Partial<EnginesMap>;
+	};
+};
+
+export type GameLibraryModuleDeps = GameLibraryModuleScoreEngineDeps & {
 	getDb: DbGetter;
 	logServiceFactory: ILogServiceFactoryPort;
 	fileSystemService: IFileSystemServicePort;
@@ -62,6 +70,7 @@ export type GameLibraryModuleDeps = {
 
 type GameLibraryScoreModuleDeps = GameLibraryModuleDeps & {
 	genreRepository: IGenreRepositoryPort;
+	gameRepository: IGameRepositoryPort;
 };
 
 const makeGameLibraryScoreEngineModule = ({
@@ -69,15 +78,22 @@ const makeGameLibraryScoreEngineModule = ({
 	logServiceFactory,
 	clock,
 	genreRepository,
-}: GameLibraryScoreModuleDeps) => {
+	gameRepository,
+	scoreEngine,
+}: GameLibraryScoreModuleDeps): IGameLibraryModulePort["scoreEngine"] => {
 	const buildLog = (ctx: string) => logServiceFactory.build(ctx);
 
 	const horrorEvidenceExtractor = makeHorrorEvidenceExtractor();
 	const horrorScoringPolicy = makeHorrorScoringPolicy();
-	const horrorScoreEngine = makeHorrorScoreEngine({ horrorEvidenceExtractor, horrorScoringPolicy });
+	const horrorScoreEngine =
+		scoreEngine?.engineOverride?.HORROR ??
+		makeHorrorScoreEngine({
+			horrorEvidenceExtractor,
+			horrorScoringPolicy,
+		});
 
-	const rpgScoreEngine = makeRPGScoreEngine();
-	const survivalScoreEngine = makeSurvivalScoreEngine();
+	const rpgScoreEngine = scoreEngine?.engineOverride?.RPG ?? makeRPGScoreEngine();
+	const survivalScoreEngine = scoreEngine?.engineOverride?.SURVIVAL ?? makeSurvivalScoreEngine();
 
 	const scoreEngineRegistry = makeScoreEngineRegistry({
 		horrorScoreEngine,
@@ -117,6 +133,7 @@ const makeGameLibraryScoreEngineModule = ({
 	const gameClassificationScoreService = makeGameClassificationScoreService({
 		gameClassificationFactory,
 		gameClassificationRepository,
+		gameRepository,
 		genreRepository,
 		clock,
 		scoreEngineRegistry,
@@ -130,33 +147,25 @@ const makeGameLibraryScoreEngineModule = ({
 	});
 
 	return {
-		horrorEvidenceExtractor,
-		horrorScoringPolicy,
-		horrorScoreEngine,
-
-		rpgScoreEngine,
-
-		survivalScoreEngine,
-
-		scoreEngineRegistry,
-
-		classificationFactory,
-		classificationMapper,
-		classificationRepository,
-
-		gameClassificationFactory,
-		gameClassificationMapper,
-		gameClassificationRepository,
-		gameClassificationScoreService,
-
-		command: {
-			applyDefaultClassificationsCommandHandler,
+		queries: {
+			getGetAllClassificationsQueryHandler: () => getAllClassificationsQueryHandler,
+			getGetAllGameClassificationsQueryHandler: () => getAllGameClassificationsQueryHandler,
 		},
 
-		query: {
-			getAllClassificationsQueryHandler,
-			getAllGameClassificationsQueryHandler,
+		commands: {
+			getApplyDefaultClassificationsCommandHandler: () => applyDefaultClassificationsCommandHandler,
 		},
+
+		getClassificationMapper: () => classificationMapper,
+		getClassificationFactory: () => classificationFactory,
+		getClassificationRepository: () => classificationRepository,
+
+		getGameClassificationMapper: () => gameClassificationMapper,
+		getGameClassificationFactory: () => gameClassificationFactory,
+		getGameClassificationRepository: () => gameClassificationRepository,
+		getGameClassificationScoreService: () => gameClassificationScoreService,
+
+		getScoreEngineRegistry: () => scoreEngineRegistry,
 	};
 };
 
@@ -248,7 +257,11 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 		logService: buildLog("GameAssetsReindexer"),
 	});
 
-	const scoreEngine = makeGameLibraryScoreEngineModule({ ...deps, genreRepository });
+	const scoreEngine = makeGameLibraryScoreEngineModule({
+		...deps,
+		genreRepository,
+		gameRepository,
+	});
 
 	const gameLibraryUnitOfWork = makeGameLibraryUnitOfWork({
 		companyFactory,
@@ -261,7 +274,7 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 		gameRepository,
 		platformFactory,
 		platformRepository,
-		gameClassificationScoreService: scoreEngine.gameClassificationScoreService,
+		gameClassificationScoreService: scoreEngine.getGameClassificationScoreService(),
 		getDb,
 	});
 
@@ -300,33 +313,12 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 
 		getGameLibraryUnitOfWork: () => gameLibraryUnitOfWork,
 
-		scoreEngine: {
-			queries: {
-				getGetAllClassificationsQueryHandler: () =>
-					scoreEngine.query.getAllClassificationsQueryHandler,
-				getGetAllGameClassificationsQueryHandler: () =>
-					scoreEngine.query.getAllGameClassificationsQueryHandler,
-			},
-
-			commands: {
-				getApplyDefaultClassificationsCommandHandler: () =>
-					scoreEngine.command.applyDefaultClassificationsCommandHandler,
-			},
-
-			getClassificationMapper: () => scoreEngine.classificationMapper,
-			getClassificationFactory: () => scoreEngine.classificationFactory,
-			getClassificationRepository: () => scoreEngine.classificationRepository,
-
-			getGameClassificationMapper: () => scoreEngine.gameClassificationMapper,
-			getGameClassificationFactory: () => scoreEngine.gameClassificationFactory,
-			getGameClassificationRepository: () => scoreEngine.gameClassificationRepository,
-			getGameClassificationScoreService: () => scoreEngine.gameClassificationScoreService,
-
-			getScoreEngineRegistry: () => scoreEngine.scoreEngineRegistry,
-		},
+		scoreEngine,
 
 		init: () => {
-			scoreEngine.command.applyDefaultClassificationsCommandHandler.execute({ type: "default" });
+			scoreEngine.commands
+				.getApplyDefaultClassificationsCommandHandler()
+				.execute({ type: "default" });
 		},
 	};
 	return Object.freeze(gameLibrary);

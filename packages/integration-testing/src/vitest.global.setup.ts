@@ -1,17 +1,11 @@
-import { makeTestCompositionRoot } from "@playatlas/bootstrap/testing";
 import { join } from "path";
+import { buildTestCompositionRoot } from "./test.lib";
 
-export const root = makeTestCompositionRoot({
-	env: {
-		PLAYATLAS_LOG_LEVEL: process.env.PLAYATLAS_LOG_LEVEL,
-		PLAYATLAS_MIGRATIONS_DIR: process.env.PLAYATLAS_MIGRATIONS_DIR,
-		PLAYATLAS_USE_IN_MEMORY_DB: process.env.PLAYATLAS_USE_IN_MEMORY_DB,
-		PLAYATLAS_DATA_DIR: process.env.PLAYATLAS_DATA_DIR,
-	},
-});
-export const factory = root.factory;
+export const root = buildTestCompositionRoot();
 
 export const api = await root.buildAsync();
+
+export const factory = root.getFactory();
 
 export const fixturesDirPath = join(import.meta.dirname, "/fixtures");
 

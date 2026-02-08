@@ -244,7 +244,7 @@ describe("Game Library / Game", () => {
 
 	it("deletion don't actually delete games, but mark them as deleted", async () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
 
 		const syncItems = factory.getSyncGameRequestDtoFactory().buildList(200);
 
@@ -259,8 +259,8 @@ describe("Game Library / Game", () => {
 			.executeAsync(seedCommand);
 		expect(seedResult.success).toBe(true);
 
-		root.clock.advance(1000);
-		const deletedAtTime = root.clock.now();
+		root.testApi.getClock().advance(1000);
+		const deletedAtTime = root.testApi.getClock().now();
 
 		const itemsToDelete = faker.helpers.arrayElements(syncItems, 20);
 		const deleteCommand = makeSyncGamesCommand({

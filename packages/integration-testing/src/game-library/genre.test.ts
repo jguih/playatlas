@@ -38,7 +38,7 @@ describe("Game Library / Genre", () => {
 
 	it("ENFORCES sync cursor invariant: ORDER BY LastUpdatedAt ASC, Id ASC", () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
 		const genres = factory.getGenreFactory().buildList(500);
 		root.seedGenre(genres);
 
@@ -47,7 +47,7 @@ describe("Game Library / Genre", () => {
 		const firstData = firstResult.data;
 		const firstIds = new Set(firstData.map((g) => g.Id));
 
-		root.clock.advance(1000);
+		root.testApi.getClock().advance(1000);
 		const newGenres = factory
 			.getGenreFactory()
 			.buildList(500, { name: `${faker.book.genre()} (New)` });

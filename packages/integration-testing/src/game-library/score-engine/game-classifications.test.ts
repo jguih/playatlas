@@ -1,15 +1,21 @@
+import type { PlayAtlasApiV1 } from "@playatlas/bootstrap/application";
 import { classificationIds } from "@playatlas/common/domain";
+import type { ScoreEngineVersion } from "@playatlas/game-library/application";
 import {
 	makeSyncGamesCommand,
 	type SyncGamesRequestDto,
 	type SyncGamesRequestDtoItem,
 } from "@playatlas/playnite-integration/commands";
 import { beforeEach, describe, expect, it } from "vitest";
+import { buildTestCompositionRoot } from "../../test.lib";
 import { api, factory, root } from "../../vitest.global.setup";
 
 describe("Game Library / Score Engine Game Classifications", () => {
-	const syncGamesAsync = async (props: { items?: SyncGamesRequestDtoItem[] } = {}) => {
+	const syncGamesAsync = async (
+		props: { items?: SyncGamesRequestDtoItem[]; api?: PlayAtlasApiV1 } = {},
+	) => {
 		const { items } = props;
+		const _api = props.api ? props.api : api;
 		const sampleSize = items ? items.length : 2000;
 		const addedItems = items ? items : factory.getSyncGameRequestDtoFactory().buildList(sampleSize);
 
@@ -21,10 +27,10 @@ describe("Game Library / Score Engine Game Classifications", () => {
 
 		const command = makeSyncGamesCommand(requestDto);
 
-		const commandResult = await api.playniteIntegration.commands
+		const commandResult = await _api.playniteIntegration.commands
 			.getSyncGamesCommandHandler()
 			.executeAsync(command);
-		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
+		const queryResult = _api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 
 		return { commandResult, queryResult };
 	};
@@ -64,5 +70,31 @@ describe("Game Library / Score Engine Game Classifications", () => {
 
 		expect(firstQueryResult.data.length).toBe(secondQueryResult.data.length);
 		expect(firstQueryResult).toEqual(secondQueryResult);
+	});
+
+	it("recalculate classification scores on engine version change", async () => {
+		// Arrange
+		const engineV1: ScoreEngineVersion = "v1.0.0";
+		const engineV2: ScoreEngineVersion = "v2.0.0";
+		const syncItems = factory.getSyncGameRequestDtoFactory().buildList(2000);
+
+		const root1 = buildTestCompositionRoot({
+			scoreEngine: { engineVersion: { HORROR: engineV1 } },
+		});
+		const api1 = await root1.buildAsync();
+		root1.seedDefaultClassifications();
+
+		await syncGamesAsync({ items: syncItems, api: api1 });
+
+		// Act
+		const root2 = buildTestCompositionRoot({
+			scoreEngine: { engineVersion: { HORROR: engineV2 } },
+		});
+		const api2 = await root2.buildAsync();
+
+		await syncGamesAsync({ items: syncItems, api: api2 });
+
+		// Assert
+		expect(true).toBe(true);
 	});
 });

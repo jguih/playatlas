@@ -30,8 +30,8 @@ describe("Game Sessions", () => {
 
 	it("opens a game session", () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
-		const now = root.clock.now().toISOString();
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const now = root.testApi.getClock().now().toISOString();
 
 		const gameId = game.getPlayniteSnapshot()!.id;
 		const sessionId = faker.string.uuid();
@@ -65,8 +65,8 @@ describe("Game Sessions", () => {
 
 	it("fails when game doesn't exist", () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
-		const now = root.clock.now();
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const now = root.testApi.getClock().now();
 
 		const gameId = faker.string.uuid();
 		const sessionId = faker.string.uuid();
@@ -91,8 +91,8 @@ describe("Game Sessions", () => {
 
 	it("closes an in progress game session", () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
-		const now = root.clock.now().toISOString();
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const now = root.testApi.getClock().now().toISOString();
 
 		const gameId = game.getPlayniteSnapshot()!.id;
 		const sessionId = faker.string.uuid();
@@ -109,8 +109,8 @@ describe("Game Sessions", () => {
 		expect(openResult.success).toBe(true);
 		expect(openResult.reason_code).toBe("opened_game_session_created");
 
-		root.clock.advance(2000);
-		const endTime = root.clock.now().toISOString();
+		root.testApi.getClock().advance(2000);
+		const endTime = root.testApi.getClock().now().toISOString();
 
 		const closeRequestDto: CloseGameSessionRequestDto = {
 			ClientUtcNow: now,
@@ -152,8 +152,8 @@ describe("Game Sessions", () => {
 
 	it("creates a new closed session when in progress doesn't exist", () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
-		const now = root.clock.now().toISOString();
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const now = root.testApi.getClock().now().toISOString();
 
 		const gameId = game.getPlayniteSnapshot()!.id;
 		const sessionId = faker.string.uuid();
@@ -191,8 +191,8 @@ describe("Game Sessions", () => {
 
 	it("gracefully handles closing an already closed session", () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
-		const now = root.clock.now().toISOString();
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const now = root.testApi.getClock().now().toISOString();
 
 		const gameId = game.getPlayniteSnapshot()!.id;
 		const sessionId = faker.string.uuid();

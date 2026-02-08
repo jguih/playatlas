@@ -21,3 +21,7 @@ export type IScoreEnginePort<TGroup extends string> = {
 	serializeBreakdown: (breakdown: ScoreBreakdown<TGroup>) => string;
 	deserializeBreakdown: (json: string) => ScoreBreakdown<TGroup>;
 };
+
+export type ScoreEngineBaseDeps = {
+	engineVersion?: ScoreEngineVersion;
+};

@@ -1,6 +1,21 @@
+import {
+	makeTestCompositionRoot,
+	type TestCompositionRootDeps,
+} from "@playatlas/bootstrap/testing";
 import type { DomainEvent } from "@playatlas/common/application";
 import type { SyncCursor } from "@playatlas/common/infra";
 import { api } from "./vitest.global.setup";
+
+export const buildTestCompositionRoot = (props: Omit<TestCompositionRootDeps, "env"> = {}) =>
+	makeTestCompositionRoot({
+		...props,
+		env: {
+			PLAYATLAS_LOG_LEVEL: process.env.PLAYATLAS_LOG_LEVEL,
+			PLAYATLAS_MIGRATIONS_DIR: process.env.PLAYATLAS_MIGRATIONS_DIR,
+			PLAYATLAS_USE_IN_MEMORY_DB: process.env.PLAYATLAS_USE_IN_MEMORY_DB,
+			PLAYATLAS_DATA_DIR: process.env.PLAYATLAS_DATA_DIR,
+		},
+	});
 
 export const recordDomainEvents = () => {
 	const events: DomainEvent[] = [];

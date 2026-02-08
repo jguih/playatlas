@@ -7,7 +7,7 @@ import { api, root } from "../../vitest.global.setup";
 describe("Game Library Synchronization / Classifications", () => {
 	it("Sync cursor invariant: correctly returns updated items across distinct timestamps", async () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
 
 		const v1 = "v1.0.0";
 		const v2 = "v2.0.0";
@@ -31,7 +31,7 @@ describe("Game Library Synchronization / Classifications", () => {
 			.execute();
 		const firstIds = firstQueryResult.data.map((c) => c.Id);
 
-		root.clock.advance(1000);
+		root.testApi.getClock().advance(1000);
 
 		const classificationsV2: MakeClassificationProps[] = [...DEFAULT_CLASSIFICATIONS].map((c) => ({
 			...c,
@@ -92,7 +92,7 @@ describe("Game Library Synchronization / Classifications", () => {
 	it("orders classifications deterministically when timestamps are equal (Id tie-breaker)", () => {
 		// Arrange
 		const fixedTime = new Date("2026-01-01T00:00:00Z");
-		root.clock.setCurrent(fixedTime);
+		root.testApi.getClock().setCurrent(fixedTime);
 
 		const handler =
 			root.testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();

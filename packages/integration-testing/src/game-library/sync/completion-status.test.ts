@@ -6,7 +6,7 @@ import { api, factory, root } from "../../vitest.global.setup";
 describe("Game Library Synchronization / Completion Status", () => {
 	it("Sync cursor invariant: correctly returns updated items across distinct timestamps", async () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
 
 		const completionStatuses = factory.getCompletionStatusFactory().buildList(50);
 		root.seedCompletionStatus(completionStatuses);
@@ -14,7 +14,7 @@ describe("Game Library Synchronization / Completion Status", () => {
 			.getGetAllCompletionStatusesQueryHandler()
 			.execute();
 
-		root.clock.advance(1000);
+		root.testApi.getClock().advance(1000);
 
 		const itemsToUpdate = faker.helpers.arrayElements(completionStatuses, 20);
 		itemsToUpdate.forEach((i) =>

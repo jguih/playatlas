@@ -10,7 +10,7 @@ describe("Game Library Synchronization / Game", () => {
 
 	it("Sync cursor invariant: correctly returns updated items across distinct timestamps", async () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
 
 		const games = factory.getGameFactory().buildList(20);
 		root.seedGame(games);
@@ -18,12 +18,12 @@ describe("Game Library Synchronization / Game", () => {
 		const firstQueryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const firstQueryIds = new Set(firstQueryResult.data.map((g) => g.Id));
 
-		root.clock.advance(1000);
+		root.testApi.getClock().advance(1000);
 
 		const gamesToUpdate = faker.helpers.arrayElements(games, 10);
 
 		for (const game of gamesToUpdate) {
-			const snapshot = root.factory.getGameFactory().buildPlayniteSnapshot();
+			const snapshot = root.getFactory().getGameFactory().buildPlayniteSnapshot();
 			game.updateFromPlaynite({
 				contentHash: `${faker.string.uuid()} (Updated)`,
 				playniteSnapshot: {

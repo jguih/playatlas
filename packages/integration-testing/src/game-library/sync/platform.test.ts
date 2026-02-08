@@ -6,7 +6,7 @@ import { api, factory, root } from "../../vitest.global.setup";
 describe("Game Library Synchronization / Platform", () => {
 	it("Sync cursor invariant: correctly returns updated items across distinct timestamps", () => {
 		// Arrange
-		root.clock.setCurrent(new Date("2026-01-01T00:00:00Z"));
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
 		const platforms = factory.getPlatformFactory().buildList(500);
 		root.seedPlatform(platforms);
 
@@ -15,7 +15,7 @@ describe("Game Library Synchronization / Platform", () => {
 		const firstData = firstResult.data;
 		const firstIds = new Set(firstData.map((g) => g.Id));
 
-		root.clock.advance(1000);
+		root.testApi.getClock().advance(1000);
 		const newPlatforms = factory
 			.getPlatformFactory()
 			.buildList(500, { name: `${faker.lorem.words({ min: 1, max: 3 })} (New)` });

@@ -1,17 +1,22 @@
 import { type ClassificationId } from "@playatlas/common/domain";
 import { ScoreEngineSerializationError } from "../../../domain";
 import { scoreBreakdownSchema, type ScoreBreakdown } from "../score-breakdown";
-import type { IScoreEnginePort } from "../score-engine.port";
+import type { IScoreEnginePort, ScoreEngineBaseDeps } from "../score-engine.port";
 import { SURVIVAL_ENGINE_VERSION, type SurvivalEvidenceGroup } from "./survival.score-engine.meta";
 
 export type ISurvivalScoreEnginePort = IScoreEnginePort<SurvivalEvidenceGroup>;
 
-export const makeSurvivalScoreEngine = (): ISurvivalScoreEnginePort => {
+export type SurvivalScoreEngineDeps = ScoreEngineBaseDeps;
+
+export const makeSurvivalScoreEngine = ({
+	engineVersion,
+}: SurvivalScoreEngineDeps = {}): ISurvivalScoreEnginePort => {
 	const classificationId: ClassificationId = "SURVIVAL";
+	const version = engineVersion ?? SURVIVAL_ENGINE_VERSION;
 
 	return {
 		id: classificationId,
-		version: SURVIVAL_ENGINE_VERSION,
+		version,
 		score: () => {
 			return {
 				score: 0,
@@ -30,7 +35,7 @@ export const makeSurvivalScoreEngine = (): ISurvivalScoreEnginePort => {
 			if (!success)
 				throw new ScoreEngineSerializationError(
 					"Failed to deserialize score engine breakdown JSON string",
-					{ engineVersion: SURVIVAL_ENGINE_VERSION, classificationId },
+					{ engineVersion: version, classificationId },
 					error,
 				);
 			return breakdown as unknown as ScoreBreakdown<SurvivalEvidenceGroup>;
