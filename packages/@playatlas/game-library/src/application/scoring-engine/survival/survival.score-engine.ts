@@ -1,18 +1,14 @@
 import { type ClassificationId } from "@playatlas/common/domain";
 import { ScoreEngineSerializationError } from "../../../domain";
 import { scoreBreakdownSchema, type ScoreBreakdown } from "../score-breakdown";
-import type { IScoreEnginePort, ScoreEngineBaseDeps } from "../score-engine.port";
+import type { IScoreEnginePort } from "../score-engine.port";
 import { SURVIVAL_ENGINE_VERSION, type SurvivalEvidenceGroup } from "./survival.score-engine.meta";
 
 export type ISurvivalScoreEnginePort = IScoreEnginePort<SurvivalEvidenceGroup>;
 
-export type SurvivalScoreEngineDeps = ScoreEngineBaseDeps;
-
-export const makeSurvivalScoreEngine = ({
-	engineVersion,
-}: SurvivalScoreEngineDeps = {}): ISurvivalScoreEnginePort => {
+export const makeSurvivalScoreEngine = (): ISurvivalScoreEnginePort => {
 	const classificationId: ClassificationId = "SURVIVAL";
-	const version = engineVersion ?? SURVIVAL_ENGINE_VERSION;
+	const version = SURVIVAL_ENGINE_VERSION;
 
 	return {
 		id: classificationId,

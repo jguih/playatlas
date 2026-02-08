@@ -1,4 +1,3 @@
-import type { PlayAtlasApiV1 } from "@playatlas/bootstrap/application";
 import { classificationIds } from "@playatlas/common/domain";
 import type { ScoreEngineVersion } from "@playatlas/game-library/application";
 import {
@@ -7,15 +6,11 @@ import {
 	type SyncGamesRequestDtoItem,
 } from "@playatlas/playnite-integration/commands";
 import { beforeEach, describe, expect, it } from "vitest";
-import { buildTestCompositionRoot } from "../../test.lib";
 import { api, factory, root } from "../../vitest.global.setup";
 
 describe("Game Library / Score Engine Game Classifications", () => {
-	const syncGamesAsync = async (
-		props: { items?: SyncGamesRequestDtoItem[]; api?: PlayAtlasApiV1 } = {},
-	) => {
+	const syncGamesAsync = async (props: { items?: SyncGamesRequestDtoItem[] } = {}) => {
 		const { items } = props;
-		const _api = props.api ? props.api : api;
 		const sampleSize = items ? items.length : 2000;
 		const addedItems = items ? items : factory.getSyncGameRequestDtoFactory().buildList(sampleSize);
 
@@ -27,10 +22,10 @@ describe("Game Library / Score Engine Game Classifications", () => {
 
 		const command = makeSyncGamesCommand(requestDto);
 
-		const commandResult = await _api.playniteIntegration.commands
+		const commandResult = await api.playniteIntegration.commands
 			.getSyncGamesCommandHandler()
 			.executeAsync(command);
-		const queryResult = _api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
+		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 
 		return { commandResult, queryResult };
 	};
@@ -76,25 +71,37 @@ describe("Game Library / Score Engine Game Classifications", () => {
 		// Arrange
 		const engineV1: ScoreEngineVersion = "v1.0.0";
 		const engineV2: ScoreEngineVersion = "v2.0.0";
-		const syncItems = factory.getSyncGameRequestDtoFactory().buildList(2000);
+		const syncItems = root.getFactory().getSyncGameRequestDtoFactory().buildList(1);
+		const horrorEngine = root.testApi.getStubs().scoreEngine.horrorScoreEngine;
 
-		const root1 = buildTestCompositionRoot({
-			scoreEngine: { engineVersion: { HORROR: engineV1 } },
-		});
-		const api1 = await root1.buildAsync();
-		root1.seedDefaultClassifications();
+		horrorEngine.setVersion(engineV1);
+		horrorEngine.setScore(10);
 
-		await syncGamesAsync({ items: syncItems, api: api1 });
+		await syncGamesAsync({ items: syncItems });
+
+		const firstQueryResult = api.gameLibrary.scoreEngine.queries
+			.getGetAllGameClassificationsQueryHandler()
+			.execute();
+		const firstHorrorResults = firstQueryResult.data.filter((d) => d.ClassificationId === "HORROR");
 
 		// Act
-		const root2 = buildTestCompositionRoot({
-			scoreEngine: { engineVersion: { HORROR: engineV2 } },
-		});
-		const api2 = await root2.buildAsync();
+		horrorEngine.setVersion(engineV2);
+		horrorEngine.setScore(100);
 
-		await syncGamesAsync({ items: syncItems, api: api2 });
+		await syncGamesAsync({ items: syncItems });
+
+		const secondQueryResult = api.gameLibrary.scoreEngine.queries
+			.getGetAllGameClassificationsQueryHandler()
+			.execute();
+		const secondHorrorResults = secondQueryResult.data.filter(
+			(d) => d.ClassificationId === "HORROR",
+		);
 
 		// Assert
-		expect(true).toBe(true);
+		expect(firstHorrorResults).toHaveLength(1);
+		expect(firstHorrorResults.at(-1)?.Score).toBe(10);
+
+		expect(secondHorrorResults).toHaveLength(2);
+		expect(secondHorrorResults.at(-1)?.Score).toBe(100);
 	});
 });

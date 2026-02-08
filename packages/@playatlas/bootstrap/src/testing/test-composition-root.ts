@@ -7,7 +7,7 @@ import type {
 	Genre,
 	Platform,
 } from "@playatlas/game-library/domain";
-import { makeTestGameFactory } from "@playatlas/game-library/testing";
+import { makeTestGameFactory, makeTestHorrorScoreEngine } from "@playatlas/game-library/testing";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapV1, type PlayAtlasApiV1 } from "../application";
 import {
@@ -26,7 +26,7 @@ import { makeInfraModule } from "../application/modules/infra.module";
 import { makePlayniteIntegrationModule } from "../application/modules/playnite-integration.module";
 import { makeTestClock, type TestClock } from "./test-clock";
 import { makeTestFactoryModule, type ITestFactoryModulePort } from "./test-factory.module";
-import type { PlayAtlasTestApiV1 } from "./test.api.v1";
+import type { PlayAtlasTestApiV1, TestApiStubs } from "./test.api.v1";
 
 export type TestCompositionRootDeps = {
 	env: AppEnvironmentVariables;
@@ -69,6 +69,7 @@ type Self = {
 		platformList: Platform[];
 	};
 	clock: TestClock;
+	stubs: TestApiStubs;
 };
 
 export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestRoot => {
@@ -130,10 +131,17 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 
 		const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus, clock };
 
+		const testHorrorScoreEngine = makeTestHorrorScoreEngine();
+
 		const gameLibrary = makeGameLibraryModule({
 			...baseDeps,
 			fileSystemService: infra.getFsService(),
 			systemConfig: system.getSystemConfig(),
+			scoreEngine: {
+				engineOverride: {
+					HORROR: testHorrorScoreEngine,
+				},
+			},
 		});
 
 		const auth = makeAuthModule({
@@ -180,6 +188,9 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 				platformList: factory.getPlatformFactory().buildList(30),
 			},
 			clock,
+			stubs: {
+				scoreEngine: { horrorScoreEngine: testHorrorScoreEngine },
+			},
 		};
 
 		setupGameFactory(self);
@@ -293,6 +304,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 					},
 				},
 			},
+			getStubs: () => withSelf(({ stubs }) => stubs),
 		},
 	};
 };

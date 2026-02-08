@@ -1,18 +1,14 @@
 import { type ClassificationId } from "@playatlas/common/domain";
 import { ScoreEngineSerializationError } from "../../../domain";
 import { scoreBreakdownSchema, type ScoreBreakdown } from "../score-breakdown";
-import type { IScoreEnginePort, ScoreEngineBaseDeps } from "../score-engine.port";
+import type { IScoreEnginePort } from "../score-engine.port";
 import { RPG_ENGINE_VERSION, type RpgEvidenceGroup } from "./rpg.score-engine.meta";
 
 export type IRPGScoreEnginePort = IScoreEnginePort<RpgEvidenceGroup>;
 
-export type RPGScoreEngineDeps = ScoreEngineBaseDeps;
-
-export const makeRPGScoreEngine = ({
-	engineVersion,
-}: RPGScoreEngineDeps = {}): IRPGScoreEnginePort => {
+export const makeRPGScoreEngine = (): IRPGScoreEnginePort => {
 	const classificationId: ClassificationId = "RPG";
-	const version = engineVersion ?? RPG_ENGINE_VERSION;
+	const version = RPG_ENGINE_VERSION;
 
 	return {
 		id: classificationId,
