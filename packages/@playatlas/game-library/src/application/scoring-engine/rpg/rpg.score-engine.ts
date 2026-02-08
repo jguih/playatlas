@@ -1,4 +1,4 @@
-import { ClassificationIdParser } from "@playatlas/common/domain";
+import { type ClassificationId } from "@playatlas/common/domain";
 import { ScoreEngineSerializationError } from "../../../domain";
 import { scoreBreakdownSchema, type ScoreBreakdown } from "../score-breakdown";
 import type { IScoreEnginePort } from "../score-engine.port";
@@ -7,7 +7,7 @@ import { RPG_ENGINE_VERSION, type RpgEvidenceGroup } from "./rpg.score-engine.me
 export type IRPGScoreEnginePort = IScoreEnginePort<RpgEvidenceGroup>;
 
 export const makeRPGScoreEngine = (): IRPGScoreEnginePort => {
-	const classificationId = ClassificationIdParser.fromTrusted("RPG");
+	const classificationId: ClassificationId = "RPG";
 
 	return {
 		id: classificationId,

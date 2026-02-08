@@ -1,4 +1,4 @@
-import { ClassificationIdParser } from "@playatlas/common/domain";
+import { type ClassificationId } from "@playatlas/common/domain";
 import { ScoreEngineSerializationError } from "../../../domain";
 import { scoreBreakdownSchema, type ScoreBreakdown } from "../score-breakdown";
 import type { IScoreEnginePort } from "../score-engine.port";
@@ -7,7 +7,7 @@ import { SURVIVAL_ENGINE_VERSION, type SurvivalEvidenceGroup } from "./survival.
 export type ISurvivalScoreEnginePort = IScoreEnginePort<SurvivalEvidenceGroup>;
 
 export const makeSurvivalScoreEngine = (): ISurvivalScoreEnginePort => {
-	const classificationId = ClassificationIdParser.fromTrusted("SURVIVAL");
+	const classificationId: ClassificationId = "SURVIVAL";
 
 	return {
 		id: classificationId,

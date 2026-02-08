@@ -1,4 +1,3 @@
-import { ClassificationIdParser } from "@playatlas/common/domain";
 import { DEFAULT_CLASSIFICATIONS } from "@playatlas/game-library/commands";
 import { describe, expect, it } from "vitest";
 import { api, root } from "../../vitest.global.setup";
@@ -16,11 +15,7 @@ describe("Game Library / Score Engine Classifications", () => {
 
 		// Assert
 		expect(classifications).toHaveLength(DEFAULT_CLASSIFICATIONS.length);
-		expect(
-			DEFAULT_CLASSIFICATIONS.every((c) =>
-				classificationIds.includes(ClassificationIdParser.fromTrusted(c.id)),
-			),
-		).toBe(true);
+		expect(DEFAULT_CLASSIFICATIONS.every((c) => classificationIds.includes(c.id))).toBe(true);
 	});
 
 	it("command handler is idempotent", () => {
@@ -55,9 +50,7 @@ describe("Game Library / Score Engine Classifications", () => {
 		handler.execute({
 			type: "override",
 			buildDefaultClassificationsOverride: ({ classificationFactory: f }) => {
-				return classificationsV1.map((c) =>
-					f.create({ ...c, id: ClassificationIdParser.fromTrusted(c.id) }),
-				);
+				return classificationsV1.map((c) => f.create({ ...c }));
 			},
 		});
 
@@ -74,9 +67,7 @@ describe("Game Library / Score Engine Classifications", () => {
 		handler.execute({
 			type: "override",
 			buildDefaultClassificationsOverride: ({ classificationFactory: f }) => {
-				return classificationsV2.map((c) =>
-					f.create({ ...c, id: ClassificationIdParser.fromTrusted(c.id) }),
-				);
+				return classificationsV2.map((c) => f.create({ ...c }));
 			},
 		});
 

@@ -1,4 +1,4 @@
-import { ClassificationIdParser } from "@playatlas/common/domain";
+import type { ClassificationId } from "@playatlas/common/domain";
 import { ScoreEngineSerializationError } from "../../../domain";
 import { scoreBreakdownSchema, type ScoreBreakdown } from "../score-breakdown";
 import type { IScoreEnginePort } from "../score-engine.port";
@@ -17,7 +17,7 @@ export const makeHorrorScoreEngine = ({
 	horrorEvidenceExtractor,
 	horrorScoringPolicy,
 }: HorrorScoreEngineDeps): IHorrorScoreEnginePort => {
-	const classificationId = ClassificationIdParser.fromTrusted("HORROR");
+	const classificationId: ClassificationId = "HORROR";
 
 	return {
 		id: classificationId,

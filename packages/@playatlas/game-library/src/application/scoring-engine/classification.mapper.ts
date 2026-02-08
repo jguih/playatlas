@@ -1,5 +1,4 @@
 import type { EntityMapper } from "@playatlas/common/application";
-import { ClassificationIdParser } from "@playatlas/common/domain";
 import type { Classification } from "../../domain/scoring-engine/classification.entity";
 import type { ClassificationResponseDto } from "../../dtos";
 import type { ClassificationModel } from "../../infra/scoring-engine/classification.repository";
@@ -36,7 +35,7 @@ export const makeClassificationMapper = ({
 	return {
 		toDomain: (model) => {
 			return classificationFactory.rehydrate({
-				id: ClassificationIdParser.fromTrusted(model.Id),
+				id: model.Id,
 				category: model.Category,
 				description: model.Description,
 				displayName: model.DisplayName,

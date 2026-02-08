@@ -1,10 +1,5 @@
 import type { EntityMapper } from "@playatlas/common/application";
-import {
-	ClassificationIdParser,
-	DomainError,
-	GameClassificationIdParser,
-	GameIdParser,
-} from "@playatlas/common/domain";
+import { DomainError, GameClassificationIdParser, GameIdParser } from "@playatlas/common/domain";
 import type { GameClassification } from "../../domain";
 import type { GameClassificationResponseDto } from "../../dtos";
 import type { GameClassificationModel } from "../../infra";
@@ -56,7 +51,7 @@ export const makeGameClassificationMapper = ({
 			return gameClassificationFactory.rehydrate({
 				id: GameClassificationIdParser.fromTrusted(model.Id),
 				gameId: GameIdParser.fromTrusted(model.GameId),
-				classificationId: ClassificationIdParser.fromTrusted(model.ClassificationId),
+				classificationId: model.ClassificationId,
 				score: model.Score,
 				breakdownJson: model.BreakdownJson,
 				engineVersion: model.EngineVersion,

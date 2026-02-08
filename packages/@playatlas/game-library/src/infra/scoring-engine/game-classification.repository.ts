@@ -3,6 +3,7 @@ import {
 	classificationIdSchema,
 	gameClassificationIdSchema,
 	gameIdSchema,
+	type ClassificationId,
 	type GameClassificationId,
 } from "@playatlas/common/domain";
 import {
@@ -11,8 +12,9 @@ import {
 	type IEntityRepositoryPort,
 } from "@playatlas/common/infra";
 import z from "zod";
-import type { IGameClassificationMapperPort } from "../../application";
-import type { GameClassification } from "../../domain";
+import type { IGameClassificationMapperPort } from "../../application/scoring-engine/game-classification.mapper";
+import type { ScoreEngineVersion } from "../../application/scoring-engine/score-engine.port";
+import type { GameClassification } from "../../domain/scoring-engine/game-classification.entity";
 import type { GameClassificationRepositoryFilters } from "./game-classification.repository.types";
 
 export const gameClassificationSchema = z.object({
@@ -34,7 +36,9 @@ export type IGameClassificationRepositoryPort = IEntityRepositoryPort<
 	GameClassificationId,
 	GameClassification,
 	GameClassificationRepositoryFilters
->;
+> & {
+	getLatestEngineVersions(): Map<ClassificationId, ScoreEngineVersion>;
+};
 
 export type GameClassificationRepositoryDeps = BaseRepositoryDeps & {
 	gameClassificationMapper: IGameClassificationMapperPort;
@@ -111,10 +115,22 @@ export const makeGameClassificationRepository = ({
 		base._update(gameClassification);
 	};
 
+	const getLatestEngineVersions: IGameClassificationRepositoryPort["getLatestEngineVersions"] =
+		() => {
+			const latest = new Map<ClassificationId, string>();
+
+			for (const gc of base.public.all()) {
+				latest.set(gc.getClassificationId(), gc.getEngineVersion());
+			}
+
+			return latest;
+		};
+
 	return {
 		...base.public,
 		add,
 		upsert,
 		update,
+		getLatestEngineVersions,
 	};
 };

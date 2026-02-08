@@ -1,8 +1,5 @@
-import { ClassificationIdParser } from "@playatlas/common/domain";
-import {
-	DEFAULT_CLASSIFICATIONS,
-	type MakeClassificationPropsWithoutBrandedId,
-} from "@playatlas/game-library/commands";
+import { DEFAULT_CLASSIFICATIONS } from "@playatlas/game-library/commands";
+import type { MakeClassificationProps } from "@playatlas/game-library/domain";
 import { describe, expect, it } from "vitest";
 import { isCursorAfter, isCursorEqual } from "../../test.lib";
 import { api, root } from "../../vitest.global.setup";
@@ -18,9 +15,7 @@ describe("Game Library Synchronization / Classifications", () => {
 		const handler =
 			root.testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
 
-		const classificationsV1: MakeClassificationPropsWithoutBrandedId[] = [
-			...DEFAULT_CLASSIFICATIONS,
-		].map((c) => ({
+		const classificationsV1: MakeClassificationProps[] = [...DEFAULT_CLASSIFICATIONS].map((c) => ({
 			...c,
 			version: v1,
 		}));
@@ -28,9 +23,7 @@ describe("Game Library Synchronization / Classifications", () => {
 		handler.execute({
 			type: "override",
 			buildDefaultClassificationsOverride: ({ classificationFactory: f }) => {
-				return classificationsV1.map((c) =>
-					f.create({ ...c, id: ClassificationIdParser.fromTrusted(c.id) }),
-				);
+				return classificationsV1.map((c) => f.create({ ...c }));
 			},
 		});
 		const firstQueryResult = api.gameLibrary.scoreEngine.queries
@@ -40,18 +33,14 @@ describe("Game Library Synchronization / Classifications", () => {
 
 		root.clock.advance(1000);
 
-		const classificationsV2: MakeClassificationPropsWithoutBrandedId[] = [
-			...DEFAULT_CLASSIFICATIONS,
-		].map((c) => ({
+		const classificationsV2: MakeClassificationProps[] = [...DEFAULT_CLASSIFICATIONS].map((c) => ({
 			...c,
 			version: v2,
 		}));
 		handler.execute({
 			type: "override",
 			buildDefaultClassificationsOverride: ({ classificationFactory: f }) => {
-				return classificationsV2.map((c) =>
-					f.create({ ...c, id: ClassificationIdParser.fromTrusted(c.id) }),
-				);
+				return classificationsV2.map((c) => f.create({ ...c }));
 			},
 		});
 
@@ -109,7 +98,7 @@ describe("Game Library Synchronization / Classifications", () => {
 			root.testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
 
 		// Intentionally unsorted IDs
-		const unordered: MakeClassificationPropsWithoutBrandedId[] = [
+		const unordered: MakeClassificationProps[] = [
 			{ ...DEFAULT_CLASSIFICATIONS[0], id: "RPG", version: "v1.0.0" },
 			{ ...DEFAULT_CLASSIFICATIONS[0], id: "HORROR", version: "v1.0.0" },
 			{ ...DEFAULT_CLASSIFICATIONS[0], id: "SURVIVAL", version: "v1.0.0" },
@@ -121,7 +110,6 @@ describe("Game Library Synchronization / Classifications", () => {
 				return unordered.map((c) =>
 					f.create({
 						...c,
-						id: ClassificationIdParser.fromTrusted(c.id),
 					}),
 				);
 			},

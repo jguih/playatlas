@@ -1,3 +1,4 @@
+import type { ClassificationId } from "@playatlas/common/domain";
 import type { ClassificationGroupMap, EnginesMap } from "./engine.registry.types";
 import { type IHorrorScoreEnginePort } from "./horror";
 import type { IRPGScoreEnginePort } from "./rpg";
@@ -5,9 +6,10 @@ import type { IScoreEnginePort } from "./score-engine.port";
 import type { ISurvivalScoreEnginePort } from "./survival";
 
 export type IScoreEngineRegistryPort = {
-	get: <C extends keyof ClassificationGroupMap>(
+	get: <C extends ClassificationId>(
 		classificationId: C,
 	) => IScoreEnginePort<ClassificationGroupMap[C]>;
+	list: () => EnginesMap;
 };
 
 export type ScoreEngineRegistryDeps = {
@@ -31,5 +33,6 @@ export const makeScoreEngineRegistry = ({
 		get: (classificationId) => {
 			return engines[classificationId];
 		},
+		list: () => engines,
 	};
 };

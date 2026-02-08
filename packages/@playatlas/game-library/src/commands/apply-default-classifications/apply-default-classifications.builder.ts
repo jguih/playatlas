@@ -1,4 +1,3 @@
-import { ClassificationIdParser } from "@playatlas/common/domain";
 import type { IClassificationFactoryPort } from "../../application";
 import type { Classification } from "../../domain/scoring-engine/classification.entity";
 import { DEFAULT_CLASSIFICATIONS } from "./apply-default-classifications.constants";
@@ -10,7 +9,5 @@ export type DefaultClassificationsBuilderDeps = {
 export const buildDefaultClassifications = ({
 	classificationFactory: f,
 }: DefaultClassificationsBuilderDeps): Classification[] => {
-	return DEFAULT_CLASSIFICATIONS.map((c) =>
-		f.create({ ...c, id: ClassificationIdParser.fromTrusted(c.id) }),
-	);
+	return DEFAULT_CLASSIFICATIONS.map((c) => f.create({ ...c }));
 };

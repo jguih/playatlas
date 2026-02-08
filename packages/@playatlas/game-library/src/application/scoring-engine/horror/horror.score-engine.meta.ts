@@ -10,7 +10,6 @@ export const HORROR_ENGINE_EVIDENCE_GROUPS = [
 	"psychological_horror",
 	"cosmic_horror",
 	"atmospheric_horror",
-	"synergy",
 ] as const satisfies string[];
 
 export type HorrorEvidenceGroup = (typeof HORROR_ENGINE_EVIDENCE_GROUPS)[number];
@@ -21,7 +20,6 @@ export const HORROR_ENGINE_GROUP_POLICY: ClassificationGroupPolicy<HorrorEvidenc
 	psychological_horror: { cap: 55 },
 	atmospheric_horror: { cap: 30 },
 	cosmic_horror: { cap: 25 },
-	synergy: { cap: 10 },
 };
 
 export const HORROR_ENGINE_TEXT_SIGNALS = [
