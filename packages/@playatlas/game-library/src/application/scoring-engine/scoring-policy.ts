@@ -1,6 +1,7 @@
+import type { EvidenceSource } from "@playatlas/common/domain";
 import type { ClassificationGroupPolicy, GateStackPolicy, NoGatePolicy } from "./engine.policy";
-import type { Evidence, EvidenceSource, StoredEvidence } from "./evidence";
-import type { Penalty } from "./penalty";
+import type { Evidence, StoredEvidence } from "./evidence.types";
+import type { Penalty } from "./penalty.types";
 import type { ScoreBreakdown } from "./score-breakdown";
 import type { IScoringPolicyPort } from "./scoring-policy.port";
 

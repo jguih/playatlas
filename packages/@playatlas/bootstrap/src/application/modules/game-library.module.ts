@@ -40,6 +40,7 @@ import {
 	makeGameRepository,
 	makeGenreRepository,
 	makePlatformRepository,
+	makeScoreBreakdownNormalizer,
 	type IGameRepositoryPort,
 	type IGenreRepositoryPort,
 } from "@playatlas/game-library/infra";
@@ -101,6 +102,10 @@ const makeGameLibraryScoreEngineModule = ({
 		survivalScoreEngine,
 	});
 
+	const scoreBreakdownNormalizer = makeScoreBreakdownNormalizer({
+		logService: buildLog("ScoreBreakdownNormalizer"),
+	});
+
 	const classificationFactory = makeClassificationFactory({ clock });
 	const classificationMapper = makeClassificationMapper({ classificationFactory });
 	const classificationRepository = makeClassificationRepository({
@@ -123,7 +128,7 @@ const makeGameLibraryScoreEngineModule = ({
 	const gameClassificationFactory = makeGameClassificationFactory({ clock });
 	const gameClassificationMapper = makeGameClassificationMapper({
 		gameClassificationFactory,
-		scoreEngineRegistry,
+		scoreBreakdownNormalizer,
 	});
 	const gameClassificationRepository = makeGameClassificationRepository({
 		gameClassificationMapper,

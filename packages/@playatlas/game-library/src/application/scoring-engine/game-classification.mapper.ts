@@ -1,11 +1,10 @@
 import type { EntityMapper } from "@playatlas/common/application";
-import { DomainError, GameClassificationIdParser, GameIdParser } from "@playatlas/common/domain";
+import { GameClassificationIdParser, GameIdParser } from "@playatlas/common/domain";
 import type { GameClassification } from "../../domain";
 import type { GameClassificationResponseDto } from "../../dtos";
 import type { GameClassificationModel } from "../../infra";
-import type { IScoreEngineRegistryPort } from "./engine.registry";
 import type { IGameClassificationFactoryPort } from "./game-classification.factory";
-import { scoreBreakdownSchema } from "./score-breakdown";
+import type { IScoreBreakdownNormalizerPort } from "./score-breakdown-normalizer.port";
 
 export type IGameClassificationMapperPort = EntityMapper<
 	GameClassification,
@@ -15,29 +14,22 @@ export type IGameClassificationMapperPort = EntityMapper<
 
 export type GameClassificationMapperDeps = {
 	gameClassificationFactory: IGameClassificationFactoryPort;
-	scoreEngineRegistry: IScoreEngineRegistryPort;
+	scoreBreakdownNormalizer: IScoreBreakdownNormalizerPort;
 };
 
 export const makeGameClassificationMapper = ({
 	gameClassificationFactory,
-	scoreEngineRegistry,
+	scoreBreakdownNormalizer,
 }: GameClassificationMapperDeps): IGameClassificationMapperPort => {
 	const _toDto: IGameClassificationMapperPort["toDto"] = (entity) => {
-		const engine = scoreEngineRegistry.get(entity.getClassificationId());
-		const breakdown = engine.deserializeBreakdown(entity.getBreakdownJson());
-		const { success, data: publicBreakdown } = scoreBreakdownSchema.safeParse(breakdown);
-
-		if (!success)
-			throw new DomainError(
-				`Failed to parse score breakdown for ClassificationId ${entity.getClassificationId()}`,
-			);
+		const Breakdown = scoreBreakdownNormalizer.normalize(entity.getBreakdownJson());
 
 		return {
 			Id: entity.getId(),
 			GameId: entity.getGameId(),
 			ClassificationId: entity.getClassificationId(),
 			Score: entity.getScore(),
-			Breakdown: publicBreakdown,
+			Breakdown,
 			Sync: {
 				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
 				DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,

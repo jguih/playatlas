@@ -1,4 +1,4 @@
-import type { EvidenceTier } from "./evidence";
+import type { EvidenceTier } from "@playatlas/common/domain";
 
 export type TextSignalItem<TGroup> = {
 	phrase: string;

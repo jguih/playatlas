@@ -1,5 +1,5 @@
 import z from "zod";
-import { InvalidStateError } from "../error";
+import { InvalidStateError } from "../../error";
 
 export const gameClassificationIdSchema = z.ulid();
 

@@ -1,9 +1,6 @@
-export * from "./classification-category";
-export * from "./classification-id";
 export * from "./company-id";
 export * from "./completion-status-id";
 export * from "./extension-registration-id";
-export * from "./game-classification-id";
 export * from "./game-id";
 export * from "./game-session-id";
 export * from "./genre-id";
@@ -13,3 +10,4 @@ export * from "./playnite-completion-status-id";
 export * from "./playnite-game-id";
 export * from "./playnite-genre-id";
 export * from "./playnite-platform-id";
+export * from "./scoring-engine";

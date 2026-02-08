@@ -10,5 +10,13 @@ export class ScoreEngineSerializationError extends Error {
 			`${message} (engine version: ${props.engineVersion}, classification id: ${props.classificationId})`,
 			{ cause },
 		);
+		this.name = "ScoreEngineSerializationError";
+	}
+}
+
+export class ScoreBreakdownNormalizerError extends Error {
+	constructor(message: string, props?: { cause?: unknown }) {
+		super(message, { cause: props?.cause });
+		this.name = "ScoreBreakdownNormalizerError";
 	}
 }

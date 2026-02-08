@@ -1,8 +1,8 @@
 import { normalize } from "@playatlas/common/common";
 import type { GenreName } from "../../domain/genre.entity";
 import type { TaxonomySignalItem, TextSignalItem } from "./engine.signals";
-import type { Evidence } from "./evidence";
 import type { IEvidenceExtractorPort } from "./evidence-extractor.port";
+import type { Evidence } from "./evidence.types";
 
 export type EvidenceExtractorDeps<TGroup> = {
 	taxonomySignals: Array<TaxonomySignalItem<TGroup>>;

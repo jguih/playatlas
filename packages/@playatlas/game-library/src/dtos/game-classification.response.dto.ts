@@ -9,14 +9,14 @@ import {
 	defaultSuccessResponseDtoSchema,
 } from "@playatlas/common/dtos";
 import z from "zod";
-import { scoreBreakdownSchema } from "../application/scoring-engine/score-breakdown";
+import { scoreBreakdownResponseDtoSchema } from "./scoring-engine/score-breakdown.response.dto";
 
 export const gameClassificationResponseDtoSchema = z.object({
 	Id: gameClassificationIdSchema,
 	GameId: gameIdSchema,
 	ClassificationId: classificationIdSchema,
 	Score: z.number(),
-	Breakdown: scoreBreakdownSchema,
+	Breakdown: scoreBreakdownResponseDtoSchema,
 	Sync: z.object({
 		LastUpdatedAt: ISODateSchema,
 		DeletedAt: ISODateSchema.nullable(),

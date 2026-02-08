@@ -1,6 +1,6 @@
 import type { ClassificationGroupPolicy } from "../engine.policy";
 import type { TaxonomySignalItem, TextSignalItem } from "../engine.signals";
-import type { ScoreEngineVersion } from "../score-engine.port";
+import type { ScoreEngineVersion } from "../score-engine.types";
 
 export const HORROR_ENGINE_VERSION = "v1.0.0" as const satisfies ScoreEngineVersion;
 

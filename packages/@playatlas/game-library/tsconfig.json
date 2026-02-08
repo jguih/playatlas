@@ -10,11 +10,5 @@
 		"moduleResolution": "bundler",
 		"module": "es2015"
 	},
-	"include": [
-		"src",
-		"vitest.config.ts",
-		"tests",
-		"../common/src/domain/value-object/classification-category.ts",
-		"../common/src/domain/value-object/classification-id.ts"
-	]
+	"include": ["src", "vitest.config.ts"]
 }

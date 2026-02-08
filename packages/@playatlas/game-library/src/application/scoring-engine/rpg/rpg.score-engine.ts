@@ -1,18 +1,14 @@
-import { type ClassificationId } from "@playatlas/common/domain";
-import { ScoreEngineSerializationError } from "../../../domain";
-import { scoreBreakdownSchema, type ScoreBreakdown } from "../score-breakdown";
+import { makeScoreEngine } from "../score-engine";
 import type { IScoreEnginePort } from "../score-engine.port";
 import { RPG_ENGINE_VERSION, type RpgEvidenceGroup } from "./rpg.score-engine.meta";
 
 export type IRPGScoreEnginePort = IScoreEnginePort<RpgEvidenceGroup>;
 
 export const makeRPGScoreEngine = (): IRPGScoreEnginePort => {
-	const classificationId: ClassificationId = "RPG";
-	const version = RPG_ENGINE_VERSION;
+	const self = makeScoreEngine({ id: "RPG", version: RPG_ENGINE_VERSION });
 
 	return {
-		id: classificationId,
-		version,
+		...self,
 		score: () => {
 			return {
 				score: 0,
@@ -25,19 +21,6 @@ export const makeRPGScoreEngine = (): IRPGScoreEnginePort => {
 					total: 0,
 				},
 			};
-		},
-		deserializeBreakdown: (json) => {
-			const { success, data: breakdown, error } = scoreBreakdownSchema.safeParse(JSON.parse(json));
-			if (!success)
-				throw new ScoreEngineSerializationError(
-					"Failed to deserialize score engine breakdown JSON string",
-					{ engineVersion: version, classificationId },
-					error,
-				);
-			return breakdown as unknown as ScoreBreakdown<RpgEvidenceGroup>;
-		},
-		serializeBreakdown: (breakdown) => {
-			return JSON.stringify(breakdown, null, 2);
 		},
 	};
 };

@@ -54,8 +54,8 @@ export class RepositoryValidationError extends RepositoryError {
 export class RepositoryOperationError extends RepositoryError {}
 
 export class DomainError extends Error {
-	constructor(message: string) {
-		super(message);
+	constructor(message: string, cause?: unknown) {
+		super(message, { cause });
 		this.name = "DomainError";
 	}
 }
