@@ -56,21 +56,24 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 		const { description, add } = props;
 		if (!description) return 0;
 
-		const text = normalize(description);
+		const normalizedDescription = normalize(description);
 
 		for (const signal of textSignals) {
-			const phrase = normalize(signal.phrase);
+			const phrases = Array.isArray(signal.phrase) ? signal.phrase : [signal.phrase];
 
-			if (text.includes(phrase)) {
-				add({
-					source: "text",
-					sourceHint: "description",
-					match: phrase,
-					weight: signal.weight,
-					group: signal.group,
-					tier: signal.tier,
-					isGate: signal.isGate,
-				});
+			for (const phrase of phrases) {
+				const normalizedPhrase = normalize(phrase);
+				if (normalizedDescription.includes(normalizedPhrase)) {
+					add({
+						source: "text",
+						sourceHint: "description",
+						match: normalizedPhrase,
+						weight: signal.weight,
+						group: signal.group,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
+				}
 			}
 		}
 	};

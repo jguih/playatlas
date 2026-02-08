@@ -18,8 +18,8 @@ export const HORROR_ENGINE_GROUP_POLICY: ClassificationGroupPolicy<HorrorEvidenc
 	core_horror: { cap: 45 },
 	survival_horror: { cap: 55 },
 	psychological_horror: { cap: 55 },
-	atmospheric_horror: { cap: 30 },
-	cosmic_horror: { cap: 25 },
+	atmospheric_horror: { cap: 40 },
+	cosmic_horror: { cap: 40 },
 };
 
 export const HORROR_ENGINE_TEXT_SIGNALS = [
