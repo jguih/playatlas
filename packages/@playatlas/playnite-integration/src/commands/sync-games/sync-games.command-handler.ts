@@ -63,7 +63,8 @@ export const makeSyncGamesCommandHandler = ({
 					completionStatusRepository.upsert(extracted.completionStatuses);
 					gameRepository.upsert(extracted.games);
 
-					gameClassificationScoreService.rescoreGames(extracted.games);
+					gameClassificationScoreService.rescoreGames(extracted.games.map((game) => ({ game })));
+					gameClassificationScoreService.computeMissingScores();
 					gameClassificationScoreService.reconcileEngineVersion();
 
 					await libraryManifestService.write();

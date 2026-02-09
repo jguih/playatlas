@@ -18,6 +18,11 @@ GET {{protocol}}://{{host}}/api/game
 Content-Type: {{contentType}}
 Authorization: {{authorization}}
 
+### Get all games classifications
+GET {{protocol}}://{{host}}/api/game/classification
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
 ### Reindex all game assets
 GET {{protocol}}://{{host}}/api/game/reindex-assets
 Content-Type: {{contentType}}

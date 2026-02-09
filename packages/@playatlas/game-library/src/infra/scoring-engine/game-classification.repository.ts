@@ -6,6 +6,7 @@ import {
 	gameIdSchema,
 	type ClassificationId,
 	type GameClassificationId,
+	type GameId,
 } from "@playatlas/common/domain";
 import {
 	makeBaseRepository,
@@ -14,7 +15,6 @@ import {
 } from "@playatlas/common/infra";
 import z from "zod";
 import type { IGameClassificationMapperPort } from "../../application/scoring-engine/game-classification.mapper";
-import type { ScoreEngineVersion } from "../../application/scoring-engine/score-engine.types";
 import type { GameClassification } from "../../domain/scoring-engine/game-classification.entity";
 import type { GameClassificationRepositoryFilters } from "./game-classification.repository.types";
 
@@ -40,7 +40,7 @@ export type IGameClassificationRepositoryPort = IEntityRepositoryPort<
 	GameClassification,
 	GameClassificationRepositoryFilters
 > & {
-	getLatestEngineVersions(): Map<ClassificationId, ScoreEngineVersion>;
+	getLatestByGame(): Map<GameId, Map<ClassificationId, GameClassification>>;
 };
 
 export type GameClassificationRepositoryDeps = BaseRepositoryDeps & {
@@ -120,22 +120,26 @@ export const makeGameClassificationRepository = ({
 		base._update(gameClassification);
 	};
 
-	const getLatestEngineVersions: IGameClassificationRepositoryPort["getLatestEngineVersions"] =
-		() => {
-			const latest = new Map<ClassificationId, string>();
+	const getLatestByGame: IGameClassificationRepositoryPort["getLatestByGame"] = () => {
+		const latest = new Map<GameId, Map<ClassificationId, GameClassification>>();
 
-			for (const gc of base.public.all()) {
-				latest.set(gc.getClassificationId(), gc.getEngineVersion());
+		for (const gc of base.public.all()) {
+			let classificationMap = latest.get(gc.getGameId());
+			if (!classificationMap) {
+				classificationMap = new Map();
+				latest.set(gc.getGameId(), classificationMap);
 			}
+			classificationMap.set(gc.getClassificationId(), gc);
+		}
 
-			return latest;
-		};
+		return latest;
+	};
 
 	return {
 		...base.public,
 		add,
 		upsert,
 		update,
-		getLatestEngineVersions,
+		getLatestByGame,
 	};
 };

@@ -1,4 +1,4 @@
-import { classificationIds } from "@playatlas/common/domain";
+import { CLASSIFICATION_IDS } from "@playatlas/common/domain";
 import type { ScoreEngineVersion } from "@playatlas/game-library/application";
 import {
 	makeSyncGamesCommand,
@@ -43,7 +43,7 @@ describe("Game Library / Score Engine Game Classifications", () => {
 		const queryResult = api.gameLibrary.scoreEngine.queries
 			.getGetAllGameClassificationsQueryHandler()
 			.execute();
-		const expectedSize = gamesQueryResult.data.length * classificationIds.length;
+		const expectedSize = gamesQueryResult.data.length * CLASSIFICATION_IDS.length;
 
 		// Assert
 		expect(queryResult.data).toHaveLength(expectedSize);

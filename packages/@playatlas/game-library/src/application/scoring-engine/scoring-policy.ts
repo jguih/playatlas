@@ -236,6 +236,8 @@ export const makeScoringPolicy = <TGroup extends string>({
 			total = 5;
 		} else if (sourceCount >= 3) {
 			total = 10;
+		} else {
+			return [];
 		}
 
 		return [

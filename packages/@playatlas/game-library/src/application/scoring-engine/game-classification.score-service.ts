@@ -1,6 +1,6 @@
 import type { ILogServicePort } from "@playatlas/common/application";
 import {
-	classificationIds as commonDomainClassificationIds,
+	CLASSIFICATION_IDS,
 	DomainError,
 	GameClassificationIdParser,
 	type ClassificationId,
@@ -9,22 +9,23 @@ import {
 import type { IClockPort } from "@playatlas/common/infra";
 import { monotonicFactory } from "ulid";
 import type { Game } from "../../domain/game.entity";
-import type { GameClassification } from "../../domain/scoring-engine/game-classification.entity";
 import type { IGameRepositoryPort } from "../../infra/game.repository.port";
 import type { IGenreRepositoryPort } from "../../infra/genre.repository.port";
 import type { IGameClassificationRepositoryPort } from "../../infra/scoring-engine/game-classification.repository";
 import type { IScoreEngineRegistryPort } from "./engine.registry";
 import type { IGameClassificationFactoryPort } from "./game-classification.factory";
 
-type RescoreGamesFnArgs = {
+export type RescoreGameItem = {
+	game: Game;
 	/**
-	 * Classifications to rescore. If empty, will rescore `all` classifications.
+	 * Classifications to rescore. If empty or undefined, will rescore `all` classifications.
 	 */
 	classificationIds?: ClassificationId[];
 };
 
 export type IGameClassificationScoreServicePort = {
-	rescoreGames: (game: Game | Game[], args?: RescoreGamesFnArgs) => void;
+	rescoreGames: (game: RescoreGameItem | RescoreGameItem[]) => void;
+	computeMissingScores: () => void;
 	reconcileEngineVersion: () => void;
 };
 
@@ -47,14 +48,14 @@ export const makeGameClassificationScoreService = ({
 	clock,
 	logService,
 }: GameClassificationScoreServiceDeps): IGameClassificationScoreServicePort => {
-	const self: Omit<IGameClassificationScoreServicePort, "reconcileEngineVersion"> = {
-		rescoreGames: (game, args = {}) => {
+	const self: Omit<
+		IGameClassificationScoreServicePort,
+		"reconcileEngineVersion" | "computeMissingScores"
+	> = {
+		rescoreGames: (game) => {
 			const start = performance.now();
 			const now = clock.now();
 			const games = Array.isArray(game) ? game : [game];
-			const classificationIds = args.classificationIds
-				? args.classificationIds
-				: commonDomainClassificationIds;
 
 			logService.info(`Calculating classification scores for ${games.length} game(s).`);
 
@@ -64,8 +65,8 @@ export const makeGameClassificationScoreService = ({
 					`Classification score calculation completed after ${duration.toFixed(1)}ms.`,
 					{
 						totalGames: games.length,
-						totalClassifications: classificationIds.length,
-						expectedOperations: games.length * classificationIds.length,
+						totalClassifications: CLASSIFICATION_IDS.length,
+						expectedOperations: games.length * CLASSIFICATION_IDS.length,
 						skipped: 0,
 						created: 0,
 						formula: "games x classifications - skipped",
@@ -79,48 +80,32 @@ export const makeGameClassificationScoreService = ({
 				const ulid = monotonicFactory();
 				const genres = genreRepository.all();
 				const genresSnapshot = new Map(genres.map((g) => [g.getId(), g]));
-				const gameClassifications = gameClassificationRepository.all();
-				const gameClassificationsByGame = new Map<
-					GameId,
-					Map<ClassificationId, GameClassification>
-				>();
+				const gameClassificationsByGame = gameClassificationRepository.getLatestByGame();
 				let skipped = 0;
 				let created = 0;
 
 				logService.info(`Operation summary:`, {
-					totalClassifications: classificationIds.length,
-					existingRecords: gameClassifications.length,
+					totalClassifications: CLASSIFICATION_IDS.length,
+					existingLatestRecords: gameClassificationsByGame.size,
 					genresSnapshotSize: genresSnapshot.size,
 				});
 
-				for (const gc of gameClassifications) {
-					const gameId = gc.getGameId();
-					const classificationId = gc.getClassificationId();
+				for (const { game, classificationIds } of games) {
+					const resolvedClassificationIds =
+						classificationIds && classificationIds.length > 0
+							? new Set(classificationIds).values().toArray()
+							: CLASSIFICATION_IDS;
 
-					let byClassification = gameClassificationsByGame.get(gameId);
-					if (!byClassification) {
-						byClassification = new Map();
-						gameClassificationsByGame.set(gameId, byClassification);
-					}
+					for (const classificationId of resolvedClassificationIds) {
+						const engine = scoreEngineRegistry.get(classificationId);
 
-					/**
-					 * Since the repo return items ordered by latest updated ASC,
-					 * this is guaranteed to have the latest updated item by the
-					 * time the loop ends
-					 */
-					byClassification.set(classificationId, gc);
-				}
+						if (!engine) throw new DomainError(`Missing engine for ${classificationId}`);
 
-				for (const classificationId of classificationIds) {
-					const engine = scoreEngineRegistry.get(classificationId);
-
-					if (!engine) throw new DomainError(`Missing engine for ${classificationId}`);
-
-					for (const game of games) {
 						const { score, normalizedScore, mode, breakdown } = engine.score({
 							game,
 							genresSnapshot,
 						});
+
 						const breakdownJson = engine.serializeBreakdown(breakdown);
 						const latestGameClassification = gameClassificationsByGame
 							.get(game.getId())
@@ -174,8 +159,8 @@ export const makeGameClassificationScoreService = ({
 					`Classification score calculation completed after ${duration.toFixed(1)}ms.`,
 					{
 						totalGames: games.length,
-						totalClassifications: classificationIds.length,
-						expectedOperations: games.length * classificationIds.length,
+						totalClassifications: CLASSIFICATION_IDS.length,
+						expectedOperations: games.length * CLASSIFICATION_IDS.length,
 						skipped,
 						created,
 						formula: "games x classifications - skipped",
@@ -192,26 +177,79 @@ export const makeGameClassificationScoreService = ({
 
 	return {
 		rescoreGames: self.rescoreGames,
+		computeMissingScores: () => {
+			const start = performance.now();
+
+			logService.info(`Computing missing game scores`);
+
+			try {
+				const gamesMissingScores: RescoreGameItem[] = [];
+				const games = gameRepository.all();
+				const gameClassificationsPerGame = gameClassificationRepository.getLatestByGame();
+
+				for (const game of games) {
+					const gameClassificationsMap = gameClassificationsPerGame.get(game.getId());
+
+					if (!gameClassificationsMap || gameClassificationsMap.size === 0) {
+						gamesMissingScores.push({ game, classificationIds: CLASSIFICATION_IDS });
+						continue;
+					}
+
+					const missingClassificationIds: ClassificationId[] = [];
+
+					for (const classificationId of CLASSIFICATION_IDS) {
+						const gameClassification = gameClassificationsMap.get(classificationId);
+
+						if (!gameClassification) {
+							missingClassificationIds.push(classificationId);
+						}
+					}
+
+					if (missingClassificationIds.length > 0) {
+						gamesMissingScores.push({
+							game,
+							classificationIds: missingClassificationIds,
+						});
+					}
+				}
+
+				if (gamesMissingScores.length > 0) {
+					logService.info(`Computing missing scores for ${gamesMissingScores.length} games`);
+					self.rescoreGames(gamesMissingScores);
+				}
+			} catch (error) {
+				const duration = performance.now() - start;
+				logService.error(`Computing missing game scores failed after ${duration.toFixed(1)}`);
+				throw error;
+			}
+		},
 		reconcileEngineVersion: () => {
 			const start = performance.now();
 
 			logService.info(`Reconciling score engines versions`);
 
 			try {
-				const latestVersions = gameClassificationRepository.getLatestEngineVersions();
-				const classificationsToRescore = new Set<ClassificationId>();
+				const latestClassificationsByGame = gameClassificationRepository.getLatestByGame();
+				const gamesToRescore = new Map<GameId, Set<ClassificationId>>();
 
-				logService.debug(`Latest used engines versions: `, latestVersions);
+				for (const classificationId of CLASSIFICATION_IDS) {
+					const engine = scoreEngineRegistry.get(classificationId);
 
-				for (const engine of Object.values(scoreEngineRegistry.list())) {
-					const storedVersion = latestVersions.get(engine.id);
+					for (const [gameId, gameClassificationMap] of latestClassificationsByGame) {
+						const gameClassification = gameClassificationMap.get(classificationId);
 
-					if (!storedVersion || storedVersion !== engine.version) {
-						classificationsToRescore.add(engine.id);
+						if (!gameClassification || gameClassification.getEngineVersion() !== engine.version) {
+							let classificationIds = gamesToRescore.get(gameId);
+							if (!classificationIds) {
+								classificationIds = new Set();
+								gamesToRescore.set(gameId, classificationIds);
+							}
+							classificationIds.add(classificationId);
+						}
 					}
 				}
 
-				if (classificationsToRescore.size === 0) {
+				if (gamesToRescore.size === 0) {
 					logService.info(
 						`Latest score engines versions are the same as current, nothing to reconcile`,
 					);
@@ -219,14 +257,19 @@ export const makeGameClassificationScoreService = ({
 				}
 
 				logService.info(
-					`Outdated score engine version detected, will rescore all games for classification ids: ${classificationsToRescore.values().toArray().join(", ")}`,
+					`Outdated score engine version detected, will rescore ${gamesToRescore.size} games`,
 				);
 
 				const games = gameRepository.all();
+				const rescoreItems: RescoreGameItem[] = [];
 
-				self.rescoreGames(games, {
-					classificationIds: [...classificationsToRescore],
-				});
+				for (const [gameId, classificationIds] of gamesToRescore) {
+					const game = games.find((g) => g.getId() === gameId);
+					if (game)
+						rescoreItems.push({ game, classificationIds: classificationIds.values().toArray() });
+				}
+
+				self.rescoreGames(rescoreItems);
 
 				const duration = performance.now() - start;
 				logService.success(
