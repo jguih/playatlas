@@ -1,8 +1,6 @@
 import type { EvidenceSource, EvidenceTier, StoredEvidenceStatus } from "@playatlas/common/domain";
 
-export type EvidenceGroup = string;
-
-export type Evidence<TGroup extends EvidenceGroup> = {
+export type Evidence<TGroup> = {
 	source: EvidenceSource;
 	sourceHint?: string;
 	match: string | number;
@@ -13,7 +11,7 @@ export type Evidence<TGroup extends EvidenceGroup> = {
 	isGate: boolean;
 };
 
-export type StoredEvidence<TGroup extends EvidenceGroup> = Evidence<TGroup> & {
+export type StoredEvidence<TGroup> = Evidence<TGroup> & {
 	status: StoredEvidenceStatus;
 	contribution: number;
 };

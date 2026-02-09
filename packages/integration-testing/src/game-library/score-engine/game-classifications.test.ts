@@ -67,7 +67,7 @@ describe("Game Library / Score Engine Game Classifications", () => {
 		expect(firstQueryResult).toEqual(secondQueryResult);
 	});
 
-	it.only("recalculate classification scores on engine version change", async () => {
+	it("recalculate classification scores on engine version change", async () => {
 		// Arrange
 		const engineV1: ScoreEngineVersion = "v1.0.0";
 		const engineV2: ScoreEngineVersion = "v2.0.0";

@@ -16,6 +16,7 @@ export * from "./penalty.types";
 export * from "./rpg";
 export * from "./score-breakdown";
 export * from "./score-breakdown-envelope";
+export type * from "./score-breakdown-normalizer.port";
 export * from "./score-engine";
 export * from "./score-engine.compiler";
 export type * from "./score-engine.language.types";

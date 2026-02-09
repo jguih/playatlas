@@ -1,6 +1,7 @@
 import z from "zod";
 import { storedEvidenceSchema } from "./evidence.schema";
 import { penaltySchema } from "./penalty.schema";
+import { synergySchema } from "./synergy.schema";
 
 type SchemaVersionType = string;
 
@@ -19,10 +20,7 @@ export const scoreBreakdownSchemaV1_1_0 = z.object({
 			contribution: z.number(),
 		}),
 	),
-	synergy: z.object({
-		contribution: z.number(),
-		details: z.string(),
-	}),
+	synergies: z.array(synergySchema),
 	subtotal: z.number(),
 	penalties: z.array(penaltySchema),
 	total: z.number(),

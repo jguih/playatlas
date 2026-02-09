@@ -45,9 +45,9 @@ export const makeScoringPolicy = <TGroup extends string>({
 	};
 
 	const computeBreakdown = (
-		props: Pick<ScoreBreakdown<TGroup>, "mode" | "groups" | "synergy" | "penalties">,
+		props: Pick<ScoreBreakdown<TGroup>, "mode" | "groups" | "synergies" | "penalties">,
 	): ScoreBreakdown<TGroup> => {
-		const { mode, groups, synergy, penalties } = props;
+		const { mode, groups, synergies, penalties } = props;
 
 		let subtotal = 0;
 		let total = 0;
@@ -56,7 +56,10 @@ export const makeScoringPolicy = <TGroup extends string>({
 			total += group.contribution;
 		}
 
-		total += synergy.contribution;
+		for (const synergy of synergies) {
+			total += synergy.contribution;
+		}
+
 		subtotal = total;
 
 		for (const penalty of penalties) {
@@ -68,7 +71,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 		const breakdown: ScoreBreakdown<TGroup> = {
 			mode,
 			groups,
-			synergy,
+			synergies,
 			subtotal,
 			penalties,
 			total,
@@ -149,7 +152,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 		};
 	};
 
-	const scoreSynergyWithoutGate = (ctx: SynergyContext): ScoreBreakdown<TGroup>["synergy"] => {
+	const scoreSynergyWithoutGate = (ctx: SynergyContext): ScoreBreakdown<TGroup>["synergies"] => {
 		let total = 0;
 		let details: string = "scored in less than 2 groups";
 
@@ -161,10 +164,13 @@ export const makeScoringPolicy = <TGroup extends string>({
 			details = `scored in 3 groups or more`;
 		}
 
-		return {
-			contribution: Math.floor(total),
-			details,
-		};
+		return [
+			{
+				type: "multiple_sources",
+				contribution: Math.floor(total),
+				details,
+			},
+		];
 	};
 
 	const scoreWithoutGate = (evidences: Evidence<TGroup>[]): ScoreBreakdown<TGroup> => {
@@ -182,10 +188,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 			return computeBreakdown({
 				mode: "without_gate",
 				groups: [],
-				synergy: {
-					contribution: 0,
-					details: "no synergies",
-				},
+				synergies: [],
 				penalties: [],
 			});
 
@@ -209,18 +212,18 @@ export const makeScoringPolicy = <TGroup extends string>({
 		});
 
 		const ctx = computeSynergyContext(evidences);
-		const synergy = scoreSynergyWithoutGate(ctx);
+		const synergies = scoreSynergyWithoutGate(ctx);
 
 		return computeBreakdown({
 			mode: "without_gate",
 			groups: groupsBreakdown,
-			synergy,
+			synergies,
 			penalties,
 		});
 	};
 
-	const scoreSynergyWithGate = (ctx: SynergyContext): ScoreBreakdown<TGroup>["synergy"] => {
-		if (ctx.groupCount < 2) return { contribution: 0, details: "scored in less than 2 groups" };
+	const scoreSynergyWithGate = (ctx: SynergyContext): ScoreBreakdown<TGroup>["synergies"] => {
+		if (ctx.groupCount < 2) return [];
 
 		const sourceCount = ctx.distinctSources.size;
 		const details = `${ctx.groupCount} group(s), ${sourceCount} source(s)`;
@@ -233,10 +236,13 @@ export const makeScoringPolicy = <TGroup extends string>({
 			total = 10;
 		}
 
-		return {
-			contribution: Math.floor(total),
-			details,
-		};
+		return [
+			{
+				type: "multiple_sources",
+				contribution: Math.floor(total),
+				details,
+			},
+		];
 	};
 
 	const scoreWithGate = (evidence: Evidence<TGroup>[]): ScoreBreakdown<TGroup> => {
@@ -317,9 +323,9 @@ export const makeScoringPolicy = <TGroup extends string>({
 		}
 
 		const ctx = computeSynergyContext(evidence);
-		const synergy = scoreSynergyWithGate(ctx);
+		const synergies = scoreSynergyWithGate(ctx);
 
-		return computeBreakdown({ mode: "with_gate", groups: groupsBreakdown, synergy, penalties });
+		return computeBreakdown({ mode: "with_gate", groups: groupsBreakdown, synergies, penalties });
 	};
 
 	return {

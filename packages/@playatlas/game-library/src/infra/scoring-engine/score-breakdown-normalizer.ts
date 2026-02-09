@@ -37,7 +37,10 @@ export const makeScoreBreakdownNormalizer = ({
 				});
 			}
 
-			let entry = scoreBreakdownSchemaRegistry[envelope.breakdownSchemaVersion];
+			let entry =
+				scoreBreakdownSchemaRegistry[
+					envelope.breakdownSchemaVersion as ScoreBreakdownSchemaVersion
+				];
 
 			if (!entry) {
 				logService.warning("Unknown breakdown schema version", {
@@ -58,7 +61,9 @@ export const makeScoreBreakdownNormalizer = ({
 			}
 
 			let data = payloadData;
-			let currentVersion: ScoreBreakdownSchemaVersion | undefined = envelope.breakdownSchemaVersion;
+			let currentVersion: ScoreBreakdownSchemaVersion | undefined =
+				envelope.breakdownSchemaVersion as ScoreBreakdownSchemaVersion;
+			let migrated = false;
 
 			const visited = new Set();
 
@@ -78,6 +83,7 @@ export const makeScoreBreakdownNormalizer = ({
 				data = entry.migrate(data);
 				entry = next;
 				currentVersion = entry.next;
+				migrated = true;
 			}
 
 			const { success, data: latestBreakdown } = canonicalScoreBreakdownSchema.safeParse(data);
@@ -89,7 +95,7 @@ export const makeScoreBreakdownNormalizer = ({
 				return { type: "raw", payload: envelope.payload };
 			}
 
-			return { type: "normalized", breakdown: latestBreakdown };
+			return { type: "normalized", breakdown: latestBreakdown, migrated };
 		},
 	};
 };

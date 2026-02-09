@@ -171,6 +171,7 @@ const makeGameLibraryScoreEngineModule = ({
 		getGameClassificationScoreService: () => gameClassificationScoreService,
 
 		getScoreEngineRegistry: () => scoreEngineRegistry,
+		getScoreBreakdownNormalizer: () => scoreBreakdownNormalizer,
 	};
 };
 

@@ -7,7 +7,11 @@ import type {
 	Genre,
 	Platform,
 } from "@playatlas/game-library/domain";
-import { makeTestGameFactory, makeTestHorrorScoreEngine } from "@playatlas/game-library/testing";
+import {
+	makeTestGameFactory,
+	makeTestHorrorScoreEngine,
+	type ITestHorrorScoreEnginePort,
+} from "@playatlas/game-library/testing";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapV1, type PlayAtlasApiV1 } from "../application";
 import {
@@ -26,7 +30,7 @@ import { makeInfraModule } from "../application/modules/infra.module";
 import { makePlayniteIntegrationModule } from "../application/modules/playnite-integration.module";
 import { makeTestClock, type TestClock } from "./test-clock";
 import { makeTestFactoryModule, type ITestFactoryModulePort } from "./test-factory.module";
-import type { PlayAtlasTestApiV1, TestApiStubs } from "./test.api.v1";
+import type { PlayAtlasTestApiV1 } from "./test.api.v1";
 
 export type TestCompositionRootDeps = {
 	env: AppEnvironmentVariables;
@@ -69,7 +73,9 @@ type Self = {
 		platformList: Platform[];
 	};
 	clock: TestClock;
-	stubs: TestApiStubs;
+	stubs: {
+		scoreEngine: { horrorScoreEngine: ITestHorrorScoreEnginePort };
+	};
 };
 
 export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestRoot => {
@@ -303,8 +309,12 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 						);
 					},
 				},
+				scoreEngine: {
+					getScoreBreakdownNormalizer: () =>
+						withSelf(({ gameLibrary }) => gameLibrary.scoreEngine.getScoreBreakdownNormalizer()),
+					getHorrorScoreEngine: () => withSelf(({ stubs }) => stubs.scoreEngine.horrorScoreEngine),
+				},
 			},
-			getStubs: () => withSelf(({ stubs }) => stubs),
 		},
 	};
 };

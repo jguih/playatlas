@@ -5,13 +5,12 @@ import type {
 	ExpandedTaxonomySignalItem,
 	ExpandedTextSignalItem,
 } from "./engine.signals";
-import type { EvidenceGroup } from "./evidence.types";
 import type { EngineLanguageRegistry } from "./score-engine.language.types";
 
 export const buildTextSignals = <
 	TTextId extends string,
 	TTaxonomyId extends string,
-	TGroup extends EvidenceGroup,
+	TGroup,
 >(props: {
 	languages: ScoreEngineLanguage[];
 	canonical: CanonicalTextSignalsMap<TTextId, TGroup>;
@@ -48,7 +47,7 @@ export const buildTextSignals = <
 export const buildTaxonomySignals = <
 	TTextId extends string,
 	TTaxonomyId extends string,
-	TGroup extends EvidenceGroup,
+	TGroup,
 >(props: {
 	languages: ScoreEngineLanguage[];
 	canonical: CanonicalTaxonomySignalsMap<TTaxonomyId, TGroup>;

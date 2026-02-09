@@ -6,3 +6,4 @@ export * from "./game-classification-id";
 export * from "./penalty-type";
 export * from "./score-engine-language";
 export * from "./stored-evidence-status";
+export * from "./synergy-type";

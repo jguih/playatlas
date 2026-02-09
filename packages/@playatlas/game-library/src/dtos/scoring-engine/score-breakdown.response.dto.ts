@@ -3,6 +3,7 @@ import { canonicalScoreBreakdownSchema } from "./score-breakdown.schema";
 
 const normalizedResponse = z.object({
 	type: z.literal("normalized"),
+	migrated: z.boolean(),
 	breakdown: canonicalScoreBreakdownSchema,
 });
 
