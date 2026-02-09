@@ -1,6 +1,7 @@
 import { ISODateSchema } from "@playatlas/common/common";
 import {
 	classificationIdSchema,
+	engineScoreMode,
 	gameClassificationIdSchema,
 	gameIdSchema,
 	type ClassificationId,
@@ -13,7 +14,7 @@ import {
 } from "@playatlas/common/infra";
 import z from "zod";
 import type { IGameClassificationMapperPort } from "../../application/scoring-engine/game-classification.mapper";
-import type { ScoreEngineVersion } from "../../application/scoring-engine/score-engine.port";
+import type { ScoreEngineVersion } from "../../application/scoring-engine/score-engine.types";
 import type { GameClassification } from "../../domain/scoring-engine/game-classification.entity";
 import type { GameClassificationRepositoryFilters } from "./game-classification.repository.types";
 
@@ -22,6 +23,8 @@ export const gameClassificationSchema = z.object({
 	GameId: gameIdSchema,
 	ClassificationId: classificationIdSchema,
 	Score: z.number(),
+	NormalizedScore: z.number(),
+	Mode: z.enum(engineScoreMode),
 	EngineVersion: z.string(),
 	BreakdownJson: z.string(),
 	LastUpdatedAt: ISODateSchema,
@@ -50,18 +53,20 @@ export const makeGameClassificationRepository = ({
 	logService,
 }: GameClassificationRepositoryDeps): IGameClassificationRepositoryPort => {
 	const TABLE_NAME = "game_classification";
-	const COLUMNS: (keyof GameClassificationModel)[] = [
+	const COLUMNS = [
 		"Id",
 		"GameId",
 		"ClassificationId",
 		"Score",
+		"NormalizedScore",
+		"Mode",
 		"EngineVersion",
 		"BreakdownJson",
 		"LastUpdatedAt",
 		"CreatedAt",
 		"DeletedAt",
 		"DeleteAfter",
-	];
+	] as const satisfies (keyof GameClassificationModel)[];
 
 	const getWhereClauseAndParamsFromFilters = (filters?: GameClassificationRepositoryFilters) => {
 		const where: string[] = [];

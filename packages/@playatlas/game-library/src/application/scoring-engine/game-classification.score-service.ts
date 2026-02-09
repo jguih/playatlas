@@ -117,7 +117,10 @@ export const makeGameClassificationScoreService = ({
 					if (!engine) throw new DomainError(`Missing engine for ${classificationId}`);
 
 					for (const game of games) {
-						const { score, breakdown } = engine.score({ game, genresSnapshot });
+						const { score, normalizedScore, mode, breakdown } = engine.score({
+							game,
+							genresSnapshot,
+						});
 						const breakdownJson = engine.serializeBreakdown(breakdown);
 						const latestGameClassification = gameClassificationsByGame
 							.get(game.getId())
@@ -145,6 +148,8 @@ export const makeGameClassificationScoreService = ({
 							classificationId: classificationId,
 							gameId: game.getId(),
 							score,
+							normalizedScore,
+							mode,
 							breakdownJson,
 							engineVersion: engine.version,
 							createdAt: now,

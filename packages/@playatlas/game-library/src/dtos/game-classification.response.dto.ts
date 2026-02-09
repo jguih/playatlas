@@ -1,6 +1,7 @@
 import { ISODateSchema } from "@playatlas/common/common";
 import {
 	classificationIdSchema,
+	engineScoreMode,
 	gameClassificationIdSchema,
 	gameIdSchema,
 } from "@playatlas/common/domain";
@@ -16,6 +17,8 @@ export const gameClassificationResponseDtoSchema = z.object({
 	GameId: gameIdSchema,
 	ClassificationId: classificationIdSchema,
 	Score: z.number(),
+	NormalizedScore: z.number(),
+	ScoreMode: z.enum(engineScoreMode),
 	Breakdown: scoreBreakdownResponseDtoSchema,
 	Sync: z.object({
 		LastUpdatedAt: ISODateSchema,

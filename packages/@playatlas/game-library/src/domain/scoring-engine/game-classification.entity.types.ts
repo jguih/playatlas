@@ -1,4 +1,9 @@
-import type { ClassificationId, GameClassificationId, GameId } from "@playatlas/common/domain";
+import type {
+	ClassificationId,
+	EngineScoreMode,
+	GameClassificationId,
+	GameId,
+} from "@playatlas/common/domain";
 import type { IClockPort } from "@playatlas/common/infra";
 
 type SyncProps = {
@@ -16,6 +21,8 @@ type BaseProps = {
 	gameId: GameId;
 	classificationId: ClassificationId;
 	score: number;
+	normalizedScore: number;
+	mode: EngineScoreMode;
 	engineVersion: string;
 	breakdownJson: string;
 };

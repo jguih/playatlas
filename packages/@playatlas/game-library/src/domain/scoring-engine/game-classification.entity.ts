@@ -4,6 +4,7 @@ import {
 	makeSoftDeletable,
 	type BaseEntity,
 	type ClassificationId,
+	type EngineScoreMode,
 	type EntitySoftDeleteProps,
 	type GameClassificationId,
 	type GameId,
@@ -20,6 +21,8 @@ export type GameClassification = BaseEntity<GameClassificationId> &
 		getGameId: () => GameId;
 		getClassificationId: () => ClassificationId;
 		getScore: () => number;
+		getNormalizedScore: () => number;
+		getMode: () => EngineScoreMode;
 		getEngineVersion: () => string;
 		getBreakdownJson: () => string;
 	}>;
@@ -34,6 +37,8 @@ export const makeGameClassificationAggregate = (
 	const gameId = props.gameId;
 	const classificationId = props.classificationId;
 	const score = props.score;
+	const normalizedScore = props.normalizedScore;
+	const mode = props.mode;
 	const engineVersion = props.engineVersion;
 	const breakdownJson = props.breakdownJson;
 	const createdAt = props.createdAt ?? now;
@@ -49,6 +54,8 @@ export const makeGameClassificationAggregate = (
 		if (validation.isNullOrEmptyString(breakdownJson))
 			throw new InvalidStateError(validation.message.isNullOrEmptyString("breakdownJson"));
 		if (score < 0) throw new InvalidStateError("Score must be a positive integer");
+		if (normalizedScore < 0)
+			throw new InvalidStateError("Normalized score must be a positive real number");
 	};
 
 	_validate();
@@ -66,6 +73,8 @@ export const makeGameClassificationAggregate = (
 		getSafeId: () => id,
 		getLastUpdatedAt: () => lastUpdatedAt,
 		getScore: () => score,
+		getNormalizedScore: () => normalizedScore,
+		getMode: () => mode,
 		getCreatedAt: () => createdAt,
 		getGameId: () => gameId,
 		getClassificationId: () => classificationId,

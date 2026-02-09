@@ -115,6 +115,8 @@ CREATE TABLE IF NOT EXISTS `game_classification` (
   `GameId` TEXT NOT NULL,
   `ClassificationId` TEXT NOT NULL,
   `Score` INTEGER NOT NULL,
+  `NormalizedScore` REAL NOT NULL,
+  `Mode` TEXT NOT NULL,
   `EngineVersion` TEXT NOT NULL,
   `BreakdownJson` TEXT NOT NULL,
   `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

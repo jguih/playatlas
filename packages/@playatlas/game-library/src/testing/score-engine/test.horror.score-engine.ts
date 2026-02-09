@@ -23,6 +23,8 @@ export const makeTestHorrorScoreEngine = (): ITestHorrorScoreEnginePort => {
 		score: () => {
 			return {
 				score,
+				normalizedScore: 0,
+				mode: "without_gate",
 				breakdown: {
 					mode: "without_gate",
 					groups: [],
