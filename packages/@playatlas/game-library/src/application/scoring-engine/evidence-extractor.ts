@@ -1,6 +1,6 @@
 import { normalize } from "@playatlas/common/common";
 import type { GenreName } from "../../domain/genre.entity";
-import type { TaxonomySignalItem, TextSignalItem } from "./engine.signals";
+import type { SignalOrGroup, TaxonomySignalItem, TextSignalItem } from "./engine.signals";
 import type { IEvidenceExtractorPort } from "./evidence-extractor.port";
 import type { Evidence } from "./evidence.types";
 
@@ -20,21 +20,33 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 		const { genres, add } = props;
 		const normalizedGenres = genres.map(normalize);
 
-		const hasGenre = (x: string) => normalizedGenres.includes(x);
+		const hasGenre = (x: string) => normalizedGenres.includes(normalize(x));
 
 		for (const signal of taxonomySignals) {
-			const names = Array.isArray(signal.name) ? signal.name : [signal.name];
-
-			if (names.every(hasGenre))
-				add({
-					source: "taxonomy",
-					sourceHint: "genre",
-					match: names.join(" + "),
-					group: signal.group,
-					weight: signal.weight,
-					tier: signal.tier,
-					isGate: signal.isGate,
-				});
+			for (const name of signal.name) {
+				if (Array.isArray(name)) {
+					if (name.every(hasGenre))
+						add({
+							source: "taxonomy",
+							sourceHint: "genre",
+							match: name.join(" + "),
+							group: signal.group,
+							weight: signal.weight,
+							tier: signal.tier,
+							isGate: signal.isGate,
+						});
+				} else if (hasGenre(name)) {
+					add({
+						source: "taxonomy",
+						sourceHint: "genre",
+						match: name,
+						group: signal.group,
+						weight: signal.weight,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
+				}
+			}
 		}
 	};
 
@@ -47,22 +59,37 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 
 		const normalizedDescription = normalize(description);
 
-		for (const signal of textSignals) {
-			const phrases = Array.isArray(signal.phrase) ? signal.phrase : [signal.phrase];
-
-			for (const phrase of phrases) {
-				const normalizedPhrase = normalize(phrase);
-				if (normalizedDescription.includes(normalizedPhrase)) {
+		const handleSignal = (signal: TextSignalItem<TGroup>, phrase: SignalOrGroup[number]) => {
+			if (Array.isArray(phrase)) {
+				const normalized = phrase.map(normalize);
+				if (normalized.every(normalizedDescription.includes))
 					add({
 						source: "text",
 						sourceHint: "description",
-						match: normalizedPhrase,
+						match: normalized.join(" + "),
 						weight: signal.weight,
 						group: signal.group,
 						tier: signal.tier,
 						isGate: signal.isGate,
 					});
-				}
+			} else {
+				const normalized = normalize(phrase);
+				if (normalizedDescription.includes(normalized))
+					add({
+						source: "text",
+						sourceHint: "description",
+						match: normalized,
+						weight: signal.weight,
+						group: signal.group,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
+			}
+		};
+
+		for (const signal of textSignals) {
+			for (const phrase of signal.phrase) {
+				handleSignal(signal, phrase);
 			}
 		}
 	};

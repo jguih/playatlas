@@ -1,6 +1,8 @@
 import type { EvidenceTier, ScoreEngineLanguage } from "@playatlas/common/domain";
 
-export type SignalRepresentation = string | string[];
+export type SignalTerm = string;
+export type SignalAndGroup = SignalTerm[];
+export type SignalOrGroup = (SignalTerm | SignalAndGroup)[];
 
 export type CanonicalSignalId = string;
 
@@ -12,7 +14,7 @@ type TextSignalItemBaseProps<TGroup> = {
 };
 
 export type TextSignalItem<TGroup> = TextSignalItemBaseProps<TGroup> & {
-	phrase: SignalRepresentation;
+	phrase: SignalOrGroup;
 };
 
 export type ExpandedTextSignalItem<TGroup> = TextSignalItem<TGroup> & {
@@ -35,7 +37,7 @@ type TaxonomySignalItemBaseProps<TGroup> = {
 };
 
 export type TaxonomySignalItem<TGroup> = TaxonomySignalItemBaseProps<TGroup> & {
-	name: SignalRepresentation;
+	name: SignalOrGroup;
 };
 
 export type ExpandedTaxonomySignalItem<TGroup> = TaxonomySignalItem<TGroup> & {

@@ -1,12 +1,9 @@
 import type { SCORE_ENGINE_LANGUAGE_EN, ScoreEngineLanguage } from "@playatlas/common/domain";
-import type { SignalRepresentation } from "./engine.signals";
+import type { SignalOrGroup } from "./engine.signals";
 
-export type LanguageTextSignalsMap<TSignal extends string> = Record<TSignal, SignalRepresentation>;
+export type LanguageTextSignalsMap<TSignal extends string> = Record<TSignal, SignalOrGroup>;
 
-export type LanguageTaxonomySignalsMap<TSignal extends string> = Record<
-	TSignal,
-	SignalRepresentation
->;
+export type LanguageTaxonomySignalsMap<TSignal extends string> = Record<TSignal, SignalOrGroup>;
 
 export type EvidenceSourceLanguageMaps<TTextId extends string, TTaxonomyId extends string> = {
 	text: LanguageTextSignalsMap<TTextId>;
