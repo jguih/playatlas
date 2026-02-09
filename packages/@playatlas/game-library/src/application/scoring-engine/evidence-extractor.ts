@@ -23,29 +23,18 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 		const hasGenre = (x: string) => normalizedGenres.includes(x);
 
 		for (const signal of taxonomySignals) {
-			if (Array.isArray(signal.name)) {
-				if (signal.name.every(hasGenre))
-					add({
-						source: "taxonomy",
-						sourceHint: "genre",
-						match: signal.name.join(" + "),
-						group: signal.group,
-						weight: signal.weight,
-						tier: signal.tier,
-						isGate: signal.isGate,
-					});
-			} else {
-				if (hasGenre(signal.name))
-					add({
-						source: "taxonomy",
-						sourceHint: "genre",
-						match: signal.name,
-						group: signal.group,
-						weight: signal.weight,
-						tier: signal.tier,
-						isGate: signal.isGate,
-					});
-			}
+			const names = Array.isArray(signal.name) ? signal.name : [signal.name];
+
+			if (names.every(hasGenre))
+				add({
+					source: "taxonomy",
+					sourceHint: "genre",
+					match: names.join(" + "),
+					group: signal.group,
+					weight: signal.weight,
+					tier: signal.tier,
+					isGate: signal.isGate,
+				});
 		}
 	};
 

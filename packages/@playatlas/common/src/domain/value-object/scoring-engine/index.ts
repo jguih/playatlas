@@ -4,4 +4,5 @@ export * from "./evidence-source";
 export * from "./evidence-tier";
 export * from "./game-classification-id";
 export * from "./penalty-type";
+export * from "./score-engine-language";
 export * from "./stored-evidence-status";

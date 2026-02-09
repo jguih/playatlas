@@ -17,6 +17,8 @@ export * from "./rpg";
 export * from "./score-breakdown";
 export * from "./score-breakdown-envelope";
 export * from "./score-engine";
+export * from "./score-engine.compiler";
+export type * from "./score-engine.language.types";
 export * from "./score-engine.port";
 export type * from "./score-engine.types";
 export * from "./scoring-policy";

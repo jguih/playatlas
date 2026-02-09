@@ -1,15 +1,30 @@
 import { makeEvidenceExtractor } from "../evidence-extractor";
 import type { IEvidenceExtractorPort } from "../evidence-extractor.port";
+import { buildTaxonomySignals, buildTextSignals } from "../score-engine.compiler";
+import { HORROR_ENGINE_LANGUAGE_REGISTRY } from "./horror.language.registry";
+import { type HorrorEvidenceGroup } from "./horror.score-engine.meta";
 import {
-	HORROR_ENGINE_TAXONOMY_SIGNALS,
-	HORROR_ENGINE_TEXT_SIGNALS,
-	type HorrorEvidenceGroup,
-} from "./horror.score-engine.meta";
+	HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS,
+	HORROR_ENGINE_CANONICAL_TEXT_SIGNALS,
+} from "./signals/canonical.signals";
 
 export type IHorrorEvidenceExtractorPort = IEvidenceExtractorPort<HorrorEvidenceGroup>;
 
-export const makeHorrorEvidenceExtractor = (): IHorrorEvidenceExtractorPort =>
-	makeEvidenceExtractor({
-		taxonomySignals: HORROR_ENGINE_TAXONOMY_SIGNALS,
-		textSignals: HORROR_ENGINE_TEXT_SIGNALS,
+export const makeHorrorEvidenceExtractor = (): IHorrorEvidenceExtractorPort => {
+	const textSignals = buildTextSignals({
+		canonical: HORROR_ENGINE_CANONICAL_TEXT_SIGNALS,
+		languages: ["en", "pt"],
+		languageRegistry: HORROR_ENGINE_LANGUAGE_REGISTRY,
 	});
+
+	const taxonomySignals = buildTaxonomySignals({
+		canonical: HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS,
+		languages: ["en", "pt"],
+		languageRegistry: HORROR_ENGINE_LANGUAGE_REGISTRY,
+	});
+
+	return makeEvidenceExtractor({
+		taxonomySignals,
+		textSignals,
+	});
+};
