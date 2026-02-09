@@ -15,7 +15,7 @@ export const makeRPGScoreEngine = (): IRPGScoreEnginePort => {
 				breakdown: {
 					mode: "without_gate",
 					groups: [],
-					synergy: { contribution: 0, details: "" },
+					synergies: [],
 					penalties: [],
 					subtotal: 0,
 					total: 0,

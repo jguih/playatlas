@@ -72,7 +72,7 @@ describe("Game Library / Score Engine Game Classifications", () => {
 		const engineV1: ScoreEngineVersion = "v1.0.0";
 		const engineV2: ScoreEngineVersion = "v2.0.0";
 		const syncItems = root.getFactory().getSyncGameRequestDtoFactory().buildList(1);
-		const horrorEngine = root.testApi.getStubs().scoreEngine.horrorScoreEngine;
+		const horrorEngine = root.testApi.gameLibrary.scoreEngine.getHorrorScoreEngine();
 
 		horrorEngine.setVersion(engineV1);
 		horrorEngine.setScore(10);

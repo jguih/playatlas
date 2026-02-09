@@ -26,7 +26,7 @@ export const makeTestHorrorScoreEngine = (): ITestHorrorScoreEnginePort => {
 				breakdown: {
 					mode: "without_gate",
 					groups: [],
-					synergy: { contribution: 0, details: "" },
+					synergies: [],
 					penalties: [],
 					subtotal: score,
 					total: score,
