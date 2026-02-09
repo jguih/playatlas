@@ -1,3 +1,4 @@
+import { engineScoreMode } from "@playatlas/common/domain";
 import z from "zod";
 import { storedEvidenceSchema } from "./evidence.schema";
 import { penaltySchema } from "./penalty.schema";
@@ -12,7 +13,7 @@ export const SCORE_BREAKDOWN_SCHEMA_V1_0_0 = "v1.0.0" as const satisfies SchemaV
 
 // #region: Individual schemas
 export const scoreBreakdownSchemaV1_1_0 = z.object({
-	mode: z.enum(["with_gate", "without_gate"]),
+	mode: z.enum(engineScoreMode),
 	groups: z.array(
 		z.object({
 			group: z.string(),
@@ -27,7 +28,7 @@ export const scoreBreakdownSchemaV1_1_0 = z.object({
 });
 
 export const scoreBreakdownSchemaV1_0_0 = z.object({
-	mode: z.enum(["with_gate", "without_gate"]),
+	mode: z.enum(engineScoreMode),
 	groups: z.array(
 		z.object({
 			group: z.string(),

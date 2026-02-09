@@ -1,9 +1,10 @@
+import type { EngineScoreMode } from "@playatlas/common/domain";
 import { type StoredEvidence } from "./evidence.types";
 import { type Penalty } from "./penalty.types";
 import type { Synergy } from "./synergy.types";
 
 export type ScoreBreakdown<TGroup> = {
-	mode: "with_gate" | "without_gate";
+	mode: EngineScoreMode;
 	groups: {
 		group: TGroup;
 		evidences: StoredEvidence<TGroup>[];

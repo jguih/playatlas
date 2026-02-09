@@ -55,7 +55,7 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 		add: (e: Evidence<TGroup>) => void;
 	}) => {
 		const { description, add } = props;
-		if (!description) return 0;
+		if (!description) return;
 
 		const normalizedDescription = normalize(description);
 

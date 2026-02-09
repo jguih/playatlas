@@ -15,11 +15,13 @@ export type ScoringPolicyDeps<TGroup extends string> = {
 	noGatePolicy: NoGatePolicy;
 	gateStackPolicy: GateStackPolicy;
 	maxScore: number;
+	maxNoGateScore: number;
 };
 
 export const makeScoringPolicy = <TGroup extends string>({
 	groupPolicies,
 	maxScore,
+	maxNoGateScore,
 	noGatePolicy,
 	gateStackPolicy,
 }: ScoringPolicyDeps<TGroup>): IScoringPolicyPort<TGroup> => {
@@ -66,7 +68,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 			total += penalty.contribution;
 		}
 
-		total = Math.min(total, mode === "with_gate" ? maxScore : 15);
+		total = Math.min(total, mode === "with_gate" ? maxScore : maxNoGateScore);
 
 		const breakdown: ScoreBreakdown<TGroup> = {
 			mode,
@@ -338,14 +340,18 @@ export const makeScoringPolicy = <TGroup extends string>({
 				const breakdown = scoreWithoutGate(nonGateEvidence);
 
 				return {
+					mode: "without_gate",
 					score: breakdown.total,
+					normalizedScore: (breakdown.total / maxNoGateScore) * 0.15,
 					breakdown,
 				};
 			}
 
 			const breakdown = scoreWithGate(evidence);
 			return {
+				mode: "with_gate",
 				score: breakdown.total,
+				normalizedScore: 0.15 + (breakdown.total / maxScore) * 0.85,
 				breakdown,
 			};
 		},

@@ -5,5 +5,6 @@ export * from "./evidence-tier";
 export * from "./game-classification-id";
 export * from "./penalty-type";
 export * from "./score-engine-language";
+export * from "./score-mode";
 export * from "./stored-evidence-status";
 export * from "./synergy-type";

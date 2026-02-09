@@ -21,7 +21,7 @@ export type GateStackPolicy = {
 	tailMultiplier: number;
 };
 
-export const DEFAULT_NO_GATE_POLICY = {
+export const SCORE_ENGINE_DEFAULT_NO_GATE_POLICY = {
 	tierPenalty: {
 		A: 0.6,
 		B: 0.75,
@@ -29,7 +29,10 @@ export const DEFAULT_NO_GATE_POLICY = {
 	},
 } as const satisfies NoGatePolicy;
 
-export const DEFAULT_GATE_STACK_POLICY = {
+export const SCORE_ENGINE_DEFAULT_GATE_STACK_POLICY = {
 	diminishingMultipliers: [1.0, 0.7],
 	tailMultiplier: 0.3,
 } as const satisfies GateStackPolicy;
+
+export const SCORE_ENGINE_DEFAULT_MAX_SCORE = 100 as const satisfies number;
+export const SCORE_ENGINE_DEFAULT_MAX_NO_GATE_SCORE = 15 as const satisfies number;

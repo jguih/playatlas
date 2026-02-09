@@ -12,6 +12,8 @@ export const makeSurvivalScoreEngine = (): ISurvivalScoreEnginePort => {
 		score: () => {
 			return {
 				score: 0,
+				normalizedScore: 0,
+				mode: "without_gate",
 				breakdown: {
 					mode: "without_gate",
 					groups: [],
