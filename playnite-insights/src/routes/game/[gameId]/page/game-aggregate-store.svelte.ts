@@ -1,4 +1,5 @@
 import type { ClientApiGetter } from "$lib/modules/bootstrap/application";
+import type { GameId } from "$lib/modules/common/domain";
 import {
 	CompanyIdParser,
 	CompletionStatusIdParser,
@@ -7,10 +8,12 @@ import {
 	type Company,
 	type CompletionStatus,
 	type Game,
-	type GameId,
+	type GameClassification,
 	type Genre,
 	type Platform,
 } from "$lib/modules/game-library/domain";
+import type { ClassificationId } from "@playatlas/common/domain";
+import { SvelteMap } from "svelte/reactivity";
 
 type GameAggregateStoreDeps = {
 	api: ClientApiGetter;
@@ -24,6 +27,7 @@ export class GameAggregateStore {
 	publishers: Company[] = $state([]);
 	genres: Genre[] = $state([]);
 	platforms: Platform[] = $state([]);
+	gameClassifications: SvelteMap<ClassificationId, Set<GameClassification>> | null = $state(null);
 
 	constructor(private readonly deps: GameAggregateStoreDeps) {}
 
@@ -76,6 +80,18 @@ export class GameAggregateStore {
 		this.platforms = platforms;
 	};
 
+	private loadGameClassifications = async () => {
+		if (!this.game) return;
+
+		const { gameClassifications } = await this.deps
+			.api()
+			.GameLibrary.ScoringEngine.Query.GetGameClassificationsByGameId.executeAsync({
+				gameId: this.game.Id,
+			});
+
+		if (gameClassifications) this.gameClassifications = new SvelteMap(gameClassifications);
+	};
+
 	initAsync = async () => {
 		const gameId = this.deps.getGameId();
 
@@ -92,5 +108,6 @@ export class GameAggregateStore {
 		await this.loadPublishersAsync();
 		await this.loadGenresAsync();
 		await this.loadPlatformsAsync();
+		await this.loadGameClassifications();
 	};
 }

@@ -34,6 +34,8 @@ export class ClientBootstrapper {
 				ScoringEngine: {
 					Query: {
 						GetGameClassifications: this.gameLibrary.getGameClassificationsByIdsQueryHandler,
+						GetGameClassificationsByGameId:
+							this.gameLibrary.getGameClassificationsByGameIdQueryHandler,
 					},
 					Command: {
 						SyncGameClassifications: this.gameLibrary.syncGameClassificationsCommandHandler,

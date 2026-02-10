@@ -1,7 +1,7 @@
 import type { SyncStatus } from "$lib/modules/common/common";
 import type { GameClassificationId, GameId } from "$lib/modules/common/domain";
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
-import type { ClassificationId, EngineScoreMode } from "@playatlas/common/domain";
+import { type ClassificationId, type EngineScoreMode } from "@playatlas/common/domain";
 import type { IGameClassificationMapperPort } from "../../application/scoring-engine/game-classification.mapper.port";
 import type {
 	GameClassification,
@@ -43,4 +43,52 @@ export class GameClassificationRepository
 			mapper: gameClassificationMapper,
 		});
 	}
+
+	getByGameIdAsync: IGameClassificationRepositoryPort["getByGameIdAsync"] = async (gameId) => {
+		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
+			const store = tx.objectStore(this.storeName);
+			const idx = store.index(gameClassificationRepositoryMeta.index.BY_GAME_ID);
+			const gameClassifications = new Map<ClassificationId, Set<GameClassification>>();
+			const context = {
+				found: false,
+			};
+
+			return await new Promise<Map<ClassificationId, Set<GameClassification>> | null>(
+				(resolve, reject) => {
+					const request = idx.openCursor(null, "prev");
+
+					request.onerror = () => reject(request.error);
+
+					request.onsuccess = () => {
+						const cursor = request.result;
+
+						if (!cursor) {
+							resolve(null);
+							return;
+						}
+
+						const gameClassification: GameClassificationModel = cursor.value;
+
+						if (gameClassification.GameId === gameId) {
+							context.found = true;
+
+							let classifications = gameClassifications.get(gameClassification.ClassificationId);
+
+							if (!classifications) {
+								classifications = new Set();
+								gameClassifications.set(gameClassification.ClassificationId, classifications);
+							}
+
+							classifications.add(this.mapper.toDomain(gameClassification));
+						} else if (context.found) {
+							resolve(gameClassifications);
+							return;
+						}
+
+						cursor.continue();
+					};
+				},
+			);
+		});
+	};
 }

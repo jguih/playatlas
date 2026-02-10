@@ -39,6 +39,7 @@ import type {
 import type {
 	IGetCompaniesByIdsQueryHandlerPort,
 	IGetCompletionStatusesByIdsQueryHandlerPort,
+	IGetGameClassificationByGameIdQueryHandler,
 	IGetGameClassificationByIdsQueryHandler,
 	IGetGameLibraryFiltersQueryHandlerPort,
 	IGetGamesByIdsQueryHandlerPort,
@@ -98,6 +99,7 @@ export interface IClientGameLibraryModulePort {
 	get gameClassificationMapper(): IGameClassificationMapperPort;
 	get gameClassificationRepository(): IGameClassificationRepositoryPort;
 	get getGameClassificationsByIdsQueryHandler(): IGetGameClassificationByIdsQueryHandler;
+	get getGameClassificationsByGameIdQueryHandler(): IGetGameClassificationByGameIdQueryHandler;
 	get syncGameClassificationsCommandHandler(): ISyncGameClassificationsCommandHandlerPort;
 	get syncGameClassificationsFlow(): ISyncGameClassificationsFlowPort;
 }

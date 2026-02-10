@@ -16,6 +16,7 @@ import type {
 import type {
 	IGetCompaniesByIdsQueryHandlerPort,
 	IGetCompletionStatusesByIdsQueryHandlerPort,
+	IGetGameClassificationByGameIdQueryHandler,
 	IGetGameClassificationByIdsQueryHandler,
 	IGetGameLibraryFiltersQueryHandlerPort,
 	IGetGamesByIdsQueryHandlerPort,
@@ -30,6 +31,7 @@ export interface ClientApiV1 {
 		ScoringEngine: {
 			Query: {
 				GetGameClassifications: IGetGameClassificationByIdsQueryHandler;
+				GetGameClassificationsByGameId: IGetGameClassificationByGameIdQueryHandler;
 			};
 			Command: {
 				SyncGameClassifications: ISyncGameClassificationsCommandHandlerPort;

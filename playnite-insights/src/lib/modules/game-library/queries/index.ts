@@ -1,5 +1,6 @@
 export * from "./get-companies-by-ids";
 export * from "./get-completion-statuses-by-ids";
+export * from "./get-game-classifications-by-game-id";
 export * from "./get-game-classifications-by-ids";
 export * from "./get-game-library-filters";
 export * from "./get-games";
