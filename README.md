@@ -4,13 +4,11 @@
 
 ### Scoring Engine Architecture
 
-#### Overview
-
 A **score engine** is a modular component responsible for computing classification scores for games and producing a structured breakdown that explains how the score was derived.
 
 Each classification (e.g., _Horror_, _RPG_, _Survival_) has its own independent score engine. Engines are versioned, deterministic, and designed to evolve safely over time while preserving historical data.
 
-To learn more about the internals of score engines and how to create new ones, visit [Scoring Engine Architecture](/packages/@playatlas/game-library/src/application/scoring-engine/README.md)
+To learn more about the internals of score engines and how to create new ones, visit [Scoring Engine Architecture](/packages/@playatlas/game-library/src/application/scoring-engine/)
 
 ## Getting Started
 
