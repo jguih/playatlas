@@ -22,6 +22,8 @@ export type GameClassification = ClientEntity<GameClassificationId> &
 		NormalizedScore: number;
 		ScoreMode: EngineScoreMode;
 		Breakdown: GameClassificationBreakdown;
+		DeletedAt: Date | null;
+		DeleteAfter: Date | null;
 		// Front-end specific
 		Sync: EntitySyncStateProps;
 	}>;

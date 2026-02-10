@@ -15,6 +15,7 @@ import {
 	gameClassificationRepositorySchema,
 	gameLibraryFilterRepositorySchema,
 	gameRepositorySchema,
+	gameVectorStoreSchema,
 	genreRepositorySchema,
 	platformRepositorySchema,
 } from "$lib/modules/game-library/infra";
@@ -48,6 +49,7 @@ export class ClientCompositionRoot {
 				completionStatusRepositorySchema,
 				gameLibraryFilterRepositorySchema,
 				gameClassificationRepositorySchema,
+				gameVectorStoreSchema,
 			],
 			clock: this.clock,
 		});

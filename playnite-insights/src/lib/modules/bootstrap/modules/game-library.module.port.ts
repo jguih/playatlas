@@ -33,6 +33,8 @@ import type {
 	IGameLibraryFilterHasherPort,
 	IGameLibraryFilterRepositoryPort,
 	IGameRepositoryPort,
+	IGameVectorReadonlyStore,
+	IGameVectorWriteStore,
 	IGenreRepositoryPort,
 	IPlatformRepositoryPort,
 } from "$lib/modules/game-library/infra";
@@ -102,4 +104,6 @@ export interface IClientGameLibraryModulePort {
 	get getGameClassificationsByGameIdQueryHandler(): IGetGameClassificationByGameIdQueryHandler;
 	get syncGameClassificationsCommandHandler(): ISyncGameClassificationsCommandHandlerPort;
 	get syncGameClassificationsFlow(): ISyncGameClassificationsFlowPort;
+	get gameVectorWriteStore(): IGameVectorWriteStore;
+	get gameVectorReadonlyStore(): IGameVectorReadonlyStore;
 }

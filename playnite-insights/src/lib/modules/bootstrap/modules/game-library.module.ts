@@ -62,6 +62,8 @@ import {
 	type IGameLibraryFilterHasherPort,
 	type IGameLibraryFilterRepositoryPort,
 	type IGameRepositoryPort,
+	type IGameVectorReadonlyStore,
+	type IGameVectorWriteStore,
 	type IGenreRepositoryPort,
 	type IPlatformRepositoryPort,
 	CompanyRepository,
@@ -71,6 +73,8 @@ import {
 	GameLibraryFilterRepository,
 	GameLibrarySyncState,
 	GameRepository,
+	GameVectorReadonlyStore,
+	GameVectorWriteStore,
 	GenreRepository,
 	PlatformRepository,
 } from "$lib/modules/game-library/infra";
@@ -159,6 +163,8 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly getGameClassificationsByGameIdQueryHandler: IGetGameClassificationByGameIdQueryHandler;
 	readonly syncGameClassificationsCommandHandler: ISyncGameClassificationsCommandHandlerPort;
 	readonly syncGameClassificationsFlow: ISyncGameClassificationsFlowPort;
+	readonly gameVectorReadonlyStore: IGameVectorReadonlyStore;
+	readonly gameVectorWriteStore: IGameVectorWriteStore;
 	// #endregion
 
 	constructor({ dbSignal, httpClient, clock, eventBus }: ClientGameLibraryModuleDeps) {
@@ -274,11 +280,14 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.syncGameClassificationsCommandHandler = new SyncGameClassificationsCommandHandler({
 			gameClassificationsRepository: this.gameClassificationRepository,
 		});
+		this.gameVectorReadonlyStore = new GameVectorReadonlyStore({ dbSignal });
+		this.gameVectorWriteStore = new GameVectorWriteStore({ dbSignal });
 		this.syncGameClassificationsFlow = new SyncGameClassificationsFlow({
 			gameClassificationMapper: this.gameClassificationMapper,
 			playAtlasClient: this.playAtlasClient,
 			syncGameClassificationsCommandHandler: this.syncGameClassificationsCommandHandler,
 			syncRunner,
+			gameVectorWriteStore: this.gameVectorWriteStore,
 		});
 
 		this.gameLibrarySyncManager = new GameLibrarySyncManager({

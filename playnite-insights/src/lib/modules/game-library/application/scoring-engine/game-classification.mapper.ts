@@ -13,6 +13,8 @@ export class GameClassificationMapper implements IGameClassificationMapperPort {
 		return {
 			Id: GameClassificationIdParser.fromTrusted(dto.Id),
 			SourceLastUpdatedAt: new Date(dto.Sync.LastUpdatedAt),
+			DeletedAt: dto.Sync.DeletedAt ? new Date(dto.Sync.DeletedAt) : null,
+			DeleteAfter: dto.Sync.DeleteAfter ? new Date(dto.Sync.DeleteAfter) : null,
 			ClassificationId: dto.ClassificationId,
 			GameId: GameIdParser.fromTrusted(dto.GameId),
 			Score: dto.Score,
@@ -31,6 +33,8 @@ export class GameClassificationMapper implements IGameClassificationMapperPort {
 		return {
 			Id: model.Id,
 			SourceLastUpdatedAt: model.SourceLastUpdatedAt,
+			DeletedAt: model.DeletedAt ? new Date(model.DeletedAt) : null,
+			DeleteAfter: model.DeleteAfter ? new Date(model.DeleteAfter) : null,
 			ClassificationId: model.ClassificationId,
 			GameId: model.GameId,
 			Score: model.Score,
@@ -50,6 +54,8 @@ export class GameClassificationMapper implements IGameClassificationMapperPort {
 			Id: entity.Id,
 			SourceLastUpdatedAt: entity.SourceLastUpdatedAt,
 			SourceLastUpdatedAtMs: entity.SourceLastUpdatedAt.getTime(),
+			DeletedAt: entity.DeletedAt,
+			DeleteAfter: entity.DeleteAfter,
 			ClassificationId: entity.ClassificationId,
 			GameId: entity.GameId,
 			Score: entity.Score,

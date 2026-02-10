@@ -14,6 +14,8 @@ export type GameClassificationModel = {
 	Id: GameClassificationId;
 	SourceLastUpdatedAt: Date;
 	SourceLastUpdatedAtMs: number;
+	DeletedAt?: Date | null;
+	DeleteAfter?: Date | null;
 	GameId: GameId;
 	ClassificationId: ClassificationId;
 	Score: number;

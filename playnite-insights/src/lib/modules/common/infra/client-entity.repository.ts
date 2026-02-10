@@ -2,6 +2,7 @@ import type { ClientEntity } from "../common/client-entity";
 import type { IClientEntityMapper } from "../common/client-entity.mapper";
 import type { IClientEntityRepository } from "./client-entity.repository.port";
 import type { ClientRepositoryStoreName } from "./client-entity.repository.types";
+import { IndexedDbRepository } from "./indexeddb.repository";
 
 export type ClientEntityRepositoryDeps = {
 	dbSignal: IDBDatabase;
@@ -11,8 +12,10 @@ export class ClientEntityRepository<
 	TEntityKey extends IDBValidKey,
 	TEntity extends ClientEntity<TEntityKey>,
 	TModel,
-> implements IClientEntityRepository<TEntity, TEntityKey> {
-	private readonly dbSignal: IDBDatabase;
+>
+	extends IndexedDbRepository
+	implements IClientEntityRepository<TEntity, TEntityKey>
+{
 	protected readonly storeName: ClientRepositoryStoreName;
 	protected readonly mapper: IClientEntityMapper<TEntityKey, TEntity, TModel>;
 
@@ -24,39 +27,10 @@ export class ClientEntityRepository<
 		storeName: ClientRepositoryStoreName;
 		mapper: IClientEntityMapper<TEntityKey, TEntity, TModel>;
 	}) {
-		this.dbSignal = dbSignal;
+		super({ dbSignal });
 		this.storeName = storeName;
 		this.mapper = mapper;
 	}
-
-	runTransaction = async <T>(
-		storeName: ClientRepositoryStoreName | ClientRepositoryStoreName[],
-		mode: IDBTransactionMode,
-		callback: (props: { tx: IDBTransaction }) => Promise<T> | T,
-	): Promise<T> => {
-		return new Promise((resolve, reject) => {
-			const tx = this.dbSignal.transaction(storeName, mode);
-
-			tx.oncomplete = () => resolve(result);
-			tx.onerror = () => reject(tx.error);
-			tx.onabort = () => reject(tx.error);
-
-			let result: T;
-			try {
-				result = callback({ tx }) as T;
-			} catch (err) {
-				tx.abort();
-				reject(err);
-			}
-		});
-	};
-
-	runRequest = <T>(req: IDBRequest<T>): Promise<T> => {
-		return new Promise((resolve, reject) => {
-			req.onsuccess = () => resolve(req.result);
-			req.onerror = () => reject(req.error);
-		});
-	};
 
 	addAsync: IClientEntityRepository<TEntity, TEntityKey>["addAsync"] = async (entity) => {
 		await this.runTransaction([this.storeName], "readwrite", async ({ tx }) => {
