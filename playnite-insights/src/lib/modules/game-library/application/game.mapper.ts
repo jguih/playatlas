@@ -1,12 +1,11 @@
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
 import { normalize } from "$lib/modules/common/common";
+import { GameIdParser, PlayniteGameIdParser } from "$lib/modules/common/domain";
 import {
 	CompanyIdParser,
 	CompletionStatusIdParser,
-	GameIdParser,
 	GenreIdParser,
 	PlatformIdParser,
-	PlayniteGameIdParser,
 } from "../domain";
 import type { IGameMapperPort } from "./game.mapper.port";
 

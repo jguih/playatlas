@@ -1,8 +1,9 @@
+import type { GameId, PlayniteGameId } from "$lib/modules/common/domain";
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
 import type { IGameMapperPort } from "../application/game.mapper.port";
 import type { CompanyId, GenreId, PlatformId } from "../domain";
 import type { CompletionStatusId } from "../domain/completion-status.entity";
-import type { Game, GameId, PlayniteGameId } from "../domain/game.entity";
+import type { Game } from "../domain/game.entity";
 import type { IGameRepositoryPort } from "./game.repository.port";
 import { gameRepositoryMeta } from "./game.repository.schema";
 import type { GameQueryResult } from "./game.repository.types";

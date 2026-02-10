@@ -1,7 +1,7 @@
 import type { IClockPort } from "$lib/modules/common/application";
 import type { IAsyncCommandHandlerPort } from "$lib/modules/common/common";
+import { GameLibraryFilterIdParser } from "$lib/modules/common/domain";
 import { GameLibraryFilterAggregate } from "../../domain/game-library-filter";
-import { GameLibraryFilterIdParser } from "../../domain/value-object/game-library-filter-id";
 import type { IGameLibraryFilterHasherPort } from "../../infra/game-library-filter.hasher";
 import type { IGameLibraryFilterRepositoryPort } from "../../infra/game-library-filter.repository.port";
 import type {

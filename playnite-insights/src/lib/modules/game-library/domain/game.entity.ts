@@ -1,20 +1,9 @@
 import type { ClientEntity, EntitySyncStateProps } from "$lib/modules/common/common";
+import type { GameId, PlayniteGameId } from "$lib/modules/common/domain";
 import type { CompanyId } from "./company.entity";
 import type { CompletionStatusId } from "./completion-status.entity";
 import type { GenreId } from "./genre.entity";
 import type { PlatformId } from "./platform.entity";
-
-export type GameId = string & { readonly __brand: "GameId" };
-
-export const GameIdParser = {
-	fromTrusted: (value: string) => value as GameId,
-};
-
-export type PlayniteGameId = string & { readonly __brand: "PlayniteGameId" };
-
-export const PlayniteGameIdParser = {
-	fromTrusted: (value: string) => value as PlayniteGameId,
-};
 
 export type Game = ClientEntity<GameId> &
 	Readonly<{

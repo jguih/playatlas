@@ -1,9 +1,9 @@
 import type { ClientEntity } from "$lib/modules/common/common";
+import type { GameLibraryFilterId } from "$lib/modules/common/domain";
 import type {
 	CreateGameLibraryFilterProps,
 	GameLibraryFilterAggregateQuery,
 } from "./game-library-filter.types";
-import type { GameLibraryFilterId } from "./value-object/game-library-filter-id";
 
 export type GameLibraryFilter = ClientEntity<GameLibraryFilterId> & {
 	get Query(): GameLibraryFilterAggregateQuery;

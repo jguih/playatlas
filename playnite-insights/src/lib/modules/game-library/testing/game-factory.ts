@@ -1,7 +1,8 @@
+import { GameIdParser, PlayniteGameIdParser } from "$lib/modules/common/domain";
 import type { IClientEntityFactoryPort } from "$lib/modules/common/testing";
 import { faker } from "@faker-js/faker";
 import { CompletionStatusIdParser } from "../domain";
-import { GameIdParser, PlayniteGameIdParser, type Game } from "../domain/game.entity";
+import { type Game } from "../domain/game.entity";
 
 export type IGameFactoryPort = IClientEntityFactoryPort<Game>;
 

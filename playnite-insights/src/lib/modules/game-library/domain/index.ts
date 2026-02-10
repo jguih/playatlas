@@ -5,4 +5,3 @@ export type * from "./game-library-filter.types";
 export * from "./game.entity";
 export * from "./genre.entity";
 export * from "./platform.entity";
-export * from "./value-object";

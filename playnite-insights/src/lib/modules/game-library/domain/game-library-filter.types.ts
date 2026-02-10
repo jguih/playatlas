@@ -1,5 +1,5 @@
+import type { GameLibraryFilterId } from "$lib/modules/common/domain";
 import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
-import type { GameLibraryFilterId } from "./value-object";
 
 type StoredGameLibraryFilter = GetGamesQueryFilter & {
 	searchNormalized?: string;
