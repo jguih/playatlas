@@ -1,8 +1,24 @@
-# Getting Started
+# PlayAtlas
 
-# Development Setup
+## Application Architecture
 
-## Local Development Server
+### Scoring Engine Architecture
+
+#### Overview
+
+A **score engine** is a modular component responsible for computing classification scores for games and producing a structured breakdown that explains how the score was derived.
+
+Each classification (e.g., _Horror_, _RPG_, _Survival_) has its own independent score engine. Engines are versioned, deterministic, and designed to evolve safely over time while preserving historical data.
+
+To learn more about the internals of score engines and how to create new ones, visit [Scoring Engine Architecture](/packages/@playatlas/game-library/src/application/scoring-engine/README.md)
+
+## Getting Started
+
+TODO: how to install PlayAtlas
+
+## Development Setup
+
+### Local Development Server
 
 To start the local development server, run:
 
@@ -12,7 +28,7 @@ pnpm dev
 
 Then, open a browser and navigate to **http://localhost:3001**.
 
-## Building Container Image
+### Building Container Image
 
 To build the Svelte application container image, run the following command at the project's root:
 
@@ -20,7 +36,7 @@ To build the Svelte application container image, run the following command at th
 docker build --tag playatlas:latest --target prod .
 ```
 
-## Running Production Container
+### Running Production Container
 
 If you want to run a local Podman container to test the final image, transfer it from Docker to the Podman local registry:
 
@@ -44,7 +60,7 @@ podman run -d \
   docker.io/library/playatlas
 ```
 
-## Running Tests
+### Running Tests
 
 To run all unit and integration tests:
 
