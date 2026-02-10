@@ -31,6 +31,14 @@ export class ClientBootstrapper {
 	bootstrap(): ClientApiV1 {
 		const api: ClientApiV1 = {
 			GameLibrary: {
+				ScoringEngine: {
+					Query: {
+						GetGameClassifications: this.gameLibrary.getGameClassificationsByIdsQueryHandler,
+					},
+					Command: {
+						SyncGameClassifications: this.gameLibrary.syncGameClassificationsCommandHandler,
+					},
+				},
 				Query: {
 					GetGames: this.gameLibrary.getGamesQueryHandler,
 					GetGamesByIds: this.gameLibrary.getGamesByIdsQueryHandler,

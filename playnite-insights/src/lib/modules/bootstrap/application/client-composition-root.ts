@@ -12,6 +12,7 @@ import { Clock } from "$lib/modules/common/infra";
 import {
 	companyRepositorySchema,
 	completionStatusRepositorySchema,
+	gameClassificationRepositorySchema,
 	gameLibraryFilterRepositorySchema,
 	gameRepositorySchema,
 	genreRepositorySchema,
@@ -46,6 +47,7 @@ export class ClientCompositionRoot {
 				sessionIdRepositorySchema,
 				completionStatusRepositorySchema,
 				gameLibraryFilterRepositorySchema,
+				gameClassificationRepositorySchema,
 			],
 			clock: this.clock,
 		});

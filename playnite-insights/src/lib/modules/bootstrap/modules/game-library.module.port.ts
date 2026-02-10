@@ -1,6 +1,7 @@
 import type {
 	ICompanyMapperPort,
 	ICompletionStatusMapperPort,
+	IGameClassificationMapperPort,
 	IGameLibraryFilterMapperPort,
 	IGameLibrarySyncManagerPort,
 	IGameLibrarySyncStatePort,
@@ -19,6 +20,7 @@ import type {
 	ICreateGameLibraryCommandHandler,
 	ISyncCompaniesCommandHandlerPort,
 	ISyncCompletionStatusesCommandHandlerPort,
+	ISyncGameClassificationsCommandHandlerPort,
 	ISyncGamesCommandHandlerPort,
 	ISyncGenresCommandHandlerPort,
 	ISyncPlatformsCommandHandlerPort,
@@ -26,6 +28,7 @@ import type {
 import type {
 	ICompanyRepositoryPort,
 	ICompletionStatusRepositoryPort,
+	IGameClassificationRepositoryPort,
 	IGameLibraryFilterHasherPort,
 	IGameLibraryFilterRepositoryPort,
 	IGameRepositoryPort,
@@ -35,6 +38,7 @@ import type {
 import type {
 	IGetCompaniesByIdsQueryHandlerPort,
 	IGetCompletionStatusesByIdsQueryHandlerPort,
+	IGetGameClassificationByIdsQueryHandler,
 	IGetGameLibraryFiltersQueryHandlerPort,
 	IGetGamesByIdsQueryHandlerPort,
 	IGetGamesQueryHandlerPort,
@@ -89,4 +93,9 @@ export interface IClientGameLibraryModulePort {
 	get gameLibraryFilterHasher(): IGameLibraryFilterHasherPort;
 	get createGameLibraryFilterCommandHandler(): ICreateGameLibraryCommandHandler;
 	get getGameLibraryFiltersQueryHandler(): IGetGameLibraryFiltersQueryHandlerPort;
+
+	get gameClassificationMapper(): IGameClassificationMapperPort;
+	get gameClassificationRepository(): IGameClassificationRepositoryPort;
+	get getGameClassificationsByIdsQueryHandler(): IGetGameClassificationByIdsQueryHandler;
+	get syncGameClassificationsCommandHandler(): ISyncGameClassificationsCommandHandlerPort;
 }

@@ -3,6 +3,7 @@ import type { IClockPort } from "$lib/modules/common/application/clock.port";
 import {
 	type ICompanyMapperPort,
 	type ICompletionStatusMapperPort,
+	type IGameClassificationMapperPort,
 	type IGameLibraryFilterMapperPort,
 	type IGameLibrarySyncManagerPort,
 	type IGameLibrarySyncStatePort,
@@ -17,6 +18,7 @@ import {
 	type ISyncPlatformsFlowPort,
 	CompanyMapper,
 	CompletionStatusMapper,
+	GameClassificationMapper,
 	GameLibraryFilterMapper,
 	GameLibrarySyncManager,
 	GameMapper,
@@ -39,12 +41,14 @@ import {
 	type ICreateGameLibraryCommandHandler,
 	type ISyncCompaniesCommandHandlerPort,
 	type ISyncCompletionStatusesCommandHandlerPort,
+	type ISyncGameClassificationsCommandHandlerPort,
 	type ISyncGamesCommandHandlerPort,
 	type ISyncGenresCommandHandlerPort,
 	type ISyncPlatformsCommandHandlerPort,
 	CreateGameLibraryFilterCommandHandler,
 	SyncCompaniesCommandHandler,
 	SyncCompletionStatusesCommandHandler,
+	SyncGameClassificationsCommandHandler,
 	SyncGamesCommandHandler,
 	SyncGenresCommandHandler,
 	SyncPlatformsCommandHandler,
@@ -52,6 +56,7 @@ import {
 import {
 	type ICompanyRepositoryPort,
 	type ICompletionStatusRepositoryPort,
+	type IGameClassificationRepositoryPort,
 	type IGameLibraryFilterHasherPort,
 	type IGameLibraryFilterRepositoryPort,
 	type IGameRepositoryPort,
@@ -59,6 +64,7 @@ import {
 	type IPlatformRepositoryPort,
 	CompanyRepository,
 	CompletionStatusRepository,
+	GameClassificationRepository,
 	GameLibraryFilterHasher,
 	GameLibraryFilterRepository,
 	GameLibrarySyncState,
@@ -69,6 +75,7 @@ import {
 import {
 	type IGetCompaniesByIdsQueryHandlerPort,
 	type IGetCompletionStatusesByIdsQueryHandlerPort,
+	type IGetGameClassificationByIdsQueryHandler,
 	type IGetGameLibraryFiltersQueryHandlerPort,
 	type IGetGamesByIdsQueryHandlerPort,
 	type IGetGamesQueryHandlerFilterBuilderProps,
@@ -78,6 +85,7 @@ import {
 	type IGetPlatformsByIdsQueryHandlerPort,
 	GetCompaniesByIdsQueryHandler,
 	GetCompletionStatusesByIdsQueryHandler,
+	GetGameClassificationsByIdsQueryHandler,
 	GetGameLibraryFiltersQueryHandler,
 	GetGamesByIdsQueryHandler,
 	GetGamesQueryHandler,
@@ -139,6 +147,13 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameLibraryFilterHasher: IGameLibraryFilterHasherPort;
 	readonly createGameLibraryFilterCommandHandler: ICreateGameLibraryCommandHandler;
 	readonly getGameLibraryFiltersQueryHandler: IGetGameLibraryFiltersQueryHandlerPort;
+
+	// #region: Scoring engine
+	readonly gameClassificationMapper: IGameClassificationMapperPort;
+	readonly gameClassificationRepository: IGameClassificationRepositoryPort;
+	readonly getGameClassificationsByIdsQueryHandler: IGetGameClassificationByIdsQueryHandler;
+	readonly syncGameClassificationsCommandHandler: ISyncGameClassificationsCommandHandlerPort;
+	// #endregion
 
 	constructor({ dbSignal, httpClient, clock, eventBus }: ClientGameLibraryModuleDeps) {
 		this.playAtlasClient = new PlayAtlasClient({ httpClient });
@@ -262,6 +277,18 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		this.getGameLibraryFiltersQueryHandler = new GetGameLibraryFiltersQueryHandler({
 			gameLibraryFilterRepository: this.gameLibraryFilterRepository,
+		});
+
+		this.gameClassificationMapper = new GameClassificationMapper({ clock });
+		this.gameClassificationRepository = new GameClassificationRepository({
+			dbSignal,
+			gameClassificationMapper: this.gameClassificationMapper,
+		});
+		this.getGameClassificationsByIdsQueryHandler = new GetGameClassificationsByIdsQueryHandler({
+			gameClassificationRepository: this.gameClassificationRepository,
+		});
+		this.syncGameClassificationsCommandHandler = new SyncGameClassificationsCommandHandler({
+			gameClassificationsRepository: this.gameClassificationRepository,
 		});
 	}
 }

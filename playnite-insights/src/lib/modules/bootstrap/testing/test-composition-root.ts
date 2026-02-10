@@ -17,6 +17,7 @@ import {
 import {
 	CompanyFactory,
 	CompletionStatusFactory,
+	GameClassificationFactory,
 	GameFactory,
 	GameLibraryFilterQueryFactory,
 	GenreFactory,
@@ -56,6 +57,7 @@ export class TestCompositionRoot {
 		platform: new PlatformFactory(),
 		completionStatus: new CompletionStatusFactory(),
 		gameLibraryFilterQuery: new GameLibraryFilterQueryFactory(),
+		gameClassification: new GameClassificationFactory(),
 	};
 
 	readonly clock: ITestClockPort;

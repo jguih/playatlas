@@ -8,6 +8,7 @@ import type {
 	ICreateGameLibraryCommandHandler,
 	ISyncCompaniesCommandHandlerPort,
 	ISyncCompletionStatusesCommandHandlerPort,
+	ISyncGameClassificationsCommandHandlerPort,
 	ISyncGamesCommandHandlerPort,
 	ISyncGenresCommandHandlerPort,
 	ISyncPlatformsCommandHandlerPort,
@@ -15,6 +16,7 @@ import type {
 import type {
 	IGetCompaniesByIdsQueryHandlerPort,
 	IGetCompletionStatusesByIdsQueryHandlerPort,
+	IGetGameClassificationByIdsQueryHandler,
 	IGetGameLibraryFiltersQueryHandlerPort,
 	IGetGamesByIdsQueryHandlerPort,
 	IGetGamesQueryHandlerPort,
@@ -25,6 +27,14 @@ import type {
 
 export interface ClientApiV1 {
 	GameLibrary: {
+		ScoringEngine: {
+			Query: {
+				GetGameClassifications: IGetGameClassificationByIdsQueryHandler;
+			};
+			Command: {
+				SyncGameClassifications: ISyncGameClassificationsCommandHandlerPort;
+			};
+		};
 		Query: {
 			GetGames: IGetGamesQueryHandlerPort;
 			GetGamesByIds: IGetGamesByIdsQueryHandlerPort;
