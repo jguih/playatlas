@@ -20,3 +20,10 @@ export class ScoreBreakdownNormalizerError extends Error {
 		this.name = "ScoreBreakdownNormalizerError";
 	}
 }
+
+export class EvidenceExtractorInvalidDataError extends Error {
+	constructor(message: string, props?: { cause?: unknown }) {
+		super(message, { cause: props?.cause });
+		this.name = "EvidenceExtractorInvalidDataError";
+	}
+}

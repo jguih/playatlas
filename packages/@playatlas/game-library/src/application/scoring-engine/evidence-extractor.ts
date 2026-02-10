@@ -1,4 +1,5 @@
 import { normalize } from "@playatlas/common/common";
+import { EvidenceExtractorInvalidDataError } from "../../domain";
 import type { GenreName } from "../../domain/genre.entity";
 import type { SignalOrGroup, TaxonomySignalItem, TextSignalItem } from "./engine.signals";
 import type { IEvidenceExtractorPort } from "./evidence-extractor.port";
@@ -102,8 +103,8 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			const add = (e: Evidence<TGroup>) => evidence.push(e);
 
 			if (!game.relationships.genres.isLoaded())
-				throw new Error(
-					"Evidence extractor requires game genres relationships to be loaded. Check if the game repository is loading relationships before calling the extractor.",
+				throw new EvidenceExtractorInvalidDataError(
+					"Evidence extractor requires all game relationships to be loaded.",
 				);
 
 			game.relationships.genres.get().forEach((gId) => {
