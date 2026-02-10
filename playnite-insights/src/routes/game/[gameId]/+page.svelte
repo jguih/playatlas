@@ -34,8 +34,6 @@
 	let heroTitleEl: HTMLElement | undefined = $state();
 	let showHeaderTitle = $state(false);
 
-	$inspect(store.gameClassifications?.get("HORROR")?.values().toArray().at(0));
-
 	onMount(() => {
 		const observer = new IntersectionObserver(
 			([entry]) => {
