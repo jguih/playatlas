@@ -23,6 +23,11 @@ GET {{protocol}}://{{host}}/api/game/classification
 Content-Type: {{contentType}}
 Authorization: {{authorization}}
 
+### Get all games sessions
+GET {{protocol}}://{{host}}/api/game/session
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
 ### Reindex all game assets
 GET {{protocol}}://{{host}}/api/game/reindex-assets
 Content-Type: {{contentType}}

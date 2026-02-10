@@ -31,6 +31,7 @@ import type {
 	IOpenGameSessionCommandHandlerPort,
 	IStaleGameSessionCommandHandlerPort,
 } from "@playatlas/game-session/commands";
+import type { IGetAllGameSessionsQueryHandlerPort } from "@playatlas/game-session/queries";
 import type {
 	ILibraryManifestServicePort,
 	IPlayniteSyncServicePort,
@@ -87,6 +88,9 @@ export type PlayAtlasApiV1 = {
 			getOpenGameSessionCommandHandler: () => IOpenGameSessionCommandHandlerPort;
 			getCloseGameSessionCommandHandler: () => ICloseGameSessionCommandHandlerPort;
 			getStaleGameSessionCommandHandler: () => IStaleGameSessionCommandHandlerPort;
+		};
+		queries: {
+			getGetAllGameSessionsQueryHandler: () => IGetAllGameSessionsQueryHandlerPort;
 		};
 	};
 	getLogService: () => ILogServicePort;

@@ -1,5 +1,4 @@
 import type { ICommandHandlerPort } from "@playatlas/common/application";
-import { makeGameSession } from "../../domain/game-session.entity";
 import { type OpenGameSessionCommand } from "./open-session.command";
 import type {
 	OpenGameSessionCommandResult,
@@ -17,6 +16,7 @@ export const makeOpenGameSessionCommandHandler = ({
 	logService,
 	eventBus,
 	clock,
+	gameSessionFactory,
 }: OpenGameSessionServiceDeps): IOpenGameSessionCommandHandlerPort => {
 	return {
 		execute: (command) => {
@@ -32,7 +32,7 @@ export const makeOpenGameSessionCommandHandler = ({
 
 			const now = clock.now();
 
-			const session = makeGameSession({
+			const session = gameSessionFactory.create({
 				sessionId: command.sessionId,
 				startTime: now,
 				gameId: gameInfo.id,

@@ -1,5 +1,6 @@
 import type { IDomainEventBusPort, ILogServicePort } from "@playatlas/common/application";
 import type { IClockPort } from "@playatlas/common/infra";
+import type { IGameSessionFactoryPort } from "../../application";
 import type { IGameSessionRepositoryPort } from "../../infra";
 import type { GameInfoProvider } from "../../types";
 
@@ -9,6 +10,7 @@ export type CloseGameSessionServiceDeps = {
 	gameInfoProvider: GameInfoProvider;
 	eventBus: IDomainEventBusPort;
 	clock: IClockPort;
+	gameSessionFactory: IGameSessionFactoryPort;
 };
 
 export type CloseGameSessionCommandResult =

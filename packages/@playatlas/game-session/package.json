@@ -10,10 +10,12 @@
 	},
 	"exports": {
 		"./commands": "./src/commands/index.ts",
+		"./queries": "./src/queries/index.ts",
 		"./domain": "./src/domain/index.ts",
 		"./infra": "./src/infra/index.ts",
 		"./types": "./src/types/index.ts",
-		"./application": "./src/application/index.ts"
+		"./application": "./src/application/index.ts",
+		"./dtos": "./src/dtos/index.ts"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

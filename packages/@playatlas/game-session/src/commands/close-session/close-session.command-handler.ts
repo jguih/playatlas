@@ -1,5 +1,4 @@
 import type { ICommandHandlerPort } from "@playatlas/common/application";
-import { makeClosedGameSession } from "../../domain/game-session.entity";
 import type { CloseGameSessionCommand } from "./close-session.command";
 import type {
 	CloseGameSessionCommandResult,
@@ -17,6 +16,7 @@ export const makeCloseGameSessionCommandHandler = ({
 	gameInfoProvider,
 	eventBus,
 	clock,
+	gameSessionFactory,
 }: CloseGameSessionServiceDeps): ICloseGameSessionCommandHandlerPort => {
 	return {
 		execute: (command: CloseGameSessionCommand): CloseGameSessionCommandResult => {
@@ -45,7 +45,7 @@ export const makeCloseGameSessionCommandHandler = ({
 					`Calculated time drift between client (PlayAtlas Exporter) and server: ${driftMs}ms`,
 				);
 
-				const closed = makeClosedGameSession({
+				const closed = gameSessionFactory.createClosed({
 					sessionId: command.sessionId,
 					gameId: gameInfo.id,
 					gameName: gameInfo.name,

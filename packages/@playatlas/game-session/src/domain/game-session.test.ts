@@ -1,11 +1,14 @@
 import { faker } from "@faker-js/faker";
 import { GameIdParser, GameSessionIdParser, InvalidStateError } from "@playatlas/common/domain";
+import { makeClock } from "@playatlas/common/infra";
 import { ulid } from "ulid";
 import { describe, expect, it } from "vitest";
-import { makeClosedGameSession, makeGameSession } from "./game-session.entity";
+import { makeGameSessionFactory } from "../application";
 
 describe("Game Session Domain", () => {
 	const sessionId = GameSessionIdParser.fromTrusted("session-1");
+	const clock = makeClock();
+	const factory = makeGameSessionFactory({ clock });
 
 	it("closes a game session", () => {
 		// Arrange
@@ -15,7 +18,7 @@ describe("Game Session Domain", () => {
 		const endTime = faker.date.future({ refDate: startTime });
 		const duration = faker.number.int({ min: 100 });
 
-		const session = makeGameSession({
+		const session = factory.create({
 			sessionId,
 			startTime,
 			gameId,
@@ -40,7 +43,7 @@ describe("Game Session Domain", () => {
 
 			// Act & Assert
 			expect(() =>
-				makeClosedGameSession({
+				factory.createClosed({
 					sessionId,
 					startTime,
 					gameId,
@@ -62,7 +65,7 @@ describe("Game Session Domain", () => {
 
 		// Act & Assert
 		expect(() =>
-			makeClosedGameSession({
+			factory.createClosed({
 				sessionId,
 				startTime,
 				gameId,
@@ -83,7 +86,7 @@ describe("Game Session Domain", () => {
 
 		// Act & Assert
 		expect(() =>
-			makeClosedGameSession({
+			factory.createClosed({
 				sessionId,
 				startTime,
 				gameId,

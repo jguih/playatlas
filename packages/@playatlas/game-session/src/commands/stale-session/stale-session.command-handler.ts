@@ -1,5 +1,4 @@
 import { type ICommandHandlerPort } from "@playatlas/common/application";
-import { makeStaleGameSession } from "../../domain/game-session.entity";
 import type { StaleGameSessionCommand } from "./stale-session.command";
 import type {
 	StaleGameSessionCommandResult,
@@ -17,6 +16,7 @@ export const makeStaleGameSessionCommandHandler = ({
 	gameInfoProvider,
 	eventBus,
 	clock,
+	gameSessionFactory,
 }: StaleGameSessionServiceDeps): IStaleGameSessionCommandHandlerPort => {
 	return {
 		execute: (command: StaleGameSessionCommand): StaleGameSessionCommandResult => {
@@ -45,7 +45,7 @@ export const makeStaleGameSessionCommandHandler = ({
 					`Calculated time drift between client (PlayAtlas Exporter) and server: ${driftMs}ms`,
 				);
 
-				const stale = makeStaleGameSession({
+				const stale = gameSessionFactory.createStale({
 					sessionId: command.sessionId,
 					gameId: gameInfo.id,
 					gameName: gameInfo.name,

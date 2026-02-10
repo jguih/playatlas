@@ -81,6 +81,9 @@ export const bootstrapV1 = ({
 				getCloseGameSessionCommandHandler: gameSession.commands.getCloseGameSessionCommandHandler,
 				getStaleGameSessionCommandHandler: gameSession.commands.getStaleGameSessionCommandHandler,
 			},
+			queries: {
+				getGetAllGameSessionsQueryHandler: gameSession.queries.getGetAllGameSessionsQueryHandler,
+			},
 		},
 		getLogService: () => backendLogService,
 		getEventBus: () => eventBus,
