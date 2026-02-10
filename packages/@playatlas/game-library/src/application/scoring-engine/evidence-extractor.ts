@@ -101,11 +101,15 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 
 			const add = (e: Evidence<TGroup>) => evidence.push(e);
 
-			if (game.relationships.genres.isLoaded())
-				game.relationships.genres.get().forEach((gId) => {
-					const genre = genres.get(gId);
-					if (genre) gameGenres.push(genre.getName());
-				});
+			if (!game.relationships.genres.isLoaded())
+				throw new Error(
+					"Evidence extractor requires game genres relationships to be loaded. Check if the game repository is loading relationships before calling the extractor.",
+				);
+
+			game.relationships.genres.get().forEach((gId) => {
+				const genre = genres.get(gId);
+				if (genre) gameGenres.push(genre.getName());
+			});
 
 			extractFromTaxonomy({ genres: gameGenres, add });
 			extractFromText({ description: game.getPlayniteSnapshot()?.description, add });
