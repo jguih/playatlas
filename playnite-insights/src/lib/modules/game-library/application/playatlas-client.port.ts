@@ -1,6 +1,7 @@
 import type {
 	GetCompaniesResponseDto,
 	GetCompletionStatusesResponseDto,
+	GetGameClassificationsResponseDto,
 	GetGamesResponseDto,
 	GetGenresResponseDto,
 	GetPlatformResponseDto,
@@ -16,4 +17,5 @@ export interface IPlayAtlasClientPort {
 	getCompaniesAsync: (props: CommonProps) => Promise<GetCompaniesResponseDto>;
 	getPlatformsAsync: (props: CommonProps) => Promise<GetPlatformResponseDto>;
 	getGenresAsync: (props: CommonProps) => Promise<GetGenresResponseDto>;
+	getGameClassificationsAsync: (props: CommonProps) => Promise<GetGameClassificationsResponseDto>;
 }

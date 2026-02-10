@@ -11,6 +11,7 @@ import type {
 	IPlayAtlasClientPort,
 	ISyncCompaniesFlowPort,
 	ISyncCompletionStatusesFlowPort,
+	ISyncGameClassificationsFlowPort,
 	ISyncGamesFlowPort,
 	ISyncGenresFlowPort,
 	ISyncPlatformsFlowPort,
@@ -98,4 +99,5 @@ export interface IClientGameLibraryModulePort {
 	get gameClassificationRepository(): IGameClassificationRepositoryPort;
 	get getGameClassificationsByIdsQueryHandler(): IGetGameClassificationByIdsQueryHandler;
 	get syncGameClassificationsCommandHandler(): ISyncGameClassificationsCommandHandlerPort;
+	get syncGameClassificationsFlow(): ISyncGameClassificationsFlowPort;
 }

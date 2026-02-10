@@ -2,6 +2,7 @@ import { zodJsonParser, type IHttpClientPort } from "$lib/modules/common/applica
 import {
 	getCompaniesResponseDtoSchema,
 	getCompletionStatusesResponseDtoSchema,
+	getGameClassificationsResponseDtoSchema,
 	getGamesResponseDtoSchema,
 	getGenresResponseDtoSchema,
 	getPlatformsResponseDtoSchema,
@@ -65,5 +66,17 @@ export class PlayAtlasClient implements IPlayAtlasClientPort {
 			},
 		});
 		return await zodJsonParser(getPlatformsResponseDtoSchema)(response);
+	};
+
+	getGameClassificationsAsync: IPlayAtlasClientPort["getGameClassificationsAsync"] = async ({
+		lastCursor,
+	}) => {
+		const response = await this.deps.httpClient.getAsync({
+			endpoint: `/api/game/classification`,
+			searchParams: {
+				sinceLastSync: lastCursor,
+			},
+		});
+		return await zodJsonParser(getGameClassificationsResponseDtoSchema)(response);
 	};
 }

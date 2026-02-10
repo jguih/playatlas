@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import { getClientApiContext } from "$lib/modules/bootstrap/application";
-	import { GameIdParser } from "$lib/modules/game-library/domain";
+	import { GameIdParser } from "$lib/modules/common/domain";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
 	import SolidChip from "$lib/ui/components/chip/SolidChip.svelte";

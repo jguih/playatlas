@@ -13,6 +13,7 @@ import {
 	type IPlayAtlasClientPort,
 	type ISyncCompaniesFlowPort,
 	type ISyncCompletionStatusesFlowPort,
+	type ISyncGameClassificationsFlowPort,
 	type ISyncGamesFlowPort,
 	type ISyncGenresFlowPort,
 	type ISyncPlatformsFlowPort,
@@ -27,6 +28,7 @@ import {
 	PlayAtlasClient,
 	SyncCompaniesFlow,
 	SyncCompletionStatusesFlow,
+	SyncGameClassificationsFlow,
 	SyncGamesFlow,
 	SyncGenresFlow,
 	SyncPlatformsFlow,
@@ -153,6 +155,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameClassificationRepository: IGameClassificationRepositoryPort;
 	readonly getGameClassificationsByIdsQueryHandler: IGetGameClassificationByIdsQueryHandler;
 	readonly syncGameClassificationsCommandHandler: ISyncGameClassificationsCommandHandlerPort;
+	readonly syncGameClassificationsFlow: ISyncGameClassificationsFlowPort;
 	// #endregion
 
 	constructor({ dbSignal, httpClient, clock, eventBus }: ClientGameLibraryModuleDeps) {
@@ -253,12 +256,31 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			syncRunner,
 		});
 
+		this.gameClassificationMapper = new GameClassificationMapper({ clock });
+		this.gameClassificationRepository = new GameClassificationRepository({
+			dbSignal,
+			gameClassificationMapper: this.gameClassificationMapper,
+		});
+		this.getGameClassificationsByIdsQueryHandler = new GetGameClassificationsByIdsQueryHandler({
+			gameClassificationRepository: this.gameClassificationRepository,
+		});
+		this.syncGameClassificationsCommandHandler = new SyncGameClassificationsCommandHandler({
+			gameClassificationsRepository: this.gameClassificationRepository,
+		});
+		this.syncGameClassificationsFlow = new SyncGameClassificationsFlow({
+			gameClassificationMapper: this.gameClassificationMapper,
+			playAtlasClient: this.playAtlasClient,
+			syncGameClassificationsCommandHandler: this.syncGameClassificationsCommandHandler,
+			syncRunner,
+		});
+
 		this.gameLibrarySyncManager = new GameLibrarySyncManager({
 			syncCompletionStatusesFlow: this.syncCompletionStatusesFlow,
 			syncGamesFlow: this.syncGamesFlow,
 			syncCompaniesFlow: this.syncCompaniesFlow,
 			syncGenresFlow: this.syncGenresFlow,
 			syncPlatformsFlow: this.syncPlatformsFlow,
+			syncGameClassificationsFlow: this.syncGameClassificationsFlow,
 			progressReporter: this.syncProgressReporter,
 			clock,
 			eventBus,
@@ -277,18 +299,6 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		this.getGameLibraryFiltersQueryHandler = new GetGameLibraryFiltersQueryHandler({
 			gameLibraryFilterRepository: this.gameLibraryFilterRepository,
-		});
-
-		this.gameClassificationMapper = new GameClassificationMapper({ clock });
-		this.gameClassificationRepository = new GameClassificationRepository({
-			dbSignal,
-			gameClassificationMapper: this.gameClassificationMapper,
-		});
-		this.getGameClassificationsByIdsQueryHandler = new GetGameClassificationsByIdsQueryHandler({
-			gameClassificationRepository: this.gameClassificationRepository,
-		});
-		this.syncGameClassificationsCommandHandler = new SyncGameClassificationsCommandHandler({
-			gameClassificationsRepository: this.gameClassificationRepository,
 		});
 	}
 }

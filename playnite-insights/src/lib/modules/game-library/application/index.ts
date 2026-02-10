@@ -18,6 +18,7 @@ export type * from "./playatlas-client.port";
 export * from "./scoring-engine";
 export * from "./sync-companies-flow";
 export * from "./sync-completion-statuses-flow";
+export * from "./sync-game-classifications-flow";
 export * from "./sync-games-flow";
 export * from "./sync-genres-flow";
 export * from "./sync-platforms-flow";

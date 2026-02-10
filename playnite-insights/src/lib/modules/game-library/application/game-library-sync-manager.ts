@@ -3,6 +3,7 @@ import type { IClockPort } from "@playatlas/common/infra";
 import type { IGameLibrarySyncManagerPort } from "./game-library-sync-manager.port";
 import type { ISyncCompaniesFlowPort } from "./sync-companies-flow";
 import type { ISyncCompletionStatusesFlowPort } from "./sync-completion-statuses-flow";
+import type { ISyncGameClassificationsFlowPort } from "./sync-game-classifications-flow";
 import type { ISyncGamesFlowPort } from "./sync-games-flow";
 import type { ISyncGenresFlowPort } from "./sync-genres-flow";
 import type { ISyncPlatformsFlowPort } from "./sync-platforms-flow";
@@ -14,6 +15,7 @@ export type GameLibrarySyncManagerDeps = {
 	syncCompaniesFlow: ISyncCompaniesFlowPort;
 	syncGenresFlow: ISyncGenresFlowPort;
 	syncPlatformsFlow: ISyncPlatformsFlowPort;
+	syncGameClassificationsFlow: ISyncGameClassificationsFlowPort;
 	progressReporter: ISyncProgressReporterPort;
 	clock: IClockPort;
 	eventBus: IDomainEventBusPort;
@@ -41,6 +43,7 @@ export class GameLibrarySyncManager implements IGameLibrarySyncManagerPort {
 				{ key: "companies", run: this.deps.syncCompaniesFlow.executeAsync },
 				{ key: "genres", run: this.deps.syncGenresFlow.executeAsync },
 				{ key: "platforms", run: this.deps.syncPlatformsFlow.executeAsync },
+				{ key: "gameClassifications", run: this.deps.syncGameClassificationsFlow.executeAsync },
 			];
 
 			for (const { key, run } of flows) {

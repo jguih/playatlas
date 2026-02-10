@@ -1,4 +1,10 @@
-export type SyncFlowKey = "games" | "completion-statuses" | "companies" | "genres" | "platforms";
+export type SyncFlowKey =
+	| "games"
+	| "completion-statuses"
+	| "companies"
+	| "genres"
+	| "platforms"
+	| "gameClassifications";
 
 export type SyncProgressEvent =
 	| { type: "sync-started" }
