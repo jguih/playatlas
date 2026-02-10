@@ -184,7 +184,7 @@ export const makeGameClassificationScoreService = ({
 
 			try {
 				const gamesMissingScores: RescoreGameItem[] = [];
-				const games = gameRepository.all();
+				const games = gameRepository.all({ load: true });
 				const gameClassificationsPerGame = gameClassificationRepository.getLatestByGame();
 
 				for (const game of games) {
@@ -260,7 +260,7 @@ export const makeGameClassificationScoreService = ({
 					`Outdated score engine version detected, will rescore ${gamesToRescore.size} games`,
 				);
 
-				const games = gameRepository.all();
+				const games = gameRepository.all({ load: true });
 				const rescoreItems: RescoreGameItem[] = [];
 
 				for (const [gameId, classificationIds] of gamesToRescore) {

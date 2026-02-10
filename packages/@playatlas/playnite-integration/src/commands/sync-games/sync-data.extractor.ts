@@ -356,7 +356,7 @@ export const buildGameLibrarySyncContext = ({
 	completionStatusRepository,
 	companyRepository,
 }: GameLibrarySyncContextBuilderDeps): GameLibrarySyncContext => {
-	const _games = gameRepository.all();
+	const _games = gameRepository.all({ load: true });
 	const games = new Map<PlayniteGameId, Game>();
 
 	for (const game of _games) {
