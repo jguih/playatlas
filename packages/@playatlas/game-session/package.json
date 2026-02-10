@@ -12,7 +12,8 @@
 		"./commands": "./src/commands/index.ts",
 		"./domain": "./src/domain/index.ts",
 		"./infra": "./src/infra/index.ts",
-		"./types": "./src/types/index.ts"
+		"./types": "./src/types/index.ts",
+		"./application": "./src/application/index.ts"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

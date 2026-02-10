@@ -1,5 +1,4 @@
-import { type GameSessionId } from "@playatlas/common/domain";
-import { sessionStatus } from "./game-session.constants";
+import { gameSessionStatus, type GameSessionId } from "@playatlas/common/domain";
 import { type GameSessionDuration } from "./game-session.entity";
 
 export class GameSessionError extends Error {
@@ -40,7 +39,7 @@ export class InvalidGameSessionStatusError extends GameSessionError {
 		super(
 			`Invalid game session status: ${
 				props.sessionStatus
-			}. Valid statuses are: ${Object.values(sessionStatus).join(", ")}`,
+			}. Valid statuses are: ${gameSessionStatus.join(", ")}`,
 		);
 	}
 }

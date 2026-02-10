@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `game_classification` (
 
 CREATE TABLE IF NOT EXISTS `game_session` (
   `SessionId` TEXT NOT NULL PRIMARY KEY,
-  `GameId` TEXT,
+  `GameId` TEXT NOT NULL,
   `GameName` TEXT,
   `StartTime` DATETIME NOT NULL,
   `EndTime` DATETIME,
@@ -137,6 +137,8 @@ CREATE TABLE IF NOT EXISTS `game_session` (
   `Status` TEXT NOT NULL,
   `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `LastUpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `DeletedAt` DATETIME DEFAULT NULL,
+  `DeleteAfter` DATETIME DEFAULT NULL,
   FOREIGN KEY (`GameId`) REFERENCES `game`(`Id`)
 );
 

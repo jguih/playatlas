@@ -1,37 +1,37 @@
-import { type DateFilter, type GameSessionId } from "@playatlas/common/domain";
+import { ISODateSchema } from "@playatlas/common/common";
+import { gameSessionStatus } from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
-import { sessionStatus } from "../domain/game-session.constants";
-import type { GameSession } from "../domain/game-session.entity";
-import type { GameSessionStatus } from "../domain/game-session.types";
-import { gameSessionMapper } from "../game-session.mapper";
+import type { IGameSessionMapperPort } from "../application";
+import type { GameSessionRepositoryFilters } from "./game-session.repository.filters";
 import type { IGameSessionRepositoryPort } from "./game-session.repository.port";
 
 export const gameSessionSchema = z.object({
 	SessionId: z.string(),
-	GameId: z.string().nullable(),
+	GameId: z.string(),
 	GameName: z.string().nullable(),
 	StartTime: z.string(),
 	EndTime: z.string().nullable(),
 	Duration: z.number().nullable(),
-	Status: z.enum([sessionStatus.inProgress, sessionStatus.closed, sessionStatus.stale]),
+	Status: z.enum(gameSessionStatus),
+	LastUpdatedAt: ISODateSchema,
+	CreatedAt: ISODateSchema,
+	DeletedAt: ISODateSchema.nullable(),
+	DeleteAfter: ISODateSchema.nullable(),
 });
 
 export type GameSessionModel = z.infer<typeof gameSessionSchema>;
 
-export type GameSessionFilters = {
-	startTime?: DateFilter[];
-	status?: {
-		op: "in" | "not in";
-		types: GameSessionStatus[];
-	};
+export type GameSessionRepositoryDeps = BaseRepositoryDeps & {
+	gameSessionMapper: IGameSessionMapperPort;
 };
 
 export const makeGameSessionRepository = ({
 	getDb,
 	logService,
-}: BaseRepositoryDeps): IGameSessionRepositoryPort => {
-	const TABLE_NAME = "game_session";
+	gameSessionMapper,
+}: GameSessionRepositoryDeps): IGameSessionRepositoryPort => {
+	const TABLE_NAME = "game_session" as const;
 	const COLUMNS: (keyof GameSessionModel)[] = [
 		"SessionId",
 		"GameId",
@@ -40,8 +40,38 @@ export const makeGameSessionRepository = ({
 		"EndTime",
 		"GameName",
 		"Status",
-	];
-	const base = makeBaseRepository<GameSessionId, GameSession, GameSessionModel>({
+		"LastUpdatedAt",
+		"CreatedAt",
+		"DeletedAt",
+		"DeleteAfter",
+	] as const;
+
+	const getWhereClauseAndParamsFromFilters = (filters?: GameSessionRepositoryFilters) => {
+		const where: string[] = [];
+		const params: (string | number)[] = [];
+
+		if (!filters) {
+			return { where: "", params };
+		}
+
+		if (filters.syncCursor) {
+			const syncCursor = filters.syncCursor;
+
+			where.push(`(LastUpdatedAt > ? OR (LastUpdatedAt = ? AND SessionId > ?))`);
+			params.push(
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.id,
+			);
+		}
+
+		return {
+			where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
+			params,
+		};
+	};
+
+	const base = makeBaseRepository({
 		getDb,
 		logService,
 		config: {
@@ -51,92 +81,22 @@ export const makeGameSessionRepository = ({
 			updateColumns: COLUMNS.filter((c) => c !== "SessionId"),
 			mapper: gameSessionMapper,
 			modelSchema: gameSessionSchema,
+			getWhereClauseAndParamsFromFilters,
+			getOrderBy: () => `ORDER BY LastUpdatedAt ASC, SessionId ASC`,
 		},
 	});
 
-	const _getWhereClauseAndParamsFromFilters = (filters?: GameSessionFilters) => {
-		const where: string[] = [];
-		const params: string[] = [];
-
-		if (filters?.startTime) {
-			for (const startTimeFilter of filters.startTime) {
-				switch (startTimeFilter.op) {
-					case "between": {
-						where.push(`StartTime >= (?) AND StartTime < (?)`);
-						params.push(startTimeFilter.start.toISOString(), startTimeFilter.end.toISOString());
-						break;
-					}
-					case "eq": {
-						where.push(`StartTime = (?)`);
-						params.push(startTimeFilter.value.toISOString());
-						break;
-					}
-					case "gte": {
-						where.push(`StartTime >= (?)`);
-						params.push(startTimeFilter.value.toISOString());
-						break;
-					}
-					case "lte": {
-						where.push(`StartTime <= (?)`);
-						params.push(startTimeFilter.value.toISOString());
-						break;
-					}
-					case "overlaps": {
-						where.push(`StartTime < (?) AND (EndTime >= (?) OR EndTime IS NULL)`);
-						params.push(startTimeFilter.end.toISOString(), startTimeFilter.start.toISOString());
-						break;
-					}
-				}
-			}
-		}
-
-		if (filters?.status) {
-			const values = filters.status.types;
-			const placeholders = values.map(() => "?").join(", ");
-			switch (filters.status.op) {
-				case "in": {
-					where.push(`Status IN (${placeholders})`);
-					break;
-				}
-				case "not in": {
-					where.push(`Status NOT IN (${placeholders})`);
-					break;
-				}
-			}
-			params.push(...filters.status.types);
-		}
-
-		return {
-			where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
-			params,
-		};
-	};
-
 	const add: IGameSessionRepositoryPort["add"] = (session) => {
 		base._add(session);
+	};
+
+	const upsert: IGameSessionRepositoryPort["upsert"] = (session) => {
+		base._upsert(session);
 	};
 
 	const update: IGameSessionRepositoryPort["update"] = (session) => {
 		base._update(session);
 	};
 
-	const getAllBy: IGameSessionRepositoryPort["getAllBy"] = (args) => {
-		return base.run(({ db }) => {
-			let query = `SELECT * FROM game_session`;
-			const { where, params } = _getWhereClauseAndParamsFromFilters(args.filters);
-			query += where;
-			query += ` ORDER BY StartTime DESC;`;
-			const stmt = db.prepare(query);
-			const result = stmt.all(...params);
-			const sessions = z.array(gameSessionSchema).parse(result);
-			const entities: GameSession[] = [];
-			for (const session of sessions) {
-				const domainEntity = gameSessionMapper.toDomain(session);
-				entities.push(domainEntity);
-			}
-			return entities;
-		}, `getAllBy()`);
-	};
-
-	return { ...base.public, add, update, getAllBy };
+	return { ...base.public, add, upsert, update };
 };
