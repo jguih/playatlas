@@ -8,6 +8,7 @@ import {
 import {
 	companyRepositorySchema,
 	completionStatusRepositorySchema,
+	gameClassificationRepositorySchema,
 	gameLibraryFilterRepositorySchema,
 	gameRepositorySchema,
 	genreRepositorySchema,
@@ -76,6 +77,7 @@ export class TestCompositionRoot {
 				sessionIdRepositorySchema,
 				completionStatusRepositorySchema,
 				gameLibraryFilterRepositorySchema,
+				gameClassificationRepositorySchema,
 			],
 			clock: this.clock,
 		});
@@ -84,7 +86,7 @@ export class TestCompositionRoot {
 		const auth: IAuthModulePort = new AuthModule({
 			httpClient: this.mocks.httpClient,
 			dbSignal: infra.dbSignal,
-			clock: infra.clock,
+			clock: this.clock,
 			logService: this.mocks.logService,
 			eventBus: this.eventBus,
 		});
@@ -93,7 +95,7 @@ export class TestCompositionRoot {
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			dbSignal: infra.dbSignal,
 			httpClient: this.mocks.httpClient,
-			clock: infra.clock,
+			clock: this.clock,
 			eventBus: this.eventBus,
 		});
 

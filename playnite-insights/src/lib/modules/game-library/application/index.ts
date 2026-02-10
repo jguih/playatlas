@@ -15,6 +15,7 @@ export * from "./platform.mapper";
 export type * from "./platform.mapper.port";
 export * from "./playatlas-client";
 export type * from "./playatlas-client.port";
+export * from "./scoring-engine";
 export * from "./sync-companies-flow";
 export * from "./sync-completion-statuses-flow";
 export * from "./sync-games-flow";

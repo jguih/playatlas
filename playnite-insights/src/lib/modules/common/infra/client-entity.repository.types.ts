@@ -7,4 +7,10 @@ export type ClientRepositoryStoreName =
 	| "platforms"
 	| "completion-status"
 	| "session-id"
-	| "game-library-filters";
+	| "game-library-filters"
+	| "game-classification";
+
+export type ClientRepositoryMeta<TLabel extends string, TIndex extends string> = {
+	storeName: ClientRepositoryStoreName;
+	index: Record<TLabel, TIndex>;
+};
