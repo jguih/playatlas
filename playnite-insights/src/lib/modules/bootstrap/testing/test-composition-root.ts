@@ -25,6 +25,7 @@ import {
 } from "$lib/modules/game-library/testing";
 import { type ClientApiV1 } from "../application/client-api.v1";
 import { ClientBootstrapper } from "../application/client-bootstrapper";
+import { GameSessionModule, type IClientGameSessionModulePort } from "../modules";
 import { AuthModule } from "../modules/auth.module";
 import type { IAuthModulePort } from "../modules/auth.module.port";
 import { ClientGameLibraryModule } from "../modules/game-library.module";
@@ -101,8 +102,14 @@ export class TestCompositionRoot {
 			eventBus: this.eventBus,
 		});
 
+		const gameSession: IClientGameSessionModulePort = new GameSessionModule({
+			clock: this.clock,
+			dbSignal: infra.dbSignal,
+			logService: this.mocks.logService,
+		});
+
 		const bootstrapper = new ClientBootstrapper({
-			modules: { infra, gameLibrary, auth },
+			modules: { infra, gameLibrary, auth, gameSession },
 			eventBus: this.eventBus,
 		});
 		return bootstrapper.bootstrap();
