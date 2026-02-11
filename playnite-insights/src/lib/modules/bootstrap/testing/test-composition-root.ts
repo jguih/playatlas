@@ -1,6 +1,7 @@
 import { sessionIdRepositorySchema } from "$lib/modules/auth/infra";
 import {
 	EventBus,
+	PlayAtlasClient,
 	type IDomainEventBusPort,
 	type IHttpClientPort,
 	type ILogServicePort,
@@ -23,9 +24,14 @@ import {
 	GenreFactory,
 	PlatformFactory,
 } from "$lib/modules/game-library/testing";
+import { SyncRunner } from "$lib/modules/synchronization/application/sync-runner";
 import { type ClientApiV1 } from "../application/client-api.v1";
 import { ClientBootstrapper } from "../application/client-bootstrapper";
-import { GameSessionModule, type IClientGameSessionModulePort } from "../modules";
+import {
+	GameSessionModule,
+	SynchronizationModule,
+	type IClientGameSessionModulePort,
+} from "../modules";
 import { AuthModule } from "../modules/auth.module";
 import type { IAuthModulePort } from "../modules/auth.module.port";
 import { ClientGameLibraryModule } from "../modules/game-library.module";
@@ -95,21 +101,37 @@ export class TestCompositionRoot {
 		});
 		await auth.initializeAsync();
 
+		const playAtlasClient = new PlayAtlasClient({ httpClient: this.mocks.httpClient });
+		const syncRunner = new SyncRunner({ clock: this.clock, syncState: infra.playAtlasSyncState });
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			dbSignal: infra.dbSignal,
-			httpClient: this.mocks.httpClient,
 			clock: this.clock,
-			eventBus: this.eventBus,
+			playAtlasClient,
+			syncRunner,
 		});
 
 		const gameSession: IClientGameSessionModulePort = new GameSessionModule({
 			clock: this.clock,
 			dbSignal: infra.dbSignal,
 			logService: this.mocks.logService,
+			playAtlasClient,
+			syncRunner,
+		});
+
+		const synchronization = new SynchronizationModule({
+			clock: this.clock,
+			eventBus: this.eventBus,
+			syncCompaniesFlow: gameLibrary.syncCompaniesFlow,
+			syncCompletionStatusesFlow: gameLibrary.syncCompletionStatusesFlow,
+			syncGameClassificationsFlow: gameLibrary.syncGameClassificationsFlow,
+			syncGamesFlow: gameLibrary.syncGamesFlow,
+			syncGenresFlow: gameLibrary.syncGenresFlow,
+			syncPlatformsFlow: gameLibrary.syncPlatformsFlow,
+			syncGameSessionsFlow: gameSession.syncGameSessionsFlow,
 		});
 
 		const bootstrapper = new ClientBootstrapper({
-			modules: { infra, gameLibrary, auth, gameSession },
+			modules: { infra, gameLibrary, auth, gameSession, synchronization },
 			eventBus: this.eventBus,
 		});
 		return bootstrapper.bootstrap();
