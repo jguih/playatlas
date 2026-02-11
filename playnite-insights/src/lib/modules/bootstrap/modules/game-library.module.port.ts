@@ -4,11 +4,9 @@ import type {
 	IGameClassificationMapperPort,
 	IGameLibraryFilterMapperPort,
 	IGameLibrarySyncManagerPort,
-	IGameLibrarySyncStatePort,
 	IGameMapperPort,
 	IGenreMapperPort,
 	IPlatformMapperPort,
-	IPlayAtlasClientPort,
 	ISyncCompaniesFlowPort,
 	ISyncCompletionStatusesFlowPort,
 	ISyncGameClassificationsFlowPort,
@@ -83,10 +81,6 @@ export interface IClientGameLibraryModulePort {
 	get getCompletionStatusesByIdsQueryHandler(): IGetCompletionStatusesByIdsQueryHandlerPort;
 	get syncCompletionStatusesCommandHandler(): ISyncCompletionStatusesCommandHandlerPort;
 	get syncCompletionStatusesFlow(): ISyncCompletionStatusesFlowPort;
-
-	get playAtlasClient(): IPlayAtlasClientPort;
-
-	get gameLibrarySyncState(): IGameLibrarySyncStatePort;
 
 	get gameLibrarySyncManager(): IGameLibrarySyncManagerPort;
 

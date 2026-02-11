@@ -29,9 +29,9 @@ export class GameSessionWriteStore
 		return await this.runTransaction([this.meta.storeName], "readwrite", async ({ tx }) => {
 			const store = tx.objectStore(this.meta.storeName);
 
-			const promises = gameSessions.map((gs) =>
-				this.runRequest(store.put(this.deps.gameSessionMapper.fromDto(gs))),
-			);
+			const promises = gameSessions
+				.map(this.deps.gameSessionMapper.fromDto)
+				.map((gs) => this.runRequest(store.put(gs)));
 
 			await Promise.all(promises);
 		});

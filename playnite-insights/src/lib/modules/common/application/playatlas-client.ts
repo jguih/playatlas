@@ -7,6 +7,7 @@ import {
 	getGenresResponseDtoSchema,
 	getPlatformsResponseDtoSchema,
 } from "@playatlas/game-library/dtos";
+import { getGameSessionsResponseDtoSchema } from "@playatlas/game-session/dtos";
 import type { IPlayAtlasClientPort } from "./playatlas-client.port";
 
 export type PlayAtlasClientDeps = {
@@ -78,5 +79,15 @@ export class PlayAtlasClient implements IPlayAtlasClientPort {
 			},
 		});
 		return await zodJsonParser(getGameClassificationsResponseDtoSchema)(response);
+	};
+
+	getGameSessionsAsync: IPlayAtlasClientPort["getGameSessionsAsync"] = async ({ lastCursor }) => {
+		const response = await this.deps.httpClient.getAsync({
+			endpoint: `/api/game/session`,
+			searchParams: {
+				sinceLastSync: lastCursor,
+			},
+		});
+		return await zodJsonParser(getGameSessionsResponseDtoSchema)(response);
 	};
 }

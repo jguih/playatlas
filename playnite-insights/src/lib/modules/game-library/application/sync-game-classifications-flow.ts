@@ -1,12 +1,15 @@
+import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
+import type {
+	ISyncRunnerPort,
+	SyncRunnerFetchResult,
+} from "$lib/modules/common/application/sync-runner";
 import type { GameId } from "$lib/modules/common/domain";
 import type { ClassificationId } from "@playatlas/common/domain";
 import type { GameClassificationResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncGameClassificationsCommandHandlerPort } from "../commands/sync-game-classifications/sync-game-classifications.command-handler";
 import type { GameClassification } from "../domain";
 import type { IGameVectorWriteStore } from "../infra/scoring-engine/game-vector.write-store";
-import type { IPlayAtlasClientPort } from "./playatlas-client.port";
 import type { IGameClassificationMapperPort } from "./scoring-engine/game-classification.mapper.port";
-import type { ISyncRunnerPort, SyncRunnerFetchResult } from "./sync-runner";
 
 export interface ISyncGameClassificationsFlowPort {
 	executeAsync: () => Promise<void>;

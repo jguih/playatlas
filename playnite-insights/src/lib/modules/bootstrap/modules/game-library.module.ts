@@ -1,16 +1,17 @@
-import type { IDomainEventBusPort, IHttpClientPort } from "$lib/modules/common/application";
+import type { IDomainEventBusPort } from "$lib/modules/common/application";
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
+import type { IGameLibrarySyncStatePort } from "$lib/modules/common/application/game-library-sync-state.port";
+import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
+import { type ISyncRunnerPort, SyncRunner } from "$lib/modules/common/application/sync-runner";
 import {
 	type ICompanyMapperPort,
 	type ICompletionStatusMapperPort,
 	type IGameClassificationMapperPort,
 	type IGameLibraryFilterMapperPort,
 	type IGameLibrarySyncManagerPort,
-	type IGameLibrarySyncStatePort,
 	type IGameMapperPort,
 	type IGenreMapperPort,
 	type IPlatformMapperPort,
-	type IPlayAtlasClientPort,
 	type ISyncCompaniesFlowPort,
 	type ISyncCompletionStatusesFlowPort,
 	type ISyncGameClassificationsFlowPort,
@@ -25,7 +26,6 @@ import {
 	GameMapper,
 	GenreMapper,
 	PlatformMapper,
-	PlayAtlasClient,
 	SyncCompaniesFlow,
 	SyncCompletionStatusesFlow,
 	SyncGameClassificationsFlow,
@@ -35,10 +35,6 @@ import {
 	SyncProgressReport,
 } from "$lib/modules/game-library/application";
 import type { ISyncProgressReporterPort } from "$lib/modules/game-library/application/sync-progress-reporter.svelte";
-import {
-	type ISyncRunnerPort,
-	SyncRunner,
-} from "$lib/modules/game-library/application/sync-runner";
 import {
 	type ICreateGameLibraryCommandHandler,
 	type ISyncCompaniesCommandHandlerPort,
@@ -71,7 +67,6 @@ import {
 	GameClassificationRepository,
 	GameLibraryFilterHasher,
 	GameLibraryFilterRepository,
-	GameLibrarySyncState,
 	GameRepository,
 	GameVectorReadonlyStore,
 	GameVectorWriteStore,
@@ -106,7 +101,8 @@ import type { IClientGameLibraryModulePort } from "./game-library.module.port";
 
 export type ClientGameLibraryModuleDeps = {
 	dbSignal: IDBDatabase;
-	httpClient: IHttpClientPort;
+	playAtlasClient: IPlayAtlasClientPort;
+	gameLibrarySyncState: IGameLibrarySyncStatePort;
 	clock: IClockPort;
 	eventBus: IDomainEventBusPort;
 };
@@ -145,8 +141,6 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly syncCompletionStatusesCommandHandler: ISyncCompletionStatusesCommandHandlerPort;
 	readonly syncCompletionStatusesFlow: ISyncCompletionStatusesFlowPort;
 
-	readonly playAtlasClient: IPlayAtlasClientPort;
-	readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
 	readonly gameLibrarySyncManager: IGameLibrarySyncManagerPort;
 	readonly syncProgressReporter: ISyncProgressReporterPort;
 
@@ -167,12 +161,16 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameVectorWriteStore: IGameVectorWriteStore;
 	// #endregion
 
-	constructor({ dbSignal, httpClient, clock, eventBus }: ClientGameLibraryModuleDeps) {
-		this.playAtlasClient = new PlayAtlasClient({ httpClient });
-		this.gameLibrarySyncState = new GameLibrarySyncState();
+	constructor({
+		dbSignal,
+		playAtlasClient,
+		gameLibrarySyncState,
+		clock,
+		eventBus,
+	}: ClientGameLibraryModuleDeps) {
 		const syncRunner: ISyncRunnerPort = new SyncRunner({
 			clock,
-			gameLibrarySyncState: this.gameLibrarySyncState,
+			gameLibrarySyncState,
 		});
 		this.syncProgressReporter = new SyncProgressReport();
 
@@ -191,7 +189,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		this.syncGamesFlow = new SyncGamesFlow({
 			gameMapper: this.gameMapper,
-			playAtlasClient: this.playAtlasClient,
+			playAtlasClient,
 			syncGamesCommandHandler: this.syncGamesCommandHandler,
 			syncRunner,
 		});
@@ -209,7 +207,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		this.syncGenresFlow = new SyncGenresFlow({
 			genreMapper: this.genreMapper,
-			playAtlasClient: this.playAtlasClient,
+			playAtlasClient,
 			syncGenresCommandHandler: this.syncGenresCommandHandler,
 			syncRunner,
 		});
@@ -224,7 +222,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		this.syncCompaniesFlow = new SyncCompaniesFlow({
 			companyMapper: this.companyMapper,
-			playAtlasClient: this.playAtlasClient,
+			playAtlasClient,
 			syncCompaniesCommandHandler: this.syncCompaniesCommandHandler,
 			syncRunner,
 		});
@@ -242,7 +240,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		this.syncPlatformsFlow = new SyncPlatformsFlow({
 			platformMapper: this.platformMapper,
-			playAtlasClient: this.playAtlasClient,
+			playAtlasClient,
 			syncPlatformsCommandHandler: this.syncPlatformsCommandHandler,
 			syncRunner,
 		});
@@ -260,7 +258,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		this.syncCompletionStatusesFlow = new SyncCompletionStatusesFlow({
 			completionStatusMapper: this.completionStatusMapper,
-			playAtlasClient: this.playAtlasClient,
+			playAtlasClient,
 			syncCompletionStatusesCommandHandler: this.syncCompletionStatusesCommandHandler,
 			syncRunner,
 		});
@@ -284,7 +282,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.gameVectorWriteStore = new GameVectorWriteStore({ dbSignal });
 		this.syncGameClassificationsFlow = new SyncGameClassificationsFlow({
 			gameClassificationMapper: this.gameClassificationMapper,
-			playAtlasClient: this.playAtlasClient,
+			playAtlasClient,
 			syncGameClassificationsCommandHandler: this.syncGameClassificationsCommandHandler,
 			syncRunner,
 			gameVectorWriteStore: this.gameVectorWriteStore,

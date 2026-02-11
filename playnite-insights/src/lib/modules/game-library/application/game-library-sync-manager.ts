@@ -1,5 +1,4 @@
-import type { IDomainEventBusPort } from "$lib/modules/common/application";
-import type { IClockPort } from "@playatlas/common/infra";
+import type { IClockPort, IDomainEventBusPort } from "$lib/modules/common/application";
 import type { IGameLibrarySyncManagerPort } from "./game-library-sync-manager.port";
 import type { ISyncCompaniesFlowPort } from "./sync-companies-flow";
 import type { ISyncCompletionStatusesFlowPort } from "./sync-completion-statuses-flow";

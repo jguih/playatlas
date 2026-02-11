@@ -8,6 +8,7 @@ import {
 	type IDomainEventBusPort,
 	type ILogServicePort,
 } from "$lib/modules/common/application";
+import { PlayAtlasClient } from "$lib/modules/common/application/playatlas-client";
 import { Clock } from "$lib/modules/common/infra";
 import {
 	companyRepositorySchema,
@@ -73,9 +74,12 @@ export class ClientCompositionRoot {
 			httpClient: new HttpClient({ url: window.origin }),
 			sessionIdProvider: auth.sessionIdProvider,
 		});
+		const playAtlasClient = new PlayAtlasClient({ httpClient: playAtlasHttpClient });
+
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			dbSignal: infra.dbSignal,
-			httpClient: playAtlasHttpClient,
+			playAtlasClient,
+			gameLibrarySyncState: infra.gameLibrarySyncState,
 			clock: this.clock,
 			eventBus: this.eventBus,
 		});

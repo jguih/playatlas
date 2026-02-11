@@ -1,3 +1,4 @@
+export * from "../../common/infra/game-library-sync-state";
 export * from "./company.repository";
 export type * from "./company.repository.port";
 export * from "./company.repository.schema";
@@ -11,7 +12,6 @@ export * from "./game-library-filter.repository";
 export type * from "./game-library-filter.repository.port";
 export * from "./game-library-filter.repository.schema";
 export type * from "./game-library-filter.repository.types";
-export * from "./game-library-sync-state";
 export * from "./game.repository";
 export type * from "./game.repository.port";
 export * from "./game.repository.schema";

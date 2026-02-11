@@ -1,8 +1,11 @@
+import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
+import type {
+	ISyncRunnerPort,
+	SyncRunnerFetchResult,
+} from "$lib/modules/common/application/sync-runner";
 import type { PlatformResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncPlatformsCommandHandlerPort } from "../commands";
 import type { IPlatformMapperPort } from "./platform.mapper.port";
-import type { IPlayAtlasClientPort } from "./playatlas-client.port";
-import type { ISyncRunnerPort, SyncRunnerFetchResult } from "./sync-runner";
 
 export type ISyncPlatformsFlowPort = {
 	executeAsync: () => Promise<void>;

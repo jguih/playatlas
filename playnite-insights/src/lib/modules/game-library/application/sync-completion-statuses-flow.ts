@@ -1,8 +1,11 @@
+import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
+import type {
+	ISyncRunnerPort,
+	SyncRunnerFetchResult,
+} from "$lib/modules/common/application/sync-runner";
 import type { CompletionStatusResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncCompletionStatusesCommandHandlerPort } from "../commands";
 import type { ICompletionStatusMapperPort } from "./completion-status.mapper.port";
-import type { IPlayAtlasClientPort } from "./playatlas-client.port";
-import type { ISyncRunnerPort, SyncRunnerFetchResult } from "./sync-runner";
 
 export interface ISyncCompletionStatusesFlowPort {
 	executeAsync: () => Promise<void>;
