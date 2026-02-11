@@ -25,6 +25,7 @@ import type {
 	IGetGenresByIdsQueryHandlerPort,
 	IGetPlatformsByIdsQueryHandlerPort,
 } from "$lib/modules/game-library/queries";
+import type { IGameSessionReadonlyStore } from "$lib/modules/game-session/infra";
 
 export interface ClientApiV1 {
 	GameLibrary: {
@@ -60,6 +61,9 @@ export interface ClientApiV1 {
 	};
 	Auth: {
 		Flow: IAuthFlowPort;
+	};
+	GameSession: {
+		GameSessionReadonlyStore: IGameSessionReadonlyStore;
 	};
 	EventBus: IDomainEventBusPort;
 }

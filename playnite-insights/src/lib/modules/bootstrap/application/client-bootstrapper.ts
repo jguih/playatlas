@@ -1,4 +1,5 @@
 import type { IDomainEventBusPort } from "$lib/modules/common/application";
+import type { IClientGameSessionModulePort } from "../modules";
 import type { IAuthModulePort } from "../modules/auth.module.port";
 import type { IClientGameLibraryModulePort } from "../modules/game-library.module.port";
 import type { IClientInfraModulePort } from "../modules/infra.module.port";
@@ -8,6 +9,7 @@ export type ClientModules = {
 	infra: IClientInfraModulePort;
 	gameLibrary: IClientGameLibraryModulePort;
 	auth: IAuthModulePort;
+	gameSession: IClientGameSessionModulePort;
 };
 
 export type ClientBootstrapperDeps = {
@@ -16,56 +18,53 @@ export type ClientBootstrapperDeps = {
 };
 
 export class ClientBootstrapper {
-	private readonly infra: IClientInfraModulePort;
-	private readonly gameLibrary: IClientGameLibraryModulePort;
-	private readonly auth: IAuthModulePort;
-	private readonly eventBus: IDomainEventBusPort;
-
-	constructor({ modules, eventBus }: ClientBootstrapperDeps) {
-		this.infra = modules.infra;
-		this.gameLibrary = modules.gameLibrary;
-		this.auth = modules.auth;
-		this.eventBus = eventBus;
-	}
+	constructor(private readonly deps: ClientBootstrapperDeps) {}
 
 	bootstrap(): ClientApiV1 {
+		const {
+			eventBus,
+			modules: { auth, gameLibrary, gameSession },
+		} = this.deps;
+
 		const api: ClientApiV1 = {
 			GameLibrary: {
 				ScoringEngine: {
 					Query: {
-						GetGameClassifications: this.gameLibrary.getGameClassificationsByIdsQueryHandler,
-						GetGameClassificationsByGameId:
-							this.gameLibrary.getGameClassificationsByGameIdQueryHandler,
+						GetGameClassifications: gameLibrary.getGameClassificationsByIdsQueryHandler,
+						GetGameClassificationsByGameId: gameLibrary.getGameClassificationsByGameIdQueryHandler,
 					},
 					Command: {
-						SyncGameClassifications: this.gameLibrary.syncGameClassificationsCommandHandler,
+						SyncGameClassifications: gameLibrary.syncGameClassificationsCommandHandler,
 					},
 				},
 				Query: {
-					GetGames: this.gameLibrary.getGamesQueryHandler,
-					GetGamesByIds: this.gameLibrary.getGamesByIdsQueryHandler,
-					GetGenreById: this.gameLibrary.getGenreByIdQueryHandler,
-					GetGenresByIds: this.gameLibrary.getGenresByIdsQueryHandler,
-					GetCompaniesByIds: this.gameLibrary.getCompaniesByIdsQueryHandler,
-					GetPlatformsByIds: this.gameLibrary.getPlatformsByIdsQueryHandler,
-					GetCompletionStatusesByIds: this.gameLibrary.getCompletionStatusesByIdsQueryHandler,
-					GetGameLibraryFilters: this.gameLibrary.getGameLibraryFiltersQueryHandler,
+					GetGames: gameLibrary.getGamesQueryHandler,
+					GetGamesByIds: gameLibrary.getGamesByIdsQueryHandler,
+					GetGenreById: gameLibrary.getGenreByIdQueryHandler,
+					GetGenresByIds: gameLibrary.getGenresByIdsQueryHandler,
+					GetCompaniesByIds: gameLibrary.getCompaniesByIdsQueryHandler,
+					GetPlatformsByIds: gameLibrary.getPlatformsByIdsQueryHandler,
+					GetCompletionStatusesByIds: gameLibrary.getCompletionStatusesByIdsQueryHandler,
+					GetGameLibraryFilters: gameLibrary.getGameLibraryFiltersQueryHandler,
 				},
 				Command: {
-					SyncGames: this.gameLibrary.syncGamesCommandHandler,
-					SyncGenres: this.gameLibrary.syncGenresCommandHandler,
-					SyncCompanies: this.gameLibrary.syncCompaniesCommandHandler,
-					SyncPlatforms: this.gameLibrary.syncPlatformsCommandHandler,
-					SyncCompletionStatuses: this.gameLibrary.syncCompletionStatusesCommandHandler,
-					CreateGameLibraryFilter: this.gameLibrary.createGameLibraryFilterCommandHandler,
+					SyncGames: gameLibrary.syncGamesCommandHandler,
+					SyncGenres: gameLibrary.syncGenresCommandHandler,
+					SyncCompanies: gameLibrary.syncCompaniesCommandHandler,
+					SyncPlatforms: gameLibrary.syncPlatformsCommandHandler,
+					SyncCompletionStatuses: gameLibrary.syncCompletionStatusesCommandHandler,
+					CreateGameLibraryFilter: gameLibrary.createGameLibraryFilterCommandHandler,
 				},
-				SyncManager: this.gameLibrary.gameLibrarySyncManager,
-				SyncProgressReporter: this.gameLibrary.syncProgressReporter,
+				SyncManager: gameLibrary.gameLibrarySyncManager,
+				SyncProgressReporter: gameLibrary.syncProgressReporter,
+			},
+			GameSession: {
+				GameSessionReadonlyStore: gameSession.gameSessionReadonlyStore,
 			},
 			Auth: {
-				Flow: this.auth.authFlow,
+				Flow: auth.authFlow,
 			},
-			EventBus: this.eventBus,
+			EventBus: eventBus,
 		};
 
 		return Object.freeze(api);

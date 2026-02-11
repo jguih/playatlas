@@ -4,7 +4,8 @@ export type SyncTarget =
 	| "companies"
 	| "genres"
 	| "platforms"
-	| "gameClassifications";
+	| "gameClassifications"
+	| "gameSessions";
 
 export interface IGameLibrarySyncStatePort {
 	getLastServerSyncCursor(target: SyncTarget): string | null;

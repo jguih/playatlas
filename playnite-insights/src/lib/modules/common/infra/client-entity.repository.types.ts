@@ -9,7 +9,8 @@ export type ClientRepositoryStoreName =
 	| "session-id"
 	| "game-library-filters"
 	| "game-classification"
-	| "game-vectors";
+	| "game-vectors"
+	| "game-sessions";
 
 export type ClientRepositoryMeta<TLabel extends string, TIndex extends string> = {
 	storeName: ClientRepositoryStoreName;

@@ -19,10 +19,13 @@ import {
 	genreRepositorySchema,
 	platformRepositorySchema,
 } from "$lib/modules/game-library/infra";
+import { gameSessionStoreSchema } from "$lib/modules/game-session/infra";
 import {
 	ClientGameLibraryModule,
 	ClientInfraModule,
+	GameSessionModule,
 	type IClientGameLibraryModulePort,
+	type IClientGameSessionModulePort,
 	type IClientInfraModulePort,
 } from "../modules";
 import { AuthModule } from "../modules/auth.module";
@@ -50,6 +53,7 @@ export class ClientCompositionRoot {
 				gameLibraryFilterRepositorySchema,
 				gameClassificationRepositorySchema,
 				gameVectorStoreSchema,
+				gameSessionStoreSchema,
 			],
 			clock: this.clock,
 		});
@@ -76,11 +80,17 @@ export class ClientCompositionRoot {
 			eventBus: this.eventBus,
 		});
 
+		const gameSession: IClientGameSessionModulePort = new GameSessionModule({
+			clock: this.clock,
+			dbSignal: infra.dbSignal,
+			logService: this.logService,
+		});
+
 		this.startLibrarySync({ auth, gameLibrary });
 		this.setupDomainEventListeners({ auth, gameLibrary });
 
 		const bootstrapper = new ClientBootstrapper({
-			modules: { infra, gameLibrary, auth },
+			modules: { infra, gameLibrary, auth, gameSession },
 			eventBus: this.eventBus,
 		});
 		return bootstrapper.bootstrap();
