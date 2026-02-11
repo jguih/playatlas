@@ -6,6 +6,7 @@ import type {
 	IGameMapperPort,
 	IGenreMapperPort,
 	IPlatformMapperPort,
+	IRecommendationEnginePort,
 	ISyncCompaniesFlowPort,
 	ISyncCompletionStatusesFlowPort,
 	ISyncGameClassificationsFlowPort,
@@ -94,4 +95,6 @@ export interface IClientGameLibraryModulePort {
 	get syncGameClassificationsFlow(): ISyncGameClassificationsFlowPort;
 	get gameVectorWriteStore(): IGameVectorWriteStore;
 	get gameVectorReadonlyStore(): IGameVectorReadonlyStore;
+
+	get recommendationEngine(): IRecommendationEnginePort;
 }

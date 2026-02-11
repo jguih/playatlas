@@ -24,4 +24,5 @@ export * from "./platform.repository";
 export type * from "./platform.repository.port";
 export * from "./platform.repository.schema";
 export type * from "./platform.repository.types";
+export * from "./recommendation-engine";
 export * from "./scoring-engine";

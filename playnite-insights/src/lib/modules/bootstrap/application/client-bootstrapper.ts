@@ -38,6 +38,7 @@ export class ClientBootstrapper {
 						SyncGameClassifications: gameLibrary.syncGameClassificationsCommandHandler,
 					},
 				},
+				RecommendationEngine: gameLibrary.recommendationEngine,
 				Query: {
 					GetGames: gameLibrary.getGamesQueryHandler,
 					GetGamesByIds: gameLibrary.getGamesByIdsQueryHandler,

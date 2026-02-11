@@ -10,6 +10,7 @@ export * from "./genre.mapper";
 export type * from "./genre.mapper.port";
 export * from "./platform.mapper";
 export type * from "./platform.mapper.port";
+export * from "./recommendation-engine";
 export * from "./scoring-engine";
 export * from "./sync-companies-flow";
 export * from "./sync-completion-statuses-flow";

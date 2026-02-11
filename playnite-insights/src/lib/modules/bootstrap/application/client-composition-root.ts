@@ -79,12 +79,6 @@ export class ClientCompositionRoot {
 		});
 		const playAtlasClient = new PlayAtlasClient({ httpClient: playAtlasHttpClient });
 		const syncRunner = new SyncRunner({ clock: this.clock, syncState: infra.playAtlasSyncState });
-		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
-			dbSignal: infra.dbSignal,
-			playAtlasClient,
-			clock: this.clock,
-			syncRunner,
-		});
 
 		const gameSession: IClientGameSessionModulePort = new GameSessionModule({
 			clock: this.clock,
@@ -92,6 +86,14 @@ export class ClientCompositionRoot {
 			logService: this.logService,
 			playAtlasClient,
 			syncRunner,
+		});
+
+		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
+			dbSignal: infra.dbSignal,
+			playAtlasClient,
+			clock: this.clock,
+			syncRunner,
+			gameSessionReadonlyStore: gameSession.gameSessionReadonlyStore,
 		});
 
 		const synchronization = new SynchronizationModule({

@@ -9,6 +9,7 @@ import {
 	type IGameMapperPort,
 	type IGenreMapperPort,
 	type IPlatformMapperPort,
+	type IRecommendationEnginePort,
 	type ISyncCompaniesFlowPort,
 	type ISyncCompletionStatusesFlowPort,
 	type ISyncGameClassificationsFlowPort,
@@ -20,8 +21,11 @@ import {
 	GameClassificationMapper,
 	GameLibraryFilterMapper,
 	GameMapper,
+	GameVectorProjectionService,
 	GenreMapper,
+	InstancePreferenceModelService,
 	PlatformMapper,
+	RecommendationEngine,
 	SyncCompaniesFlow,
 	SyncCompletionStatusesFlow,
 	SyncGameClassificationsFlow,
@@ -91,6 +95,7 @@ import {
 	GetGenresByIdsQueryHandler,
 	GetPlatformsByIdsQueryHandler,
 } from "$lib/modules/game-library/queries";
+import type { IGameSessionReadonlyStore } from "$lib/modules/game-session/infra";
 import type { IClientGameLibraryModulePort } from "./game-library.module.port";
 
 export type ClientGameLibraryModuleDeps = {
@@ -98,6 +103,7 @@ export type ClientGameLibraryModuleDeps = {
 	playAtlasClient: IPlayAtlasClientPort;
 	clock: IClockPort;
 	syncRunner: ISyncRunnerPort;
+	gameSessionReadonlyStore: IGameSessionReadonlyStore;
 };
 
 export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
@@ -151,7 +157,15 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameVectorWriteStore: IGameVectorWriteStore;
 	// #endregion
 
-	constructor({ dbSignal, playAtlasClient, clock, syncRunner }: ClientGameLibraryModuleDeps) {
+	readonly recommendationEngine: IRecommendationEnginePort;
+
+	constructor({
+		dbSignal,
+		playAtlasClient,
+		clock,
+		syncRunner,
+		gameSessionReadonlyStore,
+	}: ClientGameLibraryModuleDeps) {
 		this.gameMapper = new GameMapper({ clock });
 		this.gameRepository = new GameRepository({ dbSignal, gameMapper: this.gameMapper });
 		this.getGamesQueryHandlerFilterBuilder = new GetGamesQueryHandlerFilterBuilder();
@@ -279,6 +293,18 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		this.getGameLibraryFiltersQueryHandler = new GetGameLibraryFiltersQueryHandler({
 			gameLibraryFilterRepository: this.gameLibraryFilterRepository,
+		});
+
+		const gameVectorProjectionService = new GameVectorProjectionService({
+			gameVectorReadonlyStore: this.gameVectorReadonlyStore,
+		});
+		const instancePreferenceModelService = new InstancePreferenceModelService({
+			clock,
+			gameSessionReadonlyStore,
+		});
+		this.recommendationEngine = new RecommendationEngine({
+			gameVectorProjectionService,
+			instancePreferenceModelService,
 		});
 	}
 }

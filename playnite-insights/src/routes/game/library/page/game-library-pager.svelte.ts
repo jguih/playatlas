@@ -1,6 +1,6 @@
 import type { ClientApiGetter } from "$lib/modules/bootstrap/application";
 import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
-import type { GameCardProjection } from "../../lib/ui/components/game-card/game-card.projection";
+import type { GameCardProjection } from "$lib/ui/components/game-card/game-card.projection";
 import type { GameLibraryPagerLoadMoreProps } from "./game-library-pager.types";
 import { homePageFiltersSignal, homePageSortSignal } from "./home-page-filters.svelte";
 

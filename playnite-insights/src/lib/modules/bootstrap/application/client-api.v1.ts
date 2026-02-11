@@ -1,5 +1,6 @@
 import type { IAuthFlowPort } from "$lib/modules/auth/application";
 import type { IDomainEventBusPort } from "$lib/modules/common/application";
+import type { IRecommendationEnginePort } from "$lib/modules/game-library/application";
 import type {
 	ICreateGameLibraryCommandHandler,
 	ISyncCompaniesCommandHandlerPort,
@@ -38,6 +39,7 @@ export interface ClientApiV1 {
 				SyncGameClassifications: ISyncGameClassificationsCommandHandlerPort;
 			};
 		};
+		RecommendationEngine: IRecommendationEnginePort;
 		Query: {
 			GetGames: IGetGamesQueryHandlerPort;
 			GetGamesByIds: IGetGamesByIdsQueryHandlerPort;
