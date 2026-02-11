@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { getClientApiContext } from "$lib/modules/bootstrap/application";
-	import type { Game } from "$lib/modules/game-library/domain";
 	import BottomNav from "$lib/ui/components/BottomNav.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import Header from "$lib/ui/components/header/Header.svelte";
@@ -8,25 +7,17 @@
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
-	import { HomeIcon, LayoutDashboardIcon, SettingsIcon } from "@lucide/svelte";
-	import { onMount } from "svelte";
+	import { HomeIcon, LayoutDashboardIcon, SearchIcon, SettingsIcon } from "@lucide/svelte";
+	import { homePageFiltersSignal } from "./game/library/page/home-page-filters.svelte";
 	import { SyncProgressViewModel } from "./game/library/page/sync-progress.view-model";
+	import HomePageHero from "./page/components/HomePageHero.svelte";
+	import { HomePageStore } from "./page/home-page-game-store.svelte";
 
 	const api = getClientApiContext();
 	const syncProgress = $derived(api().Synchronization.SyncProgressReporter.progressSignal);
-	const recommendationsPromise = api().GameLibrary.RecommendationEngine.recommendAsync(10);
-	let rankedGames: Game[] = $state([]);
+	const store = new HomePageStore({ api });
 
-	onMount(() => {
-		void recommendationsPromise.then(async (ranked) => {
-			const result = await api().GameLibrary.Query.GetGamesByIds.executeAsync({
-				gameIds: ranked.map((r) => r.gameId),
-			});
-			rankedGames = result.games;
-		});
-	});
-
-	$inspect(rankedGames);
+	void store.loadGamesAsync();
 </script>
 
 <AppLayout>
@@ -44,7 +35,22 @@
 						</p>
 					{/if}
 				</div>
-				<div class="flex flex-nowrap"></div>
+				<div class="flex flex-nowrap">
+					<LightButton
+						variant="neutral"
+						iconOnly={!homePageFiltersSignal.search}
+						class="flex items-center gap-1 px-2!"
+					>
+						<Icon>
+							<SearchIcon />
+						</Icon>
+						{#if homePageFiltersSignal.search}
+							<span class="text-xs text-foreground/60 truncate max-w-12">
+								{homePageFiltersSignal.search}
+							</span>
+						{/if}
+					</LightButton>
+				</div>
 			</div>
 		</Header>
 	{/snippet}
@@ -52,7 +58,12 @@
 		<div></div>
 	{/snippet}
 
-	<Main></Main>
+	<Main>
+		<HomePageHero
+			games={store.storeSignal.hero.items}
+			loading={store.storeSignal.hero.loading}
+		/>
+	</Main>
 
 	{#snippet bottomNav()}
 		<BottomNav>

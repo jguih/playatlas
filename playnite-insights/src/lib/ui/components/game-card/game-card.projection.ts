@@ -1,4 +1,4 @@
-import type { GameId } from "$lib/modules/game-library/domain";
+import type { GameId } from "$lib/modules/common/domain";
 
 export type GameCardProjection = {
 	id: GameId;
@@ -8,4 +8,5 @@ export type GameCardProjection = {
 
 export type GameCardProps = {
 	game: GameCardProjection;
+	displayName?: boolean;
 };
