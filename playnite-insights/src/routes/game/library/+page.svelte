@@ -4,7 +4,6 @@
 	import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
 	import type { CreateGameLibraryFilterCommand } from "$lib/modules/game-library/commands";
 	import type { GameLibraryFilter } from "$lib/modules/game-library/domain";
-	import BottomNav from "$lib/ui/components/BottomNav.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import GameCard from "$lib/ui/components/game-card/GameCard.svelte";
 	import GameCardSkeleton from "$lib/ui/components/game-card/GameCardSkeleton.svelte";
@@ -14,13 +13,7 @@
 	import Main from "$lib/ui/components/Main.svelte";
 	import Sidebar from "$lib/ui/components/sidebar/Sidebar.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
-	import {
-		HomeIcon,
-		LayoutDashboardIcon,
-		ListFilter,
-		SearchIcon,
-		SettingsIcon,
-	} from "@lucide/svelte";
+	import { ArrowLeftIcon, ListFilter, SearchIcon } from "@lucide/svelte";
 	import { onMount, tick } from "svelte";
 	import SearchBottomSheet from "./page/components/SearchBottomSheet.svelte";
 	import { GameLibraryPager } from "./page/game-library-pager.svelte";
@@ -191,6 +184,16 @@
 						<p class="font-medium text-foreground/80">
 							{SyncProgressViewModel.getSyncProgressLabel(syncProgress.activeFlow)}
 						</p>
+					{:else}
+						<LightButton
+							variant="neutral"
+							iconOnly
+							onclick={() => history.back()}
+						>
+							<Icon>
+								<ArrowLeftIcon />
+							</Icon>
+						</LightButton>
 					{/if}
 				</div>
 				<div class="flex flex-nowrap">
@@ -248,39 +251,4 @@
 			style="height: 1px;"
 		></div>
 	</Main>
-
-	{#snippet bottomNav()}
-		<BottomNav>
-			<LightButton
-				size="lg"
-				iconOnly
-				state="active"
-				aria-label="Home"
-			>
-				<Icon>
-					<HomeIcon />
-				</Icon>
-			</LightButton>
-			<LightButton
-				size="lg"
-				variant="neutral"
-				iconOnly
-				aria-label="Dashboard"
-			>
-				<Icon>
-					<LayoutDashboardIcon />
-				</Icon>
-			</LightButton>
-			<LightButton
-				size="lg"
-				variant="neutral"
-				iconOnly
-				aria-label="Settings"
-			>
-				<Icon>
-					<SettingsIcon />
-				</Icon>
-			</LightButton>
-		</BottomNav>
-	{/snippet}
 </AppLayout>

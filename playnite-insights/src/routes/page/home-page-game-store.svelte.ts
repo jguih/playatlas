@@ -17,9 +17,20 @@ export class HomePageStore {
 
 	constructor(private readonly deps: HomePageStoreDeps) {}
 
-	private loadHeroItemsAsync = async () => {
+	private async withLoading<T>(
+		section: keyof HomePageStoreState,
+		fn: () => Promise<T>,
+	): Promise<T> {
+		this.storeSignal[section].loading = true;
 		try {
-			this.storeSignal.hero.loading = true;
+			return await fn();
+		} finally {
+			this.storeSignal[section].loading = false;
+		}
+	}
+
+	private loadHeroItemsAsync = async () => {
+		return this.withLoading("hero", async () => {
 			const ranked = await this.deps.api().GameLibrary.RecommendationEngine.recommendAsync(6);
 			const gameIds = ranked.map((r) => r.gameId);
 			const rankedMap = new SvelteMap(ranked.map((r) => [r.gameId, r.similarity]));
@@ -27,21 +38,18 @@ export class HomePageStore {
 			const { games } = await this.deps.api().GameLibrary.Query.GetGamesByIds.executeAsync({
 				gameIds,
 			});
-			const rankedGames: HomePageGameReadModel[] = [];
 
-			for (const game of games) {
-				rankedGames.push({
+			const rankedGames = games
+				.map((game) => ({
 					Id: game.Id,
 					Name: game.Playnite?.Name ?? "Unknown",
 					CoverImageFilePath: game.Playnite?.CoverImagePath,
 					Similarity: rankedMap.get(game.Id) ?? 0,
-				});
-			}
+				}))
+				.sort((a, b) => b.Similarity - a.Similarity);
 
 			this.storeSignal.hero.items = rankedGames.sort((a, b) => b.Similarity - a.Similarity);
-		} finally {
-			this.storeSignal.hero.loading = false;
-		}
+		});
 	};
 
 	loadGamesAsync = async () => {

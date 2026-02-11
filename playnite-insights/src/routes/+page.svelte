@@ -8,6 +8,7 @@
 	import Main from "$lib/ui/components/Main.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
 	import { HomeIcon, LayoutDashboardIcon, SearchIcon, SettingsIcon } from "@lucide/svelte";
+	import { onMount } from "svelte";
 	import { homePageFiltersSignal } from "./game/library/page/home-page-filters.svelte";
 	import { SyncProgressViewModel } from "./game/library/page/sync-progress.view-model";
 	import HomePageHero from "./page/components/HomePageHero.svelte";
@@ -18,6 +19,16 @@
 	const store = new HomePageStore({ api });
 
 	void store.loadGamesAsync();
+
+	onMount(() => {
+		const unsubscribe = api().EventBus.on("sync-finished", () => {
+			if (store.storeSignal.hero.items.length === 0) {
+				void store.loadGamesAsync();
+			}
+		});
+
+		return () => unsubscribe();
+	});
 </script>
 
 <AppLayout>

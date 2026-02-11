@@ -7,7 +7,7 @@
 
 	const {
 		game,
-		displayName = true,
+		hideName = false,
 		...props
 	}: GameCardProps & HTMLAttributes<HTMLLIElement> = $props();
 
@@ -45,9 +45,9 @@
 			loading="lazy"
 			decoding="async"
 			fetchpriority="low"
-			class={["w-full object-cover", displayName ? "h-7/8" : "h-full"]}
+			class={["w-full object-cover", !hideName ? "h-7/8" : "h-full"]}
 		/>
-		{#if displayName}
+		{#if !hideName}
 			<div class="h-1/8 bottom-0 flex w-full flex-row items-center justify-center p-2">
 				<p class="truncate text-center">{game.name}</p>
 			</div>

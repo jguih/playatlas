@@ -8,5 +8,5 @@ export type GameCardProjection = {
 
 export type GameCardProps = {
 	game: GameCardProjection;
-	displayName?: boolean;
+	hideName?: boolean;
 };
