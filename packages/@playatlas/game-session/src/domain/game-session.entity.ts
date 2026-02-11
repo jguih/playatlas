@@ -92,21 +92,21 @@ const buildGameSession = (
 		getDuration: () => _duration,
 		close: (props) => {
 			if (_status !== "in_progress") throw new GameSessionNotInProgressError();
-			if (props.endTime.getTime() <= _startTime.getTime())
-				throw new InvalidStateError(
-					"Game session end time must not be equal or earlier than start time",
-				);
-			if (props.duration <= 0)
-				throw new InvalidStateError(
-					"Game session duration must be a positive integer greater than 0",
-				);
+
 			_endTime = props.endTime;
 			_duration = props.duration;
 			_status = "closed";
+
+			_touch();
+			_validate();
 		},
 		stale: () => {
 			if (_status !== "in_progress") throw new GameSessionNotInProgressError();
+
 			_status = "stale";
+
+			_touch();
+			_validate();
 		},
 		...softDelete,
 		validate: _validate,
