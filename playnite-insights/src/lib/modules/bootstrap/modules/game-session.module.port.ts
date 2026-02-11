@@ -1,3 +1,4 @@
+import type { ISyncGameSessionsFlowPort } from "$lib/modules/game-session/application";
 import type {
 	IGameSessionReadonlyStore,
 	IGameSessionWriteStorePort,
@@ -6,4 +7,5 @@ import type {
 export type IClientGameSessionModulePort = {
 	get gameSessionWriteStore(): IGameSessionWriteStorePort;
 	get gameSessionReadonlyStore(): IGameSessionReadonlyStore;
+	get syncGameSessionsFlow(): ISyncGameSessionsFlowPort;
 };

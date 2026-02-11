@@ -2,7 +2,7 @@ import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playa
 import type {
 	ISyncRunnerPort,
 	SyncRunnerFetchResult,
-} from "$lib/modules/common/application/sync-runner";
+} from "$lib/modules/common/application/sync-runner.port";
 import type { GenreResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncGenresCommandHandlerPort } from "../commands";
 import type { IGenreMapperPort } from "./genre.mapper.port";

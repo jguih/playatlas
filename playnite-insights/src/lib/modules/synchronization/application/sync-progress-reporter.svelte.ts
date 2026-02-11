@@ -1,22 +1,16 @@
-export type SyncFlowKey =
-	| "games"
-	| "completion-statuses"
-	| "companies"
-	| "genres"
-	| "platforms"
-	| "gameClassifications";
+import type { SyncTarget } from "$lib/modules/common/domain";
 
 export type SyncProgressEvent =
 	| { type: "sync-started" }
-	| { type: "flow-started"; flow: SyncFlowKey }
-	| { type: "flow-finished"; flow: SyncFlowKey }
+	| { type: "flow-started"; flow: SyncTarget }
+	| { type: "flow-finished"; flow: SyncTarget }
 	| { type: "sync-finished" };
 
 export type SyncProgressEventType = SyncProgressEvent["type"];
 
 type SyncProgressSignal = {
 	running: boolean;
-	activeFlow: SyncFlowKey | null;
+	activeFlow: SyncTarget | null;
 };
 
 export interface ISyncProgressReporterPort {
@@ -24,7 +18,7 @@ export interface ISyncProgressReporterPort {
 	report(event: SyncProgressEvent): void;
 }
 
-export class SyncProgressReport implements ISyncProgressReporterPort {
+export class SyncProgressReporter implements ISyncProgressReporterPort {
 	progressSignal: SyncProgressSignal = $state({
 		running: false,
 		activeFlow: null,

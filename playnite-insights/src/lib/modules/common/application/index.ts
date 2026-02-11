@@ -9,3 +9,7 @@ export type * from "./http-client.port";
 export type * from "./http-client.types";
 export * from "./log-service";
 export type * from "./log-service.port";
+export type * from "./play-atlas-sync-state.port";
+export * from "./playatlas-client";
+export type * from "./playatlas-client.port";
+export * from "./sync-runner.port";

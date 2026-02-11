@@ -21,13 +21,16 @@ import {
 	platformRepositorySchema,
 } from "$lib/modules/game-library/infra";
 import { gameSessionStoreSchema } from "$lib/modules/game-session/infra";
+import { SyncRunner } from "$lib/modules/synchronization/application/sync-runner";
 import {
 	ClientGameLibraryModule,
 	ClientInfraModule,
 	GameSessionModule,
+	SynchronizationModule,
 	type IClientGameLibraryModulePort,
 	type IClientGameSessionModulePort,
 	type IClientInfraModulePort,
+	type ISynchronizationModulePort,
 } from "../modules";
 import { AuthModule } from "../modules/auth.module";
 import type { IAuthModulePort } from "../modules/auth.module.port";
@@ -75,26 +78,39 @@ export class ClientCompositionRoot {
 			sessionIdProvider: auth.sessionIdProvider,
 		});
 		const playAtlasClient = new PlayAtlasClient({ httpClient: playAtlasHttpClient });
-
+		const syncRunner = new SyncRunner({ clock: this.clock, syncState: infra.playAtlasSyncState });
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			dbSignal: infra.dbSignal,
 			playAtlasClient,
-			gameLibrarySyncState: infra.gameLibrarySyncState,
 			clock: this.clock,
-			eventBus: this.eventBus,
+			syncRunner,
 		});
 
 		const gameSession: IClientGameSessionModulePort = new GameSessionModule({
 			clock: this.clock,
 			dbSignal: infra.dbSignal,
 			logService: this.logService,
+			playAtlasClient,
+			syncRunner,
 		});
 
-		this.startLibrarySync({ auth, gameLibrary });
-		this.setupDomainEventListeners({ auth, gameLibrary });
+		const synchronization = new SynchronizationModule({
+			clock: this.clock,
+			eventBus: this.eventBus,
+			syncCompaniesFlow: gameLibrary.syncCompaniesFlow,
+			syncCompletionStatusesFlow: gameLibrary.syncCompletionStatusesFlow,
+			syncGameClassificationsFlow: gameLibrary.syncGameClassificationsFlow,
+			syncGamesFlow: gameLibrary.syncGamesFlow,
+			syncGenresFlow: gameLibrary.syncGenresFlow,
+			syncPlatformsFlow: gameLibrary.syncPlatformsFlow,
+			syncGameSessionsFlow: gameSession.syncGameSessionsFlow,
+		});
+
+		this.startLibrarySync({ auth, synchronization });
+		this.setupDomainEventListeners({ auth, synchronization });
 
 		const bootstrapper = new ClientBootstrapper({
-			modules: { infra, gameLibrary, auth, gameSession },
+			modules: { infra, gameLibrary, auth, gameSession, synchronization },
 			eventBus: this.eventBus,
 		});
 		return bootstrapper.bootstrap();
@@ -102,18 +118,18 @@ export class ClientCompositionRoot {
 
 	private startLibrarySync = (deps: {
 		auth: IAuthModulePort;
-		gameLibrary: IClientGameLibraryModulePort;
+		synchronization: ISynchronizationModulePort;
 	}) => {
 		void deps.auth.sessionIdProvider.getAsync().then((sessionId) => {
 			if (sessionId) {
-				void deps.gameLibrary.gameLibrarySyncManager.executeAsync();
+				void deps.synchronization.syncManager.executeAsync();
 			}
 		});
 	};
 
 	private setupDomainEventListeners = (deps: {
 		auth: IAuthModulePort;
-		gameLibrary: IClientGameLibraryModulePort;
+		synchronization: ISynchronizationModulePort;
 	}) => {
 		this.eventBus.on("login-successful", () => {
 			this.startLibrarySync(deps);

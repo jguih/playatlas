@@ -2,7 +2,7 @@ import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playa
 import type {
 	ISyncRunnerPort,
 	SyncRunnerFetchResult,
-} from "$lib/modules/common/application/sync-runner";
+} from "$lib/modules/common/application/sync-runner.port";
 import type { PlatformResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncPlatformsCommandHandlerPort } from "../commands";
 import type { IPlatformMapperPort } from "./platform.mapper.port";

@@ -2,7 +2,7 @@ import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playa
 import type {
 	ISyncRunnerPort,
 	SyncRunnerFetchResult,
-} from "$lib/modules/common/application/sync-runner";
+} from "$lib/modules/common/application/sync-runner.port";
 import type { CompletionStatusResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncCompletionStatusesCommandHandlerPort } from "../commands";
 import type { ICompletionStatusMapperPort } from "./completion-status.mapper.port";

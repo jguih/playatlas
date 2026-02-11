@@ -1,4 +1,4 @@
-export * from "../../common/infra/game-library-sync-state";
+export * from "../../synchronization/infra/play-atlas-sync-state";
 export * from "./company.repository";
 export type * from "./company.repository.port";
 export * from "./company.repository.schema";

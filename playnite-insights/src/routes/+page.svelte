@@ -38,7 +38,7 @@
 	const pager = new GameLibraryPager({ api });
 	const filters = new HomePageFilters();
 	const search = new HomePageSearch();
-	const syncProgress = $derived(api().GameLibrary.SyncProgressReporter.progressSignal);
+	const syncProgress = $derived(api().Synchronization.SyncProgressReporter.progressSignal);
 	const libraryFilterItems = $state<{ items: GameLibraryFilter[] }>({ items: [] });
 	let reloadPagerTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);

@@ -1,5 +1,5 @@
 import type { IDomainEventBusPort } from "$lib/modules/common/application";
-import type { IClientGameSessionModulePort } from "../modules";
+import type { IClientGameSessionModulePort, ISynchronizationModulePort } from "../modules";
 import type { IAuthModulePort } from "../modules/auth.module.port";
 import type { IClientGameLibraryModulePort } from "../modules/game-library.module.port";
 import type { IClientInfraModulePort } from "../modules/infra.module.port";
@@ -10,6 +10,7 @@ export type ClientModules = {
 	gameLibrary: IClientGameLibraryModulePort;
 	auth: IAuthModulePort;
 	gameSession: IClientGameSessionModulePort;
+	synchronization: ISynchronizationModulePort;
 };
 
 export type ClientBootstrapperDeps = {
@@ -23,7 +24,7 @@ export class ClientBootstrapper {
 	bootstrap(): ClientApiV1 {
 		const {
 			eventBus,
-			modules: { auth, gameLibrary, gameSession },
+			modules: { auth, gameLibrary, gameSession, synchronization },
 		} = this.deps;
 
 		const api: ClientApiV1 = {
@@ -55,11 +56,13 @@ export class ClientBootstrapper {
 					SyncCompletionStatuses: gameLibrary.syncCompletionStatusesCommandHandler,
 					CreateGameLibraryFilter: gameLibrary.createGameLibraryFilterCommandHandler,
 				},
-				SyncManager: gameLibrary.gameLibrarySyncManager,
-				SyncProgressReporter: gameLibrary.syncProgressReporter,
 			},
 			GameSession: {
 				GameSessionReadonlyStore: gameSession.gameSessionReadonlyStore,
+			},
+			Synchronization: {
+				SyncManager: synchronization.syncManager,
+				SyncProgressReporter: synchronization.syncProgressReporter,
 			},
 			Auth: {
 				Flow: auth.authFlow,

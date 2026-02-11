@@ -1,32 +1,37 @@
 import type { IClockPort, IDomainEventBusPort } from "$lib/modules/common/application";
-import type { IGameLibrarySyncManagerPort } from "./game-library-sync-manager.port";
-import type { ISyncCompaniesFlowPort } from "./sync-companies-flow";
-import type { ISyncCompletionStatusesFlowPort } from "./sync-completion-statuses-flow";
-import type { ISyncGameClassificationsFlowPort } from "./sync-game-classifications-flow";
-import type { ISyncGamesFlowPort } from "./sync-games-flow";
-import type { ISyncGenresFlowPort } from "./sync-genres-flow";
-import type { ISyncPlatformsFlowPort } from "./sync-platforms-flow";
-import type { ISyncProgressReporterPort, SyncFlowKey } from "./sync-progress-reporter.svelte";
+import type { SyncTarget } from "$lib/modules/common/domain";
+import type {
+	ISyncCompaniesFlowPort,
+	ISyncCompletionStatusesFlowPort,
+	ISyncGameClassificationsFlowPort,
+	ISyncGamesFlowPort,
+	ISyncGenresFlowPort,
+	ISyncPlatformsFlowPort,
+} from "$lib/modules/game-library/application";
+import type { ISyncGameSessionsFlowPort } from "$lib/modules/game-session/application";
+import type { IPlayAtlasSyncManagerPort } from "./play-atlas-sync-manager.port";
+import type { ISyncProgressReporterPort } from "./sync-progress-reporter.svelte";
 
-export type GameLibrarySyncManagerDeps = {
+export type PlayAtlasSyncManagerDeps = {
 	syncGamesFlow: ISyncGamesFlowPort;
 	syncCompletionStatusesFlow: ISyncCompletionStatusesFlowPort;
 	syncCompaniesFlow: ISyncCompaniesFlowPort;
 	syncGenresFlow: ISyncGenresFlowPort;
 	syncPlatformsFlow: ISyncPlatformsFlowPort;
 	syncGameClassificationsFlow: ISyncGameClassificationsFlowPort;
+	syncGameSessionsFlow: ISyncGameSessionsFlowPort;
 	progressReporter: ISyncProgressReporterPort;
 	clock: IClockPort;
 	eventBus: IDomainEventBusPort;
 };
 
-export class GameLibrarySyncManager implements IGameLibrarySyncManagerPort {
+export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
 	private readonly MIN_VISIBLE_MS = 300;
 	private syncing = false;
 
-	constructor(private readonly deps: GameLibrarySyncManagerDeps) {}
+	constructor(private readonly deps: PlayAtlasSyncManagerDeps) {}
 
-	executeAsync: IGameLibrarySyncManagerPort["executeAsync"] = async () => {
+	executeAsync: IPlayAtlasSyncManagerPort["executeAsync"] = async () => {
 		if (this.syncing) return;
 		this.syncing = true;
 
@@ -36,13 +41,14 @@ export class GameLibrarySyncManager implements IGameLibrarySyncManagerPort {
 		progressReporter.report({ type: "sync-started" });
 
 		try {
-			const flows: Array<{ key: SyncFlowKey; run: () => Promise<void> }> = [
+			const flows: Array<{ key: SyncTarget; run: () => Promise<void> }> = [
 				{ key: "games", run: this.deps.syncGamesFlow.executeAsync },
-				{ key: "completion-statuses", run: this.deps.syncCompletionStatusesFlow.executeAsync },
+				{ key: "completionStatuses", run: this.deps.syncCompletionStatusesFlow.executeAsync },
 				{ key: "companies", run: this.deps.syncCompaniesFlow.executeAsync },
 				{ key: "genres", run: this.deps.syncGenresFlow.executeAsync },
 				{ key: "platforms", run: this.deps.syncPlatformsFlow.executeAsync },
 				{ key: "gameClassifications", run: this.deps.syncGameClassificationsFlow.executeAsync },
+				{ key: "gameSessions", run: this.deps.syncGameSessionsFlow.executeAsync },
 			];
 
 			for (const { key, run } of flows) {

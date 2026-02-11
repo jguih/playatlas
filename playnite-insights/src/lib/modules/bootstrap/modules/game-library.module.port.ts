@@ -3,7 +3,6 @@ import type {
 	ICompletionStatusMapperPort,
 	IGameClassificationMapperPort,
 	IGameLibraryFilterMapperPort,
-	IGameLibrarySyncManagerPort,
 	IGameMapperPort,
 	IGenreMapperPort,
 	IPlatformMapperPort,
@@ -14,7 +13,6 @@ import type {
 	ISyncGenresFlowPort,
 	ISyncPlatformsFlowPort,
 } from "$lib/modules/game-library/application";
-import type { ISyncProgressReporterPort } from "$lib/modules/game-library/application/sync-progress-reporter.svelte";
 import type {
 	ICreateGameLibraryCommandHandler,
 	ISyncCompaniesCommandHandlerPort,
@@ -81,10 +79,6 @@ export interface IClientGameLibraryModulePort {
 	get getCompletionStatusesByIdsQueryHandler(): IGetCompletionStatusesByIdsQueryHandlerPort;
 	get syncCompletionStatusesCommandHandler(): ISyncCompletionStatusesCommandHandlerPort;
 	get syncCompletionStatusesFlow(): ISyncCompletionStatusesFlowPort;
-
-	get gameLibrarySyncManager(): IGameLibrarySyncManagerPort;
-
-	get syncProgressReporter(): ISyncProgressReporterPort;
 
 	get gameLibraryFilterMapper(): IGameLibraryFilterMapperPort;
 	get gameLibraryFilterRepository(): IGameLibraryFilterRepositoryPort;

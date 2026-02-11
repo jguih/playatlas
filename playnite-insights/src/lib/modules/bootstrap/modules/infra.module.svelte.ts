@@ -1,12 +1,12 @@
 import type { IClockPort, ILogServicePort } from "$lib/modules/common/application";
-import type { IGameLibrarySyncStatePort } from "$lib/modules/common/application/game-library-sync-state.port";
+import type { IPlayAtlasSyncStatePort } from "$lib/modules/common/application/play-atlas-sync-state.port";
 import { IndexedDBNotInitializedError } from "$lib/modules/common/errors";
 import {
 	INDEXEDDB_CURRENT_VERSION,
 	INDEXEDDB_NAME,
 	type IIndexedDbSchema,
 } from "$lib/modules/common/infra";
-import { GameLibrarySyncState } from "$lib/modules/game-library/infra";
+import { PlayAtlasSyncState } from "$lib/modules/game-library/infra";
 import type { IClientInfraModulePort } from "./infra.module.port";
 
 export type IndexedDbSignal = { db: IDBDatabase | null; dbReady: boolean };
@@ -23,7 +23,7 @@ export class ClientInfraModule implements IClientInfraModulePort {
 	private readonly schemas: IIndexedDbSchema[];
 	private readonly clock: IClockPort;
 
-	readonly gameLibrarySyncState: IGameLibrarySyncStatePort;
+	readonly playAtlasSyncState: IPlayAtlasSyncStatePort;
 
 	get dbSignal(): IDBDatabase {
 		if (!this.indexedDbSignal.dbReady || !this.indexedDbSignal.db)
@@ -35,7 +35,7 @@ export class ClientInfraModule implements IClientInfraModulePort {
 		this.logService = logService;
 		this.schemas = schemas;
 		this.clock = clock;
-		this.gameLibrarySyncState = new GameLibrarySyncState();
+		this.playAtlasSyncState = new PlayAtlasSyncState();
 
 		this.indexedDbSignal = $state({
 			db: null,

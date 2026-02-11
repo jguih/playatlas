@@ -24,10 +24,10 @@ export const gameSessionStoreSchema: IIndexedDbSchema = {
 		const { storeName, index } = gameSessionStoreMeta;
 
 		if (!db.objectStoreNames.contains(storeName)) {
-			const keyPath: keyof GameSessionReadModel = "SessionId";
+			const keyPath: keyof GameSessionReadModel = "Id";
 			const store = db.createObjectStore(storeName, { keyPath });
-			createIndex(store, index.BY_GAME_ID, ["GameId", "SourceLastUpdatedAtMs", "SessionId"]);
-			createIndex(store, index.BY_LAST_UPDATED_AT, ["SourceLastUpdatedAtMs", "SessionId"]);
+			createIndex(store, index.BY_GAME_ID, ["GameId", "SourceLastUpdatedAtMs", "Id"]);
+			createIndex(store, index.BY_LAST_UPDATED_AT, ["SourceLastUpdatedAtMs", "Id"]);
 		}
 	},
 };

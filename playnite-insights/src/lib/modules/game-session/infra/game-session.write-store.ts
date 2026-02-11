@@ -1,11 +1,10 @@
 import { IndexedDbRepository, type IndexedDbRepositoryDeps } from "$lib/modules/common/infra";
-import type { GameSessionResponseDto } from "@playatlas/game-session/dtos";
-import type { IGameSessionReadModelMapperPort } from "../application";
+import type { GameSessionReadModel, IGameSessionReadModelMapperPort } from "../application";
 import { gameSessionStoreMeta } from "./game-session.store.schema";
 
 export type IGameSessionWriteStorePort = {
 	upsertAsync: (props: {
-		gameSessionDto: GameSessionResponseDto | GameSessionResponseDto[];
+		gameSessionDto: GameSessionReadModel | GameSessionReadModel[];
 	}) => Promise<void>;
 };
 
@@ -29,9 +28,7 @@ export class GameSessionWriteStore
 		return await this.runTransaction([this.meta.storeName], "readwrite", async ({ tx }) => {
 			const store = tx.objectStore(this.meta.storeName);
 
-			const promises = gameSessions
-				.map(this.deps.gameSessionMapper.fromDto)
-				.map((gs) => this.runRequest(store.put(gs)));
+			const promises = gameSessions.map((gs) => this.runRequest(store.put(gs)));
 
 			await Promise.all(promises);
 		});

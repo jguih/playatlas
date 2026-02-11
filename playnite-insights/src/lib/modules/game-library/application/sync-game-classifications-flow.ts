@@ -2,7 +2,7 @@ import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playa
 import type {
 	ISyncRunnerPort,
 	SyncRunnerFetchResult,
-} from "$lib/modules/common/application/sync-runner";
+} from "$lib/modules/common/application/sync-runner.port";
 import type { GameId } from "$lib/modules/common/domain";
 import type { ClassificationId } from "@playatlas/common/domain";
 import type { GameClassificationResponseDto } from "@playatlas/game-library/dtos";
