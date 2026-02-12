@@ -21,7 +21,7 @@ describe("GameLibrary / Platforms", () => {
 		const platforms = root.factories.platform.buildList(2000);
 		const platformIds = platforms.map((g) => g.Id);
 
-		await api.GameLibrary.Command.SyncPlatforms.executeAsync({ platforms });
+		await api.GameLibrary.Command.UpsertPlatforms.executeAsync({ platforms });
 
 		// Act
 		const result = await api.GameLibrary.Query.GetPlatformsByIds.executeAsync({

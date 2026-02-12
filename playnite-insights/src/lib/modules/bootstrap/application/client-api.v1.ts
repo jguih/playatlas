@@ -3,6 +3,7 @@ import type { IDomainEventBusPort } from "$lib/modules/common/application";
 import type { IRecommendationEnginePort } from "$lib/modules/game-library/application";
 import type {
 	ICreateGameLibraryCommandHandler,
+	IProjectGameVectorsCommandHandler,
 	ISyncCompaniesCommandHandlerPort,
 	ISyncCompletionStatusesCommandHandlerPort,
 	ISyncGameClassificationsCommandHandlerPort,
@@ -19,6 +20,7 @@ import type {
 	IGetGamesByIdsQueryHandlerPort,
 	IGetGamesQueryHandlerPort,
 	IGetGamesRankedQueryHandlerPort,
+	IGetGameVectorsQueryHandlerPort,
 	IGetGenreByIdQueryHandlerPort,
 	IGetGenresByIdsQueryHandlerPort,
 	IGetPlatformsByIdsQueryHandlerPort,
@@ -37,10 +39,18 @@ export interface ClientApiV1 {
 				GetGameClassificationsByGameId: IGetGameClassificationByGameIdQueryHandler;
 			};
 			Command: {
-				SyncGameClassifications: ISyncGameClassificationsCommandHandlerPort;
+				UpsertGameClassifications: ISyncGameClassificationsCommandHandlerPort;
 			};
 		};
-		RecommendationEngine: IRecommendationEnginePort;
+		RecommendationEngine: {
+			Engine: IRecommendationEnginePort;
+			Query: {
+				GetGameVectors: IGetGameVectorsQueryHandlerPort;
+			};
+			Command: {
+				ProjectGameVectors: IProjectGameVectorsCommandHandler;
+			};
+		};
 		Query: {
 			GetGames: IGetGamesQueryHandlerPort;
 			GetGamesByIds: IGetGamesByIdsQueryHandlerPort;
@@ -53,11 +63,11 @@ export interface ClientApiV1 {
 			GetGameLibraryFilters: IGetGameLibraryFiltersQueryHandlerPort;
 		};
 		Command: {
-			SyncGames: ISyncGamesCommandHandlerPort;
-			SyncGenres: ISyncGenresCommandHandlerPort;
-			SyncCompanies: ISyncCompaniesCommandHandlerPort;
-			SyncPlatforms: ISyncPlatformsCommandHandlerPort;
-			SyncCompletionStatuses: ISyncCompletionStatusesCommandHandlerPort;
+			UpsertGames: ISyncGamesCommandHandlerPort;
+			UpsertGenres: ISyncGenresCommandHandlerPort;
+			UpsertCompanies: ISyncCompaniesCommandHandlerPort;
+			UpsertPlatforms: ISyncPlatformsCommandHandlerPort;
+			UpsertCompletionStatuses: ISyncCompletionStatusesCommandHandlerPort;
 			CreateGameLibraryFilter: ICreateGameLibraryCommandHandler;
 		};
 	};

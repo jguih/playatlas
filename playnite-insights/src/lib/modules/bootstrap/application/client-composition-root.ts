@@ -94,6 +94,8 @@ export class ClientCompositionRoot {
 			clock: this.clock,
 			syncRunner,
 			gameSessionReadonlyStore: gameSession.gameSessionReadonlyStore,
+			gameVectorReadonlyStore: infra.gameVectorReadonlyStore,
+			gameVectorWriteStore: infra.gameVectorWriteStore,
 		});
 
 		const synchronization = new SynchronizationModule({

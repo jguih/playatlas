@@ -35,10 +35,18 @@ export class ClientBootstrapper {
 						GetGameClassificationsByGameId: gameLibrary.getGameClassificationsByGameIdQueryHandler,
 					},
 					Command: {
-						SyncGameClassifications: gameLibrary.syncGameClassificationsCommandHandler,
+						UpsertGameClassifications: gameLibrary.syncGameClassificationsCommandHandler,
 					},
 				},
-				RecommendationEngine: gameLibrary.recommendationEngine,
+				RecommendationEngine: {
+					Engine: gameLibrary.recommendationEngine,
+					Query: {
+						GetGameVectors: gameLibrary.getGameVectorsQueryHandler,
+					},
+					Command: {
+						ProjectGameVectors: gameLibrary.projectGameVectorsCommandHandler,
+					},
+				},
 				Query: {
 					GetGames: gameLibrary.getGamesQueryHandler,
 					GetGamesByIds: gameLibrary.getGamesByIdsQueryHandler,
@@ -51,11 +59,11 @@ export class ClientBootstrapper {
 					GetGameLibraryFilters: gameLibrary.getGameLibraryFiltersQueryHandler,
 				},
 				Command: {
-					SyncGames: gameLibrary.syncGamesCommandHandler,
-					SyncGenres: gameLibrary.syncGenresCommandHandler,
-					SyncCompanies: gameLibrary.syncCompaniesCommandHandler,
-					SyncPlatforms: gameLibrary.syncPlatformsCommandHandler,
-					SyncCompletionStatuses: gameLibrary.syncCompletionStatusesCommandHandler,
+					UpsertGames: gameLibrary.syncGamesCommandHandler,
+					UpsertGenres: gameLibrary.syncGenresCommandHandler,
+					UpsertCompanies: gameLibrary.syncCompaniesCommandHandler,
+					UpsertPlatforms: gameLibrary.syncPlatformsCommandHandler,
+					UpsertCompletionStatuses: gameLibrary.syncCompletionStatusesCommandHandler,
 					CreateGameLibraryFilter: gameLibrary.createGameLibraryFilterCommandHandler,
 				},
 			},

@@ -1,4 +1,5 @@
 export * from "./create-game-library-filter";
+export * from "./project-game-vectors";
 export * from "./sync-companies";
 export * from "./sync-completion-statuses";
 export * from "./sync-game-classifications";

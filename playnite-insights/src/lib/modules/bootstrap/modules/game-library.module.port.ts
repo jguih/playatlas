@@ -16,6 +16,7 @@ import type {
 } from "$lib/modules/game-library/application";
 import type {
 	ICreateGameLibraryCommandHandler,
+	IProjectGameVectorsCommandHandler,
 	ISyncCompaniesCommandHandlerPort,
 	ISyncCompletionStatusesCommandHandlerPort,
 	ISyncGameClassificationsCommandHandlerPort,
@@ -30,8 +31,6 @@ import type {
 	IGameLibraryFilterHasherPort,
 	IGameLibraryFilterRepositoryPort,
 	IGameRepositoryPort,
-	IGameVectorReadonlyStore,
-	IGameVectorWriteStore,
 	IGenreRepositoryPort,
 	IPlatformRepositoryPort,
 } from "$lib/modules/game-library/infra";
@@ -44,6 +43,7 @@ import type {
 	IGetGamesByIdsQueryHandlerPort,
 	IGetGamesQueryHandlerPort,
 	IGetGamesRankedQueryHandlerPort,
+	IGetGameVectorsQueryHandlerPort,
 	IGetGenreByIdQueryHandlerPort,
 	IGetGenresByIdsQueryHandlerPort,
 	IGetPlatformsByIdsQueryHandlerPort,
@@ -95,8 +95,8 @@ export interface IClientGameLibraryModulePort {
 	get getGameClassificationsByGameIdQueryHandler(): IGetGameClassificationByGameIdQueryHandler;
 	get syncGameClassificationsCommandHandler(): ISyncGameClassificationsCommandHandlerPort;
 	get syncGameClassificationsFlow(): ISyncGameClassificationsFlowPort;
-	get gameVectorWriteStore(): IGameVectorWriteStore;
-	get gameVectorReadonlyStore(): IGameVectorReadonlyStore;
 
+	get getGameVectorsQueryHandler(): IGetGameVectorsQueryHandlerPort;
 	get recommendationEngine(): IRecommendationEnginePort;
+	get projectGameVectorsCommandHandler(): IProjectGameVectorsCommandHandler;
 }

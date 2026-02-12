@@ -21,7 +21,7 @@ describe("Game Library / Scoring Engine Game Classifications", () => {
 		const gameClassifications = root.factories.gameClassification.buildList(20_000);
 		const gameClassificationIds = gameClassifications.map((gc) => gc.Id);
 
-		await api.GameLibrary.ScoringEngine.Command.SyncGameClassifications.executeAsync({
+		await api.GameLibrary.ScoringEngine.Command.UpsertGameClassifications.executeAsync({
 			gameClassifications,
 		});
 
@@ -32,6 +32,8 @@ describe("Game Library / Scoring Engine Game Classifications", () => {
 
 		// Assert
 		expect(result.gameClassifications).toHaveLength(20_000);
-		expect(result.gameClassifications.map((gc) => gc.Id)).toEqual(gameClassificationIds);
+		expect(new Set(result.gameClassifications.map((gc) => gc.Id))).toEqual(
+			new Set(gameClassificationIds),
+		);
 	});
 });

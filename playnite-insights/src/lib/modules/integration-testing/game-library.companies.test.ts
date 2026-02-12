@@ -21,7 +21,7 @@ describe("GameLibrary / Companies", () => {
 		const companies = root.factories.company.buildList(2000);
 		const companyIds = companies.map((g) => g.Id);
 
-		await api.GameLibrary.Command.SyncCompanies.executeAsync({ companies });
+		await api.GameLibrary.Command.UpsertCompanies.executeAsync({ companies });
 
 		// Act
 		const result = await api.GameLibrary.Query.GetCompaniesByIds.executeAsync({ companyIds });

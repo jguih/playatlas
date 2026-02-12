@@ -21,7 +21,7 @@ describe("GameLibrary / Completion Statuses", () => {
 		const completionStatuses = root.factories.completionStatus.buildList(2000);
 		const completionStatusesIds = completionStatuses.map((g) => g.Id);
 
-		await api.GameLibrary.Command.SyncCompletionStatuses.executeAsync({ completionStatuses });
+		await api.GameLibrary.Command.UpsertCompletionStatuses.executeAsync({ completionStatuses });
 
 		// Act
 		const result = await api.GameLibrary.Query.GetCompletionStatusesByIds.executeAsync({
@@ -38,8 +38,8 @@ describe("GameLibrary / Completion Statuses", () => {
 		const completionStatusesIds = completionStatuses.map((g) => g.Id);
 
 		// Act
-		await api.GameLibrary.Command.SyncCompletionStatuses.executeAsync({ completionStatuses });
-		await api.GameLibrary.Command.SyncCompletionStatuses.executeAsync({ completionStatuses });
+		await api.GameLibrary.Command.UpsertCompletionStatuses.executeAsync({ completionStatuses });
+		await api.GameLibrary.Command.UpsertCompletionStatuses.executeAsync({ completionStatuses });
 
 		const result = await api.GameLibrary.Query.GetCompletionStatusesByIds.executeAsync({
 			completionStatusesIds,

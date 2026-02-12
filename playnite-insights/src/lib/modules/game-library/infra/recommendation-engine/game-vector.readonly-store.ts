@@ -11,7 +11,7 @@ export type GameVectorReadModel = Readonly<{
 
 export type IGameVectorReadonlyStore = {
 	getAllAsync: () => Promise<GameVectorReadModel[]>;
-	getByGameIdAsync: (gameId: GameId) => Promise<GameVectorReadModel | null>;
+	getByGameIdAsync: (gameId: GameId) => Promise<GameVectorReadModel[] | null>;
 };
 
 export type GameVectorReadonlyStoreDeps = IndexedDbRepositoryDeps;

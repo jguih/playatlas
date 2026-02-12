@@ -122,6 +122,8 @@ export class TestCompositionRoot {
 			playAtlasClient,
 			syncRunner,
 			gameSessionReadonlyStore: gameSession.gameSessionReadonlyStore,
+			gameVectorReadonlyStore: infra.gameVectorReadonlyStore,
+			gameVectorWriteStore: infra.gameVectorWriteStore,
 		});
 
 		const synchronization = new SynchronizationModule({

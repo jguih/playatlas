@@ -6,7 +6,13 @@ import {
 	INDEXEDDB_NAME,
 	type IIndexedDbSchema,
 } from "$lib/modules/common/infra";
-import { PlayAtlasSyncState } from "$lib/modules/game-library/infra";
+import {
+	GameVectorReadonlyStore,
+	GameVectorWriteStore,
+	PlayAtlasSyncState,
+	type IGameVectorReadonlyStore,
+	type IGameVectorWriteStore,
+} from "$lib/modules/game-library/infra";
 import type { IClientInfraModulePort } from "./infra.module.port";
 
 export type IndexedDbSignal = { db: IDBDatabase | null; dbReady: boolean };
@@ -19,11 +25,22 @@ export type ClientInfraModuleDeps = {
 
 export class ClientInfraModule implements IClientInfraModulePort {
 	private readonly indexedDbSignal: IndexedDbSignal;
-	private readonly logService: ILogServicePort;
-	private readonly schemas: IIndexedDbSchema[];
-	private readonly clock: IClockPort;
+	#gameVectorReadonlyStore: IGameVectorReadonlyStore | null = null;
+	#gameVectorWriteStore: IGameVectorWriteStore | null = null;
 
 	readonly playAtlasSyncState: IPlayAtlasSyncStatePort;
+
+	get gameVectorReadonlyStore(): IGameVectorReadonlyStore {
+		if (!this.#gameVectorReadonlyStore)
+			this.#gameVectorReadonlyStore = new GameVectorReadonlyStore({ dbSignal: this.dbSignal });
+		return this.#gameVectorReadonlyStore;
+	}
+
+	get gameVectorWriteStore(): IGameVectorWriteStore {
+		if (!this.#gameVectorWriteStore)
+			this.#gameVectorWriteStore = new GameVectorWriteStore({ dbSignal: this.dbSignal });
+		return this.#gameVectorWriteStore;
+	}
 
 	get dbSignal(): IDBDatabase {
 		if (!this.indexedDbSignal.dbReady || !this.indexedDbSignal.db)
@@ -31,16 +48,13 @@ export class ClientInfraModule implements IClientInfraModulePort {
 		return this.indexedDbSignal.db;
 	}
 
-	constructor({ logService, schemas, clock }: ClientInfraModuleDeps) {
-		this.logService = logService;
-		this.schemas = schemas;
-		this.clock = clock;
-		this.playAtlasSyncState = new PlayAtlasSyncState();
-
+	constructor(private readonly deps: ClientInfraModuleDeps) {
 		this.indexedDbSignal = $state({
 			db: null,
 			dbReady: false,
 		});
+
+		this.playAtlasSyncState = new PlayAtlasSyncState();
 	}
 
 	private openIndexedDbAsync = (props: {
@@ -58,7 +72,7 @@ export class ClientInfraModule implements IClientInfraModulePort {
 
 				db.onversionchange = () => {
 					db.close();
-					this.logService.warning("Database is outdated, please reload the app");
+					this.deps.logService.warning("Database is outdated, please reload the app");
 				};
 
 				resolve(request.result);
@@ -80,7 +94,7 @@ export class ClientInfraModule implements IClientInfraModulePort {
 		this.indexedDbSignal.db = await this.openIndexedDbAsync({
 			dbName: INDEXEDDB_NAME,
 			version: INDEXEDDB_CURRENT_VERSION,
-			schemas: this.schemas,
+			schemas: this.deps.schemas,
 		});
 		this.indexedDbSignal.dbReady = true;
 	};

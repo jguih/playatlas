@@ -7,7 +7,10 @@ import {
 	type IGameClassificationMapperPort,
 	type IGameLibraryFilterMapperPort,
 	type IGameMapperPort,
+	type IGameVectorProjectionServicePort,
+	type IGameVectorProjectionWriterPort,
 	type IGenreMapperPort,
+	type IInstancePreferenceModelService,
 	type IPlatformMapperPort,
 	type IRecommendationEnginePort,
 	type ISyncCompaniesFlowPort,
@@ -22,6 +25,7 @@ import {
 	GameLibraryFilterMapper,
 	GameMapper,
 	GameVectorProjectionService,
+	GameVectorProjectionWriter,
 	GenreMapper,
 	InstancePreferenceModelService,
 	PlatformMapper,
@@ -35,6 +39,7 @@ import {
 } from "$lib/modules/game-library/application";
 import {
 	type ICreateGameLibraryCommandHandler,
+	type IProjectGameVectorsCommandHandler,
 	type ISyncCompaniesCommandHandlerPort,
 	type ISyncCompletionStatusesCommandHandlerPort,
 	type ISyncGameClassificationsCommandHandlerPort,
@@ -42,6 +47,7 @@ import {
 	type ISyncGenresCommandHandlerPort,
 	type ISyncPlatformsCommandHandlerPort,
 	CreateGameLibraryFilterCommandHandler,
+	ProjectGameVectorsCommandHandler,
 	SyncCompaniesCommandHandler,
 	SyncCompletionStatusesCommandHandler,
 	SyncGameClassificationsCommandHandler,
@@ -66,8 +72,6 @@ import {
 	GameLibraryFilterHasher,
 	GameLibraryFilterRepository,
 	GameRepository,
-	GameVectorReadonlyStore,
-	GameVectorWriteStore,
 	GenreRepository,
 	PlatformRepository,
 } from "$lib/modules/game-library/infra";
@@ -81,6 +85,7 @@ import {
 	type IGetGamesQueryHandlerFilterBuilderPort,
 	type IGetGamesQueryHandlerPort,
 	type IGetGamesRankedQueryHandlerPort,
+	type IGetGameVectorsQueryHandlerPort,
 	type IGetGenreByIdQueryHandlerPort,
 	type IGetGenresByIdsQueryHandlerPort,
 	type IGetPlatformsByIdsQueryHandlerPort,
@@ -93,6 +98,7 @@ import {
 	GetGamesQueryHandler,
 	GetGamesQueryHandlerFilterBuilder,
 	GetGamesRankedQueryHandler,
+	GetGameVectorsQueryHandler,
 	GetGenresByIdQueryHandler,
 	GetGenresByIdsQueryHandler,
 	GetPlatformsByIdsQueryHandler,
@@ -106,6 +112,8 @@ export type ClientGameLibraryModuleDeps = {
 	clock: IClockPort;
 	syncRunner: ISyncRunnerPort;
 	gameSessionReadonlyStore: IGameSessionReadonlyStore;
+	gameVectorWriteStore: IGameVectorWriteStore;
+	gameVectorReadonlyStore: IGameVectorReadonlyStore;
 };
 
 export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
@@ -156,11 +164,16 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly getGameClassificationsByGameIdQueryHandler: IGetGameClassificationByGameIdQueryHandler;
 	readonly syncGameClassificationsCommandHandler: ISyncGameClassificationsCommandHandlerPort;
 	readonly syncGameClassificationsFlow: ISyncGameClassificationsFlowPort;
-	readonly gameVectorReadonlyStore: IGameVectorReadonlyStore;
-	readonly gameVectorWriteStore: IGameVectorWriteStore;
 	// #endregion
 
+	// #region: Recommendation Engine
+	readonly gameVectorProjectionService: IGameVectorProjectionServicePort;
+	readonly gameVectorProjectionWriter: IGameVectorProjectionWriterPort;
+	readonly getGameVectorsQueryHandler: IGetGameVectorsQueryHandlerPort;
+	readonly instancePreferenceModelService: IInstancePreferenceModelService;
 	readonly recommendationEngine: IRecommendationEnginePort;
+	readonly projectGameVectorsCommandHandler: IProjectGameVectorsCommandHandler;
+	// #endregion
 
 	constructor({
 		dbSignal,
@@ -168,21 +181,31 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		clock,
 		syncRunner,
 		gameSessionReadonlyStore,
+		gameVectorReadonlyStore,
+		gameVectorWriteStore,
 	}: ClientGameLibraryModuleDeps) {
-		this.gameVectorReadonlyStore = new GameVectorReadonlyStore({ dbSignal });
-		this.gameVectorWriteStore = new GameVectorWriteStore({ dbSignal });
-
-		const gameVectorProjectionService = new GameVectorProjectionService({
-			gameVectorReadonlyStore: this.gameVectorReadonlyStore,
+		// #region: Recommendation Engine
+		this.gameVectorProjectionService = new GameVectorProjectionService({
+			gameVectorReadonlyStore: gameVectorReadonlyStore,
 		});
-		const instancePreferenceModelService = new InstancePreferenceModelService({
+		this.gameVectorProjectionWriter = new GameVectorProjectionWriter({
+			gameVectorWriteStore: gameVectorWriteStore,
+		});
+		this.instancePreferenceModelService = new InstancePreferenceModelService({
 			clock,
 			gameSessionReadonlyStore,
 		});
 		this.recommendationEngine = new RecommendationEngine({
-			gameVectorProjectionService,
-			instancePreferenceModelService,
+			gameVectorProjectionService: this.gameVectorProjectionService,
+			instancePreferenceModelService: this.instancePreferenceModelService,
 		});
+		this.getGameVectorsQueryHandler = new GetGameVectorsQueryHandler({
+			gameVectorProjectionService: this.gameVectorProjectionService,
+		});
+		this.projectGameVectorsCommandHandler = new ProjectGameVectorsCommandHandler({
+			gameVectorProjectionWriter: this.gameVectorProjectionWriter,
+		});
+		// #endregion
 
 		this.gameMapper = new GameMapper({ clock });
 		this.gameRepository = new GameRepository({ dbSignal, gameMapper: this.gameMapper });
@@ -197,7 +220,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.getGamesRankedQueryHandler = new GetGamesRankedQueryHandler({
 			gameRepository: this.gameRepository,
 			recommendationEngine: this.recommendationEngine,
-			gameVectorProjectionService,
+			gameVectorProjectionService: this.gameVectorProjectionService,
 		});
 		this.syncGamesCommandHandler = new SyncGamesCommandHandler({
 			gameRepository: this.gameRepository,
@@ -278,6 +301,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			syncRunner,
 		});
 
+		// #region: Scoring Engine
 		this.gameClassificationMapper = new GameClassificationMapper({ clock });
 		this.gameClassificationRepository = new GameClassificationRepository({
 			dbSignal,
@@ -293,15 +317,16 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.syncGameClassificationsCommandHandler = new SyncGameClassificationsCommandHandler({
 			gameClassificationsRepository: this.gameClassificationRepository,
 		});
-
 		this.syncGameClassificationsFlow = new SyncGameClassificationsFlow({
 			gameClassificationMapper: this.gameClassificationMapper,
 			playAtlasClient,
 			syncGameClassificationsCommandHandler: this.syncGameClassificationsCommandHandler,
 			syncRunner,
-			gameVectorWriteStore: this.gameVectorWriteStore,
+			gameVectorProjectionWriter: this.gameVectorProjectionWriter,
 		});
+		// #endregion
 
+		// #region: Game Library Filters
 		this.gameLibraryFilterMapper = new GameLibraryFilterMapper();
 		this.gameLibraryFilterRepository = new GameLibraryFilterRepository({
 			dbSignal,
@@ -316,5 +341,6 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.getGameLibraryFiltersQueryHandler = new GetGameLibraryFiltersQueryHandler({
 			gameLibraryFilterRepository: this.gameLibraryFilterRepository,
 		});
+		// #endregion
 	}
 }

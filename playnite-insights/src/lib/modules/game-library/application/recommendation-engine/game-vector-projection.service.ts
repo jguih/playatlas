@@ -5,8 +5,10 @@ import {
 } from "$lib/modules/common/domain";
 import type { IGameVectorReadonlyStore } from "../../infra/recommendation-engine/game-vector.readonly-store";
 
+export type GameVectorProjection = Map<GameId, Float32Array>;
+
 export type IGameVectorProjectionServicePort = {
-	buildAsync: () => Promise<Map<GameId, Float32Array>>;
+	buildAsync: () => Promise<GameVectorProjection>;
 };
 
 export type GameVectorProjectionServiceDeps = {
@@ -19,7 +21,7 @@ export class GameVectorProjectionService implements IGameVectorProjectionService
 	buildAsync: IGameVectorProjectionServicePort["buildAsync"] = async () => {
 		const rows = await this.deps.gameVectorReadonlyStore.getAllAsync();
 
-		const map = new Map<GameId, Float32Array>();
+		const map: GameVectorProjection = new Map();
 
 		for (const row of rows) {
 			let vec = map.get(row.GameId);
