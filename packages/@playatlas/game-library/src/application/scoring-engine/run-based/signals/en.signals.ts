@@ -37,7 +37,29 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		"fresh layout every playthrough",
 		"unique layouts each time",
 	],
-	BRANCHING_PATHS_LABEL: ["branching paths"],
+	RUN_LOOP_LANGUAGE_LABEL: [
+		"each run",
+		"every run",
+		"per run",
+		"new run",
+		"another run",
+		"between runs",
+		"run after run",
+	],
+	TRY_AGAIN_LOOP_LABEL: [
+		"try again",
+		"attempt after attempt",
+		"learn from failure",
+		"fail and retry",
+		"die and try again",
+	],
+	DUNGEON_CRAWL_LABEL: [
+		"dungeon crawl",
+		"dungeon-crawl",
+		"dungeon crawler",
+		"dungeon-crawler",
+		"descend into the dungeon",
+	],
 	// #endregion
 	// #region: permadeath_reset
 	PERMADEATH_LABEL: ["permadeath", "permanent death"],
@@ -52,9 +74,24 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	NO_CHECKPOINTS_LABEL: ["no checkpoints"],
 	// #endregion
 	// #region: run_variability
-	ENDLESSLY_REPLAYABLE_LABEL: ["endlessly replayable"],
 	CUSTOMIZE_YOUR_RUN_LABEL: ["customize your run"],
 	DAILY_CHALLENGES: ["daily challenges"],
+	BUILD_VARIETY_LABEL: [
+		"randomized items",
+		"random loot",
+		"random upgrades",
+		"random power-ups",
+		"random power ups",
+		"procedural loot",
+	],
+	RANDOMIZED_ITEMS_LABEL: [
+		"different builds",
+		"unique builds",
+		"build variety",
+		"experiment with builds",
+		"varied playstyles",
+	],
+	ENDLESSLY_REPLAYABLE_LABEL: ["endlessly replayable"],
 	// #endregion
 	// #region: meta_progression
 	ROGUELITE_PROGRESSION_LABEL: ["roguelite progression", "rogue-lite progression"],

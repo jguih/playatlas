@@ -39,10 +39,22 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		weight: 20,
 		isGate: false,
 	},
-	BRANCHING_PATHS_LABEL: {
+	RUN_LOOP_LANGUAGE_LABEL: {
 		group: "procedural_runs",
 		tier: "C",
-		weight: 10,
+		weight: 20,
+		isGate: false,
+	},
+	TRY_AGAIN_LOOP_LABEL: {
+		group: "procedural_runs",
+		tier: "C",
+		weight: 20,
+		isGate: false,
+	},
+	DUNGEON_CRAWL_LABEL: {
+		group: "procedural_runs",
+		tier: "C",
+		weight: 20,
 		isGate: false,
 	},
 	// #endregion
@@ -62,17 +74,11 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	NO_CHECKPOINTS_LABEL: {
 		group: "permadeath_reset",
 		tier: "C",
-		weight: 12,
+		weight: 10,
 		isGate: false,
 	},
 	// #endregion
 	// #region: run_variability
-	ENDLESSLY_REPLAYABLE_LABEL: {
-		group: "run_variability",
-		tier: "B",
-		weight: 30,
-		isGate: false,
-	},
 	CUSTOMIZE_YOUR_RUN_LABEL: {
 		group: "run_variability",
 		tier: "B",
@@ -85,30 +91,48 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		weight: 20,
 		isGate: false,
 	},
+	RANDOMIZED_ITEMS_LABEL: {
+		group: "run_variability",
+		tier: "B",
+		weight: 32,
+		isGate: false,
+	},
+	BUILD_VARIETY_LABEL: {
+		group: "run_variability",
+		tier: "B",
+		weight: 30,
+		isGate: false,
+	},
+	ENDLESSLY_REPLAYABLE_LABEL: {
+		group: "run_variability",
+		tier: "C",
+		weight: 15,
+		isGate: false,
+	},
 	// #endregion
 	// #region: meta_progression
 	ROGUELITE_PROGRESSION_LABEL: {
 		group: "meta_progression",
 		tier: "A",
-		weight: 55,
-		isGate: true,
+		weight: 34,
+		isGate: false,
 	},
 	META_PROGRESSION_SYSTEM_LABEL: {
 		group: "meta_progression",
 		tier: "B",
-		weight: 45,
+		weight: 32,
 		isGate: false,
 	},
 	PERMANENT_UPGRADES_LABEL: {
 		group: "meta_progression",
 		tier: "B",
-		weight: 30,
+		weight: 24,
 		isGate: false,
 	},
 	PERMANENT_UNLOCKS_LABEL: {
 		group: "meta_progression",
 		tier: "B",
-		weight: 30,
+		weight: 22,
 		isGate: false,
 	},
 	// #endregion

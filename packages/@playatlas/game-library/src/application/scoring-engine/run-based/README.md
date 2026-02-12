@@ -55,3 +55,11 @@ Examples of signals
 - long-term unlock systems
 
 Tilts toward roguelite structure.
+
+## Canonical References
+
+- [Dead Cells](https://store.steampowered.com/app/588650/Dead_Cells/)
+- [Hades](https://store.steampowered.com/app/1145360/Hades/)
+- [The Binding of Isaac](https://store.steampowered.com/app/250900/The_Binding_of_Isaac_Rebirth/)
+- [Risk of Rain 2](https://store.steampowered.com/app/632360/Risk_of_Rain_2/)
+- [Mewgenics](https://store.steampowered.com/app/686060/Mewgenics/)
