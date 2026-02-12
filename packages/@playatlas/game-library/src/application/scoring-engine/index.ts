@@ -13,7 +13,7 @@ export * from "./game-classification.score-service";
 export * from "./horror";
 export * from "./horror/horror.score-engine";
 export * from "./penalty.types";
-export * from "./rpg";
+export * from "./run-based";
 export * from "./score-breakdown";
 export * from "./score-breakdown-envelope";
 export type * from "./score-breakdown-normalizer.port";

@@ -99,7 +99,7 @@ describe("Game Library Synchronization / Classifications", () => {
 
 		// Intentionally unsorted IDs
 		const unordered: MakeClassificationProps[] = [
-			{ ...DEFAULT_CLASSIFICATIONS[0], id: "RPG", version: "v1.0.0" },
+			{ ...DEFAULT_CLASSIFICATIONS[0], id: "RUN-BASED", version: "v1.0.0" },
 			{ ...DEFAULT_CLASSIFICATIONS[0], id: "HORROR", version: "v1.0.0" },
 			{ ...DEFAULT_CLASSIFICATIONS[0], id: "SURVIVAL", version: "v1.0.0" },
 		];

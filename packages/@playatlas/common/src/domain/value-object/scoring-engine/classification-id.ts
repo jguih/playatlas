@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CLASSIFICATION_IDS = ["HORROR", "SURVIVAL", "RPG"] as const satisfies string[];
+export const CLASSIFICATION_IDS = ["HORROR", "SURVIVAL", "RUN-BASED"] as const satisfies string[];
 
 export const classificationIdSchema = z.enum(CLASSIFICATION_IDS);
 

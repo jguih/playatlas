@@ -22,7 +22,7 @@ import {
 	makeHorrorScoringPolicy,
 	makePlatformFactory,
 	makePlatformMapper,
-	makeRPGScoreEngine,
+	makeRunBasedScoreEngine,
 	makeScoreEngineRegistry,
 	makeSurvivalScoreEngine,
 	type EnginesMap,
@@ -93,12 +93,13 @@ const makeGameLibraryScoreEngineModule = ({
 			horrorScoringPolicy,
 		});
 
-	const rpgScoreEngine = scoreEngine?.engineOverride?.RPG ?? makeRPGScoreEngine();
+	const runBasedScoreEngine =
+		scoreEngine?.engineOverride?.["RUN-BASED"] ?? makeRunBasedScoreEngine();
 	const survivalScoreEngine = scoreEngine?.engineOverride?.SURVIVAL ?? makeSurvivalScoreEngine();
 
 	const scoreEngineRegistry = makeScoreEngineRegistry({
 		horrorScoreEngine,
-		rpgScoreEngine,
+		runBasedScoreEngine,
 		survivalScoreEngine,
 	});
 

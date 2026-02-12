@@ -5,10 +5,10 @@ export const DEFAULT_CLASSIFICATION_VERSION =
 
 export const DEFAULT_CLASSIFICATIONS = [
 	{
-		id: "RPG",
+		id: "RUN-BASED",
 		category: "genre",
-		description: "RPG games",
-		displayName: "RPG",
+		description: "Run-based games",
+		displayName: "Run-Based",
 		version: DEFAULT_CLASSIFICATION_VERSION,
 	},
 	{

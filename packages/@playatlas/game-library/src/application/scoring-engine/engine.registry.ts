@@ -2,13 +2,13 @@ import type { ClassificationId } from "@playatlas/common/domain";
 import type { ClassificationGroupMap, EnginesMap } from "./engine.registry.types";
 import { type IHorrorScoreEnginePort } from "./horror";
 import { HORROR_ENGINE_EVIDENCE_GROUPS } from "./horror/horror.score-engine.meta";
-import { RPG_ENGINE_EVIDENCE_GROUPS, type IRPGScoreEnginePort } from "./rpg";
+import { RUN_BASED_ENGINE_EVIDENCE_GROUPS, type IRunBasedScoreEngine } from "./run-based";
 import type { IScoreEnginePort } from "./score-engine.port";
 import { SURVIVAL_ENGINE_EVIDENCE_GROUPS, type ISurvivalScoreEnginePort } from "./survival";
 
 export const classificationGroupMap = {
 	HORROR: HORROR_ENGINE_EVIDENCE_GROUPS,
-	RPG: RPG_ENGINE_EVIDENCE_GROUPS,
+	"RUN-BASED": RUN_BASED_ENGINE_EVIDENCE_GROUPS,
 	SURVIVAL: SURVIVAL_ENGINE_EVIDENCE_GROUPS,
 } as const satisfies Record<ClassificationId, string[]>;
 
@@ -21,18 +21,18 @@ export type IScoreEngineRegistryPort = {
 
 export type ScoreEngineRegistryDeps = {
 	horrorScoreEngine: IHorrorScoreEnginePort;
-	rpgScoreEngine: IRPGScoreEnginePort;
+	runBasedScoreEngine: IRunBasedScoreEngine;
 	survivalScoreEngine: ISurvivalScoreEnginePort;
 };
 
 export const makeScoreEngineRegistry = ({
 	horrorScoreEngine,
-	rpgScoreEngine,
+	runBasedScoreEngine,
 	survivalScoreEngine,
 }: ScoreEngineRegistryDeps): IScoreEngineRegistryPort => {
 	const engines: EnginesMap = {
 		HORROR: horrorScoreEngine,
-		RPG: rpgScoreEngine,
+		"RUN-BASED": runBasedScoreEngine,
 		SURVIVAL: survivalScoreEngine,
 	};
 
