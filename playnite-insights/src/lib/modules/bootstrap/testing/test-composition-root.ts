@@ -12,6 +12,7 @@ import {
 	gameClassificationRepositorySchema,
 	gameLibraryFilterRepositorySchema,
 	gameRepositorySchema,
+	gameVectorStoreSchema,
 	genreRepositorySchema,
 	platformRepositorySchema,
 } from "$lib/modules/game-library/infra";
@@ -24,6 +25,7 @@ import {
 	GenreFactory,
 	PlatformFactory,
 } from "$lib/modules/game-library/testing";
+import { gameSessionStoreSchema } from "$lib/modules/game-session/infra";
 import { SyncRunner } from "$lib/modules/synchronization/application/sync-runner";
 import { type ClientApiV1 } from "../application/client-api.v1";
 import { ClientBootstrapper } from "../application/client-bootstrapper";
@@ -87,6 +89,8 @@ export class TestCompositionRoot {
 				completionStatusRepositorySchema,
 				gameLibraryFilterRepositorySchema,
 				gameClassificationRepositorySchema,
+				gameVectorStoreSchema,
+				gameSessionStoreSchema,
 			],
 			clock: this.clock,
 		});
@@ -103,12 +107,6 @@ export class TestCompositionRoot {
 
 		const playAtlasClient = new PlayAtlasClient({ httpClient: this.mocks.httpClient });
 		const syncRunner = new SyncRunner({ clock: this.clock, syncState: infra.playAtlasSyncState });
-		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
-			dbSignal: infra.dbSignal,
-			clock: this.clock,
-			playAtlasClient,
-			syncRunner,
-		});
 
 		const gameSession: IClientGameSessionModulePort = new GameSessionModule({
 			clock: this.clock,
@@ -116,6 +114,14 @@ export class TestCompositionRoot {
 			logService: this.mocks.logService,
 			playAtlasClient,
 			syncRunner,
+		});
+
+		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
+			dbSignal: infra.dbSignal,
+			clock: this.clock,
+			playAtlasClient,
+			syncRunner,
+			gameSessionReadonlyStore: gameSession.gameSessionReadonlyStore,
 		});
 
 		const synchronization = new SynchronizationModule({

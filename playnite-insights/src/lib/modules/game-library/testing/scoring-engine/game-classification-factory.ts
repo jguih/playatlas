@@ -16,13 +16,15 @@ export class GameClassificationFactory
 
 		return {
 			Id: GameClassificationIdParser.fromTrusted(faker.string.ulid()),
+			SourceLastUpdatedAt: faker.date.recent(),
+			DeletedAt: null,
+			DeleteAfter: null,
 			GameId: GameIdParser.fromTrusted(faker.string.ulid()),
 			ClassificationId: this.pickOne(CLASSIFICATION_IDS) as unknown as ClassificationId,
 			Breakdown: { type: "raw", payload: {} },
 			Score,
 			NormalizedScore: 0.15 + (Score / 100) * 0.85,
 			ScoreMode: "without_gate",
-			SourceLastUpdatedAt: faker.date.recent(),
 			Sync: {
 				ErrorMessage: null,
 				LastSyncedAt: faker.date.recent(),
