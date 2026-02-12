@@ -43,6 +43,7 @@ export class ClientBootstrapper {
 					GetGames: gameLibrary.getGamesQueryHandler,
 					GetGamesByIds: gameLibrary.getGamesByIdsQueryHandler,
 					GetGenreById: gameLibrary.getGenreByIdQueryHandler,
+					GetGamesRanked: gameLibrary.getGamesRankedQueryHandler,
 					GetGenresByIds: gameLibrary.getGenresByIdsQueryHandler,
 					GetCompaniesByIds: gameLibrary.getCompaniesByIdsQueryHandler,
 					GetPlatformsByIds: gameLibrary.getPlatformsByIdsQueryHandler,

@@ -18,6 +18,7 @@ import type {
 	IGetGameLibraryFiltersQueryHandlerPort,
 	IGetGamesByIdsQueryHandlerPort,
 	IGetGamesQueryHandlerPort,
+	IGetGamesRankedQueryHandlerPort,
 	IGetGenreByIdQueryHandlerPort,
 	IGetGenresByIdsQueryHandlerPort,
 	IGetPlatformsByIdsQueryHandlerPort,
@@ -43,6 +44,7 @@ export interface ClientApiV1 {
 		Query: {
 			GetGames: IGetGamesQueryHandlerPort;
 			GetGamesByIds: IGetGamesByIdsQueryHandlerPort;
+			GetGamesRanked: IGetGamesRankedQueryHandlerPort;
 			GetGenreById: IGetGenreByIdQueryHandlerPort;
 			GetGenresByIds: IGetGenresByIdsQueryHandlerPort;
 			GetCompaniesByIds: IGetCompaniesByIdsQueryHandlerPort;

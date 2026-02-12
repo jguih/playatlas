@@ -17,6 +17,7 @@
 	const api = getClientApiContext();
 	const syncProgress = $derived(api().Synchronization.SyncProgressReporter.progressSignal);
 	const store = new HomePageStore({ api });
+	// void api().GameLibrary.Query.GetGamesRanked.executeAsync({ limit: 50 }).then(console.log);
 
 	void store.loadGamesAsync();
 

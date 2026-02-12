@@ -43,6 +43,7 @@ import type {
 	IGetGameLibraryFiltersQueryHandlerPort,
 	IGetGamesByIdsQueryHandlerPort,
 	IGetGamesQueryHandlerPort,
+	IGetGamesRankedQueryHandlerPort,
 	IGetGenreByIdQueryHandlerPort,
 	IGetGenresByIdsQueryHandlerPort,
 	IGetPlatformsByIdsQueryHandlerPort,
@@ -53,6 +54,7 @@ export interface IClientGameLibraryModulePort {
 	get gameRepository(): IGameRepositoryPort;
 	get getGamesQueryHandler(): IGetGamesQueryHandlerPort;
 	get getGamesByIdsQueryHandler(): IGetGamesByIdsQueryHandlerPort;
+	get getGamesRankedQueryHandler(): IGetGamesRankedQueryHandlerPort;
 	get syncGamesCommandHandler(): ISyncGamesCommandHandlerPort;
 	get syncGamesFlow(): ISyncGamesFlowPort;
 

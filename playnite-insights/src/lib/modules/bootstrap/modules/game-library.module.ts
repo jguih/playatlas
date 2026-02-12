@@ -78,8 +78,9 @@ import {
 	type IGetGameClassificationByIdsQueryHandler,
 	type IGetGameLibraryFiltersQueryHandlerPort,
 	type IGetGamesByIdsQueryHandlerPort,
-	type IGetGamesQueryHandlerFilterBuilderProps,
+	type IGetGamesQueryHandlerFilterBuilderPort,
 	type IGetGamesQueryHandlerPort,
+	type IGetGamesRankedQueryHandlerPort,
 	type IGetGenreByIdQueryHandlerPort,
 	type IGetGenresByIdsQueryHandlerPort,
 	type IGetPlatformsByIdsQueryHandlerPort,
@@ -91,6 +92,7 @@ import {
 	GetGamesByIdsQueryHandler,
 	GetGamesQueryHandler,
 	GetGamesQueryHandlerFilterBuilder,
+	GetGamesRankedQueryHandler,
 	GetGenresByIdQueryHandler,
 	GetGenresByIdsQueryHandler,
 	GetPlatformsByIdsQueryHandler,
@@ -109,9 +111,10 @@ export type ClientGameLibraryModuleDeps = {
 export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameMapper: IGameMapperPort;
 	readonly gameRepository: IGameRepositoryPort;
-	readonly getGamesQueryHandlerFilterBuilder: IGetGamesQueryHandlerFilterBuilderProps;
+	readonly getGamesQueryHandlerFilterBuilder: IGetGamesQueryHandlerFilterBuilderPort;
 	readonly getGamesQueryHandler: IGetGamesQueryHandlerPort;
 	readonly getGamesByIdsQueryHandler: IGetGamesByIdsQueryHandlerPort;
+	readonly getGamesRankedQueryHandler: IGetGamesRankedQueryHandlerPort;
 	readonly syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
 	readonly syncGamesFlow: ISyncGamesFlowPort;
 
@@ -166,6 +169,21 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		syncRunner,
 		gameSessionReadonlyStore,
 	}: ClientGameLibraryModuleDeps) {
+		this.gameVectorReadonlyStore = new GameVectorReadonlyStore({ dbSignal });
+		this.gameVectorWriteStore = new GameVectorWriteStore({ dbSignal });
+
+		const gameVectorProjectionService = new GameVectorProjectionService({
+			gameVectorReadonlyStore: this.gameVectorReadonlyStore,
+		});
+		const instancePreferenceModelService = new InstancePreferenceModelService({
+			clock,
+			gameSessionReadonlyStore,
+		});
+		this.recommendationEngine = new RecommendationEngine({
+			gameVectorProjectionService,
+			instancePreferenceModelService,
+		});
+
 		this.gameMapper = new GameMapper({ clock });
 		this.gameRepository = new GameRepository({ dbSignal, gameMapper: this.gameMapper });
 		this.getGamesQueryHandlerFilterBuilder = new GetGamesQueryHandlerFilterBuilder();
@@ -175,6 +193,11 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		this.getGamesByIdsQueryHandler = new GetGamesByIdsQueryHandler({
 			gameRepository: this.gameRepository,
+		});
+		this.getGamesRankedQueryHandler = new GetGamesRankedQueryHandler({
+			gameRepository: this.gameRepository,
+			recommendationEngine: this.recommendationEngine,
+			gameVectorProjectionService,
 		});
 		this.syncGamesCommandHandler = new SyncGamesCommandHandler({
 			gameRepository: this.gameRepository,
@@ -270,8 +293,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.syncGameClassificationsCommandHandler = new SyncGameClassificationsCommandHandler({
 			gameClassificationsRepository: this.gameClassificationRepository,
 		});
-		this.gameVectorReadonlyStore = new GameVectorReadonlyStore({ dbSignal });
-		this.gameVectorWriteStore = new GameVectorWriteStore({ dbSignal });
+
 		this.syncGameClassificationsFlow = new SyncGameClassificationsFlow({
 			gameClassificationMapper: this.gameClassificationMapper,
 			playAtlasClient,
@@ -293,18 +315,6 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		this.getGameLibraryFiltersQueryHandler = new GetGameLibraryFiltersQueryHandler({
 			gameLibraryFilterRepository: this.gameLibraryFilterRepository,
-		});
-
-		const gameVectorProjectionService = new GameVectorProjectionService({
-			gameVectorReadonlyStore: this.gameVectorReadonlyStore,
-		});
-		const instancePreferenceModelService = new InstancePreferenceModelService({
-			clock,
-			gameSessionReadonlyStore,
-		});
-		this.recommendationEngine = new RecommendationEngine({
-			gameVectorProjectionService,
-			instancePreferenceModelService,
 		});
 	}
 }

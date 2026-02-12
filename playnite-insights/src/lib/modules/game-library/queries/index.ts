@@ -5,6 +5,7 @@ export * from "./get-game-classifications-by-ids";
 export * from "./get-game-library-filters";
 export * from "./get-games";
 export * from "./get-games-by-ids";
+export * from "./get-games-ranked";
 export * from "./get-genre-by-id";
 export * from "./get-genres-by-ids";
 export * from "./get-platforms-by-ids";

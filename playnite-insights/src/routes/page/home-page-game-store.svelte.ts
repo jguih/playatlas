@@ -31,7 +31,9 @@ export class HomePageStore {
 
 	private loadHeroItemsAsync = async () => {
 		return this.withLoading("hero", async () => {
-			const ranked = await this.deps.api().GameLibrary.RecommendationEngine.recommendAsync(6);
+			const ranked = await this.deps
+				.api()
+				.GameLibrary.RecommendationEngine.recommendForInstanceAsync({ limit: 6 });
 			const gameIds = ranked.map((r) => r.gameId);
 			const rankedMap = new SvelteMap(ranked.map((r) => [r.gameId, r.similarity]));
 

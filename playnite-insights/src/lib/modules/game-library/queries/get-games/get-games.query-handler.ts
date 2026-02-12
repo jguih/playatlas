@@ -1,7 +1,7 @@
 import type { GetGamesQuerySortDirection } from "$lib/modules/common/queries";
 import type { Game } from "../../domain/game.entity";
 import type { IGameRepositoryPort } from "../../infra/game.repository.port";
-import type { IGetGamesQueryHandlerFilterBuilderProps } from "./get-games.query-handler.filter-builder";
+import type { IGetGamesQueryHandlerFilterBuilderPort } from "./get-games.query-handler.filter-builder";
 import type {
 	GetGamesQueryResult,
 	IGetGamesQueryHandlerPort,
@@ -10,7 +10,7 @@ import type { GameFilter, ScanSourceAsyncFn } from "./get-games.query-handler.ty
 
 export type GetGamesQueryHandlerDeps = {
 	gameRepository: IGameRepositoryPort;
-	filterBuilder: IGetGamesQueryHandlerFilterBuilderProps;
+	filterBuilder: IGetGamesQueryHandlerFilterBuilderPort;
 };
 
 export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {

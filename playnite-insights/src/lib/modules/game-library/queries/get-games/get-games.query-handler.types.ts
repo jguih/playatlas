@@ -1,5 +1,6 @@
+import type { GameId } from "$lib/modules/common/domain";
 import type { GetGamesQuerySortDirection } from "$lib/modules/common/queries";
-import type { Game, GameId } from "../../domain/game.entity";
+import type { Game } from "../../domain/game.entity";
 
 export type GameFilter = (game: Game) => boolean;
 

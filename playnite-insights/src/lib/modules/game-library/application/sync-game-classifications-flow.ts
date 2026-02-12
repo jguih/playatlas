@@ -8,7 +8,7 @@ import type { ClassificationId } from "@playatlas/common/domain";
 import type { GameClassificationResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncGameClassificationsCommandHandlerPort } from "../commands/sync-game-classifications/sync-game-classifications.command-handler";
 import type { GameClassification } from "../domain";
-import type { IGameVectorWriteStore } from "../infra/scoring-engine/game-vector.write-store";
+import type { IGameVectorWriteStore } from "../infra/recommendation-engine/game-vector.write-store";
 import type { IGameClassificationMapperPort } from "./scoring-engine/game-classification.mapper.port";
 
 export interface ISyncGameClassificationsFlowPort {
