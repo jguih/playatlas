@@ -6,6 +6,7 @@ import {
 	type CompletionStatusId,
 	type GenreId,
 	type PlatformId,
+	type TagId,
 } from "@playatlas/common/domain";
 import type { TestEntityFactory } from "@playatlas/common/testing";
 import { monotonicFactory } from "ulid";
@@ -19,6 +20,7 @@ export type GameFactoryDeps = {
 	companyOptions: CompanyId[];
 	genreOptions: GenreId[];
 	platformOptions: PlatformId[];
+	tagOptions: TagId[];
 	gameFactory: IGameFactoryPort;
 	gameMapper: IGameMapperPort;
 };
@@ -36,6 +38,7 @@ export const makeTestGameFactory = ({
 	companyOptions,
 	genreOptions,
 	platformOptions,
+	tagOptions,
 	gameFactory,
 	gameMapper,
 }: GameFactoryDeps): TestGameFactory => {
@@ -78,6 +81,7 @@ export const makeTestGameFactory = ({
 				publisherIds: p(pickMany(companyOptions, { min: 1, max: 3 }), props.publisherIds),
 				genreIds: p(pickMany(genreOptions, { min: 1, max: 15 }), props.genreIds),
 				platformIds: p(pickMany(platformOptions, { min: 1, max: 5 }), props.platformIds),
+				tagIds: p(pickMany(tagOptions, { min: 3, max: 15 }), props.tagIds),
 				completionStatusId: null,
 			}),
 	});

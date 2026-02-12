@@ -6,6 +6,7 @@ import type {
 	Game,
 	Genre,
 	Platform,
+	Tag,
 } from "@playatlas/game-library/domain";
 import {
 	makeTestGameFactory,
@@ -71,6 +72,7 @@ type Self = {
 		companyList: Company[];
 		genreList: Genre[];
 		platformList: Platform[];
+		tagList: Tag[];
 	};
 	clock: TestClock;
 	stubs: {
@@ -87,13 +89,14 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 	};
 
 	const setupGameFactory = (self: Self) => {
-		const { companyList, completionStatusList, genreList, platformList } =
+		const { companyList, completionStatusList, genreList, platformList, tagList } =
 			self.gameRelationshipOptions;
 
 		const completionStatusOptions = completionStatusList.map((c) => c.getId());
 		const companyOptions = companyList.map((c) => c.getId());
 		const genreOptions = genreList.map((g) => g.getId());
 		const platformOptions = platformList.map((p) => p.getId());
+		const tagOptions = tagList.map((t) => t.getId());
 
 		self.factory.setGameFactory(
 			makeTestGameFactory({
@@ -101,6 +104,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 				completionStatusOptions,
 				genreOptions,
 				platformOptions,
+				tagOptions,
 				gameFactory: self.gameLibrary.getGameFactory(),
 				gameMapper: self.gameLibrary.getGameMapper(),
 			}),
@@ -160,6 +164,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
 			platformFactory: gameLibrary.getPlatformFactory(),
 			genreFactory: gameLibrary.getGenreFactory(),
+			tagFactory: gameLibrary.getTagFactory(),
 			extensionRegistrationFactory: auth.getExtensionRegistrationFactory(),
 			clock,
 		});
@@ -192,6 +197,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 				companyList: factory.getCompanyFactory().buildList(200),
 				genreList: factory.getGenreFactory().buildList(200),
 				platformList: factory.getPlatformFactory().buildList(30),
+				tagList: factory.getTagFactory().buildList(1000),
 			},
 			clock,
 			stubs: {
@@ -257,13 +263,14 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 
 	const seedGameRelationships = () => {
 		withSelf(({ gameLibrary, gameRelationshipOptions }) => {
-			const { companyList, completionStatusList, genreList, platformList } =
+			const { companyList, completionStatusList, genreList, platformList, tagList } =
 				gameRelationshipOptions;
 
 			gameLibrary.getCompletionStatusRepository().upsert(completionStatusList);
 			gameLibrary.getCompanyRepository().upsert(companyList);
 			gameLibrary.getGenreRepository().upsert(genreList);
 			gameLibrary.getPlatformRepository().upsert(platformList);
+			gameLibrary.getTagRepository().upsert(tagList);
 		});
 	};
 

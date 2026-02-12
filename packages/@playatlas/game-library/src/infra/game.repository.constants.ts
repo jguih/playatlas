@@ -32,6 +32,7 @@ export const RELATIONSHIP_TABLE_NAME = {
 	gamePublisher: "game_publisher",
 	gameGenre: "game_genre",
 	gamePlatform: "game_platform",
+	gameTag: "game_tag",
 } as const;
 
 export const GAME_RELATIONSHIP_META = {
@@ -50,5 +51,9 @@ export const GAME_RELATIONSHIP_META = {
 	platforms: {
 		table: RELATIONSHIP_TABLE_NAME.gamePlatform,
 		column: "PlatformId" as const,
+	},
+	tags: {
+		table: RELATIONSHIP_TABLE_NAME.gameTag,
+		column: "TagId" as const,
 	},
 } satisfies Record<GameRelationship, { table: string; column: string }>;

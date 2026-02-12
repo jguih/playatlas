@@ -6,6 +6,7 @@ import type {
 	PlatformId,
 	PlayniteGameId,
 	Relationship,
+	TagId,
 } from "@playatlas/common/domain";
 import type { IClockPort } from "@playatlas/common/infra";
 
@@ -14,6 +15,7 @@ export type GameRelationshipMap = {
 	publishers: CompanyId;
 	genres: GenreId;
 	platforms: PlatformId;
+	tags: TagId;
 };
 
 export type GameRelationship = keyof GameRelationshipMap;
@@ -27,6 +29,7 @@ export type MakeGameRelationshipProps = {
 	publisherIds?: CompanyId[] | null;
 	genreIds?: GenreId[] | null;
 	platformIds?: PlatformId[] | null;
+	tagIds?: TagId[] | null;
 };
 
 export type PlayniteGameSnapshot = {
@@ -88,6 +91,7 @@ export type UpdateGameFromPlayniteProps = {
 		publisherIds: CompanyId[];
 		genreIds: GenreId[];
 		platformIds: PlatformId[];
+		tagIds: TagId[];
 	};
 	contentHash: string;
 	playniteSnapshot: PlayniteGameSnapshot | null;

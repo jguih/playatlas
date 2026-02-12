@@ -17,6 +17,8 @@ import type {
 	IPlatformMapperPort,
 	IScoreBreakdownNormalizerPort,
 	IScoreEngineRegistryPort,
+	ITagFactoryPort,
+	ITagMapperPort,
 } from "@playatlas/game-library/application";
 import type { IApplyDefaultClassificationsCommandHandlerPort } from "@playatlas/game-library/commands";
 import type {
@@ -29,6 +31,7 @@ import type {
 	IGameRepositoryPort,
 	IGenreRepositoryPort,
 	IPlatformRepositoryPort,
+	ITagRepositoryPort,
 } from "@playatlas/game-library/infra";
 import type {
 	IGetAllClassificationsQueryHandler,
@@ -71,6 +74,10 @@ export type IGameLibraryModulePort = Readonly<{
 	getGenreMapper: () => IGenreMapperPort;
 	getGenreFactory: () => IGenreFactoryPort;
 	getGenreRepository: () => IGenreRepositoryPort;
+
+	getTagMapper: () => ITagMapperPort;
+	getTagFactory: () => ITagFactoryPort;
+	getTagRepository: () => ITagRepositoryPort;
 
 	getGameLibraryUnitOfWork: () => IGameLibraryUnitOfWorkPort;
 

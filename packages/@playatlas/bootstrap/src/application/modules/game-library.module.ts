@@ -27,6 +27,8 @@ import {
 	makeRunBasedScoringPolicy,
 	makeScoreEngineRegistry,
 	makeSurvivalScoreEngine,
+	makeTagFactory,
+	makeTagMapper,
 	type EnginesMap,
 } from "@playatlas/game-library/application";
 import { makeApplyDefaultClassificationsCommandHandler } from "@playatlas/game-library/commands";
@@ -43,6 +45,7 @@ import {
 	makeGenreRepository,
 	makePlatformRepository,
 	makeScoreBreakdownNormalizer,
+	makeTagRepository,
 	type IGameRepositoryPort,
 	type IGenreRepositoryPort,
 } from "@playatlas/game-library/infra";
@@ -257,6 +260,14 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 		clock,
 	});
 
+	const tagFactory = makeTagFactory({ clock });
+	const tagMapper = makeTagMapper({ tagFactory });
+	const tagRepository = makeTagRepository({
+		getDb,
+		logService: buildLog("TagRepository"),
+		tagMapper,
+	});
+
 	const gameAssetsContextFactory = makeGameAssetsContextFactory({
 		fileSystemService,
 		logServiceFactory,
@@ -291,12 +302,6 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 	});
 
 	const gameLibrary: IGameLibraryModulePort = {
-		getCompanyRepository: () => companyRepository,
-		getGameRepository: () => gameRepository,
-		getGenreRepository: () => genreRepository,
-		getPlatformRepository: () => platformRepository,
-		getCompletionStatusRepository: () => completionStatusRepository,
-
 		queries: {
 			getGetAllGamesQueryHandler: () => queryHandlerGetAllGames,
 			getGetAllCompaniesQueryHandler: () => queryHandlerGetAllCompanies,
@@ -310,18 +315,27 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 
 		getGameFactory: () => gameFactory,
 		getGameMapper: () => gameMapper,
+		getGameRepository: () => gameRepository,
 
 		getCompanyFactory: () => companyFactory,
 		getCompanyMapper: () => companyMapper,
+		getCompanyRepository: () => companyRepository,
 
 		getCompletionStatusFactory: () => completionStatusFactory,
 		getCompletionStatusMapper: () => completionStatusMapper,
+		getCompletionStatusRepository: () => completionStatusRepository,
 
 		getPlatformFactory: () => platformFactory,
 		getPlatformMapper: () => platformMapper,
+		getPlatformRepository: () => platformRepository,
 
 		getGenreFactory: () => genreFactory,
 		getGenreMapper: () => genreMapper,
+		getGenreRepository: () => genreRepository,
+
+		getTagFactory: () => tagFactory,
+		getTagMapper: () => tagMapper,
+		getTagRepository: () => tagRepository,
 
 		getGameLibraryUnitOfWork: () => gameLibraryUnitOfWork,
 

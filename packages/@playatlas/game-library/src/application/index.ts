@@ -10,3 +10,5 @@ export * from "./genre.mapper";
 export * from "./platform.factory";
 export * from "./platform.mapper";
 export * from "./scoring-engine";
+export * from "./tag.factory";
+export * from "./tag.mapper";

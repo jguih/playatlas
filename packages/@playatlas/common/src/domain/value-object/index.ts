@@ -11,4 +11,6 @@ export * from "./playnite-completion-status-id";
 export * from "./playnite-game-id";
 export * from "./playnite-genre-id";
 export * from "./playnite-platform-id";
+export * from "./playnite-tag-id";
 export * from "./scoring-engine";
+export * from "./tag-id";

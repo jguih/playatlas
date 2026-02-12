@@ -4,3 +4,4 @@ export * from "./game.factory";
 export * from "./genre.factory";
 export * from "./platform.factory";
 export * from "./score-engine";
+export * from "./tag.factory";

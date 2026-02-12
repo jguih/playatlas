@@ -47,6 +47,7 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 	const genres = createRelationship(props.genreIds ?? null);
 	const platforms = createRelationship(props.platformIds ?? null);
 	const publishers = createRelationship(props.publisherIds ?? null);
+	const tags = createRelationship(props.tagIds ?? null);
 
 	const _validate = () => {
 		if (_playnite_snapshot && _playnite_snapshot.playtime < 0)
@@ -101,6 +102,7 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 			genres,
 			platforms,
 			publishers,
+			tags,
 		},
 		getCompletionStatusId: () => _completion_status_id,
 		setImageReference: ({ name, path }) => {

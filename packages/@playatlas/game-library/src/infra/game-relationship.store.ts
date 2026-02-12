@@ -46,12 +46,13 @@ export const makeGameRelationshipStore = ({
 
 		const map = new Map<GameId, GameRelationshipMap[typeof relationship][]>();
 
+		for (const gameId of gameIds) {
+			map.set(gameId, []);
+		}
+
 		for (const props of rows) {
 			const gameId = props.GameId as GameId;
 			const entityId = props[column] as GameRelationshipMap[typeof relationship];
-
-			if (!map.get(gameId)) map.set(gameId, []);
-
 			map.get(gameId)!.push(entityId);
 		}
 

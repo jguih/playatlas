@@ -20,3 +20,6 @@ export * from "./platform.repository";
 export type * from "./platform.repository.port";
 export type * from "./platform.repository.types";
 export * from "./scoring-engine";
+export * from "./tag.repository";
+export type * from "./tag.repository.port";
+export type * from "./tag.repository.types";
