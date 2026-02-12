@@ -25,11 +25,11 @@ export type GameRelationshipProps = {
 };
 
 export type MakeGameRelationshipProps = {
-	developerIds?: CompanyId[] | null;
-	publisherIds?: CompanyId[] | null;
-	genreIds?: GenreId[] | null;
-	platformIds?: PlatformId[] | null;
-	tagIds?: TagId[] | null;
+	developerIds: CompanyId[] | null;
+	publisherIds: CompanyId[] | null;
+	genreIds: GenreId[] | null;
+	platformIds: PlatformId[] | null;
+	tagIds: TagId[] | null;
 };
 
 export type PlayniteGameSnapshot = {
@@ -71,7 +71,7 @@ type SyncGameProps = {
 
 export type MakeGameProps = Partial<SyncGameProps> &
 	BaseGame &
-	MakeGameRelationshipProps &
+	Partial<MakeGameRelationshipProps> &
 	Partial<SoftDeleteProps> &
 	Partial<PlayniteProps>;
 

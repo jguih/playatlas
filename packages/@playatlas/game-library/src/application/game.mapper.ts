@@ -25,6 +25,7 @@ const _toDto = (game: Game): GameResponseDto => {
 	const Platforms = game.relationships.platforms.isLoaded()
 		? game.relationships.platforms.get()
 		: [];
+	const Tags = game.relationships.tags.isLoaded() ? game.relationships.tags.get() : [];
 	const playniteSnapshot = game.getPlayniteSnapshot();
 
 	const dto: GameResponseDto = {
@@ -53,6 +54,7 @@ const _toDto = (game: Game): GameResponseDto => {
 		Publishers,
 		Genres,
 		Platforms,
+		Tags,
 		Sync: {
 			LastUpdatedAt: game.getLastUpdatedAt().toISOString(),
 			DeletedAt: game.getDeletedAt()?.toISOString() ?? null,
@@ -95,7 +97,16 @@ export const makeGameMapper = ({ gameFactory }: GameMapperDeps): IGameMapperPort
 			};
 			return record;
 		},
-		toDomain: (game: GameModel, relationships: MakeGameRelationshipProps = {}): Game => {
+		toDomain: (
+			game: GameModel,
+			relationships: MakeGameRelationshipProps = {
+				developerIds: null,
+				genreIds: null,
+				platformIds: null,
+				publisherIds: null,
+				tagIds: null,
+			},
+		): Game => {
 			const entity: Game = gameFactory.rehydrate({
 				id: GameIdParser.fromTrusted(game.Id),
 				playniteSnapshot: game.PlayniteId
@@ -122,6 +133,7 @@ export const makeGameMapper = ({ gameFactory }: GameMapperDeps): IGameMapperPort
 				genreIds: relationships.genreIds,
 				platformIds: relationships.platformIds,
 				publisherIds: relationships.publisherIds,
+				tagIds: relationships.tagIds,
 				completionStatusId: game.CompletionStatusId
 					? CompletionStatusIdParser.fromTrusted(game.CompletionStatusId)
 					: null,

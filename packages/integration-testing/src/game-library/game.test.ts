@@ -108,6 +108,26 @@ describe("Game Library / Game", () => {
 		expect(new Set(insertedGame?.Platforms)).toEqual(new Set([platformId]));
 	});
 
+	it("persists a game and eager load its tags", () => {
+		// Arrange
+		const tag = factory.getTagFactory().build();
+		const tagId = tag.getId();
+		root.seedTags(tag);
+
+		const game = factory.getGameFactory().build({ tagIds: [tagId] });
+		root.seedGame(game);
+
+		// Act
+		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
+		const games = result.data;
+		const insertedGame = games?.find((g) => g.Id === game.getId());
+
+		// Assert
+		expect(games).toBeTruthy();
+		expect(insertedGame).toBeTruthy();
+		expect(new Set(insertedGame?.Tags)).toEqual(new Set([tagId]));
+	});
+
 	it("returns game manifest data", async () => {
 		// Arrange
 		const game = factory.getGameFactory().build();

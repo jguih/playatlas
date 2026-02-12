@@ -36,6 +36,7 @@ export const gameResponseDtoSchema = z.object({
 	Publishers: z.array(z.string()),
 	Genres: z.array(z.string()),
 	Platforms: z.array(z.string()),
+	Tags: z.array(z.string()),
 	Sync: z.object({
 		LastUpdatedAt: ISODateSchema,
 		DeletedAt: ISODateSchema.nullable(),

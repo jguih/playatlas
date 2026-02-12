@@ -46,6 +46,7 @@ export type TestRoot = {
 	seedGenre: (genre: Genre | Genre[]) => void;
 	seedPlatform: (platform: Platform | Platform[]) => void;
 	seedCompletionStatus: (completionStatus: CompletionStatus | CompletionStatus[]) => void;
+	seedTags: (tag: Tag | Tag[]) => void;
 	seedGameRelationships: () => void;
 	seedDefaultClassifications: () => void;
 	getGameRelationshipOptions: () => {
@@ -261,6 +262,12 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		});
 	};
 
+	const seedTags = (tag: Tag | Tag[]) => {
+		withSelf(({ gameLibrary }) => {
+			gameLibrary.getTagRepository().upsert(tag);
+		});
+	};
+
 	const seedGameRelationships = () => {
 		withSelf(({ gameLibrary, gameRelationshipOptions }) => {
 			const { companyList, completionStatusList, genreList, platformList, tagList } =
@@ -300,6 +307,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 		seedGenre,
 		seedPlatform,
 		seedCompletionStatus,
+		seedTags,
 		seedGameRelationships,
 		seedDefaultClassifications,
 		getGameRelationshipOptions: () => {
