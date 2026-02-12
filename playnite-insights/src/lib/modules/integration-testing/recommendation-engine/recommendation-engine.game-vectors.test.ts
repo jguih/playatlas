@@ -1,5 +1,6 @@
 import type { ClientApiV1 } from "$lib/modules/bootstrap/application";
 import { TestCompositionRoot } from "$lib/modules/bootstrap/testing";
+import { GAME_CLASSIFICATION_DIMENSIONS } from "$lib/modules/common/domain";
 import "fake-indexeddb/auto";
 
 describe("Game Library / Recommendation Engine Game Vectors", () => {
@@ -29,5 +30,16 @@ describe("Game Library / Recommendation Engine Game Vectors", () => {
 
 		// Assert
 		expect(result.gameVectors).toHaveLength(2000);
+
+		for (const [, v] of result.gameVectors) {
+			expect(v.length).toBe(GAME_CLASSIFICATION_DIMENSIONS);
+		}
+
+		for (const [, v] of result.gameVectors) {
+			for (const x of v) {
+				expect(x).toBeGreaterThanOrEqual(0);
+				expect(x).toBeLessThanOrEqual(1);
+			}
+		}
 	});
 });
