@@ -1,5 +1,6 @@
 import { ISODateSchema } from "@playatlas/common/common";
 import {
+	CLASSIFICATION_IDS,
 	classificationIdSchema,
 	engineScoreMode,
 	gameClassificationIdSchema,
@@ -40,7 +41,8 @@ export type IGameClassificationRepositoryPort = IEntityRepositoryPort<
 	GameClassification,
 	GameClassificationRepositoryFilters
 > & {
-	getLatestByGame(): Map<GameId, Map<ClassificationId, GameClassification>>;
+	getLatestByGame: () => Map<GameId, Map<ClassificationId, GameClassification>>;
+	cleanup: () => void;
 };
 
 export type GameClassificationRepositoryDeps = BaseRepositoryDeps & {
@@ -135,11 +137,25 @@ export const makeGameClassificationRepository = ({
 		return latest;
 	};
 
+	const cleanup: IGameClassificationRepositoryPort["cleanup"] = () => {
+		base.run(() => {
+			base.runSavePoint(({ db }) => {
+				const classificationIdColumn: keyof GameClassificationModel = "ClassificationId";
+				const placeholders = CLASSIFICATION_IDS.map(() => `?`);
+				const stmt = db.prepare(
+					`DELETE FROM ${TABLE_NAME} WHERE ${classificationIdColumn} NOT IN (${placeholders})`,
+				);
+				stmt.run(...CLASSIFICATION_IDS);
+			});
+		}, "cleanup()");
+	};
+
 	return {
 		...base.public,
 		add,
 		upsert,
 		update,
 		getLatestByGame,
+		cleanup,
 	};
 };

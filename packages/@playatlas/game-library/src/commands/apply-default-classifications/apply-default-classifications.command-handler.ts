@@ -72,7 +72,9 @@ export const makeApplyDefaultClassificationsCommandHandler = ({
 				}
 			}
 
-			logService.success(`Default classifications applied successfully`);
+			logService.success(`Default classifications applied successfully`, {
+				defaultClassifications: defaultClassifications.map((c) => c.getId()),
+			});
 		},
 	};
 };

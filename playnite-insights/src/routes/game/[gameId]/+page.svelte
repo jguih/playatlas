@@ -57,6 +57,8 @@
 
 		return () => observer.disconnect();
 	});
+
+	$inspect(store.gameClassifications?.get("RUN-BASED")?.values().toArray());
 </script>
 
 <Header

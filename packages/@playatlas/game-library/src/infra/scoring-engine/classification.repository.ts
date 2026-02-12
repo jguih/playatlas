@@ -1,5 +1,6 @@
 import { ISODateSchema } from "@playatlas/common/common";
 import {
+	CLASSIFICATION_IDS,
 	classificationCategorySchema,
 	classificationIdSchema,
 	type ClassificationId,
@@ -32,7 +33,9 @@ export type IClassificationRepositoryPort = IEntityRepositoryPort<
 	ClassificationId,
 	Classification,
 	ClassificationRepositoryFilters
->;
+> & {
+	cleanup: () => void;
+};
 
 export type ClassificationRepositoryDeps = BaseRepositoryDeps & {
 	classificationMapper: IClassificationMapperPort;
@@ -108,8 +111,22 @@ export const makeClassificationRepository = ({
 		base._update(classification);
 	};
 
+	const cleanup: IClassificationRepositoryPort["cleanup"] = () => {
+		base.run(() => {
+			base.runSavePoint(({ db }) => {
+				const classificationIdColumn: keyof ClassificationModel = "Id";
+				const placeholders = CLASSIFICATION_IDS.map(() => `?`);
+				const stmt = db.prepare(
+					`DELETE FROM ${TABLE_NAME} WHERE ${classificationIdColumn} NOT IN (${placeholders})`,
+				);
+				stmt.run(...CLASSIFICATION_IDS);
+			});
+		}, "cleanup()");
+	};
+
 	return {
 		...base.public,
+		cleanup,
 		add,
 		upsert,
 		update,

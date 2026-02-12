@@ -22,7 +22,9 @@ import {
 	makeHorrorScoringPolicy,
 	makePlatformFactory,
 	makePlatformMapper,
+	makeRunBasedEvidenceExtractor,
 	makeRunBasedScoreEngine,
+	makeRunBasedScoringPolicy,
 	makeScoreEngineRegistry,
 	makeSurvivalScoreEngine,
 	type EnginesMap,
@@ -93,8 +95,11 @@ const makeGameLibraryScoreEngineModule = ({
 			horrorScoringPolicy,
 		});
 
+	const runBasedEvidenceExtractor = makeRunBasedEvidenceExtractor();
+	const runBasedScoringPolicy = makeRunBasedScoringPolicy();
 	const runBasedScoreEngine =
-		scoreEngine?.engineOverride?.["RUN-BASED"] ?? makeRunBasedScoreEngine();
+		scoreEngine?.engineOverride?.["RUN-BASED"] ??
+		makeRunBasedScoreEngine({ runBasedEvidenceExtractor, runBasedScoringPolicy });
 	const survivalScoreEngine = scoreEngine?.engineOverride?.SURVIVAL ?? makeSurvivalScoreEngine();
 
 	const scoreEngineRegistry = makeScoreEngineRegistry({
@@ -323,6 +328,9 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 		scoreEngine,
 
 		init: () => {
+			scoreEngine.getGameClassificationRepository().cleanup();
+			scoreEngine.getClassificationRepository().cleanup();
+
 			scoreEngine.commands
 				.getApplyDefaultClassificationsCommandHandler()
 				.execute({ type: "default" });

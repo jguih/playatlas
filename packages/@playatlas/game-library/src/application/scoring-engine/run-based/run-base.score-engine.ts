@@ -1,5 +1,7 @@
 import { makeScoreEngine } from "../score-engine";
 import type { IScoreEnginePort } from "../score-engine.port";
+import type { IRunBasedEvidenceExtractorPort } from "./run-based.evidence-extractor";
+import type { IRunBasedScoringPolicyPort } from "./run-based.policy";
 import {
 	RUN_BASED_ENGINE_VERSION,
 	type RunBasedEvidenceGroup,
@@ -7,7 +9,15 @@ import {
 
 export type IRunBasedScoreEngine = IScoreEnginePort<RunBasedEvidenceGroup>;
 
-export const makeRunBasedScoreEngine = (): IRunBasedScoreEngine => {
+export type RunBasedScoreEngineDeps = {
+	runBasedEvidenceExtractor: IRunBasedEvidenceExtractorPort;
+	runBasedScoringPolicy: IRunBasedScoringPolicyPort;
+};
+
+export const makeRunBasedScoreEngine = ({
+	runBasedEvidenceExtractor,
+	runBasedScoringPolicy,
+}: RunBasedScoreEngineDeps): IRunBasedScoreEngine => {
 	const self = makeScoreEngine<RunBasedEvidenceGroup>({
 		id: "RUN-BASED",
 		version: RUN_BASED_ENGINE_VERSION,
@@ -15,20 +25,10 @@ export const makeRunBasedScoreEngine = (): IRunBasedScoreEngine => {
 
 	return {
 		...self,
-		score: () => {
-			return {
-				mode: "without_gate",
-				breakdown: {
-					mode: "without_gate",
-					groups: [],
-					synergies: [],
-					subtotal: 0,
-					penalties: [],
-					total: 0,
-				},
-				score: 0,
-				normalizedScore: 0,
-			};
+		score: ({ game, genresSnapshot }) => {
+			const evidence = runBasedEvidenceExtractor.extract(game, { genres: genresSnapshot });
+			const result = runBasedScoringPolicy.apply(evidence);
+			return result;
 		},
 	};
 };
