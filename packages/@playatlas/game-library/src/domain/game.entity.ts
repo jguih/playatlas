@@ -147,6 +147,7 @@ export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game =>
 			publishers.set(value.relationships.publisherIds);
 			platforms.set(value.relationships.platformIds);
 			genres.set(value.relationships.genreIds);
+			tags.set(value.relationships.tagIds);
 
 			_touch();
 			_validate();

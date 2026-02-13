@@ -9,6 +9,8 @@ import {
 	PlayniteGameIdParser,
 	PlayniteGenreIdParser,
 	PlaynitePlatformIdParser,
+	PlayniteTagIdParser,
+	TagIdParser,
 	type CompanyId,
 	type GameId,
 	type GenreId,
@@ -18,6 +20,8 @@ import {
 	type PlayniteGameId,
 	type PlayniteGenreId,
 	type PlaynitePlatformId,
+	type PlayniteTagId,
+	type TagId,
 } from "@playatlas/common/domain";
 import type {
 	ICompanyFactoryPort,
@@ -25,6 +29,7 @@ import type {
 	IGameFactoryPort,
 	IGenreFactoryPort,
 	IPlatformFactoryPort,
+	ITagFactoryPort,
 } from "@playatlas/game-library/application";
 import {
 	type Company,
@@ -35,6 +40,7 @@ import {
 	type PlayniteGameSnapshot,
 	type PlayniteGenreSnapshot,
 	type PlaynitePlatformSnapshot,
+	type Tag,
 } from "@playatlas/game-library/domain";
 import type {
 	ICompanyRepositoryPort,
@@ -42,6 +48,7 @@ import type {
 	IGameRepositoryPort,
 	IGenreRepositoryPort,
 	IPlatformRepositoryPort,
+	ITagRepositoryPort,
 } from "@playatlas/game-library/infra";
 import { monotonicFactory } from "ulid";
 import type { SyncGamesCommand, SyncGamesCommandItem } from "./sync-games.command";
@@ -51,6 +58,7 @@ export type ExtractedSyncData = {
 	platforms: Platform[];
 	companies: Company[];
 	completionStatuses: CompletionStatus[];
+	tags: Tag[];
 	games: Game[];
 	added: GameId[];
 	updated: GameId[];
@@ -65,6 +73,7 @@ export type SyncDataExtractorDeps = {
 	completionStatusFactory: ICompletionStatusFactoryPort;
 	platformFactory: IPlatformFactoryPort;
 	genreFactory: IGenreFactoryPort;
+	tagFactory: ITagFactoryPort;
 	context: GameLibrarySyncContext;
 };
 
@@ -77,11 +86,13 @@ export const extractSyncData = ({
 	gameFactory,
 	platformFactory,
 	genreFactory,
+	tagFactory,
 }: SyncDataExtractorDeps): ExtractedSyncData => {
 	const genres = new Map<PlayniteGenreId, Genre>();
 	const platforms = new Map<PlaynitePlatformId, Platform>();
 	const companies = new Map<PlayniteCompanyId, Company>();
 	const completionStatuses = new Map<PlayniteCompletionStatusId, CompletionStatus>();
+	const tags = new Map<PlayniteTagId, Tag>();
 	const games = new Map<PlayniteGameId, Game>();
 	const added: GameId[] = [];
 	const updated: GameId[] = [];
@@ -95,6 +106,7 @@ export const extractSyncData = ({
 		const itemDevelopers = new Set<CompanyId>();
 		const itemPlatforms = new Set<PlatformId>();
 		const itemGenres = new Set<GenreId>();
+		const itemTags = new Set<TagId>();
 
 		item.Genres?.forEach((g) => {
 			const playniteGenreId = PlayniteGenreIdParser.fromExternal(g.Id);
@@ -200,6 +212,31 @@ export const extractSyncData = ({
 			}
 		});
 
+		item.Tags?.forEach((t) => {
+			const tagId = PlayniteTagIdParser.fromExternal(t.Id);
+			const existing = context.tags.get(tagId) ?? tags.get(tagId);
+
+			if (existing) {
+				itemTags.add(existing.getId());
+
+				const didUpdate = existing.updateFromPlaynite({
+					name: t.Name,
+					playniteSnapshot: { id: tagId },
+				});
+				if (didUpdate) tags.set(tagId, existing);
+			} else {
+				const newTag = tagFactory.create({
+					id: TagIdParser.fromTrusted(ulid()),
+					playniteSnapshot: { id: tagId },
+					name: t.Name,
+					createdAt: now,
+					lastUpdatedAt: now,
+				});
+				tags.set(tagId, newTag);
+				itemTags.add(newTag.getId());
+			}
+		});
+
 		if (item.CompletionStatus) {
 			itemPlayniteCompletionStatusId = PlayniteCompletionStatusIdParser.fromExternal(
 				item.CompletionStatus.Id,
@@ -234,6 +271,7 @@ export const extractSyncData = ({
 		const genreIds = itemGenres.values().toArray();
 		const publisherIds = itemPublishers.values().toArray();
 		const platformIds = itemPlatforms.values().toArray();
+		const tagIds = itemTags.values().toArray();
 
 		if (existingGame) {
 			const existingSnapshot = existingGame.getPlayniteSnapshot();
@@ -257,7 +295,7 @@ export const extractSyncData = ({
 			const didUpdate = existingGame.updateFromPlaynite({
 				contentHash: item.ContentHash,
 				playniteSnapshot,
-				relationships: { developerIds, genreIds, platformIds, publisherIds },
+				relationships: { developerIds, genreIds, platformIds, publisherIds, tagIds },
 			});
 			if (didUpdate) games.set(playniteGameId, existingGame);
 		} else {
@@ -326,6 +364,7 @@ export const extractSyncData = ({
 		platforms: [...platforms.values()],
 		companies: [...companies.values()],
 		completionStatuses: [...completionStatuses.values()],
+		tags: [...tags.values()],
 		games: [...games.values()],
 		added,
 		updated,
@@ -339,6 +378,7 @@ export type GameLibrarySyncContext = {
 	readonly completionStatuses: ReadonlyMap<PlayniteCompletionStatusId, CompletionStatus>;
 	readonly platforms: ReadonlyMap<PlaynitePlatformId, Platform>;
 	readonly companies: ReadonlyMap<PlayniteCompanyId, Company>;
+	readonly tags: ReadonlyMap<PlayniteTagId, Tag>;
 };
 
 export type GameLibrarySyncContextBuilderDeps = {
@@ -347,6 +387,7 @@ export type GameLibrarySyncContextBuilderDeps = {
 	platformRepository: IPlatformRepositoryPort;
 	completionStatusRepository: ICompletionStatusRepositoryPort;
 	companyRepository: ICompanyRepositoryPort;
+	tagRepository: ITagRepositoryPort;
 };
 
 export const buildGameLibrarySyncContext = ({
@@ -355,6 +396,7 @@ export const buildGameLibrarySyncContext = ({
 	platformRepository,
 	completionStatusRepository,
 	companyRepository,
+	tagRepository,
 }: GameLibrarySyncContextBuilderDeps): GameLibrarySyncContext => {
 	const _games = gameRepository.all({ load: true });
 	const games = new Map<PlayniteGameId, Game>();
@@ -397,11 +439,20 @@ export const buildGameLibrarySyncContext = ({
 		if (playniteCompanyId) companies.set(playniteCompanyId, company);
 	}
 
+	const _tags = tagRepository.all();
+	const tags = new Map<PlayniteTagId, Tag>();
+
+	for (const tag of _tags) {
+		const playniteTagId = tag.getPlayniteSnapshot()?.id;
+		if (playniteTagId) tags.set(playniteTagId, tag);
+	}
+
 	return {
 		games,
 		genres,
 		platforms,
 		completionStatuses,
 		companies,
+		tags,
 	};
 };

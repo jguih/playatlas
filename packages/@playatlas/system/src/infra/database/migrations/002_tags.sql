@@ -18,4 +18,6 @@ CREATE TABLE IF NOT EXISTS `game_tag` (
   FOREIGN KEY (`TagId`) REFERENCES `tag`(`Id`)
 );
 
+UPDATE `game` SET `ContentHash` = '<INVALIDATED>';
+
 COMMIT;

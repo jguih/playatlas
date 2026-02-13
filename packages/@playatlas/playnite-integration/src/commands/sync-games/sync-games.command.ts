@@ -38,6 +38,8 @@ export type SyncGamesCommandItem = {
 		  }[]
 		| null;
 
+	Tags?: { Id: string; Name: string }[] | null;
+
 	ReleaseDate?: string | null;
 
 	Playtime: number;

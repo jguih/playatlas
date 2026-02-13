@@ -1,4 +1,5 @@
 import { ISODateSchema } from "@playatlas/common/common";
+import { playniteTagIdSchema } from "@playatlas/common/domain";
 import z from "zod";
 
 const platformSchema = z.object({
@@ -18,6 +19,13 @@ const genreSchema = z.object({
 });
 
 export type SyncGamesRequestDtoItemGenre = z.infer<typeof genreSchema>;
+
+const tagSchema = z.object({
+	Id: playniteTagIdSchema,
+	Name: z.string(),
+});
+
+export type SyncGamesRequestDtoItemTag = z.infer<typeof tagSchema>;
 
 const companySchema = z.object({
 	Id: z.string(),
@@ -45,6 +53,7 @@ export const syncGamesItemDtoSchema = z.object({
 	Genres: z.array(genreSchema).optional().nullable(),
 	Developers: z.array(developerSchema).optional().nullable(),
 	Publishers: z.array(publisherSchema).optional().nullable(),
+	Tags: z.array(tagSchema).optional().nullable(),
 	ReleaseDate: ISODateSchema.optional().nullable(),
 	Playtime: z.number(),
 	LastActivity: ISODateSchema.optional().nullable(),

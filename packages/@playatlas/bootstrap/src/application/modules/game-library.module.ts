@@ -297,6 +297,8 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 		gameRepository,
 		platformFactory,
 		platformRepository,
+		tagRepository,
+		tagFactory,
 		gameClassificationScoreService: scoreEngine.getGameClassificationScoreService(),
 		getDb,
 	});

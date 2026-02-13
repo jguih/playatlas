@@ -4,6 +4,7 @@ import type {
 	IGameRepositoryPort,
 	IGenreRepositoryPort,
 	IPlatformRepositoryPort,
+	ITagRepositoryPort,
 } from "../infra";
 import type { ICompanyFactoryPort } from "./company.factory";
 import type { ICompletionStatusFactoryPort } from "./completion-status.factory";
@@ -11,6 +12,7 @@ import type { IGameFactoryPort } from "./game.factory";
 import type { IGenreFactoryPort } from "./genre.factory";
 import type { IPlatformFactoryPort } from "./platform.factory";
 import type { IGameClassificationScoreServicePort } from "./scoring-engine";
+import type { ITagFactoryPort } from "./tag.factory";
 
 export type GameLibraryUnitOfWorkContext = {
 	repositories: {
@@ -19,6 +21,7 @@ export type GameLibraryUnitOfWorkContext = {
 		platformRepository: IPlatformRepositoryPort;
 		companyRepository: ICompanyRepositoryPort;
 		completionStatusRepository: ICompletionStatusRepositoryPort;
+		tagRepository: ITagRepositoryPort;
 	};
 	factories: {
 		gameFactory: IGameFactoryPort;
@@ -26,6 +29,7 @@ export type GameLibraryUnitOfWorkContext = {
 		platformFactory: IPlatformFactoryPort;
 		companyFactory: ICompanyFactoryPort;
 		completionStatusFactory: ICompletionStatusFactoryPort;
+		tagFactory: ITagFactoryPort;
 	};
 	gameClassificationScoreService: IGameClassificationScoreServicePort;
 };

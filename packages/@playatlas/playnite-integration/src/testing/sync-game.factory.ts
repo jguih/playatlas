@@ -6,6 +6,7 @@ import type {
 	SyncGamesRequestDtoItemCompletionStatus,
 	SyncGamesRequestDtoItemGenre,
 	SyncGamesRequestDtoItemPlatform,
+	SyncGamesRequestDtoItemTag,
 } from "../commands";
 
 export type SyncGamesRequestDtoFactory = TestEntityFactory<undefined, SyncGamesRequestDtoItem> & {
@@ -13,6 +14,7 @@ export type SyncGamesRequestDtoFactory = TestEntityFactory<undefined, SyncGamesR
 	completionStatusOptions: SyncGamesRequestDtoItemCompletionStatus[];
 	companyOptions: SyncGamesRequestDtoItemCompany[];
 	platformOptions: SyncGamesRequestDtoItemPlatform[];
+	tagOptions: SyncGamesRequestDtoItemTag[];
 };
 
 export const makeSyncGamesRequestDtoFactory = (): SyncGamesRequestDtoFactory => {
@@ -29,6 +31,15 @@ export const makeSyncGamesRequestDtoFactory = (): SyncGamesRequestDtoFactory => 
 	};
 
 	const genreOptions: SyncGamesRequestDtoItemGenre[] = buildGenreDto(1000);
+
+	const buildTagDto = (n: number): SyncGamesRequestDtoItemTag[] => {
+		return Array.from({ length: n }, () => ({
+			Id: faker.string.uuid(),
+			Name: faker.lorem.words({ min: 1, max: 2 }),
+		}));
+	};
+
+	const tagOptions: SyncGamesRequestDtoItemTag[] = buildTagDto(1000);
 
 	const buildCompanyDto = (n: number): SyncGamesRequestDtoItemCompany[] => {
 		return Array.from({ length: n }, () => ({
@@ -56,6 +67,7 @@ export const makeSyncGamesRequestDtoFactory = (): SyncGamesRequestDtoFactory => 
 		const genres = faker.helpers.arrayElements(genreOptions, { min: 2, max: 15 });
 		const companies = faker.helpers.arrayElements(companyOptions, { min: 1, max: 3 });
 		const platforms = faker.helpers.arrayElements(platformOptions, { min: 1, max: 5 });
+		const tags = faker.helpers.arrayElements(tagOptions, { min: 3, max: 15 });
 
 		return {
 			Id: faker.string.uuid(),
@@ -77,6 +89,7 @@ export const makeSyncGamesRequestDtoFactory = (): SyncGamesRequestDtoFactory => 
 			Developers: faker.helpers.arrayElement([companies, null, undefined]),
 			Publishers: faker.helpers.arrayElement([companies, null, undefined]),
 			Platforms: faker.helpers.arrayElement([platforms, null, undefined]),
+			Tags: faker.helpers.arrayElement([tags, null, undefined]),
 		};
 	};
 
@@ -89,5 +102,6 @@ export const makeSyncGamesRequestDtoFactory = (): SyncGamesRequestDtoFactory => 
 		completionStatusOptions,
 		companyOptions,
 		platformOptions,
+		tagOptions,
 	};
 };

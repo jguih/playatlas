@@ -9,12 +9,14 @@ import type {
 	IGameLibraryUnitOfWorkPort,
 	IGenreFactoryPort,
 	IPlatformFactoryPort,
+	ITagFactoryPort,
 } from "../application";
 import type { ICompanyRepositoryPort } from "./company.repository.port";
 import type { ICompletionStatusRepositoryPort } from "./completion-status.repository.port";
 import type { IGameRepositoryPort } from "./game.repository.port";
 import type { IGenreRepositoryPort } from "./genre.repository.port";
 import type { IPlatformRepositoryPort } from "./platform.repository.port";
+import type { ITagRepositoryPort } from "./tag.repository.port";
 
 export type GameLibraryUnitOfWorkDeps = {
 	gameRepository: IGameRepositoryPort;
@@ -22,11 +24,13 @@ export type GameLibraryUnitOfWorkDeps = {
 	platformRepository: IPlatformRepositoryPort;
 	companyRepository: ICompanyRepositoryPort;
 	completionStatusRepository: ICompletionStatusRepositoryPort;
+	tagRepository: ITagRepositoryPort;
 	gameFactory: IGameFactoryPort;
 	companyFactory: ICompanyFactoryPort;
 	completionStatusFactory: ICompletionStatusFactoryPort;
 	platformFactory: IPlatformFactoryPort;
 	genreFactory: IGenreFactoryPort;
+	tagFactory: ITagFactoryPort;
 	gameClassificationScoreService: IGameClassificationScoreServicePort;
 	getDb: () => DatabaseSync;
 };
@@ -43,6 +47,8 @@ export const makeGameLibraryUnitOfWork = ({
 	platformRepository,
 	completionStatusRepository,
 	gameClassificationScoreService,
+	tagRepository,
+	tagFactory,
 	getDb,
 }: GameLibraryUnitOfWorkDeps): IGameLibraryUnitOfWorkPort => {
 	const ctx: GameLibraryUnitOfWorkContext = {
@@ -52,6 +58,7 @@ export const makeGameLibraryUnitOfWork = ({
 			gameFactory,
 			genreFactory,
 			platformFactory,
+			tagFactory,
 		},
 		repositories: {
 			gameRepository,
@@ -59,6 +66,7 @@ export const makeGameLibraryUnitOfWork = ({
 			companyRepository,
 			completionStatusRepository,
 			platformRepository,
+			tagRepository,
 		},
 		gameClassificationScoreService,
 	};

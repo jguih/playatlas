@@ -31,6 +31,7 @@ export const makeSyncGamesCommandHandler = ({
 						gameRepository,
 						genreRepository,
 						platformRepository,
+						tagRepository,
 					} = repositories;
 
 					let extracted: ExtractedSyncData;
@@ -60,6 +61,7 @@ export const makeSyncGamesCommandHandler = ({
 					genreRepository.upsert(extracted.genres);
 					platformRepository.upsert(extracted.platforms);
 					companyRepository.upsert(extracted.companies);
+					tagRepository.upsert(extracted.tags);
 					completionStatusRepository.upsert(extracted.completionStatuses);
 					gameRepository.upsert(extracted.games);
 
