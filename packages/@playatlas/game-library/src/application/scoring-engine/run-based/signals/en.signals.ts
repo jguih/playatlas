@@ -23,12 +23,10 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		"unpredictable layouts",
 		"the layout differs each time",
 		"dynamic level generation",
-		"no two runs are the same",
 		"ever-changing levels",
 		"ever changing levels",
 		"ever-changing castle",
 		"ever changing castle",
-		"never experience the same game twice",
 	],
 	EVER_SHIFTING_LABEL: ["ever-shifting", "ever shifting"],
 	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [
@@ -76,21 +74,32 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	// #region: run_variability
 	CUSTOMIZE_YOUR_RUN_LABEL: ["customize your run"],
 	DAILY_CHALLENGES: ["daily challenges"],
-	BUILD_VARIETY_LABEL: [
+	RANDOMIZED_ITEMS_LABEL: [
 		"randomized items",
+		"random items",
 		"random loot",
 		"random upgrades",
 		"random power-ups",
 		"random power ups",
 		"procedural loot",
+		"item variety",
 	],
-	RANDOMIZED_ITEMS_LABEL: [
+	BUILD_VARIETY_LABEL: [
+		"combine loot",
 		"different builds",
 		"unique builds",
 		"build variety",
 		"experiment with builds",
 		"varied playstyles",
 	],
+	GAMEPLAY_VARIETY_LABEL: [
+		"gameplay modifiers",
+		"no run will ever be the same",
+		"no two runs are the same",
+		"never experience the same game twice",
+		"randomized stages, enemies, and items",
+	],
+	ENDLESS_RUN_LABEL: ["continue your run indefinitely", "limitlessly increase in power"],
 	ENDLESSLY_REPLAYABLE_LABEL: ["endlessly replayable"],
 	// #endregion
 	// #region: meta_progression

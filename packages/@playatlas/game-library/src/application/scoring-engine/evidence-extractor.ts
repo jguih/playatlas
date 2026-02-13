@@ -63,7 +63,7 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 		const handleSignal = (signal: TextSignalItem<TGroup>, phrase: SignalOrGroup[number]) => {
 			if (Array.isArray(phrase)) {
 				const normalized = phrase.map(normalize);
-				if (normalized.every(normalizedDescription.includes))
+				if (normalized.every((p) => normalizedDescription.includes(p)))
 					add({
 						source: "text",
 						sourceHint: "description",

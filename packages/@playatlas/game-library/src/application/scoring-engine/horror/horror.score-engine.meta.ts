@@ -1,7 +1,7 @@
 import type { ClassificationGroupPolicy } from "../engine.policy";
 import type { ScoreEngineVersion } from "../score-engine.types";
 
-export const HORROR_ENGINE_VERSION = "v1.0.0" as const satisfies ScoreEngineVersion;
+export const HORROR_ENGINE_VERSION = "v1.0.1" as const satisfies ScoreEngineVersion;
 
 export const HORROR_ENGINE_EVIDENCE_GROUPS = [
 	"core_horror",

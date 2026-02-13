@@ -79,48 +79,60 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	},
 	// #endregion
 	// #region: run_variability
-	CUSTOMIZE_YOUR_RUN_LABEL: {
+	GAMEPLAY_VARIETY_LABEL: {
 		group: "run_variability",
 		tier: "B",
-		weight: 22,
-		isGate: false,
-	},
-	DAILY_CHALLENGES: {
-		group: "run_variability",
-		tier: "B",
-		weight: 20,
+		weight: 35,
 		isGate: false,
 	},
 	RANDOMIZED_ITEMS_LABEL: {
 		group: "run_variability",
 		tier: "B",
-		weight: 32,
+		weight: 34,
 		isGate: false,
 	},
 	BUILD_VARIETY_LABEL: {
 		group: "run_variability",
 		tier: "B",
-		weight: 30,
+		weight: 25,
+		isGate: false,
+	},
+	ENDLESS_RUN_LABEL: {
+		group: "run_variability",
+		tier: "B",
+		weight: 20,
+		isGate: false,
+	},
+	DAILY_CHALLENGES: {
+		group: "run_variability",
+		tier: "C",
+		weight: 12,
+		isGate: false,
+	},
+	CUSTOMIZE_YOUR_RUN_LABEL: {
+		group: "run_variability",
+		tier: "C",
+		weight: 20,
 		isGate: false,
 	},
 	ENDLESSLY_REPLAYABLE_LABEL: {
 		group: "run_variability",
 		tier: "C",
-		weight: 15,
+		weight: 12,
 		isGate: false,
 	},
 	// #endregion
 	// #region: meta_progression
 	ROGUELITE_PROGRESSION_LABEL: {
 		group: "meta_progression",
-		tier: "A",
-		weight: 34,
+		tier: "B",
+		weight: 30,
 		isGate: false,
 	},
 	META_PROGRESSION_SYSTEM_LABEL: {
 		group: "meta_progression",
 		tier: "B",
-		weight: 32,
+		weight: 25,
 		isGate: false,
 	},
 	PERMANENT_UPGRADES_LABEL: {

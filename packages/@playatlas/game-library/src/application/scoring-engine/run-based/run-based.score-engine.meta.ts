@@ -1,7 +1,7 @@
 import type { ClassificationGroupPolicy } from "../engine.policy";
 import type { ScoreEngineVersion } from "../score-engine.types";
 
-export const RUN_BASED_ENGINE_VERSION = "v1.0.1" as const satisfies ScoreEngineVersion;
+export const RUN_BASED_ENGINE_VERSION = "v1.0.2" as const satisfies ScoreEngineVersion;
 
 export const RUN_BASED_ENGINE_EVIDENCE_GROUPS = [
 	"procedural_runs",
