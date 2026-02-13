@@ -1,11 +1,19 @@
 import { makeScoreEngine } from "../score-engine";
 import type { IScoreEnginePort } from "../score-engine.port";
-import { SURVIVAL_ENGINE_VERSION, type SurvivalEvidenceGroup } from "./survival.score-engine.meta";
+import {
+	SURVIVAL_ENGINE_EVIDENCE_GROUP_META,
+	SURVIVAL_ENGINE_VERSION,
+	type SurvivalEvidenceGroup,
+} from "./survival.score-engine.meta";
 
 export type ISurvivalScoreEnginePort = IScoreEnginePort<SurvivalEvidenceGroup>;
 
 export const makeSurvivalScoreEngine = (): ISurvivalScoreEnginePort => {
-	const self = makeScoreEngine({ id: "SURVIVAL", version: SURVIVAL_ENGINE_VERSION });
+	const self = makeScoreEngine({
+		id: "SURVIVAL",
+		version: SURVIVAL_ENGINE_VERSION,
+		evidenceGroupMeta: SURVIVAL_ENGINE_EVIDENCE_GROUP_META,
+	});
 
 	return {
 		...self,

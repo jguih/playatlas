@@ -5,14 +5,33 @@ import type {
 import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical.signals";
 
 export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
-	// #region: procedural_runs
+	// #region: run_based_identity
 	ROGUELIKE_LABEL: ["roguelike", "rogue-like"],
 	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
+	RUN_LOOP_LANGUAGE_LABEL: [
+		"each run",
+		"every run",
+		"per run",
+		"new run",
+		"another run",
+		"between runs",
+		"run after run",
+	],
+	TRY_AGAIN_LOOP_LABEL: [
+		"try again",
+		"attempt after attempt",
+		"learn from failure",
+		"fail and retry",
+		"die and try again",
+	],
+	// #region: procedural_runs
 	PROCEDURAL_GENERATION_LABEL: [
 		"procedurally generated levels",
 		"procedural generation",
 		"procedurally generated dungeons",
 		"generated dungeons",
+		"procedurally generated world",
+		"procedural environments",
 	],
 	RANDOMIZED_MAPS_LABEL: [
 		"randomized levels",
@@ -35,29 +54,6 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		"fresh layout every playthrough",
 		"unique layouts each time",
 	],
-	RUN_LOOP_LANGUAGE_LABEL: [
-		"each run",
-		"every run",
-		"per run",
-		"new run",
-		"another run",
-		"between runs",
-		"run after run",
-	],
-	TRY_AGAIN_LOOP_LABEL: [
-		"try again",
-		"attempt after attempt",
-		"learn from failure",
-		"fail and retry",
-		"die and try again",
-	],
-	DUNGEON_CRAWL_LABEL: [
-		"dungeon crawl",
-		"dungeon-crawl",
-		"dungeon crawler",
-		"dungeon-crawler",
-		"descend into the dungeon",
-	],
 	// #endregion
 	// #region: permadeath_reset
 	PERMADEATH_LABEL: ["permadeath", "permanent death"],
@@ -66,7 +62,6 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		"start over after death",
 		"run resets on death",
 		"begin again after failure",
-		"restart from the beginning",
 		"unforgiving death system",
 	],
 	NO_CHECKPOINTS_LABEL: ["no checkpoints"],
@@ -111,9 +106,11 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 } as const satisfies LanguageTextSignalsMap<RunBasedTextSignalId>;
 
 export const RUN_BASED_ENGINE_TAXONOMY_SIGNALS_EN = {
-	// #region: procedural_runs
+	// #region: run_based_identity
 	ROGUELIKE_TAXONOMY: ["roguelike", "rogue-like"],
 	ROGUELITE_TAXONOMY: ["roguelite", "rogue-lite"],
+	// #endregion
+	// #region: procedural_runs
 	PROCEDURAL_GENERATION_TAXONOMY: ["procedural generation", "procedural-generation"],
 	// #endregion
 	// #region: permadeath_reset

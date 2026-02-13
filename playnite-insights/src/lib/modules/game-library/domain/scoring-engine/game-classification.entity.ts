@@ -1,6 +1,7 @@
 import type { ClientEntity, EntitySyncStateProps } from "$lib/modules/common/common";
 import type { GameClassificationId, GameId } from "$lib/modules/common/domain";
 import type { ClassificationId, EngineScoreMode } from "@playatlas/common/domain";
+import type { EvidenceGroupMeta } from "./evidence-group-meta.record";
 import type { ScoreBreakdown } from "./score-breakdown.record";
 
 export type GameClassificationBreakdown =
@@ -22,6 +23,7 @@ export type GameClassification = ClientEntity<GameClassificationId> &
 		NormalizedScore: number;
 		ScoreMode: EngineScoreMode;
 		Breakdown: GameClassificationBreakdown;
+		EvidenceGroupMeta: EvidenceGroupMeta | null;
 		DeletedAt: Date | null;
 		DeleteAfter: Date | null;
 		// Front-end specific

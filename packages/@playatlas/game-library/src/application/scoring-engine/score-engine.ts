@@ -3,20 +3,23 @@ import { ScoreEngineSerializationError } from "../../domain";
 import { canonicalScoreBreakdownSchema, LATEST_SCORE_BREAKDOWN_SCHEMA_VERSION } from "../../dtos";
 import type { ScoreBreakdownEnvelope } from "./score-breakdown-envelope";
 import type { IScoreEnginePort } from "./score-engine.port";
-import type { ScoreEngineVersion } from "./score-engine.types";
+import type { ScoreEngineEvidenceGroupsMeta, ScoreEngineVersion } from "./score-engine.types";
 
-type ScoreEngineDeps = {
+type ScoreEngineDeps<TGroup extends string> = {
 	id: ClassificationId;
 	version: ScoreEngineVersion;
+	evidenceGroupMeta: ScoreEngineEvidenceGroupsMeta<TGroup>;
 };
 
 export const makeScoreEngine = <TGroup extends string>({
 	id,
 	version,
-}: ScoreEngineDeps): IScoreEnginePort<TGroup> => {
+	evidenceGroupMeta,
+}: ScoreEngineDeps<TGroup>): IScoreEnginePort<TGroup> => {
 	return {
 		id,
 		version,
+		evidenceGroupMeta,
 		score: () => {
 			throw new DomainError("Not Implemented");
 		},

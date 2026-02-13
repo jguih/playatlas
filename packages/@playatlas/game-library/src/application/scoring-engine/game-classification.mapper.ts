@@ -3,6 +3,7 @@ import { GameClassificationIdParser, GameIdParser } from "@playatlas/common/doma
 import type { GameClassification } from "../../domain";
 import type { GameClassificationResponseDto } from "../../dtos";
 import type { GameClassificationModel } from "../../infra";
+import type { IScoreEngineRegistryPort } from "./engine.registry";
 import type { IGameClassificationFactoryPort } from "./game-classification.factory";
 import type { IScoreBreakdownNormalizerPort } from "./score-breakdown-normalizer.port";
 
@@ -15,14 +16,17 @@ export type IGameClassificationMapperPort = EntityMapper<
 export type GameClassificationMapperDeps = {
 	gameClassificationFactory: IGameClassificationFactoryPort;
 	scoreBreakdownNormalizer: IScoreBreakdownNormalizerPort;
+	scoreEngineRegistry: IScoreEngineRegistryPort;
 };
 
 export const makeGameClassificationMapper = ({
 	gameClassificationFactory,
 	scoreBreakdownNormalizer,
+	scoreEngineRegistry,
 }: GameClassificationMapperDeps): IGameClassificationMapperPort => {
 	const _toDto: IGameClassificationMapperPort["toDto"] = (entity) => {
 		const Breakdown = scoreBreakdownNormalizer.normalize(entity.getBreakdownJson());
+		const engine = scoreEngineRegistry.get(entity.getClassificationId());
 
 		return {
 			Id: entity.getId(),
@@ -32,6 +36,7 @@ export const makeGameClassificationMapper = ({
 			NormalizedScore: entity.getNormalizedScore(),
 			ScoreMode: entity.getMode(),
 			Breakdown,
+			EvidenceGroupMeta: engine.evidenceGroupMeta,
 			Sync: {
 				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
 				DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,

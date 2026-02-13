@@ -1,9 +1,10 @@
-import type { ClassificationGroupPolicy } from "../engine.policy";
-import type { ScoreEngineVersion } from "../score-engine.types";
+import type { ScoreEngineEvidenceGroupPolicy } from "../engine.policy";
+import type { ScoreEngineEvidenceGroupsMeta, ScoreEngineVersion } from "../score-engine.types";
 
-export const RUN_BASED_ENGINE_VERSION = "v1.0.2" as const satisfies ScoreEngineVersion;
+export const RUN_BASED_ENGINE_VERSION = "v1.0.4" as const satisfies ScoreEngineVersion;
 
 export const RUN_BASED_ENGINE_EVIDENCE_GROUPS = [
+	"run_based_identity",
 	"procedural_runs",
 	"permadeath_reset",
 	"run_variability",
@@ -12,9 +13,18 @@ export const RUN_BASED_ENGINE_EVIDENCE_GROUPS = [
 
 export type RunBasedEvidenceGroup = (typeof RUN_BASED_ENGINE_EVIDENCE_GROUPS)[number];
 
-export const RUN_BASED_ENGINE_GROUP_POLICY = {
+export const RUN_BASED_ENGINE_EVIDENCE_GROUP_META = {
+	run_based_identity: { userFacing: false, role: "identity" },
+	procedural_runs: { userFacing: true, role: "dimension" },
+	permadeath_reset: { userFacing: true, role: "dimension" },
+	meta_progression: { userFacing: true, role: "dimension" },
+	run_variability: { userFacing: true, role: "dimension" },
+} as const satisfies ScoreEngineEvidenceGroupsMeta<RunBasedEvidenceGroup>;
+
+export const RUN_BASED_ENGINE_EVIDENCE_GROUP_POLICY = {
+	run_based_identity: { cap: 40 },
 	procedural_runs: { cap: 50 },
 	permadeath_reset: { cap: 30 },
-	run_variability: { cap: 45 },
+	run_variability: { cap: 40 },
 	meta_progression: { cap: 30 },
-} as const satisfies ClassificationGroupPolicy<RunBasedEvidenceGroup>;
+} as const satisfies ScoreEngineEvidenceGroupPolicy<RunBasedEvidenceGroup>;

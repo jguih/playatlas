@@ -6,9 +6,12 @@ The goal is not to decide whether a game _is_ horror, but how strongly it expres
 
 ## Groups
 
-### core_horror
+### horror_identity
 
 Evidence of explicit horror identity and recognizable genre conventions.
+
+- **userFacing**: false
+- **role**: `identity`
 
 Examples of signals:
 
@@ -20,9 +23,12 @@ Examples of signals:
 
 This is the broad foundation of horror. It captures games that clearly present themselves as horror through themes and imagery.
 
-### survival_horror
+### resource_survival
 
 Evidence that fear is reinforced by vulnerability and resource pressure.
+
+- **userFacing**: true
+- **role**: `dimension`
 
 Examples of signals:
 
@@ -38,6 +44,9 @@ Focuses on horror created through mechanical vulnerability and survival tension,
 
 Evidence of fear driven by mental, emotional, or perceptual disturbance.
 
+- **userFacing**: true
+- **role**: `dimension`
+
 Examples of signals:
 
 - unreliable perception or distorted reality
@@ -48,23 +57,29 @@ Examples of signals:
 
 Captures horror that targets the player’s psyche rather than relying primarily on physical threats.
 
-### cosmic_horror
+### combat_engagement
 
-Evidence of horror rooted in the unknown, incomprehensible, or existential.
+Evidence of combat engagement through the game.
+
+- **userFacing**: true
+- **role**: `dimension`
 
 Examples of signals:
 
-- unknowable or ancient entities
-- insignificance of humanity
-- forbidden knowledge
-- eldritch or Lovecraftian themes
-- existential terror
+- timed dodges
+- first person shooter
+- third person shooter
+- action taxonomy
+- usage of weapons to defend yourself
 
-Focuses on fear arising from scale, mystery, and the limits of human understanding.
+Focuses on engagement with enemies using tools, weapons and consumables.
 
 ### atmospheric_horror
 
 Evidence of horror conveyed through mood, environment, and sensory tension.
+
+- **userFacing**: true
+- **role**: `dimension`
 
 Examples of signals:
 

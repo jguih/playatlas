@@ -3,6 +3,7 @@ import type { IScoreEnginePort } from "../score-engine.port";
 import type { IRunBasedEvidenceExtractorPort } from "./run-based.evidence-extractor";
 import type { IRunBasedScoringPolicyPort } from "./run-based.policy";
 import {
+	RUN_BASED_ENGINE_EVIDENCE_GROUP_META,
 	RUN_BASED_ENGINE_VERSION,
 	type RunBasedEvidenceGroup,
 } from "./run-based.score-engine.meta";
@@ -21,6 +22,7 @@ export const makeRunBasedScoreEngine = ({
 	const self = makeScoreEngine<RunBasedEvidenceGroup>({
 		id: "RUN-BASED",
 		version: RUN_BASED_ENGINE_VERSION,
+		evidenceGroupMeta: RUN_BASED_ENGINE_EVIDENCE_GROUP_META,
 	});
 
 	return {

@@ -3,6 +3,7 @@ import type { GameClassificationId, GameId } from "$lib/modules/common/domain";
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
 import { type ClassificationId, type EngineScoreMode } from "@playatlas/common/domain";
 import type { IGameClassificationMapperPort } from "../../application/scoring-engine/game-classification.mapper.port";
+import type { EvidenceGroupMeta } from "../../domain/scoring-engine/evidence-group-meta.record";
 import type {
 	GameClassification,
 	GameClassificationBreakdown,
@@ -22,6 +23,7 @@ export type GameClassificationModel = {
 	NormalizedScore: number;
 	ScoreMode: EngineScoreMode;
 	Breakdown: GameClassificationBreakdown;
+	EvidenceGroupMeta?: EvidenceGroupMeta | null;
 
 	Sync: {
 		Status: SyncStatus;

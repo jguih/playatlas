@@ -1,5 +1,6 @@
 export * from "./classification-category";
 export * from "./classification-id";
+export * from "./evidence-group-role";
 export * from "./evidence-source";
 export * from "./evidence-tier";
 export * from "./game-classification-id";

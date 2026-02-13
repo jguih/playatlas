@@ -21,6 +21,7 @@ export class GameClassificationMapper implements IGameClassificationMapperPort {
 			NormalizedScore: dto.NormalizedScore,
 			ScoreMode: dto.ScoreMode,
 			Breakdown: dto.Breakdown,
+			EvidenceGroupMeta: dto.EvidenceGroupMeta,
 			Sync: {
 				Status: "synced",
 				LastSyncedAt: lastSync ?? this.deps.clock.now(),
@@ -41,6 +42,7 @@ export class GameClassificationMapper implements IGameClassificationMapperPort {
 			NormalizedScore: model.NormalizedScore,
 			ScoreMode: model.ScoreMode,
 			Breakdown: model.Breakdown,
+			EvidenceGroupMeta: model.EvidenceGroupMeta ?? null,
 			Sync: {
 				LastSyncedAt: model.Sync.LastSyncedAt,
 				ErrorMessage: model.Sync.ErrorMessage ?? null,
@@ -62,6 +64,7 @@ export class GameClassificationMapper implements IGameClassificationMapperPort {
 			NormalizedScore: entity.NormalizedScore,
 			ScoreMode: entity.ScoreMode,
 			Breakdown: entity.Breakdown,
+			EvidenceGroupMeta: entity.EvidenceGroupMeta,
 			Sync: {
 				LastSyncedAt: entity.Sync.LastSyncedAt,
 				ErrorMessage: entity.Sync.ErrorMessage,

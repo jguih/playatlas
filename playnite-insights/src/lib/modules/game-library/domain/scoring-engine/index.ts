@@ -1,3 +1,4 @@
+export type * from "./evidence-group-meta.record";
 export type * from "./evidence.record";
 export * from "./game-classification.entity";
 export type * from "./penalty.record";

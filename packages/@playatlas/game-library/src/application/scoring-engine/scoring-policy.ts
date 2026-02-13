@@ -1,8 +1,13 @@
 import type { EvidenceSource } from "@playatlas/common/domain";
-import type { ClassificationGroupPolicy, GateStackPolicy, NoGatePolicy } from "./engine.policy";
+import type {
+	GateStackPolicy,
+	NoGatePolicy,
+	ScoreEngineEvidenceGroupPolicy,
+} from "./engine.policy";
 import type { Evidence, StoredEvidence } from "./evidence.types";
 import type { Penalty } from "./penalty.types";
 import type { ScoreBreakdown } from "./score-breakdown";
+import type { ScoreEngineEvidenceGroupsMeta } from "./score-engine.types";
 import type { IScoringPolicyPort } from "./scoring-policy.port";
 
 type SynergyContext = {
@@ -11,7 +16,8 @@ type SynergyContext = {
 };
 
 export type ScoringPolicyDeps<TGroup extends string> = {
-	groupPolicies: ClassificationGroupPolicy<TGroup>;
+	evidenceGroupPolicies: ScoreEngineEvidenceGroupPolicy<TGroup>;
+	evidenceGroupMeta: ScoreEngineEvidenceGroupsMeta<TGroup>;
 	noGatePolicy: NoGatePolicy;
 	gateStackPolicy: GateStackPolicy;
 	maxScore: number;
@@ -19,7 +25,7 @@ export type ScoringPolicyDeps<TGroup extends string> = {
 };
 
 export const makeScoringPolicy = <TGroup extends string>({
-	groupPolicies,
+	evidenceGroupPolicies,
 	maxScore,
 	maxNoGateScore,
 	noGatePolicy,
@@ -286,7 +292,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 		}
 
 		for (const [group, evidence] of bestEvidenceByGroup) {
-			const policy = groupPolicies[group];
+			const policy = evidenceGroupPolicies[group];
 			let contribution: number = evidence.weight;
 
 			if (policy.multiplier) contribution *= policy.multiplier;

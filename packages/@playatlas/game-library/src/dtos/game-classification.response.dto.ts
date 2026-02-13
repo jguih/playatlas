@@ -10,6 +10,7 @@ import {
 	defaultSuccessResponseDtoSchema,
 } from "@playatlas/common/dtos";
 import z from "zod";
+import { evidenceGroupMetaResponseDtoSchema } from "./scoring-engine";
 import { scoreBreakdownResponseDtoSchema } from "./scoring-engine/score-breakdown.response.dto";
 
 export const gameClassificationResponseDtoSchema = z.object({
@@ -20,6 +21,7 @@ export const gameClassificationResponseDtoSchema = z.object({
 	NormalizedScore: z.number(),
 	ScoreMode: z.enum(engineScoreMode),
 	Breakdown: scoreBreakdownResponseDtoSchema,
+	EvidenceGroupMeta: evidenceGroupMetaResponseDtoSchema,
 	Sync: z.object({
 		LastUpdatedAt: ISODateSchema,
 		DeletedAt: ISODateSchema.nullable(),

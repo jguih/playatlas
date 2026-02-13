@@ -5,11 +5,31 @@ import type {
 import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical.signals";
 
 export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
-	// #region: procedural_runs
+	// #region: run_based_identity
 	ROGUELIKE_LABEL: ["roguelike", "rogue-like"],
 	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
+	RUN_LOOP_LANGUAGE_LABEL: [
+		"a cada run",
+		"em cada run",
+		"por run",
+		"nova run",
+		"outra run",
+		"entre runs",
+		"run após run",
+	],
+	TRY_AGAIN_LOOP_LABEL: [
+		"tente novamente",
+		"tentativa após tentativa",
+		"aprenda com o fracasso",
+		"falhe e tente de novo",
+		"morra e tente novamente",
+	],
+	// #endregion
+	// #region: procedural_runs
 	PROCEDURAL_GENERATION_LABEL: [
 		"níveis gerados proceduralmente",
+		"mundo gerado proceduralmente",
+		"levels gerados proceduralmente",
 		"geração procedural",
 		"masmorras geradas proceduralmente",
 	],
@@ -34,28 +54,6 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 		"layout novo a cada jogada",
 		"layouts únicos a cada vez",
 	],
-	RUN_LOOP_LANGUAGE_LABEL: [
-		"a cada run",
-		"em cada run",
-		"por run",
-		"nova run",
-		"outra run",
-		"entre runs",
-		"run após run",
-	],
-	TRY_AGAIN_LOOP_LABEL: [
-		"tente novamente",
-		"tentativa após tentativa",
-		"aprenda com o fracasso",
-		"falhe e tente de novo",
-		"morra e tente novamente",
-	],
-	DUNGEON_CRAWL_LABEL: [
-		"dungeon crawl",
-		"dungeon crawler",
-		"exploração de masmorras",
-		"desça às masmorras",
-	],
 	// #endregion
 	// #region: permadeath_reset
 	PERMADEATH_LABEL: ["permadeath", "morte permanente"],
@@ -64,7 +62,6 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 		"comece de novo após morrer",
 		"a run reinicia ao morrer",
 		"recomece após falhar",
-		"reinicie desde o começo",
 		"sistema de morte implacável",
 	],
 	NO_CHECKPOINTS_LABEL: ["sem checkpoints", "sem pontos de controle"],
@@ -121,9 +118,11 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 } as const satisfies LanguageTextSignalsMap<RunBasedTextSignalId>;
 
 export const RUN_BASED_ENGINE_TAXONOMY_SIGNALS_PT = {
-	// #region: procedural_runs
+	// #region: run_based_identity
 	ROGUELIKE_TAXONOMY: ["roguelike", "rogue-like"],
 	ROGUELITE_TAXONOMY: ["roguelite", "rogue-lite"],
+	// #endregion
+	// #region: procedural_runs
 	PROCEDURAL_GENERATION_TAXONOMY: ["geração procedural", "geração-procedural"],
 	// #endregion
 	// #region: permadeath_reset

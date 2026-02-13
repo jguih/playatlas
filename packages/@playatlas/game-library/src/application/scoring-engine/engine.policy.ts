@@ -1,11 +1,14 @@
 import type { EvidenceTier } from "@playatlas/common/domain";
 
-export type GroupPolicy = {
+export type EvidenceGroupPolicy = {
 	cap?: number;
 	multiplier?: number;
 };
 
-export type ClassificationGroupPolicy<TGroup extends string> = Record<TGroup, GroupPolicy>;
+export type ScoreEngineEvidenceGroupPolicy<TGroup extends string> = Record<
+	TGroup,
+	EvidenceGroupPolicy
+>;
 
 export type NoGatePolicy = {
 	/**

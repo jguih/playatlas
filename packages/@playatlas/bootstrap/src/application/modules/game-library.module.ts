@@ -142,6 +142,7 @@ const makeGameLibraryScoreEngineModule = ({
 	const gameClassificationMapper = makeGameClassificationMapper({
 		gameClassificationFactory,
 		scoreBreakdownNormalizer,
+		scoreEngineRegistry,
 	});
 	const gameClassificationRepository = makeGameClassificationRepository({
 		gameClassificationMapper,
