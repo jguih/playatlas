@@ -1,6 +1,11 @@
 import { normalize } from "@playatlas/common/common";
 import { EvidenceExtractorInvalidDataError } from "../../domain";
-import type { SignalOrGroup, TaxonomySignalItem, TextSignalItem } from "./engine.signals";
+import type {
+	SignalAndGroup,
+	SignalOrGroup,
+	TaxonomySignalItem,
+	TextSignalItem,
+} from "./engine.signals";
 import type { IEvidenceExtractorPort } from "./evidence-extractor.port";
 import type { Evidence } from "./evidence.types";
 
@@ -19,34 +24,69 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 		add: (e: Evidence<TGroup>) => void;
 	}) => {
 		const { genres, tags, add } = props;
-		const taxonomyList = genres.concat(tags).map(normalize);
+		const genresList = genres.map(normalize);
+		const tagsList = tags.map(normalize);
 
-		const hasTaxonomy = (x: string) => taxonomyList.includes(normalize(x));
+		const hasGenre = (x: string) => genresList.includes(normalize(x));
+		const hasTag = (x: string) => tagsList.includes(normalize(x));
 
-		for (const signal of taxonomySignals) {
-			for (const name of signal.name) {
-				if (Array.isArray(name)) {
-					if (name.every(hasTaxonomy))
-						add({
-							source: "taxonomy",
-							sourceHint: "genre",
-							match: name.join(" + "),
-							group: signal.group,
-							weight: signal.weight,
-							tier: signal.tier,
-							isGate: signal.isGate,
-						});
-				} else if (hasTaxonomy(name)) {
+		const extractFromGenre = (
+			signal: TaxonomySignalItem<TGroup>,
+			name: string | SignalAndGroup,
+		) => {
+			if (Array.isArray(name)) {
+				if (name.every((n) => hasGenre(n)))
 					add({
 						source: "taxonomy",
 						sourceHint: "genre",
-						match: name,
+						match: name.join(" + "),
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
 						isGate: signal.isGate,
 					});
-				}
+			} else if (hasGenre(name)) {
+				add({
+					source: "taxonomy",
+					sourceHint: "genre",
+					match: name,
+					group: signal.group,
+					weight: signal.weight,
+					tier: signal.tier,
+					isGate: signal.isGate,
+				});
+			}
+		};
+
+		const extractFromTag = (signal: TaxonomySignalItem<TGroup>, name: string | SignalAndGroup) => {
+			if (Array.isArray(name)) {
+				if (name.every((n) => hasTag(n)))
+					add({
+						source: "taxonomy",
+						sourceHint: "tag",
+						match: name.join(" + "),
+						group: signal.group,
+						weight: signal.weight,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
+			} else if (hasTag(name)) {
+				add({
+					source: "taxonomy",
+					sourceHint: "tag",
+					match: name,
+					group: signal.group,
+					weight: signal.weight,
+					tier: signal.tier,
+					isGate: signal.isGate,
+				});
+			}
+		};
+
+		for (const signal of taxonomySignals) {
+			for (const name of signal.name) {
+				extractFromGenre(signal, name);
+				extractFromTag(signal, name);
 			}
 		}
 	};
@@ -60,7 +100,10 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 
 		const normalizedDescription = normalize(description);
 
-		const handleSignal = (signal: TextSignalItem<TGroup>, phrase: SignalOrGroup[number]) => {
+		const extractFromDescription = (
+			signal: TextSignalItem<TGroup>,
+			phrase: SignalOrGroup[number],
+		) => {
 			if (Array.isArray(phrase)) {
 				const normalized = phrase.map(normalize);
 				if (normalized.every((p) => normalizedDescription.includes(p)))
@@ -90,7 +133,7 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 
 		for (const signal of textSignals) {
 			for (const phrase of signal.phrase) {
-				handleSignal(signal, phrase);
+				extractFromDescription(signal, phrase);
 			}
 		}
 	};
