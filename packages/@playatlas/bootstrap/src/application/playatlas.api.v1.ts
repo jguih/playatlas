@@ -25,6 +25,7 @@ import type {
 	IGetAllGamesQueryHandlerPort,
 	IGetAllGenresQueryHandlerPort,
 	IGetAllPlatformsQueryHandlerPort,
+	IGetAllTagsQueryHandlerPort,
 } from "@playatlas/game-library/queries";
 import type {
 	ICloseGameSessionCommandHandlerPort,
@@ -50,6 +51,7 @@ export type PlayAtlasApiV1 = {
 			getGetAllPlatformsQueryHandler: () => IGetAllPlatformsQueryHandlerPort;
 			getGetAllGenresQueryHandler: () => IGetAllGenresQueryHandlerPort;
 			getGetAllCompletionStatusesQueryHandler: () => IGetAllCompletionStatusesQueryHandlerPort;
+			getGetAllTagsQueryHandler: () => IGetAllTagsQueryHandlerPort;
 		};
 		getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
 		getGameAssetsReindexer: () => IGameAssetsReindexerPort;

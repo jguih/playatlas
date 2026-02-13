@@ -1,29 +1,30 @@
 import type { EntityMapper } from "@playatlas/common/application";
 import { PlayniteTagIdParser, TagIdParser } from "@playatlas/common/domain";
-import type { Tag } from "../domain";
-import type { TagModel } from "../infra";
+import type { Tag } from "../domain/tag.entity";
+import type { TagResponseDto } from "../dtos/tag.response.dto";
+import type { TagModel } from "../infra/tag.repository";
 import type { ITagFactoryPort } from "./tag.factory";
 
-export type ITagMapperPort = EntityMapper<Tag, TagModel>;
+export type ITagMapperPort = EntityMapper<Tag, TagModel, TagResponseDto>;
 
 export type TagMapperDeps = {
 	tagFactory: ITagFactoryPort;
 };
 
 export const makeTagMapper = ({ tagFactory }: TagMapperDeps): ITagMapperPort => {
-	// const _toDto: ITagMapperPort["toDto"] = (entity) => {
-	//   const dto: TagResponseDto = {
-	//     Id: entity.getId(),
-	//     PlayniteId: entity.getPlayniteSnapshot()?.id ?? null,
-	//     Name: entity.getName(),
-	//     Sync: {
-	//       LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
-	//       DeletedAt: entity.getDeletedAt()?.toISOString() ?? null,
-	//       DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,
-	//     },
-	//   };
-	//   return dto;
-	// };
+	const _toDto: ITagMapperPort["toDto"] = (entity) => {
+		const dto: TagResponseDto = {
+			Id: entity.getId(),
+			PlayniteId: entity.getPlayniteSnapshot()?.id ?? null,
+			Name: entity.getName(),
+			Sync: {
+				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
+				DeletedAt: entity.getDeletedAt()?.toISOString() ?? null,
+				DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,
+			},
+		};
+		return dto;
+	};
 
 	return {
 		toPersistence: (entity) => {
@@ -51,6 +52,10 @@ export const makeTagMapper = ({ tagFactory }: TagMapperDeps): ITagMapperPort => 
 				deleteAfter: model.DeleteAfter ? new Date(model.DeleteAfter) : null,
 			});
 			return entity;
+		},
+		toDto: _toDto,
+		toDtoList: (entities) => {
+			return entities.map(_toDto);
 		},
 	};
 };

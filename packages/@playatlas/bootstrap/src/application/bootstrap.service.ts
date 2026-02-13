@@ -35,6 +35,7 @@ export const bootstrapV1 = ({
 				getGetAllGenresQueryHandler: gameLibrary.queries.getGetAllGenresQueryHandler,
 				getGetAllCompletionStatusesQueryHandler:
 					gameLibrary.queries.getGetAllCompletionStatusesQueryHandler,
+				getGetAllTagsQueryHandler: gameLibrary.queries.getGetAllTagsQueryHandler,
 			},
 			getGameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory,
 			getGameAssetsReindexer: gameLibrary.getGameAssetsReindexer,

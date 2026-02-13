@@ -57,6 +57,7 @@ import {
 	makeGetAllGamesQueryHandler,
 	makeGetAllGenresQueryHandler,
 	makeGetAllPlatformQueryHandler,
+	makeGetAllTagsQueryHandler,
 } from "@playatlas/game-library/queries";
 import type { IGameLibraryModulePort } from "./game-library.module.port";
 
@@ -267,6 +268,12 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 		logService: buildLog("TagRepository"),
 		tagMapper,
 	});
+	const queryHandlerGetAllTags = makeGetAllTagsQueryHandler({
+		clock,
+		tagMapper,
+		tagRepository,
+		logService: buildLog("GetAllTagsQueryHandler"),
+	});
 
 	const gameAssetsContextFactory = makeGameAssetsContextFactory({
 		fileSystemService,
@@ -310,6 +317,7 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 			getGetAllPlatformsQueryHandler: () => queryHandlerGetAllPlatforms,
 			getGetAllGenresQueryHandler: () => queryHandlerGetAllGenres,
 			getGetAllCompletionStatusesQueryHandler: () => queryHandlerGetAllCompletionStatuses,
+			getGetAllTagsQueryHandler: () => queryHandlerGetAllTags,
 		},
 
 		getGameAssetsContextFactory: () => gameAssetsContextFactory,

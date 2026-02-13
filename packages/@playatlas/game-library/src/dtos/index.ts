@@ -6,3 +6,4 @@ export * from "./game.response.dto";
 export * from "./genre.response.dto";
 export * from "./platform.response.dto";
 export * from "./scoring-engine";
+export * from "./tag.response.dto";

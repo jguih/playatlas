@@ -13,6 +13,11 @@ GET {{protocol}}://{{host}}/api/genre
 Content-Type: {{contentType}}
 Authorization: {{authorization}}
 
+### Get all tags
+GET {{protocol}}://{{host}}/api/tag
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
 ### Get all games
 GET {{protocol}}://{{host}}/api/game
 Content-Type: {{contentType}}

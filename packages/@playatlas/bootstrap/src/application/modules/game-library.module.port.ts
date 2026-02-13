@@ -41,6 +41,7 @@ import type {
 	IGetAllGamesQueryHandlerPort,
 	IGetAllGenresQueryHandlerPort,
 	IGetAllPlatformsQueryHandlerPort,
+	IGetAllTagsQueryHandlerPort,
 } from "@playatlas/game-library/queries";
 
 export type IGameLibraryModulePort = Readonly<{
@@ -50,6 +51,7 @@ export type IGameLibraryModulePort = Readonly<{
 		getGetAllPlatformsQueryHandler: () => IGetAllPlatformsQueryHandlerPort;
 		getGetAllGenresQueryHandler: () => IGetAllGenresQueryHandlerPort;
 		getGetAllCompletionStatusesQueryHandler: () => IGetAllCompletionStatusesQueryHandlerPort;
+		getGetAllTagsQueryHandler: () => IGetAllTagsQueryHandlerPort;
 	};
 
 	getGameAssetsContextFactory: () => IGameAssetsContextFactoryPort;
