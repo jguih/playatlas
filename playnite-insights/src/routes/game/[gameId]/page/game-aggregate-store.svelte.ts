@@ -3,14 +3,10 @@ import type { GameId } from "$lib/modules/common/domain";
 import {
 	CompanyIdParser,
 	CompletionStatusIdParser,
-	GenreIdParser,
-	PlatformIdParser,
 	type Company,
 	type CompletionStatus,
 	type Game,
 	type GameClassification,
-	type Genre,
-	type Platform,
 } from "$lib/modules/game-library/domain";
 import type { ClassificationId } from "@playatlas/common/domain";
 import { SvelteMap } from "svelte/reactivity";
@@ -25,8 +21,6 @@ export class GameAggregateStore {
 	completionStatus: CompletionStatus | null = $state(null);
 	developers: Company[] = $state([]);
 	publishers: Company[] = $state([]);
-	genres: Genre[] = $state([]);
-	platforms: Platform[] = $state([]);
 	gameClassifications: SvelteMap<ClassificationId, Set<GameClassification>> | null = $state(null);
 
 	constructor(private readonly deps: GameAggregateStoreDeps) {}
@@ -62,24 +56,6 @@ export class GameAggregateStore {
 		this.completionStatus = completionStatuses.at(0) ?? null;
 	};
 
-	private loadGenresAsync = async () => {
-		if (!this.game || this.game.Genres.length === 0) return;
-
-		const { genres } = await this.deps.api().GameLibrary.Query.GetGenresByIds.executeAsync({
-			genreIds: this.game.Genres.map(GenreIdParser.fromTrusted),
-		});
-		this.genres = genres;
-	};
-
-	private loadPlatformsAsync = async () => {
-		if (!this.game || this.game.Platforms.length === 0) return;
-
-		const { platforms } = await this.deps.api().GameLibrary.Query.GetPlatformsByIds.executeAsync({
-			platformIds: this.game.Platforms.map(PlatformIdParser.fromTrusted),
-		});
-		this.platforms = platforms;
-	};
-
 	private loadGameClassifications = async () => {
 		if (!this.game) return;
 
@@ -103,11 +79,11 @@ export class GameAggregateStore {
 
 		if (!this.game) return;
 
-		await this.loadCompletionStatusAsync();
-		await this.loadDevelopersAsync();
-		await this.loadPublishersAsync();
-		await this.loadGenresAsync();
-		await this.loadPlatformsAsync();
-		await this.loadGameClassifications();
+		await Promise.allSettled([
+			this.loadCompletionStatusAsync(),
+			this.loadDevelopersAsync(),
+			this.loadPublishersAsync(),
+			this.loadGameClassifications(),
+		]);
 	};
 }

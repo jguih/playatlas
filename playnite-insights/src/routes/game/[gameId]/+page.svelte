@@ -59,6 +59,7 @@
 	});
 
 	$inspect(store.gameClassifications?.get("RUN-BASED")?.values().toArray());
+	$inspect(vm.evidenceGroupsSignal);
 </script>
 
 <Header
@@ -149,22 +150,14 @@
 							class="pb-2"
 							bind:this={heroTitleEl}
 						>
-							<h1 class="text-2xl font-semibold leading-tight drop-shadow-md mb-1">
+							<h1 class="text-2xl font-semibold leading-tight drop-shadow-md mb-2">
 								{store.game.Playnite?.Name}
 							</h1>
 
-							{#if store.game.Playnite?.ReleaseDate || vm.companiesSummarySignal.length > 0}
-								<span class="text-sm">
-									<span class="text-foreground/60">
-										{store.game.Playnite?.ReleaseDate?.getFullYear()}
-									</span>
-									{#if store.game.Playnite?.ReleaseDate && vm.companiesSummarySignal.length > 0}
-										•
-									{/if}
-									<span class="font-bold text-foreground/60">
-										{vm.companiesSummarySignal}
-									</span>
-								</span>
+							{#if vm.highestClassificationStringSignal}
+								<SolidChip class="text-xs">
+									{vm.highestClassificationStringSignal}
+								</SolidChip>
 							{/if}
 						</div>
 					</div>
@@ -247,7 +240,7 @@
 					>
 						{@render detailSection(
 							"Last Played",
-							store.game.Playnite?.LastActivity?.toLocaleDateString(),
+							store.game.Playnite?.LastActivity?.toLocaleString(),
 						)}
 						{@render detailSection(
 							"Playtime",
@@ -267,8 +260,6 @@
 						{@render detailSection("Hidden", store.game.Playnite?.Hidden ? "Yes" : "No")}
 						{@render detailSection("Developers", vm.developersStringSignal)}
 						{@render detailSection("Publishers", vm.publishersStringSignal)}
-						{@render detailSection("Genres", vm.genresStringSignal)}
-						{@render detailSection("Platforms", vm.platformsStringSignal)}
 					</GameInfoSection>
 
 					<GameInfoSection
