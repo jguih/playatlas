@@ -12,6 +12,7 @@ import type { Game } from "../../domain/game.entity";
 import type { IGameRepositoryPort } from "../../infra/game.repository.port";
 import type { IGenreRepositoryPort } from "../../infra/genre.repository.port";
 import type { IGameClassificationRepositoryPort } from "../../infra/scoring-engine/game-classification.repository";
+import type { ITagRepositoryPort } from "../../infra/tag.repository.port";
 import type { IScoreEngineRegistryPort } from "./engine.registry";
 import type { IGameClassificationFactoryPort } from "./game-classification.factory";
 
@@ -32,6 +33,7 @@ export type IGameClassificationScoreServicePort = {
 export type GameClassificationScoreServiceDeps = {
 	scoreEngineRegistry: IScoreEngineRegistryPort;
 	genreRepository: IGenreRepositoryPort;
+	tagRepository: ITagRepositoryPort;
 	gameClassificationFactory: IGameClassificationFactoryPort;
 	gameClassificationRepository: IGameClassificationRepositoryPort;
 	gameRepository: IGameRepositoryPort;
@@ -42,6 +44,7 @@ export type GameClassificationScoreServiceDeps = {
 export const makeGameClassificationScoreService = ({
 	scoreEngineRegistry,
 	genreRepository,
+	tagRepository,
 	gameClassificationFactory,
 	gameClassificationRepository,
 	gameRepository,
@@ -80,6 +83,8 @@ export const makeGameClassificationScoreService = ({
 				const ulid = monotonicFactory();
 				const genres = genreRepository.all();
 				const genresSnapshot = new Map(genres.map((g) => [g.getId(), g]));
+				const tags = tagRepository.all();
+				const tagsSnapshot = new Map(tags.map((t) => [t.getId(), t]));
 				const gameClassificationsByGame = gameClassificationRepository.getLatestByGame();
 				let skipped = 0;
 				let created = 0;
@@ -104,6 +109,7 @@ export const makeGameClassificationScoreService = ({
 						const { score, normalizedScore, mode, breakdown } = engine.score({
 							game,
 							genresSnapshot,
+							tagsSnapshot,
 						});
 
 						const breakdownJson = engine.serializeBreakdown(breakdown);

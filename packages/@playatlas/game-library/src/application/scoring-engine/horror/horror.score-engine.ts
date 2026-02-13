@@ -19,8 +19,11 @@ export const makeHorrorScoreEngine = ({
 
 	return {
 		...self,
-		score: ({ game, genresSnapshot }) => {
-			const evidence = horrorEvidenceExtractor.extract(game, { genres: genresSnapshot });
+		score: ({ game, genresSnapshot, tagsSnapshot }) => {
+			const evidence = horrorEvidenceExtractor.extract(game, {
+				genres: genresSnapshot,
+				tags: tagsSnapshot,
+			});
 			const result = horrorScoringPolicy.apply(evidence);
 			return result;
 		},

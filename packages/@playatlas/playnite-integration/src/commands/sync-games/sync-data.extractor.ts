@@ -323,6 +323,7 @@ export const extractSyncData = ({
 				genreIds: genreIds,
 				publisherIds: publisherIds,
 				platformIds: platformIds,
+				tagIds: tagIds,
 				completionStatusId: null,
 				lastUpdatedAt: now,
 				createdAt: now,

@@ -1,6 +1,5 @@
 import { normalize } from "@playatlas/common/common";
 import { EvidenceExtractorInvalidDataError } from "../../domain";
-import type { GenreName } from "../../domain/genre.entity";
 import type { SignalOrGroup, TaxonomySignalItem, TextSignalItem } from "./engine.signals";
 import type { IEvidenceExtractorPort } from "./evidence-extractor.port";
 import type { Evidence } from "./evidence.types";
@@ -15,18 +14,19 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 	textSignals,
 }: EvidenceExtractorDeps<TGroup>): IEvidenceExtractorPort<TGroup> => {
 	const extractFromTaxonomy = (props: {
-		genres: GenreName[];
+		genres: string[];
+		tags: string[];
 		add: (e: Evidence<TGroup>) => void;
 	}) => {
-		const { genres, add } = props;
-		const normalizedGenres = genres.map(normalize);
+		const { genres, tags, add } = props;
+		const taxonomyList = genres.concat(tags).map(normalize);
 
-		const hasGenre = (x: string) => normalizedGenres.includes(normalize(x));
+		const hasTaxonomy = (x: string) => taxonomyList.includes(normalize(x));
 
 		for (const signal of taxonomySignals) {
 			for (const name of signal.name) {
 				if (Array.isArray(name)) {
-					if (name.every(hasGenre))
+					if (name.every(hasTaxonomy))
 						add({
 							source: "taxonomy",
 							sourceHint: "genre",
@@ -36,7 +36,7 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 							tier: signal.tier,
 							isGate: signal.isGate,
 						});
-				} else if (hasGenre(name)) {
+				} else if (hasTaxonomy(name)) {
 					add({
 						source: "taxonomy",
 						sourceHint: "genre",
@@ -96,13 +96,14 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 	};
 
 	return {
-		extract: (game, { genres }) => {
+		extract: (game, { genres, tags }) => {
 			const evidence: Evidence<TGroup>[] = [];
-			const gameGenres: GenreName[] = [];
+			const gameGenres: string[] = [];
+			const gameTags: string[] = [];
 
 			const add = (e: Evidence<TGroup>) => evidence.push(e);
 
-			if (!game.relationships.genres.isLoaded())
+			if (!game.relationships.genres.isLoaded() || !game.relationships.tags.isLoaded())
 				throw new EvidenceExtractorInvalidDataError(
 					"Evidence extractor requires all game relationships to be loaded.",
 				);
@@ -112,7 +113,12 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 				if (genre) gameGenres.push(genre.getName());
 			});
 
-			extractFromTaxonomy({ genres: gameGenres, add });
+			game.relationships.tags.get().forEach((tId) => {
+				const tag = tags.get(tId);
+				if (tag) gameTags.push(tag.getName());
+			});
+
+			extractFromTaxonomy({ genres: gameGenres, tags: gameTags, add });
 			extractFromText({ description: game.getPlayniteSnapshot()?.description, add });
 
 			return evidence;

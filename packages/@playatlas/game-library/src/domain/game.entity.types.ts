@@ -71,7 +71,7 @@ type SyncGameProps = {
 
 export type MakeGameProps = Partial<SyncGameProps> &
 	BaseGame &
-	Partial<MakeGameRelationshipProps> &
+	MakeGameRelationshipProps &
 	Partial<SoftDeleteProps> &
 	Partial<PlayniteProps>;
 

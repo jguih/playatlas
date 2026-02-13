@@ -48,6 +48,7 @@ import {
 	makeTagRepository,
 	type IGameRepositoryPort,
 	type IGenreRepositoryPort,
+	type ITagRepositoryPort,
 } from "@playatlas/game-library/infra";
 import {
 	makeGetAllClassificationsQueryHandler,
@@ -78,6 +79,7 @@ export type GameLibraryModuleDeps = GameLibraryModuleScoreEngineDeps & {
 type GameLibraryScoreModuleDeps = GameLibraryModuleDeps & {
 	genreRepository: IGenreRepositoryPort;
 	gameRepository: IGameRepositoryPort;
+	tagRepository: ITagRepositoryPort;
 };
 
 const makeGameLibraryScoreEngineModule = ({
@@ -86,6 +88,7 @@ const makeGameLibraryScoreEngineModule = ({
 	clock,
 	genreRepository,
 	gameRepository,
+	tagRepository,
 	scoreEngine,
 }: GameLibraryScoreModuleDeps): IGameLibraryModulePort["scoreEngine"] => {
 	const buildLog = (ctx: string) => logServiceFactory.build(ctx);
@@ -150,6 +153,7 @@ const makeGameLibraryScoreEngineModule = ({
 		gameClassificationRepository,
 		gameRepository,
 		genreRepository,
+		tagRepository,
 		clock,
 		scoreEngineRegistry,
 		logService: buildLog("GameClassificationScoreService"),
@@ -291,6 +295,7 @@ export const makeGameLibraryModule = (deps: GameLibraryModuleDeps): IGameLibrary
 		...deps,
 		genreRepository,
 		gameRepository,
+		tagRepository,
 	});
 
 	const gameLibraryUnitOfWork = makeGameLibraryUnitOfWork({

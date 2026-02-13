@@ -25,8 +25,11 @@ export const makeRunBasedScoreEngine = ({
 
 	return {
 		...self,
-		score: ({ game, genresSnapshot }) => {
-			const evidence = runBasedEvidenceExtractor.extract(game, { genres: genresSnapshot });
+		score: ({ game, genresSnapshot, tagsSnapshot }) => {
+			const evidence = runBasedEvidenceExtractor.extract(game, {
+				genres: genresSnapshot,
+				tags: tagsSnapshot,
+			});
 			const result = runBasedScoringPolicy.apply(evidence);
 			return result;
 		},
