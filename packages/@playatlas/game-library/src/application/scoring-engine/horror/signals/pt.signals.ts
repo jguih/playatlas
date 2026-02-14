@@ -19,6 +19,7 @@ export const HORROR_ENGINE_TEXT_SIGNALS_PT = {
 	RESOURCE_MANAGEMENT_LABEL: ["gerenciamento de recursos"],
 	LIMITED_RESOURCES_LABEL: ["recursos limitados"],
 	INVENTORY_MANAGEMENT_LABEL: ["gerenciamento de inventário", "gestão de inventário"],
+	FIGHT_FOR_SURVIVAL_LABEL: ["lute pela sobrevivência"],
 	// #region: psychological_horror
 	PSYCHOLOGICAL_HORROR_LABEL: ["terror psicológico"],
 	DESCEND_INTO_MADNESS_LABEL: ["descida à loucura", "mergulhar na loucura"],

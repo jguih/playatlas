@@ -73,7 +73,7 @@ export class GameViewModel {
 			const strongestClassifications: ClassificationId[] = [];
 
 			for (const [classificationId, evidenceGroupMeta] of groupsMeta) {
-				if (evidenceGroupMeta.score <= 0.4) continue;
+				if (evidenceGroupMeta.score <= 0.3) continue;
 				if (
 					evidenceGroupMeta.score === highestScore ||
 					evidenceGroupMeta.score >= highestScore * 0.75

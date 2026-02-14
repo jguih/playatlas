@@ -6,13 +6,13 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	HORROR_GAME_LABEL: {
 		group: "horror_identity",
 		tier: "A",
-		weight: 40,
+		weight: 30,
 		isGate: true,
 	},
 	HORROR_ADVENTURE_LABEL: {
 		group: "horror_identity",
 		tier: "A",
-		weight: 40,
+		weight: 30,
 		isGate: true,
 	},
 	GRUELING_HORROR_LABEL: {
@@ -34,31 +34,37 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	SURVIVAL_HORROR_LABEL: {
 		group: "resource_survival",
 		tier: "A",
-		weight: 45,
+		weight: 20,
 		isGate: true,
 	},
 	SURVIVAL_NIGHTMARE_LABEL: {
 		group: "resource_survival",
 		tier: "B",
-		weight: 20,
+		weight: 16,
 		isGate: false,
 	},
 	RESOURCE_MANAGEMENT_LABEL: {
 		group: "resource_survival",
 		tier: "B",
-		weight: 18,
+		weight: 14,
 		isGate: false,
 	},
 	LIMITED_RESOURCES_LABEL: {
 		group: "resource_survival",
 		tier: "B",
-		weight: 22,
+		weight: 16,
 		isGate: false,
 	},
 	INVENTORY_MANAGEMENT_LABEL: {
 		group: "resource_survival",
-		tier: "B",
-		weight: 18,
+		tier: "C",
+		weight: 8,
+		isGate: false,
+	},
+	FIGHT_FOR_SURVIVAL_LABEL: {
+		group: "resource_survival",
+		tier: "C",
+		weight: 8,
 		isGate: false,
 	},
 	// #endregion
@@ -66,7 +72,7 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	PSYCHOLOGICAL_HORROR_LABEL: {
 		group: "psychological_horror",
 		tier: "A",
-		weight: 60,
+		weight: 35,
 		isGate: true,
 	},
 	DESCEND_INTO_MADNESS_LABEL: {
@@ -78,7 +84,7 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	DISTURBING_LABEL: {
 		group: "psychological_horror",
 		tier: "C",
-		weight: 15,
+		weight: 14,
 		isGate: false,
 	},
 	NIGHTMARE_LABEL: {
@@ -99,7 +105,7 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "atmospheric_horror",
 		tier: "B",
 		weight: 25,
-		isGate: true,
+		isGate: false,
 	},
 	TENSION_ATMOSPHERE_LABEL: {
 		group: "atmospheric_horror",
@@ -170,8 +176,8 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	// #region: horror_identity
 	HORROR_TAXONOMY: {
 		group: "horror_identity",
-		tier: "A",
-		weight: 40,
+		tier: "B",
+		weight: 15,
 		isGate: true,
 	},
 	// #endregion
@@ -179,13 +185,13 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	THIRD_PERSON_SHOOTER_TAXONOMY: {
 		group: "combat_engagement",
 		tier: "B",
-		weight: 16,
+		weight: 14,
 		isGate: false,
 	},
 	FIRST_PERSON_SHOOTER_TAXONOMY: {
 		group: "combat_engagement",
 		tier: "B",
-		weight: 18,
+		weight: 14,
 		isGate: false,
 	},
 	ACTION_TAXONOMY: {
@@ -205,7 +211,7 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	SURVIVAL_HORROR_TAXONOMY: {
 		group: "resource_survival",
 		tier: "A",
-		weight: 55,
+		weight: 15,
 		isGate: true,
 	},
 	SURVIVAL_TAXONOMY: {
@@ -219,13 +225,13 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	PSYCHOLOGICAL_HORROR_TAXONOMY: {
 		group: "psychological_horror",
 		tier: "A",
-		weight: 60,
+		weight: 18,
 		isGate: true,
 	},
 	SUPERNATURAL_TAXONOMY: {
 		group: "psychological_horror",
 		tier: "B",
-		weight: 15,
+		weight: 8,
 		isGate: false,
 	},
 	// #endregion

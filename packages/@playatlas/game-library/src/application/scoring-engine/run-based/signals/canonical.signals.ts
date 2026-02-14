@@ -122,25 +122,25 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	ROGUELITE_PROGRESSION_LABEL: {
 		group: "meta_progression",
 		tier: "B",
-		weight: 25,
+		weight: 20,
 		isGate: false,
 	},
 	META_PROGRESSION_SYSTEM_LABEL: {
 		group: "meta_progression",
 		tier: "B",
-		weight: 24,
+		weight: 16,
 		isGate: false,
 	},
 	PERMANENT_UPGRADES_LABEL: {
 		group: "meta_progression",
 		tier: "B",
-		weight: 22,
+		weight: 18,
 		isGate: false,
 	},
 	PERMANENT_UNLOCKS_LABEL: {
 		group: "meta_progression",
 		tier: "B",
-		weight: 22,
+		weight: 18,
 		isGate: false,
 	},
 	// #endregion
@@ -152,14 +152,14 @@ export const RUN_BASED_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	// #region: run_based_identity
 	ROGUELIKE_TAXONOMY: {
 		group: "run_based_identity",
-		tier: "A",
-		weight: 30,
+		tier: "B",
+		weight: 15,
 		isGate: true,
 	},
 	ROGUELITE_TAXONOMY: {
 		group: "run_based_identity",
-		tier: "A",
-		weight: 25,
+		tier: "B",
+		weight: 14,
 		isGate: true,
 	},
 	// #endregion
@@ -167,7 +167,7 @@ export const RUN_BASED_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	PROCEDURAL_GENERATION_TAXONOMY: {
 		group: "procedural_runs",
 		tier: "B",
-		weight: 35,
+		weight: 16,
 		isGate: false,
 	},
 	// #endregion
@@ -175,15 +175,15 @@ export const RUN_BASED_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	PERMADEATH_TAXONOMY: {
 		group: "permadeath_reset",
 		tier: "B",
-		weight: 25,
+		weight: 14,
 		isGate: false,
 	},
 	// #endregion
 	// #region: run_variability
 	REPLAY_VALUE_TAXONOMY: {
 		group: "run_variability",
-		tier: "B",
-		weight: 25,
+		tier: "C",
+		weight: 12,
 		isGate: false,
 	},
 	// #endregion

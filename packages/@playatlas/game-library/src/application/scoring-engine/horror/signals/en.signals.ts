@@ -19,6 +19,7 @@ export const HORROR_ENGINE_TEXT_SIGNALS_EN = {
 	RESOURCE_MANAGEMENT_LABEL: ["resource management"],
 	LIMITED_RESOURCES_LABEL: ["limited resources"],
 	INVENTORY_MANAGEMENT_LABEL: ["inventory management", "inventory and ammo management"],
+	FIGHT_FOR_SURVIVAL_LABEL: ["fight for survival"],
 	// #region: psychological_horror
 	PSYCHOLOGICAL_HORROR_LABEL: ["psychological horror", "psychological-horror"],
 	DESCEND_INTO_MADNESS_LABEL: ["descend into madness", "succumb to the madness"],
