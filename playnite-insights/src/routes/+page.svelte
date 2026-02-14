@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { getClientApiContext } from "$lib/modules/bootstrap/application";
 	import BottomNav from "$lib/ui/components/BottomNav.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
@@ -9,15 +11,15 @@
 	import Spinner from "$lib/ui/components/Spinner.svelte";
 	import { HomeIcon, LayoutDashboardIcon, SearchIcon, SettingsIcon } from "@lucide/svelte";
 	import { onMount } from "svelte";
-	import { homePageFiltersSignal } from "./game/library/page/home-page-filters.svelte";
+	import { GameLibraryPager } from "./game/library/page/game-library-pager.svelte";
 	import { SyncProgressViewModel } from "./game/library/page/sync-progress.view-model";
 	import HomePageHero from "./page/components/HomePageHero.svelte";
 	import { HomePageStore } from "./page/home-page-game-store.svelte";
 
 	const api = getClientApiContext();
+	const pager = new GameLibraryPager({ api });
 	const syncProgress = $derived(api().Synchronization.SyncProgressReporter.progressSignal);
 	const store = new HomePageStore({ api });
-	// void api().GameLibrary.Query.GetGamesRanked.executeAsync({ limit: 50 }).then(console.log);
 
 	void store.loadGamesAsync();
 
@@ -50,15 +52,15 @@
 				<div class="flex flex-nowrap">
 					<LightButton
 						variant="neutral"
-						iconOnly={!homePageFiltersSignal.search}
+						iconOnly={!pager.pagerStateSignal.query.filters.search}
 						class="flex items-center gap-1 px-2!"
 					>
 						<Icon>
 							<SearchIcon />
 						</Icon>
-						{#if homePageFiltersSignal.search}
+						{#if pager.pagerStateSignal.query.filters.search}
 							<span class="text-xs text-foreground/60 truncate max-w-12">
-								{homePageFiltersSignal.search}
+								{pager.pagerStateSignal.query.filters.search}
 							</span>
 						{/if}
 					</LightButton>
@@ -74,6 +76,10 @@
 		<HomePageHero
 			games={store.storeSignal.hero.items}
 			loading={store.storeSignal.hero.loading}
+			onClickSeeMore={async () => {
+				pager.setQuery({ mode: "ranked" });
+				await goto(resolve("/game/library"));
+			}}
 		/>
 	</Main>
 

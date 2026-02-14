@@ -58,8 +58,9 @@
 		return () => observer.disconnect();
 	});
 
-	$inspect(store.gameClassifications?.get("RUN-BASED")?.values().toArray());
-	$inspect(vm.evidenceGroupsSignal);
+	// $inspect(store.gameClassifications?.get("HORROR")?.values().toArray().at(0));
+	// $inspect(store.gameClassifications?.get("RUN-BASED")?.values().toArray().at(0));
+	// $inspect(store.gameClassifications?.get("SURVIVAL")?.values().toArray().at(0));
 </script>
 
 <Header

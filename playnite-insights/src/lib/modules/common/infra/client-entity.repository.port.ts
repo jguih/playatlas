@@ -38,7 +38,7 @@ export interface IClientEntityRepository<
 	 * @throws {IndexedDBNotInitializedError} If the DB is not ready
 	 * @throws {DOMException} If a transaction fails
 	 */
-	getByIdsAsync: (entityId: TEntityKey[]) => Promise<TEntity[]>;
+	getByIdsAsync: (entityId: TEntityKey[]) => Promise<Map<TEntityKey, TEntity>>;
 	/**
 	 * Sync provided list of entities with local db, creating, updating
 	 * or marking entities as deleted

@@ -1,58 +1,87 @@
 import type { ClientApiGetter } from "$lib/modules/bootstrap/application";
-import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
 import type { GameCardProjection } from "$lib/ui/components/game-card/game-card.projection";
-import type { GameLibraryPagerLoadMoreProps } from "./game-library-pager.types";
-import { homePageFiltersSignal, homePageSortSignal } from "./home-page-filters.svelte";
-
-export type GameLibraryPagerState = {
-	games: GameCardProjection[];
-	nextKey: IDBValidKey | null;
-	loading: boolean;
-	exhausted: boolean;
-};
+import type {
+	GameLibraryPagerState,
+	SetGameLibraryPagerQueryProps,
+} from "./game-library-pager.types";
+import { resetGameLibraryScrollPosition } from "./game-library-scroll-position.svelte";
 
 export type GameLibraryPagerDeps = {
 	api: ClientApiGetter;
 };
 
-export const pagerStateSignal = $state<GameLibraryPagerState>({
+let pagerStateSignal = $state<GameLibraryPagerState>({
+	mode: "query",
 	games: [],
 	nextKey: null,
 	loading: false,
 	exhausted: false,
+	query: { filters: {}, sort: { type: "recentlyUpdated", direction: "desc" } },
 });
 
 export class GameLibraryPager {
-	readonly pagerStateSignal: GameLibraryPagerState;
-	private readonly api: ClientApiGetter;
+	constructor(private readonly deps: GameLibraryPagerDeps) {}
 
-	constructor({ api }: GameLibraryPagerDeps) {
-		this.pagerStateSignal = pagerStateSignal;
-		this.api = api;
+	get pagerStateSignal() {
+		return pagerStateSignal;
 	}
 
-	loadMore = async (props: GameLibraryPagerLoadMoreProps = {}) => {
-		if (this.pagerStateSignal.loading || this.pagerStateSignal.exhausted) return;
+	private getSnapshots = () => {
+		const pagerStateSnapshot = $state.snapshot(
+			pagerStateSignal,
+		) as unknown as GameLibraryPagerState;
+		return { pagerStateSnapshot };
+	};
 
-		const { filter, sort } = props;
-
-		this.pagerStateSignal.loading = true;
-
+	private withLoading = <T>(fn: () => T): T => {
 		try {
-			const pagerSnapshot = $state.snapshot(
-				this.pagerStateSignal,
-			) as unknown as GameLibraryPagerState;
-			const filterSnapshot =
-				filter ?? ($state.snapshot(homePageFiltersSignal) as unknown as GetGamesQueryFilter);
-			const sortSnapshot =
-				sort ?? ($state.snapshot(homePageSortSignal) as unknown as GetGamesQuerySort);
-			const cursor = pagerSnapshot.nextKey;
+			pagerStateSignal.loading = true;
+			return fn();
+		} finally {
+			pagerStateSignal.loading = false;
+		}
+	};
 
-			const result = await this.api().GameLibrary.Query.GetGames.executeAsync({
+	private loadFromRankedAsync = async () => {
+		await this.withLoading(async () => {
+			const { pagerStateSnapshot } = this.getSnapshots();
+
+			if (pagerStateSnapshot.mode !== "ranked") return;
+
+			const result = await this.deps.api().GameLibrary.Query.GetGamesRanked.executeAsync({
 				limit: 50,
-				sort: sortSnapshot,
+				filter: pagerStateSnapshot.query.filters,
+				cursor: pagerStateSnapshot.nextKey,
+			});
+
+			const cardProjectionItems = result.games.map(
+				(i) =>
+					({
+						id: i.Id,
+						name: i.Playnite?.Name ?? "Unknown",
+						coverImageFilePath: i.Playnite?.CoverImagePath,
+					}) satisfies GameCardProjection,
+			);
+
+			pagerStateSignal.games.push(...cardProjectionItems);
+			pagerStateSignal.nextKey = result.nextKey;
+			pagerStateSignal.exhausted = result.nextKey === null;
+		});
+	};
+
+	private loadFromQueryAsync = async () => {
+		return await this.withLoading(async () => {
+			const { pagerStateSnapshot } = this.getSnapshots();
+
+			if (pagerStateSnapshot.mode !== "query") return;
+
+			const cursor = pagerStateSnapshot.nextKey;
+
+			const result = await this.deps.api().GameLibrary.Query.GetGames.executeAsync({
+				limit: 50,
+				sort: pagerStateSnapshot.query.sort,
 				cursor,
-				filter: filterSnapshot,
+				filter: pagerStateSnapshot.query.filters,
 			});
 
 			const cardProjectionItems = result.items.map(
@@ -64,20 +93,62 @@ export class GameLibraryPager {
 					}) satisfies GameCardProjection,
 			);
 
-			this.pagerStateSignal.games.push(...cardProjectionItems);
-			this.pagerStateSignal.nextKey = result.nextKey;
-			this.pagerStateSignal.exhausted = result.nextKey === null;
-		} finally {
-			this.pagerStateSignal.loading = false;
+			pagerStateSignal.games.push(...cardProjectionItems);
+			pagerStateSignal.nextKey = result.nextKey;
+			pagerStateSignal.exhausted = result.nextKey === null;
+		});
+	};
+
+	loadMoreAsync = async () => {
+		if (pagerStateSignal.loading || pagerStateSignal.exhausted) return;
+
+		const { pagerStateSnapshot } = this.getSnapshots();
+
+		if (pagerStateSnapshot.mode === "query") {
+			await this.loadFromQueryAsync();
+		} else {
+			await this.loadFromRankedAsync();
 		}
 	};
 
 	invalidateSignal = () => {
-		if (this.pagerStateSignal.loading) return;
+		if (pagerStateSignal.loading) return;
 
-		this.pagerStateSignal.exhausted = false;
-		this.pagerStateSignal.games = [];
-		this.pagerStateSignal.loading = false;
-		this.pagerStateSignal.nextKey = null;
+		pagerStateSignal.exhausted = false;
+		pagerStateSignal.games = [];
+		pagerStateSignal.loading = false;
+		pagerStateSignal.nextKey = null;
+	};
+
+	setQuery = (query: SetGameLibraryPagerQueryProps) => {
+		resetGameLibraryScrollPosition();
+
+		switch (query.mode) {
+			case "ranked": {
+				pagerStateSignal = {
+					mode: "ranked",
+					query: { filters: query.filters ?? {} },
+					loading: false,
+					exhausted: false,
+					games: [],
+					nextKey: null,
+				};
+				break;
+			}
+			case "query":
+			default:
+				pagerStateSignal = {
+					mode: "query",
+					query: {
+						filters: query.filters ?? {},
+						sort: query.sort ?? { type: "recentlyUpdated", direction: "desc" },
+					},
+					loading: false,
+					exhausted: false,
+					games: [],
+					nextKey: null,
+				};
+				break;
+		}
 	};
 }

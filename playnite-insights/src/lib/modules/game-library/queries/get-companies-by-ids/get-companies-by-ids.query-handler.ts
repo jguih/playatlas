@@ -20,6 +20,6 @@ export class GetCompaniesByIdsQueryHandler implements IGetCompaniesByIdsQueryHan
 		companyIds,
 	}: GetCompaniesByIdsQuery): Promise<GetCompaniesByIdsQueryResult> {
 		const companies = await this.companyRepository.getByIdsAsync(companyIds);
-		return { companies };
+		return { companies: companies.values().toArray() };
 	}
 }

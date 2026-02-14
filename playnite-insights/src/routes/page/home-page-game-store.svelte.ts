@@ -33,8 +33,8 @@ export class HomePageStore {
 		return this.withLoading("hero", async () => {
 			const ranked = await this.deps
 				.api()
-				.GameLibrary.RecommendationEngine.Engine.recommendForInstanceAsync({ limit: 6 });
-			const gameIds = ranked.map((r) => r.gameId);
+				.GameLibrary.RecommendationEngine.Engine.recommendForInstanceAsync();
+			const gameIds = ranked.slice(0, 6).map((r) => r.gameId);
 			const rankedMap = new SvelteMap(ranked.map((r) => [r.gameId, r.similarity]));
 
 			const { games } = await this.deps.api().GameLibrary.Query.GetGamesByIds.executeAsync({
@@ -50,7 +50,7 @@ export class HomePageStore {
 				}))
 				.sort((a, b) => b.Similarity - a.Similarity);
 
-			this.storeSignal.hero.items = rankedGames.sort((a, b) => b.Similarity - a.Similarity);
+			this.storeSignal.hero.items = rankedGames;
 		});
 	};
 

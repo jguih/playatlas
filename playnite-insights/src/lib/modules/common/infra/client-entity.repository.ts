@@ -71,11 +71,14 @@ export class ClientEntityRepository<
 		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
 
-			const requests = ids.map((key) => this.runRequest<TModel | undefined>(store.get(key)));
+			const entries = await Promise.all(
+				ids.map(async (id) => {
+					const model = await this.runRequest(store.get(id));
+					return model ? [id, this.mapper.toDomain(model)] : undefined;
+				}),
+			);
 
-			const results = await Promise.all(requests);
-
-			return results.filter((e) => e !== undefined).map(this.mapper.toDomain);
+			return new Map(entries.filter(Boolean) as [TEntityKey, TEntity][]);
 		});
 	};
 

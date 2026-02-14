@@ -16,7 +16,7 @@ export class GetGameClassificationsByIdsQueryHandler implements IGetGameClassifi
 			: [gameClassificationIds];
 		const gameClassifications = await this.deps.gameClassificationRepository.getByIdsAsync(ids);
 		return {
-			gameClassifications,
+			gameClassifications: gameClassifications.values().toArray(),
 		};
 	};
 }

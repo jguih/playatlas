@@ -15,6 +15,6 @@ export class GetGamesByIdsQueryHandler implements IGetGamesByIdsQueryHandlerPort
 
 	async executeAsync({ gameIds }: GetGamesByIdsQuery): Promise<GetGamesByIdsQueryResult> {
 		const games = await this.gameRepository.getByIdsAsync(gameIds);
-		return { games };
+		return { games: games.values().toArray() };
 	}
 }

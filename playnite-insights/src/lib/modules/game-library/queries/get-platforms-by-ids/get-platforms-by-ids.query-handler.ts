@@ -20,6 +20,6 @@ export class GetPlatformsByIdsQueryHandler implements IGetPlatformsByIdsQueryHan
 		platformIds,
 	}: GetPlatformsByIdsQuery): Promise<GetPlatformsByIdsQueryResult> {
 		const platforms = await this.platformRepository.getByIdsAsync(platformIds);
-		return { platforms };
+		return { platforms: platforms.values().toArray() };
 	}
 }

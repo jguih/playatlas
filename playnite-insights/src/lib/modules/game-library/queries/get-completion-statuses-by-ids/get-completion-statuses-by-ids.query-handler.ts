@@ -21,6 +21,6 @@ export class GetCompletionStatusesByIdsQueryHandler implements IGetCompletionSta
 	}: GetCompletionStatusesByIdsQuery): Promise<GetCompletionStatusesByIdsQueryResult> {
 		const completionStatuses =
 			await this.completionStatusRepository.getByIdsAsync(completionStatusesIds);
-		return { completionStatuses };
+		return { completionStatuses: completionStatuses.values().toArray() };
 	}
 }

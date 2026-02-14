@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import { resolve } from "$app/paths";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import GameCard from "$lib/ui/components/game-card/GameCard.svelte";
 	import GameCardSkeleton from "$lib/ui/components/game-card/GameCardSkeleton.svelte";
@@ -9,9 +7,10 @@
 	type HeroProps = {
 		games: HomePageGameReadModel[];
 		loading: boolean;
+		onClickSeeMore: () => void;
 	};
 
-	const { games, loading }: HeroProps = $props();
+	const { games, loading, onClickSeeMore }: HeroProps = $props();
 </script>
 
 <section class="mb-8">
@@ -22,7 +21,7 @@
 			<p class="text-sm opacity-60">Based on your taste</p>
 			<LightButton
 				size="sm"
-				onclick={() => goto(resolve("/game/library"))}
+				onclick={() => onClickSeeMore()}
 			>
 				See more
 			</LightButton>

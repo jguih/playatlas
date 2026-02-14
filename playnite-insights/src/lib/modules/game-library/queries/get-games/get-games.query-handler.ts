@@ -1,4 +1,4 @@
-import type { GetGamesQuerySortDirection } from "$lib/modules/common/queries";
+import type { SortDirection } from "$lib/modules/common/domain";
 import type { Game } from "../../domain/game.entity";
 import type { IGameRepositoryPort } from "../../infra/game.repository.port";
 import type { IGetGamesQueryHandlerFilterBuilderPort } from "./get-games.query-handler.filter-builder";
@@ -24,7 +24,7 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 		limit: number;
 		filters: GameFilter | GameFilter[];
 		scanSourceAsync: ScanSourceAsyncFn;
-		direction?: GetGamesQuerySortDirection;
+		direction?: SortDirection;
 		cursor?: IDBValidKey | null;
 	}): Promise<GetGamesQueryResult> => {
 		const { limit, scanSourceAsync, direction } = params;

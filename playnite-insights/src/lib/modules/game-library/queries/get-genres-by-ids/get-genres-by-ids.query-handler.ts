@@ -15,6 +15,6 @@ export class GetGenresByIdsQueryHandler implements IGetGenresByIdsQueryHandlerPo
 
 	async executeAsync({ genreIds }: GetGenresByIdsQuery): Promise<GetGenresByIdsQueryResult> {
 		const genres = await this.genreRepository.getByIdsAsync(genreIds);
-		return { genres };
+		return { genres: genres.values().toArray() };
 	}
 }

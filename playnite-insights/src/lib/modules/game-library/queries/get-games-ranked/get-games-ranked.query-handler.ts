@@ -6,7 +6,9 @@ import type {
 } from "../../application/recommendation-engine/recommendation-engine";
 import type { RecommendationEngineFilter } from "../../application/recommendation-engine/recommendation-engine.types";
 import type { IGameRepositoryPort } from "../../infra/game.repository.port";
+import type { GetGamesRankedQuery } from "./get-games-ranked.query";
 import type { IGetGamesRankedQueryHandlerPort } from "./get-games-ranked.query-handler.port";
+import type { ExpandedGame } from "./get-games-ranked.query.types";
 
 export type GetGamesRankedQueryHandlerDeps = {
 	recommendationEngine: IRecommendationEnginePort;
@@ -27,13 +29,21 @@ export class GetGamesRankedQueryHandler implements IGetGamesRankedQueryHandlerPo
 		return { slice, nextKey };
 	};
 
-	executeAsync: IGetGamesRankedQueryHandlerPort["executeAsync"] = async (query) => {
-		const filter: RecommendationEngineFilter = ({ vector }): boolean =>
-			vector[GAME_CLASSIFICATION_INDEX.HORROR] > 0.4;
+	private buildFilters = (query: GetGamesRankedQuery) => {
+		const filters: RecommendationEngineFilter[] = [];
 
+		if (query.filter?.horror) {
+			filters.push(({ vector }): boolean => vector[GAME_CLASSIFICATION_INDEX.HORROR] > 0.4);
+		}
+
+		return filters;
+	};
+
+	executeAsync: IGetGamesRankedQueryHandlerPort["executeAsync"] = async (query) => {
 		const ranked = await this.deps.recommendationEngine.recommendForInstanceAsync({
-			filters: [filter],
+			filters: this.buildFilters(query),
 		});
+		const rankedMap = new Map(ranked.map((r) => [r.gameId, r.similarity]));
 
 		const { slice, nextKey } = this.paginate({
 			items: ranked,
@@ -41,12 +51,13 @@ export class GetGamesRankedQueryHandler implements IGetGamesRankedQueryHandlerPo
 			cursor: query.cursor,
 		});
 
-		const similarityMap = new Map(slice.map((r) => [r.gameId, r.similarity]));
-
 		const games = await this.deps.gameRepository.getByIdsAsync(slice.map((s) => s.gameId));
 
-		games.sort((a, b) => similarityMap.get(b.Id)! - similarityMap.get(a.Id)!);
+		const rankedGames: ExpandedGame[] = [...games.values()].map((g) => ({
+			...g,
+			Synergy: rankedMap.get(g.Id) ?? 0,
+		}));
 
-		return { games, nextKey };
+		return { games: rankedGames, nextKey };
 	};
 }

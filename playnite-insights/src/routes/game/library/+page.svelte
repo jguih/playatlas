@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { afterNavigate, beforeNavigate } from "$app/navigation";
 	import { getClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
-	import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
 	import type { CreateGameLibraryFilterCommand } from "$lib/modules/game-library/commands";
 	import type { GameLibraryFilter } from "$lib/modules/game-library/domain";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
@@ -16,20 +15,16 @@
 	import { ArrowLeftIcon, ListFilter, SearchIcon } from "@lucide/svelte";
 	import { onMount, tick } from "svelte";
 	import SearchBottomSheet from "./page/components/SearchBottomSheet.svelte";
+	import { GameLibraryFiltersSidebar } from "./page/game-library-filters-sidebar";
 	import { GameLibraryPager } from "./page/game-library-pager.svelte";
-	import type { GameLibraryPagerLoadMoreProps } from "./page/game-library-pager.types";
-	import {
-		HomePageFilters,
-		homePageFiltersSignal,
-		homePageSortSignal,
-	} from "./page/home-page-filters.svelte";
-	import { homePageScrollState } from "./page/home-page-scroll-position.svelte";
+	import { type GameLibraryPagerState } from "./page/game-library-pager.types";
+	import { gameLibraryPageScrollState } from "./page/game-library-scroll-position.svelte";
 	import { HomePageSearch } from "./page/home-page-search.svelte";
 	import { SyncProgressViewModel } from "./page/sync-progress.view-model";
 
 	const api = getClientApiContext();
 	const pager = new GameLibraryPager({ api });
-	const filters = new HomePageFilters();
+	const filters = new GameLibraryFiltersSidebar();
 	const search = new HomePageSearch();
 	const syncProgress = $derived(api().Synchronization.SyncProgressReporter.progressSignal);
 	const libraryFilterItems = $state<{ items: GameLibraryFilter[] }>({ items: [] });
@@ -37,9 +32,9 @@
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);
 	let main = $state<HTMLElement | undefined>(undefined);
 
-	const reloadPagerAsync = async (props: GameLibraryPagerLoadMoreProps = {}) => {
+	const reloadPagerAsync = async () => {
 		pager.invalidateSignal();
-		await pager.loadMore(props);
+		await pager.loadMoreAsync();
 	};
 
 	const clearReloadPagerTimeout = () => {
@@ -50,10 +45,8 @@
 	};
 
 	const commitSearchAsync = async (command: CreateGameLibraryFilterCommand) => {
-		const query = command.query;
-
 		await Promise.allSettled([
-			reloadPagerAsync({ filter: query.filter ?? undefined, sort: query.sort }),
+			reloadPagerAsync(),
 			api().GameLibrary.Command.CreateGameLibraryFilter.executeAsync(command),
 		]);
 
@@ -63,7 +56,7 @@
 	const reloadPagerDebounced = () => {
 		clearReloadPagerTimeout();
 
-		if (!homePageFiltersSignal.search) {
+		if (!pager.pagerStateSignal.query.filters.search) {
 			void reloadPagerAsync();
 			return;
 		}
@@ -88,7 +81,7 @@
 		const observer = new IntersectionObserver(
 			async ([entry]) => {
 				if (entry.isIntersecting) {
-					await pager.loadMore();
+					await pager.loadMoreAsync();
 				}
 			},
 			{
@@ -121,17 +114,17 @@
 	});
 
 	beforeNavigate(() => {
-		if (main) homePageScrollState.y = main.scrollTop;
+		if (main) gameLibraryPageScrollState.y = main.scrollTop;
 	});
 
 	afterNavigate(() => {
-		if (!main || homePageScrollState.y === 0) return;
+		if (!main || gameLibraryPageScrollState.y === 0) return;
 
 		const restore = () => {
 			if (!main) return;
 
 			if (main.scrollHeight > main.clientHeight) {
-				main.scrollTo({ top: homePageScrollState.y, behavior: "auto" });
+				main.scrollTo({ top: gameLibraryPageScrollState.y, behavior: "auto" });
 			} else {
 				requestAnimationFrame(restore);
 			}
@@ -149,22 +142,23 @@
 	<SearchBottomSheet
 		onClose={() => {
 			clearReloadPagerTimeout();
+			const state = $state.snapshot(pager.pagerStateSignal) as unknown as GameLibraryPagerState;
 
 			const command: CreateGameLibraryFilterCommand = {
 				query: {
-					filter: $state.snapshot(homePageFiltersSignal) as unknown as GetGamesQueryFilter,
-					sort: $state.snapshot(homePageSortSignal) as unknown as GetGamesQuerySort,
+					filter: state.query.filters,
+					sort: state.mode === "query" ? state.query.sort : { type: "recentlyUpdated" },
 				},
 			};
 
 			search.close();
 			void commitSearchAsync(command);
 		}}
-		bind:value={homePageFiltersSignal.search}
+		bind:value={pager.pagerStateSignal.query.filters.search}
 		onChange={reloadPagerDebounced}
 		libraryFilterItems={libraryFilterItems.items}
 		onApplyFilterItem={(item) => {
-			homePageFiltersSignal.search = item.Query.filter?.search;
+			pager.pagerStateSignal.query.filters.search = item.Query.filter?.search;
 			search.close();
 			void reloadPagerAsync();
 		}}
@@ -199,16 +193,16 @@
 				<div class="flex flex-nowrap">
 					<LightButton
 						variant="neutral"
-						iconOnly={!homePageFiltersSignal.search}
+						iconOnly={!pager.pagerStateSignal.query.filters.search}
 						onclick={search.open}
 						class="flex items-center gap-1 px-2!"
 					>
 						<Icon>
 							<SearchIcon />
 						</Icon>
-						{#if homePageFiltersSignal.search}
+						{#if pager.pagerStateSignal.query.filters.search}
 							<span class="text-xs text-foreground/60 truncate max-w-12">
-								{homePageFiltersSignal.search}
+								{pager.pagerStateSignal.query.filters.search}
 							</span>
 						{/if}
 					</LightButton>

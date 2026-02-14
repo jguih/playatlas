@@ -1,14 +1,13 @@
+import type { SortDirection } from "../../domain";
+
 export type GetGamesQueryFilter = {
-	installed?: boolean;
 	search?: string;
+	horror?: boolean;
 };
 
-export type GetGamesQuerySortDirection = "asc" | "desc";
+type GetGamesQuerySortType = "recentlyUpdated" | "name" | "playtime";
 
-export type GetGamesQuerySort =
-	| { type: "recentlyUpdated"; direction?: GetGamesQuerySortDirection }
-	| { type: "name"; direction?: GetGamesQuerySortDirection }
-	| { type: "playtime"; direction?: GetGamesQuerySortDirection };
+export type GetGamesQuerySort = { type: GetGamesQuerySortType; direction?: SortDirection };
 
 export type GetGamesQuery = {
 	sort: GetGamesQuerySort;

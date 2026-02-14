@@ -13,7 +13,6 @@ export type RankedGame = {
 
 export type IRecommendationEnginePort = {
 	recommendForInstanceAsync(props?: {
-		limit?: number;
 		filters?: RecommendationEngineFilter[];
 	}): Promise<RankedGame[]>;
 };
@@ -43,7 +42,7 @@ export class RecommendationEngine implements IRecommendationEnginePort {
 	recommendForInstanceAsync: IRecommendationEnginePort["recommendForInstanceAsync"] = async (
 		props = {},
 	) => {
-		const { limit, filters } = props;
+		const { filters } = props;
 		const applyFilters = this.combineFilters(...(filters ?? []));
 		const gameVectors = await this.deps.gameVectorProjectionService.buildAsync();
 		const instanceVector = await this.deps.instancePreferenceModelService.buildAsync(gameVectors);
@@ -60,8 +59,12 @@ export class RecommendationEngine implements IRecommendationEnginePort {
 			});
 		}
 
-		results.sort((a, b) => b.similarity - a.similarity);
+		results.sort((a, b) => {
+			const diff = b.similarity - a.similarity;
+			if (diff !== 0) return diff;
+			return a.gameId.localeCompare(b.gameId);
+		});
 
-		return results.slice(0, limit);
+		return results;
 	};
 }
