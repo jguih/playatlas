@@ -45,7 +45,9 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 			if (result.items.length === 0) break;
 
 			for (const game of result.items) {
-				if (filter(game)) collected.push(game);
+				if (filter(game)) {
+					collected.push(game);
+				}
 
 				if (collected.length === limit) {
 					nextKey = result.keys.get(game.Id) ?? null;

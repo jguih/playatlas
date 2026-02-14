@@ -20,6 +20,8 @@ let pagerStateSignal = $state<GameLibraryPagerState>({
 });
 
 export class GameLibraryPager {
+	private inFlightCursor: IDBValidKey | number | undefined = $state(undefined);
+
 	constructor(private readonly deps: GameLibraryPagerDeps) {}
 
 	get pagerStateSignal() {
@@ -33,10 +35,15 @@ export class GameLibraryPager {
 		return { pagerStateSnapshot };
 	};
 
-	private withLoading = <T>(fn: () => T): T => {
+	private withLoading = async <T>(fn: () => Promise<T>): Promise<T> => {
+		if (pagerStateSignal.loading) {
+			console.warn("withLoading called while already loading");
+		}
+
+		pagerStateSignal.loading = true;
+
 		try {
-			pagerStateSignal.loading = true;
-			return fn();
+			return await fn();
 		} finally {
 			pagerStateSignal.loading = false;
 		}
@@ -47,6 +54,11 @@ export class GameLibraryPager {
 			const { pagerStateSnapshot } = this.getSnapshots();
 
 			if (pagerStateSnapshot.mode !== "ranked") return;
+
+			const cursor = pagerStateSnapshot.nextKey;
+
+			if (this.inFlightCursor === cursor) return;
+			this.inFlightCursor = cursor ?? undefined;
 
 			const result = await this.deps.api().GameLibrary.Query.GetGamesRanked.executeAsync({
 				limit: 50,
@@ -77,6 +89,9 @@ export class GameLibraryPager {
 
 			const cursor = pagerStateSnapshot.nextKey;
 
+			if (this.inFlightCursor === cursor) return;
+			this.inFlightCursor = cursor ?? undefined;
+
 			const result = await this.deps.api().GameLibrary.Query.GetGames.executeAsync({
 				limit: 50,
 				sort: pagerStateSnapshot.query.sort,
@@ -102,17 +117,18 @@ export class GameLibraryPager {
 	loadMoreAsync = async () => {
 		if (pagerStateSignal.loading || pagerStateSignal.exhausted) return;
 
-		const { pagerStateSnapshot } = this.getSnapshots();
-
-		if (pagerStateSnapshot.mode === "query") {
+		if (pagerStateSignal.mode === "query") {
 			await this.loadFromQueryAsync();
-		} else {
+		} else if (pagerStateSignal.mode === "ranked") {
 			await this.loadFromRankedAsync();
 		}
 	};
 
 	invalidateSignal = () => {
 		if (pagerStateSignal.loading) return;
+
+		resetGameLibraryScrollPosition();
+		this.inFlightCursor = undefined;
 
 		pagerStateSignal.exhausted = false;
 		pagerStateSignal.games = [];
@@ -122,6 +138,7 @@ export class GameLibraryPager {
 
 	setQuery = (query: SetGameLibraryPagerQueryProps) => {
 		resetGameLibraryScrollPosition();
+		this.inFlightCursor = undefined;
 
 		switch (query.mode) {
 			case "ranked": {

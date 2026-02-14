@@ -44,12 +44,20 @@
 		}
 	};
 
-	const commitSearchAsync = async (command: CreateGameLibraryFilterCommand) => {
+	const commitSearchAsync = async () => {
+		const state = $state.snapshot(pager.pagerStateSignal) as unknown as GameLibraryPagerState;
+
+		const command: CreateGameLibraryFilterCommand = {
+			query: {
+				filter: state.query.filters,
+				sort: state.mode === "query" ? state.query.sort : { type: "recentlyUpdated" },
+			},
+		};
+
 		await Promise.allSettled([
 			reloadPagerAsync(),
 			api().GameLibrary.Command.CreateGameLibraryFilter.executeAsync(command),
 		]);
-
 		await loadLibraryFiltersAsync();
 	};
 
@@ -142,25 +150,18 @@
 	<SearchBottomSheet
 		onClose={() => {
 			clearReloadPagerTimeout();
-			const state = $state.snapshot(pager.pagerStateSignal) as unknown as GameLibraryPagerState;
-
-			const command: CreateGameLibraryFilterCommand = {
-				query: {
-					filter: state.query.filters,
-					sort: state.mode === "query" ? state.query.sort : { type: "recentlyUpdated" },
-				},
-			};
-
 			search.close();
-			void commitSearchAsync(command);
+			void commitSearchAsync();
 		}}
 		bind:value={pager.pagerStateSignal.query.filters.search}
-		onChange={reloadPagerDebounced}
+		onChange={() => {
+			reloadPagerDebounced();
+		}}
 		libraryFilterItems={libraryFilterItems.items}
-		onApplyFilterItem={(item) => {
-			pager.pagerStateSignal.query.filters.search = item.Query.filter?.search;
+		onApplyFilterItem={async (item) => {
+			pager.setQuery({ mode: "query", filters: { search: item.Query.filter?.search } });
 			search.close();
-			void reloadPagerAsync();
+			await pager.loadMoreAsync();
 		}}
 	/>
 {/if}

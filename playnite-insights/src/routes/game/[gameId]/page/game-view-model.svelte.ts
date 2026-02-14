@@ -50,7 +50,6 @@ export class GameViewModel {
 				);
 
 				for (const groupName of groupsThatScored) {
-					if (!groupMeta[groupName].userFacing) continue;
 					groups.push({ name: groupName });
 				}
 
