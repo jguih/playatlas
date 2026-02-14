@@ -1,3 +1,4 @@
+import type { ScoreBreakdown } from "$lib/modules/game-library/domain";
 import { m } from "$lib/paraglide/messages";
 import { CLASSIFICATION_IDS, type ClassificationId } from "@playatlas/common/domain";
 import { SvelteMap } from "svelte/reactivity";
@@ -7,25 +8,27 @@ type GameViewModelDeps = {
 	gameAggregateStore: GameAggregateStore;
 };
 
-type EvidenceGroupMeta = {
-	name: string;
+type EvidenceGroupBreakdown = {
+	score: number;
+	groups: ScoreBreakdown["groups"];
 };
 
 type EngineEntry = {
 	classificationId: ClassificationId;
 	score: number;
-	groups: EvidenceGroupMeta[];
+	groups: ScoreBreakdown["groups"];
 };
 
 export class GameViewModel {
 	private store: GameAggregateStore;
-	#evidenceGroupsSignal: Map<ClassificationId, EvidenceGroupMeta[]>;
-	#highestClassificationSignal: ClassificationId | null;
+	#evidenceGroupBreakdownByClassificationId: Map<ClassificationId, EvidenceGroupBreakdown>;
+	#strongestClassificationsSignal: ClassificationId[];
+	#strongestClassificationsLabelSignal: string[];
 
 	constructor({ gameAggregateStore }: GameViewModelDeps) {
 		this.store = gameAggregateStore;
 
-		this.#evidenceGroupsSignal = $derived.by(() => {
+		this.#evidenceGroupBreakdownByClassificationId = $derived.by(() => {
 			const gameClassificationsByClassificationId = gameAggregateStore.gameClassifications;
 
 			if (!gameClassificationsByClassificationId) return new SvelteMap();
@@ -38,25 +41,14 @@ export class GameViewModel {
 					?.values()
 					.toArray();
 				const latestGameClassification = gameClassifications?.at(0);
-				const groupMeta = latestGameClassification?.EvidenceGroupMeta;
 
 				if (!latestGameClassification) continue;
 				if (latestGameClassification.Breakdown.type !== "normalized") continue;
-				if (!groupMeta) continue;
-
-				const groups: EvidenceGroupMeta[] = [];
-				const groupsThatScored = latestGameClassification.Breakdown.breakdown.groups.map(
-					(g) => g.group,
-				);
-
-				for (const groupName of groupsThatScored) {
-					groups.push({ name: groupName });
-				}
 
 				entries.push({
 					classificationId,
 					score: latestGameClassification.NormalizedScore,
-					groups,
+					groups: latestGameClassification.Breakdown.breakdown.groups,
 				});
 			}
 
@@ -66,50 +58,58 @@ export class GameViewModel {
 				else return a.classificationId.localeCompare(b.classificationId);
 			});
 
-			const evidenceGroups = new SvelteMap<ClassificationId, EvidenceGroupMeta[]>();
+			const evidenceGroups = new SvelteMap<ClassificationId, EvidenceGroupBreakdown>();
 
 			for (const entry of entries) {
-				evidenceGroups.set(entry.classificationId, entry.groups);
+				evidenceGroups.set(entry.classificationId, { groups: entry.groups, score: entry.score });
 			}
 
 			return evidenceGroups;
 		});
 
-		this.#highestClassificationSignal = $derived.by(() => {
-			const evidenceGroups = this.#evidenceGroupsSignal;
-			for (const [classificationId, evidenceGroupMeta] of evidenceGroups) {
-				if (evidenceGroupMeta.length > 0) return classificationId;
+		this.#strongestClassificationsSignal = $derived.by(() => {
+			const groupsMeta = this.#evidenceGroupBreakdownByClassificationId;
+			const highestScore = [...groupsMeta.values()].at(0)?.score ?? 0;
+			const strongestClassifications: ClassificationId[] = [];
+
+			for (const [classificationId, evidenceGroupMeta] of groupsMeta) {
+				if (evidenceGroupMeta.score <= 0.4) continue;
+				if (
+					evidenceGroupMeta.score === highestScore ||
+					evidenceGroupMeta.score >= highestScore * 0.75
+				)
+					strongestClassifications.push(classificationId);
 			}
-			return null;
+
+			return strongestClassifications;
+		});
+
+		this.#strongestClassificationsLabelSignal = $derived.by(() => {
+			const labels: string[] = [];
+
+			for (const classification of this.#strongestClassificationsSignal) {
+				switch (classification) {
+					case "HORROR":
+						labels.push(m["score_engine.HORROR.engineLabel"]());
+						break;
+					case "RUN-BASED":
+						labels.push(m["score_engine.RUN-BASED.engineLabel"]());
+						break;
+					default:
+						break;
+				}
+			}
+
+			return labels;
 		});
 	}
 
-	get companiesSummarySignal(): string {
-		const firstDev = this.store.developers.at(0);
-		const firstPublisher = this.store.publishers.at(0);
-
-		if (firstDev?.Id === firstPublisher?.Id) return firstDev?.Name ?? "";
-
-		if (firstDev && firstPublisher) return [firstDev.Name, firstPublisher.Name].join(", ");
-
-		if (firstDev) return firstDev.Name;
-
-		return firstPublisher?.Name ?? "";
+	get evidenceGroupsSignal(): Map<ClassificationId, EvidenceGroupBreakdown> {
+		return this.#evidenceGroupBreakdownByClassificationId;
 	}
 
-	get evidenceGroupsSignal(): Map<ClassificationId, EvidenceGroupMeta[]> {
-		return this.#evidenceGroupsSignal;
-	}
-
-	get highestClassificationStringSignal(): string {
-		switch (this.#highestClassificationSignal) {
-			case "HORROR":
-				return m["score_engine.HORROR.engineLabel"]();
-			case "RUN-BASED":
-				return m["score_engine.RUN-BASED.engineLabel"]();
-			default:
-				return "";
-		}
+	get strongestClassificationsLabelSignal(): string[] {
+		return this.#strongestClassificationsLabelSignal;
 	}
 
 	get developersStringSignal(): string {

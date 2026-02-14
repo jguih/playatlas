@@ -151,15 +151,20 @@
 							class="pb-2"
 							bind:this={heroTitleEl}
 						>
-							<h1 class="text-2xl font-semibold leading-tight drop-shadow-md mb-2">
+							<h1 class="text-2xl font-semibold leading-tight drop-shadow-md mb-2 wrap-break-word">
 								{store.game.Playnite?.Name}
 							</h1>
 
-							{#if vm.highestClassificationStringSignal}
-								<SolidChip class="text-xs">
-									{vm.highestClassificationStringSignal}
-								</SolidChip>
-							{/if}
+							<div class="flex gap-1 flex-wrap">
+								{#each vm.strongestClassificationsLabelSignal as classificationLabel, i (classificationLabel)}
+									<SolidChip
+										class="text-xs"
+										variant={i > 0 ? "neutral" : "primary"}
+									>
+										{classificationLabel}
+									</SolidChip>
+								{/each}
+							</div>
 						</div>
 					</div>
 				</div>
