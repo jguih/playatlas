@@ -33,7 +33,7 @@
 			}
 		},
 		"RUN-BASED": {
-			"engineLabel": "Roguelike-style",
+			"engineLabel": "Roguelike/lite",
 			"groups": {
 				"procedural_runs": {
 					"label": "Procedural Runs",

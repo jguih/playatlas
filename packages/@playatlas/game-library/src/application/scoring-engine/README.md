@@ -89,6 +89,13 @@ All engines are registered in a central registry that:
 
 No engine should be instantiated ad-hoc outside the registry.
 
+### 6. Caps and multipliers follows a specific order
+
+After the best evidence is selected for each group, caps and multipliers must be applied in the following order:
+
+1. **Group policy**: apply multiplier and cap based on the chosen evidence's group, in that order.
+2. **Source policy**: apply multiplier and cap based on chosen evidence's source, in that order.
+
 ## Scoring Flow
 
 The high-level scoring pipeline is:

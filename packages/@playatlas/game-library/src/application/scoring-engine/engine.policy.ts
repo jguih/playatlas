@@ -36,6 +36,3 @@ export const SCORE_ENGINE_DEFAULT_GATE_STACK_POLICY = {
 	diminishingMultipliers: [1.0, 0.7],
 	tailMultiplier: 0.3,
 } as const satisfies GateStackPolicy;
-
-export const SCORE_ENGINE_DEFAULT_MAX_SCORE = 100 as const satisfies number;
-export const SCORE_ENGINE_DEFAULT_MAX_NO_GATE_SCORE = 15 as const satisfies number;

@@ -1,8 +1,10 @@
 export * from "./classification.factory";
 export * from "./classification.mapper";
+export * from "./engine.evidence-source.policy";
 export * from "./engine.policy";
 export * from "./engine.registry";
 export type * from "./engine.registry.types";
+export * from "./engine.score-ceiling.policy";
 export * from "./engine.signals";
 export * from "./evidence-extractor";
 export type * from "./evidence-extractor.port";

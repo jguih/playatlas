@@ -37,8 +37,8 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			if (Array.isArray(name)) {
 				if (name.every((n) => hasGenre(n)))
 					add({
-						source: "taxonomy",
-						sourceHint: "genre",
+						source: "genre",
+						sourceHint: "taxonomy",
 						match: name.join(" + "),
 						group: signal.group,
 						weight: signal.weight,
@@ -47,8 +47,8 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 					});
 			} else if (hasGenre(name)) {
 				add({
-					source: "taxonomy",
-					sourceHint: "genre",
+					source: "genre",
+					sourceHint: "taxonomy",
 					match: name,
 					group: signal.group,
 					weight: signal.weight,
@@ -62,8 +62,8 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			if (Array.isArray(name)) {
 				if (name.every((n) => hasTag(n)))
 					add({
-						source: "taxonomy",
-						sourceHint: "tag",
+						source: "tag",
+						sourceHint: "taxonomy",
 						match: name.join(" + "),
 						group: signal.group,
 						weight: signal.weight,
@@ -72,8 +72,8 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 					});
 			} else if (hasTag(name)) {
 				add({
-					source: "taxonomy",
-					sourceHint: "tag",
+					source: "tag",
+					sourceHint: "taxonomy",
 					match: name,
 					group: signal.group,
 					weight: signal.weight,

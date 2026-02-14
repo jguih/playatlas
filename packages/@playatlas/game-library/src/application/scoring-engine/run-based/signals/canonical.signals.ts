@@ -152,14 +152,14 @@ export const RUN_BASED_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	// #region: run_based_identity
 	ROGUELIKE_TAXONOMY: {
 		group: "run_based_identity",
-		tier: "B",
-		weight: 15,
+		tier: "A",
+		weight: 30,
 		isGate: true,
 	},
 	ROGUELITE_TAXONOMY: {
 		group: "run_based_identity",
-		tier: "B",
-		weight: 14,
+		tier: "A",
+		weight: 30,
 		isGate: true,
 	},
 	// #endregion
@@ -167,7 +167,7 @@ export const RUN_BASED_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	PROCEDURAL_GENERATION_TAXONOMY: {
 		group: "procedural_runs",
 		tier: "B",
-		weight: 16,
+		weight: 25,
 		isGate: false,
 	},
 	// #endregion
@@ -175,7 +175,7 @@ export const RUN_BASED_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	PERMADEATH_TAXONOMY: {
 		group: "permadeath_reset",
 		tier: "B",
-		weight: 14,
+		weight: 20,
 		isGate: false,
 	},
 	// #endregion

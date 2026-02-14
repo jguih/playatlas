@@ -176,8 +176,8 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	// #region: horror_identity
 	HORROR_TAXONOMY: {
 		group: "horror_identity",
-		tier: "B",
-		weight: 15,
+		tier: "A",
+		weight: 30,
 		isGate: true,
 	},
 	// #endregion
@@ -185,13 +185,13 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	THIRD_PERSON_SHOOTER_TAXONOMY: {
 		group: "combat_engagement",
 		tier: "B",
-		weight: 14,
+		weight: 15,
 		isGate: false,
 	},
 	FIRST_PERSON_SHOOTER_TAXONOMY: {
 		group: "combat_engagement",
 		tier: "B",
-		weight: 14,
+		weight: 15,
 		isGate: false,
 	},
 	ACTION_TAXONOMY: {
@@ -211,7 +211,7 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	SURVIVAL_HORROR_TAXONOMY: {
 		group: "resource_survival",
 		tier: "A",
-		weight: 15,
+		weight: 30,
 		isGate: true,
 	},
 	SURVIVAL_TAXONOMY: {
@@ -225,7 +225,7 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	PSYCHOLOGICAL_HORROR_TAXONOMY: {
 		group: "psychological_horror",
 		tier: "A",
-		weight: 18,
+		weight: 35,
 		isGate: true,
 	},
 	SUPERNATURAL_TAXONOMY: {

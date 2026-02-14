@@ -1,3 +1,3 @@
-export const evidenceSource = ["taxonomy", "text"] as const satisfies string[];
+export const evidenceSource = ["text", "genre", "tag"] as const satisfies string[];
 
 export type EvidenceSource = (typeof evidenceSource)[number];
