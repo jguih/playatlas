@@ -1,7 +1,7 @@
 import { GameClassificationIdParser, GameIdParser } from "$lib/modules/common/domain";
 import type { IClientEntityFactoryPort } from "$lib/modules/common/testing";
 import { faker } from "@faker-js/faker";
-import { CLASSIFICATION_IDS, type ClassificationId } from "@playatlas/common/domain";
+import { CLASSIFICATION_IDS } from "@playatlas/common/domain";
 import type { GameClassification } from "../../domain/scoring-engine/game-classification.entity";
 import { ClientTestFactory } from "../client-test-factory";
 
@@ -20,11 +20,12 @@ export class GameClassificationFactory
 			DeletedAt: null,
 			DeleteAfter: null,
 			GameId: GameIdParser.fromTrusted(faker.string.ulid()),
-			ClassificationId: this.pickOne(CLASSIFICATION_IDS) as unknown as ClassificationId,
+			ClassificationId: this.pickOne(...CLASSIFICATION_IDS),
 			Breakdown: { type: "raw", payload: {} },
 			Score,
 			NormalizedScore: 0.15 + (Score / 100) * 0.85,
 			ScoreMode: "without_gate",
+			EvidenceGroupMeta: null,
 			Sync: {
 				ErrorMessage: null,
 				LastSyncedAt: faker.date.recent(),

@@ -57,7 +57,7 @@ export class GameClassificationRepository
 				found: false,
 			};
 
-			return await new Promise<Map<ClassificationId, Set<GameClassification>> | null>(
+			return await new Promise<Map<ClassificationId, Set<GameClassification>>>(
 				(resolve, reject) => {
 					const request = idx.openCursor(null, "next");
 
@@ -67,7 +67,7 @@ export class GameClassificationRepository
 						const cursor = request.result;
 
 						if (!cursor) {
-							resolve(null);
+							resolve(gameClassifications);
 							return;
 						}
 
