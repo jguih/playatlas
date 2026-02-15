@@ -1,7 +1,11 @@
 import type { SyncStatus } from "$lib/modules/common/common";
 import type { GameClassificationId, GameId } from "$lib/modules/common/domain";
 import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
-import { type ClassificationId, type EngineScoreMode } from "@playatlas/common/domain";
+import {
+	CLASSIFICATION_IDS,
+	type ClassificationId,
+	type EngineScoreMode,
+} from "@playatlas/common/domain";
 import type { IGameClassificationMapperPort } from "../../application/scoring-engine/game-classification.mapper.port";
 import type { EvidenceGroupMeta } from "../../domain/scoring-engine/evidence-group-meta.record";
 import type {
@@ -32,7 +36,11 @@ export type GameClassificationModel = {
 	};
 };
 
-export type GameClassificationRepositoryDeps = ClientEntityRepositoryDeps & {
+export type GameClassificationRepositoryDeps = ClientEntityRepositoryDeps<
+	GameClassificationId,
+	GameClassification,
+	GameClassificationModel
+> & {
 	gameClassificationMapper: IGameClassificationMapperPort;
 };
 
@@ -45,6 +53,7 @@ export class GameClassificationRepository
 			dbSignal,
 			storeName: gameClassificationRepositoryMeta.storeName,
 			mapper: gameClassificationMapper,
+			shouldIgnore: (entity) => !CLASSIFICATION_IDS.includes(entity.ClassificationId),
 		});
 	}
 
@@ -71,9 +80,10 @@ export class GameClassificationRepository
 							return;
 						}
 
-						const gameClassification: GameClassificationModel = cursor.value;
+						const gameClassificationModel: GameClassificationModel = cursor.value;
+						const gameClassification = this.mapper.toDomain(gameClassificationModel);
 
-						if (gameClassification.GameId === gameId) {
+						if (gameClassification.GameId === gameId && !this.shouldIgnore?.(gameClassification)) {
 							context.found = true;
 
 							let classifications = gameClassifications.get(gameClassification.ClassificationId);
@@ -83,7 +93,7 @@ export class GameClassificationRepository
 								gameClassifications.set(gameClassification.ClassificationId, classifications);
 							}
 
-							classifications.add(this.mapper.toDomain(gameClassification));
+							classifications.add(gameClassification);
 						} else if (context.found) {
 							resolve(gameClassifications);
 							return;

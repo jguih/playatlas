@@ -4,8 +4,15 @@ import type { IClientEntityRepository } from "./client-entity.repository.port";
 import type { ClientRepositoryStoreName } from "./client-entity.repository.types";
 import { IndexedDbRepository } from "./indexeddb.repository";
 
-export type ClientEntityRepositoryDeps = {
+export type ClientEntityRepositoryDeps<
+	TEntityKey extends IDBValidKey,
+	TEntity extends ClientEntity<TEntityKey>,
+	TModel,
+> = {
 	dbSignal: IDBDatabase;
+	storeName: ClientRepositoryStoreName;
+	mapper: IClientEntityMapper<TEntityKey, TEntity, TModel>;
+	shouldIgnore?: (entity: TEntity) => boolean;
 };
 
 export class ClientEntityRepository<
@@ -18,18 +25,18 @@ export class ClientEntityRepository<
 {
 	protected readonly storeName: ClientRepositoryStoreName;
 	protected readonly mapper: IClientEntityMapper<TEntityKey, TEntity, TModel>;
+	protected readonly shouldIgnore?: (entity: TEntity) => boolean;
 
 	constructor({
 		dbSignal,
 		storeName,
 		mapper,
-	}: ClientEntityRepositoryDeps & {
-		storeName: ClientRepositoryStoreName;
-		mapper: IClientEntityMapper<TEntityKey, TEntity, TModel>;
-	}) {
+		shouldIgnore,
+	}: ClientEntityRepositoryDeps<TEntityKey, TEntity, TModel>) {
 		super({ dbSignal });
 		this.storeName = storeName;
 		this.mapper = mapper;
+		this.shouldIgnore = shouldIgnore;
 	}
 
 	addAsync: IClientEntityRepository<TEntity, TEntityKey>["addAsync"] = async (entity) => {
@@ -59,7 +66,14 @@ export class ClientEntityRepository<
 		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
 			const store = tx.objectStore(this.storeName);
 			const model = await this.runRequest<TModel | undefined>(store.get(entityId));
-			return model ? this.mapper.toDomain(model) : null;
+
+			if (model) {
+				const entity = this.mapper.toDomain(model);
+				if (this.shouldIgnore?.(entity)) return null;
+				return entity;
+			}
+
+			return null;
 		});
 	};
 
@@ -74,7 +88,14 @@ export class ClientEntityRepository<
 			const entries = await Promise.all(
 				ids.map(async (id) => {
 					const model = await this.runRequest(store.get(id));
-					return model ? [id, this.mapper.toDomain(model)] : undefined;
+
+					if (model) {
+						const entity = this.mapper.toDomain(model);
+						if (this.shouldIgnore?.(entity)) return undefined;
+						return [id, entity];
+					}
+
+					return undefined;
 				}),
 			);
 
