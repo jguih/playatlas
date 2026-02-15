@@ -1,94 +1,60 @@
-import type { ScoreBreakdown } from "$lib/modules/game-library/domain";
+import type { GameClassification } from "$lib/modules/game-library/domain";
 import { m } from "$lib/paraglide/messages";
-import { CLASSIFICATION_IDS, type ClassificationId } from "@playatlas/common/domain";
+import { type ClassificationId } from "@playatlas/common/domain";
 import { SvelteMap } from "svelte/reactivity";
+import {
+	EvidenceGroupDetailsRegistry,
+	type EvidenceGroupDetails,
+} from "./evidence-group-details-registry";
 import type { GameAggregateStore } from "./game-aggregate-store.svelte";
 
 type GameViewModelDeps = {
 	gameAggregateStore: GameAggregateStore;
 };
 
-type EvidenceGroupBreakdown = {
-	score: number;
-	groups: ScoreBreakdown["groups"];
-};
-
-type EngineEntry = {
-	classificationId: ClassificationId;
-	score: number;
-	groups: ScoreBreakdown["groups"];
-};
-
 export class GameViewModel {
+	/**
+	 * To consider classifications which total score was equal or higher than this threshold.
+	 */
+	private STRONGEST_CLASSIFICATION_SCORE_THRESHOLD = 0.3 as const;
+
 	private store: GameAggregateStore;
-	#evidenceGroupBreakdownByClassificationId: Map<ClassificationId, EvidenceGroupBreakdown>;
-	#strongestClassificationsSignal: ClassificationId[];
-	#strongestClassificationsLabelSignal: string[];
+	private gameClassificationsOrderedByStrongest: SvelteMap<ClassificationId, GameClassification>;
+	strongestClassificationsLabelSignal: string[];
+	evidenceGroupLocalizedDetailsByClassificationSignal: SvelteMap<
+		ClassificationId,
+		EvidenceGroupDetails[]
+	>;
 
 	constructor({ gameAggregateStore }: GameViewModelDeps) {
 		this.store = gameAggregateStore;
 
-		this.#evidenceGroupBreakdownByClassificationId = $derived.by(() => {
-			const gameClassificationsByClassificationId = gameAggregateStore.gameClassifications;
+		this.gameClassificationsOrderedByStrongest = $derived.by(() => {
+			const gameClassifications = gameAggregateStore.latestGameClassifications;
+			const entries: Array<{ classificationId: ClassificationId } & GameClassification> = [];
 
-			if (!gameClassificationsByClassificationId) return new SvelteMap();
-
-			const entries: EngineEntry[] = [];
-
-			for (const classificationId of CLASSIFICATION_IDS) {
-				const gameClassifications = gameClassificationsByClassificationId
-					.get(classificationId)
-					?.values()
-					.toArray();
-				const latestGameClassification = gameClassifications?.at(0);
-
-				if (!latestGameClassification) continue;
-				if (latestGameClassification.Breakdown.type !== "normalized") continue;
-
-				entries.push({
-					classificationId,
-					score: latestGameClassification.NormalizedScore,
-					groups: latestGameClassification.Breakdown.breakdown.groups,
-				});
+			for (const [classificationId, gameClassification] of gameClassifications) {
+				entries.push({ classificationId, ...gameClassification });
 			}
 
 			entries.sort((a, b) => {
-				const scoreDiff = b.score - a.score;
-				if (scoreDiff !== 0) return scoreDiff;
-				else return a.classificationId.localeCompare(b.classificationId);
+				const diff = b.Score - a.Score;
+				if (diff !== 0) return diff;
+				return b.Id.localeCompare(a.Id);
 			});
 
-			const evidenceGroups = new SvelteMap<ClassificationId, EvidenceGroupBreakdown>();
-
-			for (const entry of entries) {
-				evidenceGroups.set(entry.classificationId, { groups: entry.groups, score: entry.score });
-			}
-
-			return evidenceGroups;
+			return new SvelteMap(entries.map((e) => [e.classificationId, e]));
 		});
 
-		this.#strongestClassificationsSignal = $derived.by(() => {
-			const groupsMeta = this.#evidenceGroupBreakdownByClassificationId;
-			const highestScore = [...groupsMeta.values()].at(0)?.score ?? 0;
-			const strongestClassifications: ClassificationId[] = [];
-
-			for (const [classificationId, evidenceGroupMeta] of groupsMeta) {
-				if (evidenceGroupMeta.score <= 0.3) continue;
-				if (
-					evidenceGroupMeta.score === highestScore ||
-					evidenceGroupMeta.score >= highestScore * 0.75
-				)
-					strongestClassifications.push(classificationId);
-			}
-
-			return strongestClassifications;
-		});
-
-		this.#strongestClassificationsLabelSignal = $derived.by(() => {
+		this.strongestClassificationsLabelSignal = $derived.by(() => {
 			const labels: string[] = [];
 
-			for (const classification of this.#strongestClassificationsSignal) {
-				switch (classification) {
+			for (const [classificationId, gameClassification] of this
+				.gameClassificationsOrderedByStrongest) {
+				if (gameClassification.NormalizedScore <= this.STRONGEST_CLASSIFICATION_SCORE_THRESHOLD)
+					continue;
+
+				switch (classificationId) {
 					case "HORROR":
 						labels.push(m["score_engine.HORROR.engineLabel"]());
 						break;
@@ -102,14 +68,40 @@ export class GameViewModel {
 
 			return labels;
 		});
-	}
 
-	get evidenceGroupsSignal(): Map<ClassificationId, EvidenceGroupBreakdown> {
-		return this.#evidenceGroupBreakdownByClassificationId;
-	}
+		this.evidenceGroupLocalizedDetailsByClassificationSignal = $derived.by(() => {
+			const gameClassifications = this.gameClassificationsOrderedByStrongest;
+			const evidenceGroupLocalizedDetailsByClassification = new SvelteMap<
+				ClassificationId,
+				EvidenceGroupDetails[]
+			>();
 
-	get strongestClassificationsLabelSignal(): string[] {
-		return this.#strongestClassificationsLabelSignal;
+			for (const [classificationId, gameClassification] of gameClassifications) {
+				const groupsMeta = gameClassification.EvidenceGroupMeta;
+
+				if (!groupsMeta) continue;
+				if (gameClassification.Breakdown.type !== "normalized") continue;
+
+				const evidenceGroupLocalizedDetails: EvidenceGroupDetails[] = [];
+				evidenceGroupLocalizedDetailsByClassification.set(
+					classificationId,
+					evidenceGroupLocalizedDetails,
+				);
+
+				for (const group of gameClassification.Breakdown.breakdown.groups) {
+					const groupName = group.group;
+					if (!groupsMeta[groupName].userFacing) continue;
+
+					const details = EvidenceGroupDetailsRegistry.getDetailsForGroup(
+						classificationId,
+						groupName,
+					);
+					if (details) evidenceGroupLocalizedDetails.push(details);
+				}
+			}
+
+			return evidenceGroupLocalizedDetailsByClassification;
+		});
 	}
 
 	get developersStringSignal(): string {

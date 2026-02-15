@@ -59,7 +59,7 @@ export class GameClassificationRepository
 
 			return await new Promise<Map<ClassificationId, Set<GameClassification>> | null>(
 				(resolve, reject) => {
-					const request = idx.openCursor(null, "prev");
+					const request = idx.openCursor(null, "next");
 
 					request.onerror = () => reject(request.error);
 

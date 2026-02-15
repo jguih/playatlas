@@ -26,9 +26,25 @@
 		"HORROR": {
 			"engineLabel": "Horror",
 			"groups": {
+				"horror_identity": {
+					"label": "Horror Identity",
+					"description": "Explicit horror identity and recognizable genre conventions"
+				},
+				"resource_survival": {
+					"label": "Survival Horror",
+					"description": "Procedural generation of in-game levels or maps"
+				},
+				"psychological_horror": {
+					"label": "Psychological Horror",
+					"description": "Procedural generation of in-game levels or maps"
+				},
 				"combat_engagement": {
 					"label": "Combat",
 					"description": "Direct hostile encounters with enemies"
+				},
+				"atmospheric_horror": {
+					"label": "Atmospheric",
+					"description": "Horror conveyed through mood, environment, and sensory tension"
 				}
 			}
 		},

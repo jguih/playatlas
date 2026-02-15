@@ -58,9 +58,12 @@
 		return () => observer.disconnect();
 	});
 
-	$inspect(store.gameClassifications?.get("HORROR")?.values().toArray().at(0));
-	$inspect(store.gameClassifications?.get("RUN-BASED")?.values().toArray().at(0));
-	$inspect(store.gameClassifications?.get("SURVIVAL")?.values().toArray().at(0));
+	$inspect(store.latestGameClassifications?.get("HORROR"));
+	$inspect(store.latestGameClassifications?.get("RUN-BASED"));
+	$inspect(store.latestGameClassifications?.get("SURVIVAL"));
+	$inspect(vm.evidenceGroupLocalizedDetailsByClassificationSignal.get("HORROR"));
+	$inspect(vm.evidenceGroupLocalizedDetailsByClassificationSignal.get("RUN-BASED"));
+	$inspect(vm.evidenceGroupLocalizedDetailsByClassificationSignal.get("SURVIVAL"));
 </script>
 
 <Header
@@ -239,6 +242,25 @@
 							<span class="font-medium text-end">{value}</span>
 						</div>
 					{/snippet}
+
+					<GameInfoSection
+						title="Genre Breakdown"
+						class=""
+					>
+						{#each vm.evidenceGroupLocalizedDetailsByClassificationSignal as [classificationId, groupDetails] (classificationId)}
+							{#if groupDetails.length > 0}
+								<h2>{classificationId}</h2>
+								<ul>
+									{#each groupDetails as groupDetail (JSON.stringify(groupDetail))}
+										<li>
+											<p>{groupDetail.name}</p>
+											<p>{groupDetail.description}</p>
+										</li>
+									{/each}
+								</ul>
+							{/if}
+						{/each}
+					</GameInfoSection>
 
 					<GameInfoSection
 						title="Activity"

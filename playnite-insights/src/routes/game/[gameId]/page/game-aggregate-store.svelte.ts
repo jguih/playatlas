@@ -21,7 +21,9 @@ export class GameAggregateStore {
 	completionStatus: CompletionStatus | null = $state(null);
 	developers: Company[] = $state([]);
 	publishers: Company[] = $state([]);
-	gameClassifications: SvelteMap<ClassificationId, Set<GameClassification>> | null = $state(null);
+	latestGameClassifications: SvelteMap<ClassificationId, GameClassification> = $state(
+		new SvelteMap(),
+	);
 
 	constructor(private readonly deps: GameAggregateStoreDeps) {}
 
@@ -65,7 +67,17 @@ export class GameAggregateStore {
 				gameId: this.game.Id,
 			});
 
-		if (gameClassifications) this.gameClassifications = new SvelteMap(gameClassifications);
+		if (!gameClassifications) return;
+
+		const latestGameClassifications = new SvelteMap<ClassificationId, GameClassification>();
+
+		for (const [classificationId, gameClassificationSet] of gameClassifications) {
+			for (const gameClassification of gameClassificationSet) {
+				latestGameClassifications.set(classificationId, gameClassification);
+			}
+		}
+
+		this.latestGameClassifications = latestGameClassifications;
 	};
 
 	initAsync = async () => {
