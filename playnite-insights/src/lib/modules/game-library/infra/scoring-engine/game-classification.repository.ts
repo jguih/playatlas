@@ -83,8 +83,13 @@ export class GameClassificationRepository
 						const gameClassificationModel: GameClassificationModel = cursor.value;
 						const gameClassification = this.mapper.toDomain(gameClassificationModel);
 
-						if (gameClassification.GameId === gameId && !this.shouldIgnore?.(gameClassification)) {
+						if (gameClassification.GameId === gameId) {
 							context.found = true;
+
+							if (this.shouldIgnore?.(gameClassification)) {
+								cursor.continue();
+								return;
+							}
 
 							let classifications = gameClassifications.get(gameClassification.ClassificationId);
 
