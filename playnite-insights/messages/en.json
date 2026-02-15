@@ -51,11 +51,30 @@
 		"RUN-BASED": {
 			"engineLabel": "Roguelike/lite",
 			"groups": {
+				"run_based_identity": {
+					"label": "Run-based Identity",
+					"description": "Explicit horror identity and recognizable genre conventions"
+				},
 				"procedural_runs": {
 					"label": "Procedural Runs",
 					"description": "Procedural generation of in-game levels or maps"
+				},
+				"permadeath_reset": {
+					"label": "Permanent Death",
+					"description": "Procedural generation of in-game levels or maps"
+				},
+				"run_variability": {
+					"label": "Run Variability",
+					"description": "Procedural generation of in-game levels or maps"
+				},
+				"meta_progression": {
+					"label": "Meta Progression",
+					"description": "Procedural generation of in-game levels or maps"
 				}
 			}
+		},
+		"SURVIVAL": {
+			"engineLabel": "Survival"
 		}
 	}
 }

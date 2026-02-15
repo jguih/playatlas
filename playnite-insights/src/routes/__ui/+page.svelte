@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { pushState } from "$app/navigation";
 	import { page } from "$app/state";
+	import { GameIdParser } from "$lib/modules/common/domain";
 	import BottomNav from "$lib/ui/components/BottomNav.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
 	import ComponentDisplayContainer from "$lib/ui/components/ComponentDisplayContainer.svelte";
 	import ComponentSection from "$lib/ui/components/ComponentSection.svelte";
 	import ComponentSectionText from "$lib/ui/components/ComponentSectionText.svelte";
+	import Dropdown from "$lib/ui/components/dropdown/Dropdown.svelte";
 	import Input from "$lib/ui/components/forms/Input.svelte";
 	import GameCard from "$lib/ui/components/game-card/GameCard.svelte";
 	import Header from "$lib/ui/components/header/Header.svelte";
@@ -291,7 +293,7 @@
 		<ComponentSection title="Game Card">
 			<GameCard
 				game={{
-					id: "123",
+					id: GameIdParser.fromTrusted("123"),
 					name: "Minecraft",
 					coverImageFilePath: `123/cover.png`,
 				}}
@@ -317,6 +319,14 @@
 					/>
 				{/each}
 			</div>
+		</ComponentSection>
+
+		<ComponentSection>
+			<Dropdown>
+				{#snippet label()}
+					<span>Dropdown</span>
+				{/snippet}
+			</Dropdown>
 		</ComponentSection>
 	</Main>
 	{#snippet bottomNav()}

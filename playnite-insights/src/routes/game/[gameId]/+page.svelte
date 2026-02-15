@@ -6,6 +6,7 @@
 	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
 	import SolidChip from "$lib/ui/components/chip/SolidChip.svelte";
 	import SyncStateChip from "$lib/ui/components/chip/SyncStateChip.svelte";
+	import Dropdown from "$lib/ui/components/dropdown/Dropdown.svelte";
 	import Header from "$lib/ui/components/header/Header.svelte";
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
@@ -22,6 +23,7 @@
 	import GameInfoSection from "./page/components/GameInfoSection.svelte";
 	import { GameAggregateStore } from "./page/game-aggregate-store.svelte";
 	import { GameViewModel } from "./page/game-view-model.svelte";
+	import { getScoreEngineLabel } from "./page/score-engine-registry";
 
 	const { params } = $props();
 	const getGameId = () => GameIdParser.fromTrusted(params.gameId);
@@ -58,12 +60,12 @@
 		return () => observer.disconnect();
 	});
 
-	$inspect(store.latestGameClassifications?.get("HORROR"));
-	$inspect(store.latestGameClassifications?.get("RUN-BASED"));
-	$inspect(store.latestGameClassifications?.get("SURVIVAL"));
-	$inspect(vm.evidenceGroupLocalizedDetailsByClassificationSignal.get("HORROR"));
-	$inspect(vm.evidenceGroupLocalizedDetailsByClassificationSignal.get("RUN-BASED"));
-	$inspect(vm.evidenceGroupLocalizedDetailsByClassificationSignal.get("SURVIVAL"));
+	// $inspect(store.latestGameClassifications?.get("HORROR"));
+	// $inspect(store.latestGameClassifications?.get("RUN-BASED"));
+	// $inspect(store.latestGameClassifications?.get("SURVIVAL"));
+	// $inspect(vm.evidenceGroupDetailsByClassificationSignal.get("HORROR"));
+	// $inspect(vm.evidenceGroupDetailsByClassificationSignal.get("RUN-BASED"));
+	// $inspect(vm.evidenceGroupDetailsByClassificationSignal.get("SURVIVAL"));
 </script>
 
 <Header
@@ -247,17 +249,21 @@
 						title="Genre Breakdown"
 						class=""
 					>
-						{#each vm.evidenceGroupLocalizedDetailsByClassificationSignal as [classificationId, groupDetails] (classificationId)}
+						{#each vm.evidenceGroupDetailsByClassificationSignal as [classificationId, groupDetails] (classificationId)}
 							{#if groupDetails.length > 0}
-								<h2>{classificationId}</h2>
-								<ul>
-									{#each groupDetails as groupDetail (JSON.stringify(groupDetail))}
-										<li>
-											<p>{groupDetail.name}</p>
-											<p>{groupDetail.description}</p>
-										</li>
-									{/each}
-								</ul>
+								<Dropdown>
+									{#snippet label()}
+										{getScoreEngineLabel(classificationId)}
+									{/snippet}
+									<ul>
+										{#each groupDetails as groupDetail (groupDetail.label())}
+											<li>
+												<p>{groupDetail.label()}</p>
+												<p>{groupDetail.description()}</p>
+											</li>
+										{/each}
+									</ul>
+								</Dropdown>
 							{/if}
 						{/each}
 					</GameInfoSection>

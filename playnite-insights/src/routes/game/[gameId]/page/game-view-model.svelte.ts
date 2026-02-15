@@ -2,11 +2,8 @@ import type { GameClassification } from "$lib/modules/game-library/domain";
 import { m } from "$lib/paraglide/messages";
 import { type ClassificationId } from "@playatlas/common/domain";
 import { SvelteMap } from "svelte/reactivity";
-import {
-	EvidenceGroupDetailsRegistry,
-	type EvidenceGroupDetails,
-} from "./evidence-group-details-registry";
 import type { GameAggregateStore } from "./game-aggregate-store.svelte";
+import { getScoreEngineGroupDetails, type EvidenceGroupMeta } from "./score-engine-registry";
 
 type GameViewModelDeps = {
 	gameAggregateStore: GameAggregateStore;
@@ -21,10 +18,7 @@ export class GameViewModel {
 	private store: GameAggregateStore;
 	private gameClassificationsOrderedByStrongest: SvelteMap<ClassificationId, GameClassification>;
 	strongestClassificationsLabelSignal: string[];
-	evidenceGroupLocalizedDetailsByClassificationSignal: SvelteMap<
-		ClassificationId,
-		EvidenceGroupDetails[]
-	>;
+	evidenceGroupDetailsByClassificationSignal: SvelteMap<ClassificationId, EvidenceGroupMeta[]>;
 
 	constructor({ gameAggregateStore }: GameViewModelDeps) {
 		this.store = gameAggregateStore;
@@ -47,10 +41,10 @@ export class GameViewModel {
 		});
 
 		this.strongestClassificationsLabelSignal = $derived.by(() => {
+			const gameClassifications = this.gameClassificationsOrderedByStrongest;
 			const labels: string[] = [];
 
-			for (const [classificationId, gameClassification] of this
-				.gameClassificationsOrderedByStrongest) {
+			for (const [classificationId, gameClassification] of gameClassifications) {
 				if (gameClassification.NormalizedScore <= this.STRONGEST_CLASSIFICATION_SCORE_THRESHOLD)
 					continue;
 
@@ -69,38 +63,34 @@ export class GameViewModel {
 			return labels;
 		});
 
-		this.evidenceGroupLocalizedDetailsByClassificationSignal = $derived.by(() => {
+		this.evidenceGroupDetailsByClassificationSignal = $derived.by(() => {
 			const gameClassifications = this.gameClassificationsOrderedByStrongest;
-			const evidenceGroupLocalizedDetailsByClassification = new SvelteMap<
+			const evidenceGroupDetailsByClassification = new SvelteMap<
 				ClassificationId,
-				EvidenceGroupDetails[]
+				EvidenceGroupMeta[]
 			>();
 
 			for (const [classificationId, gameClassification] of gameClassifications) {
 				const groupsMeta = gameClassification.EvidenceGroupMeta;
+				const groupDetails = getScoreEngineGroupDetails(classificationId);
 
 				if (!groupsMeta) continue;
 				if (gameClassification.Breakdown.type !== "normalized") continue;
 
-				const evidenceGroupLocalizedDetails: EvidenceGroupDetails[] = [];
-				evidenceGroupLocalizedDetailsByClassification.set(
-					classificationId,
-					evidenceGroupLocalizedDetails,
-				);
+				const evidenceGroupDetails: EvidenceGroupMeta[] = [];
+				evidenceGroupDetailsByClassification.set(classificationId, evidenceGroupDetails);
 
 				for (const group of gameClassification.Breakdown.breakdown.groups) {
 					const groupName = group.group;
 					if (!groupsMeta[groupName].userFacing) continue;
 
-					const details = EvidenceGroupDetailsRegistry.getDetailsForGroup(
-						classificationId,
-						groupName,
-					);
-					if (details) evidenceGroupLocalizedDetails.push(details);
+					for (const [name, details] of Object.entries(groupDetails)) {
+						if (name === groupName) evidenceGroupDetails.push(details);
+					}
 				}
 			}
 
-			return evidenceGroupLocalizedDetailsByClassification;
+			return evidenceGroupDetailsByClassification;
 		});
 	}
 
