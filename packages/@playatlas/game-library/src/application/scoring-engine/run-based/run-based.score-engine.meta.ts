@@ -1,3 +1,4 @@
+import type { ScoreEngineClassificationTierThresholdPolicy } from "../engine.classification-tier-threshold.policy";
 import type { ScoreEngineEvidenceGroupPolicy } from "../engine.policy";
 import type { ScoreEngineEvidenceGroupsMeta, ScoreEngineVersion } from "../score-engine.types";
 
@@ -28,3 +29,9 @@ export const RUN_BASED_ENGINE_EVIDENCE_GROUP_POLICY = {
 	run_variability: { cap: 40 },
 	meta_progression: { cap: 30 },
 } as const satisfies ScoreEngineEvidenceGroupPolicy<RunBasedEvidenceGroup>;
+
+export const RUN_BASED_ENGINE_CLASSIFICATION_TIER_THRESHOLD_POLICY = {
+	adjacent: 0.252,
+	strong: 0.405,
+	core: 0.507,
+} as const satisfies ScoreEngineClassificationTierThresholdPolicy;

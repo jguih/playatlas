@@ -1,5 +1,5 @@
 import type { CanonicalClassificationTier, EvidenceSource } from "@playatlas/common/domain";
-import type { ScoreEngineClassificationThresholdPolicy } from "./engine.classification-threshold.policy";
+import type { ScoreEngineClassificationTierThresholdPolicy } from "./engine.classification-tier-threshold.policy";
 import type { ScoreEngineSourcePolicy } from "./engine.evidence-source.policy";
 import type {
 	GateStackPolicy,
@@ -26,7 +26,7 @@ export type ScoringPolicyDeps<TGroup extends string> = {
 	noGatePolicy: NoGatePolicy;
 	gateStackPolicy: GateStackPolicy;
 	scoreCeilingPolicy: ScoreEngineScoreCeilingPolicy;
-	classificationThresholdPolicy: ScoreEngineClassificationThresholdPolicy;
+	classificationTierThresholdPolicy: ScoreEngineClassificationTierThresholdPolicy;
 };
 
 export const makeScoringPolicy = <TGroup extends string>({
@@ -35,7 +35,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 	scoreCeilingPolicy,
 	noGatePolicy,
 	gateStackPolicy,
-	classificationThresholdPolicy,
+	classificationTierThresholdPolicy,
 }: ScoringPolicyDeps<TGroup>): IScoringPolicyPort<TGroup> => {
 	const SOURCE_PRIORITY: Record<EvidenceSource, number> = {
 		text: 3,
@@ -66,11 +66,10 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 	const computeClassificationTier = (normalizedScore: number): CanonicalClassificationTier => {
 		if (normalizedScore === 0) return "none";
-
-		if (normalizedScore >= classificationThresholdPolicy.core) return "core";
-		else if (normalizedScore >= classificationThresholdPolicy.strong) return "strong";
-		else if (normalizedScore >= classificationThresholdPolicy.adjacent) return "adjacent";
-		else return "weak";
+		if (normalizedScore >= classificationTierThresholdPolicy.core) return "core";
+		if (normalizedScore >= classificationTierThresholdPolicy.strong) return "strong";
+		if (normalizedScore >= classificationTierThresholdPolicy.adjacent) return "adjacent";
+		return "weak";
 	};
 
 	const applyTagOnlyPenalty = ({

@@ -1,3 +1,4 @@
+import type { ScoreEngineClassificationTierThresholdPolicy } from "../engine.classification-tier-threshold.policy";
 import type { ScoreEngineEvidenceGroupPolicy } from "../engine.policy";
 import type { ScoreEngineEvidenceGroupsMeta, ScoreEngineVersion } from "../score-engine.types";
 
@@ -29,4 +30,8 @@ export const HORROR_ENGINE_EVIDENCE_GROUP_POLICY = {
 	atmospheric_horror: { cap: 50 },
 } as const satisfies ScoreEngineEvidenceGroupPolicy<HorrorEvidenceGroup>;
 
-export const HORROR_ENGINE_SOURCE_POLICY = {};
+export const HORROR_ENGINE_CLASSIFICATION_TIER_THRESHOLD_POLICY = {
+	adjacent: 0.02,
+	strong: 0.252,
+	core: 0.405,
+} as const satisfies ScoreEngineClassificationTierThresholdPolicy;
