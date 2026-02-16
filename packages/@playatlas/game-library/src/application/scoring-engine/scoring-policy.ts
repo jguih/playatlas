@@ -73,12 +73,16 @@ export const makeScoringPolicy = <TGroup extends string>({
 			}
 		}
 
-		if (uniqueSources.size === 1 && uniqueSources.has("tag"))
+		if (uniqueSources.size === 1 && uniqueSources.has("tag")) {
+			const rawContribution = scoreCeilingPolicy.tagsOnly - total;
+			const contribution = rawContribution < 0 ? rawContribution : 0;
+
 			return {
 				type: "tags_only",
-				contribution: scoreCeilingPolicy.tagsOnly - total,
-				details: "Score capped because only tags provided evidence",
+				contribution,
+				details: `Score capped to ${scoreCeilingPolicy.tagsOnly} because only tags provided evidence`,
 			};
+		}
 	};
 
 	const computeBreakdown = (

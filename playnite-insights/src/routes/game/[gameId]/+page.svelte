@@ -23,7 +23,7 @@
 	import GameInfoSection from "./page/components/GameInfoSection.svelte";
 	import { GameAggregateStore } from "./page/game-aggregate-store.svelte";
 	import { GameViewModel } from "./page/game-view-model.svelte";
-	import { getScoreEngineLabel } from "./page/score-engine-registry";
+	import { getScoreEngineDescription, getScoreEngineLabel } from "./page/score-engine-registry";
 
 	const { params } = $props();
 	const getGameId = () => GameIdParser.fromTrusted(params.gameId);
@@ -60,12 +60,9 @@
 		return () => observer.disconnect();
 	});
 
-	// $inspect(store.latestGameClassifications?.get("HORROR"));
-	// $inspect(store.latestGameClassifications?.get("RUN-BASED"));
-	// $inspect(store.latestGameClassifications?.get("SURVIVAL"));
-	// $inspect(vm.evidenceGroupDetailsByClassificationSignal.get("HORROR"));
-	// $inspect(vm.evidenceGroupDetailsByClassificationSignal.get("RUN-BASED"));
-	// $inspect(vm.evidenceGroupDetailsByClassificationSignal.get("SURVIVAL"));
+	$inspect(store.latestGameClassifications?.get("HORROR"));
+	$inspect(store.latestGameClassifications?.get("RUN-BASED"));
+	$inspect(store.latestGameClassifications?.get("SURVIVAL"));
 </script>
 
 <Header
@@ -199,6 +196,39 @@
 						</ActionButtonContainer>
 					</div>
 
+					{#if vm.classificationsBreakdownSignal.size > 0}
+						<GameInfoSection title="Genre Breakdown">
+							{#each vm.classificationsBreakdownSignal as [classificationId, groupDetails] (classificationId)}
+								<Dropdown>
+									{#snippet label()}
+										<span class="font-semibold">
+											{getScoreEngineLabel(classificationId)}
+										</span>
+									{/snippet}
+									<div class="px-4 py-3">
+										<p class="text-sm mb-4 leading-relaxed">
+											{getScoreEngineDescription(classificationId)}
+										</p>
+										<ul class="divide-y divide-black/10">
+											{#each groupDetails as groupDetail (groupDetail.label())}
+												{#if groupDetail.visible}
+													<li class="py-3">
+														<p class="text-sm font-medium mb-1">
+															{groupDetail.label()}
+														</p>
+														<p class="text-sm text-muted leading-relaxed">
+															{groupDetail.description()}
+														</p>
+													</li>
+												{/if}
+											{/each}
+										</ul>
+									</div>
+								</Dropdown>
+							{/each}
+						</GameInfoSection>
+					{/if}
+
 					<GameInfoSection
 						title="Installation"
 						class="flex gap-2 flex-col"
@@ -244,29 +274,6 @@
 							<span class="font-medium text-end">{value}</span>
 						</div>
 					{/snippet}
-
-					<GameInfoSection
-						title="Genre Breakdown"
-						class=""
-					>
-						{#each vm.evidenceGroupDetailsByClassificationSignal as [classificationId, groupDetails] (classificationId)}
-							{#if groupDetails.length > 0}
-								<Dropdown>
-									{#snippet label()}
-										{getScoreEngineLabel(classificationId)}
-									{/snippet}
-									<ul>
-										{#each groupDetails as groupDetail (groupDetail.label())}
-											<li>
-												<p>{groupDetail.label()}</p>
-												<p>{groupDetail.description()}</p>
-											</li>
-										{/each}
-									</ul>
-								</Dropdown>
-							{/if}
-						{/each}
-					</GameInfoSection>
 
 					<GameInfoSection
 						title="Activity"

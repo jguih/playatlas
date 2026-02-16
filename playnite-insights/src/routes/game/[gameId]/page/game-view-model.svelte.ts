@@ -1,24 +1,32 @@
 import type { GameClassification } from "$lib/modules/game-library/domain";
-import { m } from "$lib/paraglide/messages";
 import { type ClassificationId } from "@playatlas/common/domain";
 import { SvelteMap } from "svelte/reactivity";
 import type { GameAggregateStore } from "./game-aggregate-store.svelte";
-import { getScoreEngineGroupDetails, type EvidenceGroupMeta } from "./score-engine-registry";
+import {
+	getScoreEngineGroupDetails,
+	getScoreEngineLabel,
+	type EvidenceGroupMeta,
+} from "./score-engine-registry";
 
 type GameViewModelDeps = {
 	gameAggregateStore: GameAggregateStore;
+};
+
+type EvidenceGroupDetails = EvidenceGroupMeta & {
+	visible: boolean;
 };
 
 export class GameViewModel {
 	/**
 	 * To consider classifications which total score was equal or higher than this threshold.
 	 */
-	private STRONGEST_CLASSIFICATION_SCORE_THRESHOLD = 0.3 as const;
+	private STRONGEST_CLASSIFICATIONS_MIN_SCORE = 0.3 as const;
+	private CLASSIFICATIONS_BREAKDOWN_MIN_SCORE = 0.1 as const;
 
 	private store: GameAggregateStore;
 	private gameClassificationsOrderedByStrongest: SvelteMap<ClassificationId, GameClassification>;
 	strongestClassificationsLabelSignal: string[];
-	evidenceGroupDetailsByClassificationSignal: SvelteMap<ClassificationId, EvidenceGroupMeta[]>;
+	classificationsBreakdownSignal: SvelteMap<ClassificationId, EvidenceGroupDetails[]>;
 
 	constructor({ gameAggregateStore }: GameViewModelDeps) {
 		this.store = gameAggregateStore;
@@ -45,48 +53,51 @@ export class GameViewModel {
 			const labels: string[] = [];
 
 			for (const [classificationId, gameClassification] of gameClassifications) {
-				if (gameClassification.NormalizedScore <= this.STRONGEST_CLASSIFICATION_SCORE_THRESHOLD)
+				if (gameClassification.NormalizedScore <= this.STRONGEST_CLASSIFICATIONS_MIN_SCORE)
 					continue;
-
-				switch (classificationId) {
-					case "HORROR":
-						labels.push(m["score_engine.HORROR.engineLabel"]());
-						break;
-					case "RUN-BASED":
-						labels.push(m["score_engine.RUN-BASED.engineLabel"]());
-						break;
-					default:
-						break;
-				}
+				labels.push(getScoreEngineLabel(classificationId));
 			}
 
 			return labels;
 		});
 
-		this.evidenceGroupDetailsByClassificationSignal = $derived.by(() => {
+		this.classificationsBreakdownSignal = $derived.by(() => {
 			const gameClassifications = this.gameClassificationsOrderedByStrongest;
 			const evidenceGroupDetailsByClassification = new SvelteMap<
 				ClassificationId,
-				EvidenceGroupMeta[]
+				EvidenceGroupDetails[]
 			>();
 
 			for (const [classificationId, gameClassification] of gameClassifications) {
+				if (gameClassification.NormalizedScore < this.CLASSIFICATIONS_BREAKDOWN_MIN_SCORE) continue;
+
 				const groupsMeta = gameClassification.EvidenceGroupMeta;
 				const groupDetails = getScoreEngineGroupDetails(classificationId);
 
 				if (!groupsMeta) continue;
 				if (gameClassification.Breakdown.type !== "normalized") continue;
 
-				const evidenceGroupDetails: EvidenceGroupMeta[] = [];
-				evidenceGroupDetailsByClassification.set(classificationId, evidenceGroupDetails);
+				const breakdownGroupDetails: Array<{ name: string; visible: boolean }> = [];
 
 				for (const group of gameClassification.Breakdown.breakdown.groups) {
 					const groupName = group.group;
-					if (!groupsMeta[groupName].userFacing) continue;
+					breakdownGroupDetails.push({
+						name: groupName,
+						visible: groupsMeta[groupName].userFacing,
+					});
+				}
 
-					for (const [name, details] of Object.entries(groupDetails)) {
-						if (name === groupName) evidenceGroupDetails.push(details);
+				for (const breakdownGroupDetail of breakdownGroupDetails) {
+					const groupName = breakdownGroupDetail.name;
+					if (!(groupName in groupDetails)) continue;
+					const details = groupDetails[groupName as keyof typeof groupDetails] as EvidenceGroupMeta;
+
+					let evidenceGroupDetails = evidenceGroupDetailsByClassification.get(classificationId);
+					if (!evidenceGroupDetails) {
+						evidenceGroupDetails = [];
+						evidenceGroupDetailsByClassification.set(classificationId, evidenceGroupDetails);
 					}
+					evidenceGroupDetails.push({ ...details, visible: breakdownGroupDetail.visible });
 				}
 			}
 

@@ -25,51 +25,53 @@
 	"score_engine": {
 		"HORROR": {
 			"engineLabel": "Horror",
+			"engineDescription": "Measures how strongly a game expresses horror themes through tone, mechanics, and emotional tension",
 			"groups": {
 				"horror_identity": {
 					"label": "Horror Identity",
-					"description": "Explicit horror identity and recognizable genre conventions"
+					"description": "Explicit horror themes and recognizable genre conventions such as monsters, gore, and supernatural threats"
 				},
 				"resource_survival": {
-					"label": "Survival Horror",
-					"description": "Procedural generation of in-game levels or maps"
+					"label": "Survival Tension",
+					"description": "Fear reinforced by vulnerability, scarcity of resources, and pressure to survive under risk"
 				},
 				"psychological_horror": {
 					"label": "Psychological Horror",
-					"description": "Procedural generation of in-game levels or maps"
+					"description": "Horror driven by mental disturbance, distorted perception, and emotional or existential dread"
 				},
 				"combat_engagement": {
-					"label": "Combat",
-					"description": "Direct hostile encounters with enemies"
+					"label": "Combat Engagement",
+					"description": "Direct confrontation with enemies through weapons, tools, and action-oriented combat systems"
 				},
 				"atmospheric_horror": {
-					"label": "Atmospheric",
-					"description": "Horror conveyed through mood, environment, and sensory tension"
+					"label": "Atmospheric Horror",
+					"description": "Horror conveyed through mood, environment, and sustained sensory tension"
 				}
 			}
 		},
 		"RUN-BASED": {
 			"engineLabel": "Roguelike/lite",
+			"engineDescription": "Measures how strongly a game is structured around repeatable procedural runs and reset-driven progression loops",
 			"groups": {
 				"run_based_identity": {
 					"label": "Run-based Identity",
-					"description": "Explicit horror identity and recognizable genre conventions"
+					"description": "Explicit roguelike or roguelite identity expressed through run-focused structure and genre conventions"
 				},
 				"procedural_runs": {
 					"label": "Procedural Runs",
-					"description": "Procedural generation of in-game levels or maps"
+					"description": "Gameplay sessions built from procedurally or semi-randomly generated layouts and encounters"
 				},
 				"permadeath_reset": {
-					"label": "Permanent Death",
-					"description": "Procedural generation of in-game levels or maps"
+					"label": "Permadeath",
+					"description": "Failure that triggers a full or near-full reset of the current run and its progress"
 				},
 				"run_variability": {
 					"label": "Run Variability",
-					"description": "Procedural generation of in-game levels or maps"
+					"description": "Meaningful differences between runs through randomized builds, items, or evolving playstyles"
 				},
 				"meta_progression": {
 					"label": "Meta Progression",
-					"description": "Procedural generation of in-game levels or maps"
+					"description": "Persistent progression systems that carry unlocks or upgrades across multiple runs"
 				}
 			}
 		},

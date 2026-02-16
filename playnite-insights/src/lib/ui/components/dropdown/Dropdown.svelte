@@ -21,7 +21,7 @@
 	<LightButton
 		onclick={() => toggleOpened()}
 		justify="start"
-		class="w-full"
+		class={["w-full", props.class]}
 		state={opened ? "selected" : "default"}
 	>
 		<Icon>
