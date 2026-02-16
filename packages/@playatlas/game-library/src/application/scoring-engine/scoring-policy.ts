@@ -72,6 +72,17 @@ export const makeScoringPolicy = <TGroup extends string>({
 		return "weak";
 	};
 
+	const estimateContribution = (evidence: Evidence<TGroup>): number => {
+		const groupPolicy = evidenceGroupPolicies[evidence.group];
+		const sourcePolicy = evidenceSourcePolicy[evidence.source];
+		let contribution: number = evidence.weight;
+
+		if (groupPolicy.multiplier) contribution *= groupPolicy.multiplier;
+		if (sourcePolicy.multiplier) contribution *= sourcePolicy.multiplier;
+
+		return contribution;
+	};
+
 	const applyTagOnlyPenalty = ({
 		groups,
 		total,
@@ -185,7 +196,10 @@ export const makeScoringPolicy = <TGroup extends string>({
 				continue;
 			}
 
-			if (!strongestEvidence || evidence.weight > strongestEvidence.weight) {
+			const strongestContribution = strongestEvidence ? estimateContribution(strongestEvidence) : 0;
+			const evidenceContribution = estimateContribution(evidence);
+
+			if (!strongestEvidence || evidenceContribution > strongestContribution) {
 				strongestEvidence = evidence;
 			} else {
 				ignore(evidence);
@@ -350,12 +364,14 @@ export const makeScoringPolicy = <TGroup extends string>({
 				}
 
 				const current = bestEvidenceByGroup.get(group);
+				const currentContribution = current ? estimateContribution(current) : 0;
+				const evidenceContribution = estimateContribution(evidence);
 
-				if (!current || evidence.weight > current.weight) {
+				if (!current || evidenceContribution > currentContribution) {
 					bestEvidenceByGroup.set(group, evidence);
 					if (current) ignore(current);
 				} else if (
-					current.weight === evidence.weight &&
+					currentContribution === evidenceContribution &&
 					SOURCE_PRIORITY[evidence.source] > SOURCE_PRIORITY[current.source]
 				) {
 					bestEvidenceByGroup.set(group, evidence);
