@@ -9,6 +9,7 @@ node_modules
 .wrangler
 .svelte-kit
 build
+packages/@playatlas/bootstrap/dist
 
 # OS
 .DS_Store
