@@ -1,5 +1,5 @@
 import { m } from "$lib/paraglide/messages";
-import type { ClassificationId } from "@playatlas/common/domain";
+import type { CanonicalClassificationTier, ClassificationId } from "@playatlas/common/domain";
 import type {
 	HorrorEvidenceGroup,
 	RunBasedEvidenceGroup,
@@ -11,10 +11,9 @@ export type EvidenceGroupMeta = {
 	description: () => string;
 };
 
-type ScoreEngineMetaRaw = {
-	label: () => string;
-	description: () => string;
-	groups: Record<string, EvidenceGroupMeta>;
+export type ScoreEngineMeta = {
+	engineLabel: () => string;
+	engineDescription: () => string;
 };
 
 const horrorEvidenceGroupRegistry = {
@@ -70,31 +69,41 @@ const survivalBasedEvidenceGroupRegistry = {
 	},
 } as const satisfies Record<SurvivalEvidenceGroup, EvidenceGroupMeta>;
 
+type ScoreEngineMetaRaw = ScoreEngineMeta & {
+	groups: Record<string, EvidenceGroupMeta>;
+};
+
 export const scoreEngineRegistry = {
 	HORROR: {
-		label: () => m["score_engine.HORROR.engineLabel"](),
-		description: () => m["score_engine.HORROR.engineDescription"](),
+		engineLabel: () => m["score_engine.HORROR.engineLabel"](),
+		engineDescription: () => m["score_engine.HORROR.engineDescription"](),
 		groups: horrorEvidenceGroupRegistry,
 	},
 	"RUN-BASED": {
-		label: () => m["score_engine.RUN-BASED.engineLabel"](),
-		description: () => m["score_engine.RUN-BASED.engineDescription"](),
+		engineLabel: () => m["score_engine.RUN-BASED.engineLabel"](),
+		engineDescription: () => m["score_engine.RUN-BASED.engineDescription"](),
 		groups: runBasedEvidenceGroupRegistry,
 	},
 	SURVIVAL: {
-		label: () => m["score_engine.SURVIVAL.engineLabel"](),
-		description: () => m["score_engine.HORROR.engineDescription"](), // Placeholder
+		engineLabel: () => m["score_engine.SURVIVAL.engineLabel"](),
+		engineDescription: () => m["score_engine.HORROR.engineDescription"](), // Placeholder
 		groups: survivalBasedEvidenceGroupRegistry,
 	},
 } as const satisfies Record<ClassificationId, ScoreEngineMetaRaw>;
 
-export type ScoreEngineMeta = typeof scoreEngineRegistry;
-
 export const getScoreEngineLabel = (classificationId: ClassificationId): string =>
-	scoreEngineRegistry[classificationId].label();
+	scoreEngineRegistry[classificationId].engineLabel();
 
 export const getScoreEngineDescription = (classificationId: ClassificationId): string =>
-	scoreEngineRegistry[classificationId].description();
+	scoreEngineRegistry[classificationId].engineDescription();
 
 export const getScoreEngineGroupDetails = (classificationId: ClassificationId) =>
 	scoreEngineRegistry[classificationId].groups;
+
+export const classificationTierRegistry = {
+	core: () => "Core",
+	strong: () => "Strong Match",
+	adjacent: () => "Adjacent",
+	weak: () => "Light Elements",
+	none: () => "None",
+} as const satisfies Record<CanonicalClassificationTier, () => string>;

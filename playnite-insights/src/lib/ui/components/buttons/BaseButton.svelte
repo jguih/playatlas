@@ -36,9 +36,6 @@
 		"relative inline-flex cursor-pointer select-none items-center whitespace-nowrap",
 		"transition-colors-default",
 		"outline-none focus-visible:ring-2 focus-visible:ring-offset-0",
-		justify === "center" && "justify-center",
-		justify === "between" && "justify-between",
-		justify === "start" && "justify-start",
 		rounded && "rounded-full",
 		"hover:shadow-sm active:shadow-none",
 		"data-[state=disabled]:cursor-not-allowed",
@@ -53,7 +50,15 @@
 		</span>
 	{/if}
 
-	<span class={["inline-flex items-center gap-2", loading && "invisible"]}>
+	<span
+		class={[
+			"inline-flex items-center gap-2 w-full",
+			loading && "invisible",
+			justify === "center" && "justify-center",
+			justify === "between" && "justify-between",
+			justify === "start" && "justify-start",
+		]}
+	>
 		{#if props.children}
 			{@render props.children()}
 		{/if}

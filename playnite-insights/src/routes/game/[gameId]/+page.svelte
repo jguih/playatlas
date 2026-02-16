@@ -6,7 +6,6 @@
 	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
 	import SolidChip from "$lib/ui/components/chip/SolidChip.svelte";
 	import SyncStateChip from "$lib/ui/components/chip/SyncStateChip.svelte";
-	import Dropdown from "$lib/ui/components/dropdown/Dropdown.svelte";
 	import Header from "$lib/ui/components/header/Header.svelte";
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
@@ -21,9 +20,9 @@
 	import CompletionStatusButton from "./page/components/CompletionStatusButton.svelte";
 	import GameDetailSkeleton from "./page/components/GameDetailSkeleton.svelte";
 	import GameInfoSection from "./page/components/GameInfoSection.svelte";
+	import GenreBreakdown from "./page/components/genre-breakdown/GenreBreakdown.svelte";
 	import { GameAggregateStore } from "./page/game-aggregate-store.svelte";
 	import { GameViewModel } from "./page/game-view-model.svelte";
-	import { getScoreEngineDescription, getScoreEngineLabel } from "./page/score-engine-registry";
 
 	const { params } = $props();
 	const getGameId = () => GameIdParser.fromTrusted(params.gameId);
@@ -198,34 +197,7 @@
 
 					{#if vm.classificationsBreakdownSignal.size > 0}
 						<GameInfoSection title="Genre Breakdown">
-							{#each vm.classificationsBreakdownSignal as [classificationId, groupDetails] (classificationId)}
-								<Dropdown>
-									{#snippet label()}
-										<span class="font-semibold">
-											{getScoreEngineLabel(classificationId)}
-										</span>
-									{/snippet}
-									<div class="px-4 py-3">
-										<p class="text-sm mb-4 leading-relaxed">
-											{getScoreEngineDescription(classificationId)}
-										</p>
-										<ul class="divide-y divide-black/10">
-											{#each groupDetails as groupDetail (groupDetail.label())}
-												{#if groupDetail.visible}
-													<li class="py-3">
-														<p class="text-sm font-medium mb-1">
-															{groupDetail.label()}
-														</p>
-														<p class="text-sm text-muted leading-relaxed">
-															{groupDetail.description()}
-														</p>
-													</li>
-												{/if}
-											{/each}
-										</ul>
-									</div>
-								</Dropdown>
-							{/each}
+							<GenreBreakdown classificationsBreakdownSignal={vm.classificationsBreakdownSignal} />
 						</GameInfoSection>
 					{/if}
 
