@@ -1,5 +1,6 @@
 import { makeScoreEngine, type IScoreEnginePort, type ScoreEngineVersion } from "../../application";
 import {
+	HORROR_ENGINE_EVIDENCE_GROUPS_META,
 	HORROR_ENGINE_VERSION,
 	type HorrorEvidenceGroup,
 } from "../../application/scoring-engine/horror/horror.score-engine.meta";
@@ -13,7 +14,11 @@ export const makeTestHorrorScoreEngine = (): ITestHorrorScoreEnginePort => {
 	let version: ScoreEngineVersion = HORROR_ENGINE_VERSION;
 	let score = 0;
 
-	const self = makeScoreEngine({ id: "HORROR", version });
+	const self = makeScoreEngine({
+		id: "HORROR",
+		version,
+		evidenceGroupMeta: HORROR_ENGINE_EVIDENCE_GROUPS_META,
+	});
 
 	return {
 		...self,
@@ -32,6 +37,8 @@ export const makeTestHorrorScoreEngine = (): ITestHorrorScoreEnginePort => {
 					penalties: [],
 					subtotal: score,
 					total: score,
+					normalizedTotal: score,
+					tier: "none",
 				},
 			};
 		},

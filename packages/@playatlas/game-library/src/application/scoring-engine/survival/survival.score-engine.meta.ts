@@ -1,6 +1,6 @@
 import type { ScoreEngineEvidenceGroupsMeta, ScoreEngineVersion } from "../score-engine.types";
 
-export const SURVIVAL_ENGINE_VERSION = "v1.0.1" as const satisfies ScoreEngineVersion;
+export const SURVIVAL_ENGINE_VERSION = "v1.0.2" as const satisfies ScoreEngineVersion;
 
 export const SURVIVAL_ENGINE_EVIDENCE_GROUPS = ["survival_identity"] as const satisfies string[];
 

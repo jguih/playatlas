@@ -29,6 +29,8 @@ export const makeSurvivalScoreEngine = (): ISurvivalScoreEnginePort => {
 					penalties: [],
 					subtotal: 0,
 					total: 0,
+					normalizedTotal: 0,
+					tier: "none",
 				},
 			};
 		},

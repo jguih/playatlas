@@ -22,6 +22,8 @@ describe("Game Library /  Score Engine Breakdown Normalizer", () => {
 			subtotal: 0,
 			penalties: [],
 			total: 0,
+			normalizedTotal: 0,
+			tier: "none",
 		};
 		const breakdown = root.testApi.gameLibrary.scoreEngine
 			.getHorrorScoreEngine()
@@ -50,6 +52,8 @@ describe("Game Library /  Score Engine Breakdown Normalizer", () => {
 			subtotal: 0,
 			penalties: [],
 			total: 0,
+			normalizedTotal: 0,
+			tier: "none",
 		};
 		const breakdown = envelopeJson(LATEST_SCORE_BREAKDOWN_SCHEMA_VERSION, rawBreakdown);
 
@@ -133,5 +137,6 @@ describe("Game Library /  Score Engine Breakdown Normalizer", () => {
 		expect(resultPayload).not.toBe(null);
 		expect(resultMigrated).toBe(true);
 		expect(resultPayload?.synergies).toHaveLength(1);
+		expect(resultPayload?.tier).toBe("none");
 	});
 });

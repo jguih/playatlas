@@ -2,10 +2,11 @@ import type z from "zod";
 import {
 	SCORE_BREAKDOWN_SCHEMA_V1_0_0,
 	SCORE_BREAKDOWN_SCHEMA_V1_1_0,
-	canonicalScoreBreakdownSchema,
+	SCORE_BREAKDOWN_SCHEMA_V1_2_0,
 	scoreBreakdownSchemaMap,
 	scoreBreakdownSchemaV1_0_0,
 	scoreBreakdownSchemaV1_1_0,
+	scoreBreakdownSchemaV1_2_0,
 	type ScoreBreakdownSchemaVersion,
 } from "../../dtos/scoring-engine/score-breakdown.schema";
 
@@ -34,11 +35,26 @@ export const scoreBreakdownSchemaRegistry: Record<
 				],
 			};
 
-			return canonicalScoreBreakdownSchema.parse(v1_1_0);
+			return scoreBreakdownSchemaV1_1_0.parse(v1_1_0);
 		},
 		next: SCORE_BREAKDOWN_SCHEMA_V1_1_0,
 	},
 	[SCORE_BREAKDOWN_SCHEMA_V1_1_0]: {
 		schema: scoreBreakdownSchemaMap[SCORE_BREAKDOWN_SCHEMA_V1_1_0],
+		migrate: (data) => {
+			const v1_1_0 = data as z.infer<typeof scoreBreakdownSchemaV1_1_0>;
+			const v1_2_0: z.infer<typeof scoreBreakdownSchemaV1_2_0> = {
+				...v1_1_0,
+				groups: v1_1_0.groups.map((g) => ({ ...g, contributionPercent: 0 })),
+				normalizedTotal: v1_1_0.total,
+				tier: "none",
+			};
+
+			return scoreBreakdownSchemaV1_2_0.parse(v1_2_0);
+		},
+		next: SCORE_BREAKDOWN_SCHEMA_V1_2_0,
+	},
+	[SCORE_BREAKDOWN_SCHEMA_V1_2_0]: {
+		schema: scoreBreakdownSchemaMap[SCORE_BREAKDOWN_SCHEMA_V1_2_0],
 	},
 };
