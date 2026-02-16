@@ -2,7 +2,7 @@ import type { ScoreEngineClassificationTierThresholdPolicy } from "../engine.cla
 import type { ScoreEngineEvidenceGroupPolicy } from "../engine.policy";
 import type { ScoreEngineEvidenceGroupsMeta, ScoreEngineVersion } from "../score-engine.types";
 
-export const HORROR_ENGINE_VERSION = "v1.0.7" as const satisfies ScoreEngineVersion;
+export const HORROR_ENGINE_VERSION = "v1.0.8" as const satisfies ScoreEngineVersion;
 
 export const HORROR_ENGINE_EVIDENCE_GROUPS = [
 	"horror_identity",
@@ -33,5 +33,5 @@ export const HORROR_ENGINE_EVIDENCE_GROUP_POLICY = {
 export const HORROR_ENGINE_CLASSIFICATION_TIER_THRESHOLD_POLICY = {
 	adjacent: 0.02,
 	strong: 0.252,
-	core: 0.405,
+	core: 0.4135,
 } as const satisfies ScoreEngineClassificationTierThresholdPolicy;
