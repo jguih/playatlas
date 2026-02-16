@@ -23,9 +23,22 @@
 		"syncing_library": "Syncing library..."
 	},
 	"score_engine": {
+		"classificationTier": {
+			"core": "Core",
+			"strong": "Strong Match",
+			"adjacent": "Adjacent",
+			"weak": "Light elements",
+			"none": "None"
+		},
+		"evidenceGroupTier": {
+			"strong": "Strong Influence",
+			"moderate": "Moderate Influence",
+			"light": "Light Influence",
+			"none": "None"
+		},
 		"HORROR": {
 			"engineLabel": "Horror",
-			"engineDescription": "Measures how strongly a game expresses horror themes through tone, mechanics, and emotional tension",
+			"engineDescription": "Expresses horror themes through tone, mechanics, and emotional tension",
 			"groups": {
 				"horror_identity": {
 					"label": "Horror Identity",
@@ -51,7 +64,7 @@
 		},
 		"RUN-BASED": {
 			"engineLabel": "Roguelike/lite",
-			"engineDescription": "Measures how strongly a game is structured around repeatable procedural runs and reset-driven progression loops",
+			"engineDescription": "Structured around repeatable procedural runs and reset-driven progression loops",
 			"groups": {
 				"run_based_identity": {
 					"label": "Run-based Identity",

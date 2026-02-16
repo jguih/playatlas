@@ -7,6 +7,7 @@ export const canonicalClassificationThresholdTiers = [
 export type CanonicalClassificationThresholdTier =
 	(typeof canonicalClassificationThresholdTiers)[number];
 
+// MUST be ordered by weakest tier first -> greatest tier last.
 export const canonicalClassificationTiers = [
 	"none",
 	"weak",

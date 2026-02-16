@@ -101,9 +101,18 @@ export const getScoreEngineGroupDetails = (classificationId: ClassificationId) =
 	scoreEngineRegistry[classificationId].groups;
 
 export const classificationTierRegistry = {
-	core: () => "Core",
-	strong: () => "Strong Match",
-	adjacent: () => "Adjacent",
-	weak: () => "Light Elements",
-	none: () => "None",
+	core: () => m["score_engine.classificationTier.core"](),
+	strong: () => m["score_engine.classificationTier.strong"](),
+	adjacent: () => m["score_engine.classificationTier.adjacent"](),
+	weak: () => m["score_engine.classificationTier.weak"](),
+	none: () => m["score_engine.classificationTier.none"](),
 } as const satisfies Record<CanonicalClassificationTier, () => string>;
+
+export type EvidenceGroupTier = "strong" | "moderate" | "light" | "none";
+
+export const evidenceGroupTierRegistry = {
+	strong: () => m["score_engine.evidenceGroupTier.strong"](),
+	moderate: () => m["score_engine.evidenceGroupTier.moderate"](),
+	light: () => m["score_engine.evidenceGroupTier.light"](),
+	none: () => m["score_engine.evidenceGroupTier.none"](),
+} as const satisfies Record<EvidenceGroupTier, () => string>;

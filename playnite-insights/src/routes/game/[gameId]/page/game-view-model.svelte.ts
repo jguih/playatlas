@@ -1,13 +1,19 @@
-import type { GameClassification } from "$lib/modules/game-library/domain";
-import { type CanonicalClassificationTier, type ClassificationId } from "@playatlas/common/domain";
+import type { GameClassification, ScoreBreakdown } from "$lib/modules/game-library/domain";
+import {
+	canonicalClassificationTiers,
+	type CanonicalClassificationTier,
+	type ClassificationId,
+} from "@playatlas/common/domain";
 import { SvelteMap } from "svelte/reactivity";
 import type { GameAggregateStore } from "./game-aggregate-store.svelte";
 import {
 	classificationTierRegistry,
+	evidenceGroupTierRegistry,
 	getScoreEngineGroupDetails,
 	getScoreEngineLabel,
 	scoreEngineRegistry,
 	type EvidenceGroupMeta,
+	type EvidenceGroupTier,
 	type ScoreEngineMeta,
 } from "./score-engine-registry";
 
@@ -17,6 +23,8 @@ type GameViewModelDeps = {
 
 type EvidenceGroupDetails = EvidenceGroupMeta & {
 	visible: boolean;
+	rawTier: EvidenceGroupTier;
+	tierLabel: () => string;
 };
 
 export type ClassificationsBreakdownMap = SvelteMap<
@@ -59,6 +67,19 @@ export class GameViewModel {
 			}
 
 			entries.sort((a, b) => {
+				const breakdownA = a.Breakdown.type === "normalized" ? a.Breakdown.breakdown : null;
+				const breakdownB = b.Breakdown.type === "normalized" ? b.Breakdown.breakdown : null;
+
+				// Order by greatest tier descending first
+				if (breakdownA && breakdownB) {
+					const indexA = canonicalClassificationTiers.indexOf(breakdownA.tier);
+					const indexB = canonicalClassificationTiers.indexOf(breakdownB.tier);
+					if (indexA < indexB) return 1;
+					if (indexB > indexA) return -1;
+					return 0;
+				}
+
+				// Fallback to by greatest score ascending
 				const diff = b.Score - a.Score;
 				if (diff !== 0) return diff;
 				return b.Id.localeCompare(a.Id);
@@ -116,13 +137,20 @@ export class GameViewModel {
 				evidenceGroupDetails.rawTier = breakdown.tier;
 				evidenceGroupDetails.tierLabel = classificationTierRegistry[breakdown.tier];
 
-				const breakdownGroupDetails: Array<{ name: string; visible: boolean }> = [];
+				const breakdownGroupDetails: Array<{
+					name: string;
+					visible: boolean;
+					tier: EvidenceGroupTier;
+				}> = [];
 
 				for (const group of breakdown.groups) {
+					if (group.contribution === 0) continue;
+
 					const groupName = group.group;
 					breakdownGroupDetails.push({
 						name: groupName,
 						visible: groupsMeta[groupName].userFacing,
+						tier: this.computeEvidenceGroupTier(group),
 					});
 				}
 
@@ -136,6 +164,8 @@ export class GameViewModel {
 					evidenceGroupDetails.groupDetails.push({
 						...details,
 						visible: breakdownGroupDetail.visible,
+						rawTier: breakdownGroupDetail.tier,
+						tierLabel: evidenceGroupTierRegistry[breakdownGroupDetail.tier],
 					});
 				}
 			}
@@ -164,6 +194,15 @@ export class GameViewModel {
 		if (breakdown && excludedTiers.includes(breakdown.tier)) return true;
 		else if (!breakdown && gameClassification.NormalizedScore <= minScore) return true;
 		return false;
+	};
+
+	private computeEvidenceGroupTier = (
+		group: ScoreBreakdown["groups"][number],
+	): EvidenceGroupTier => {
+		if (group.contributionPercent === 0) return "none";
+		if (group.contributionPercent >= 0.5) return "strong";
+		if (group.contribution >= 0.2) return "moderate";
+		return "light";
 	};
 
 	get developersStringSignal(): string {
