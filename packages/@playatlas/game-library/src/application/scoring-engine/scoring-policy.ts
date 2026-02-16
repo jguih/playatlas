@@ -11,6 +11,7 @@ import type { Penalty } from "./penalty.types";
 import type { ScoreBreakdown } from "./score-breakdown";
 import type { ScoreEngineEvidenceGroupsMeta } from "./score-engine.types";
 import type { IScoringPolicyPort } from "./scoring-policy.port";
+import type { ComputeScoreBreakdownProps } from "./scoring-policy.types";
 
 type SynergyContext = {
 	groupCount: number;
@@ -63,7 +64,9 @@ export const makeScoringPolicy = <TGroup extends string>({
 	const applyTagOnlyPenalty = ({
 		groups,
 		total,
-	}: Pick<ScoreBreakdown<TGroup>, "groups"> & { total: number }): Penalty | undefined => {
+	}: Pick<ComputeScoreBreakdownProps<TGroup>, "groups"> & { total: number }):
+		| Penalty
+		| undefined => {
 		const uniqueSources = new Set<EvidenceSource>();
 
 		for (const group of groups) {
@@ -85,9 +88,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 		}
 	};
 
-	const computeBreakdown = (
-		props: Pick<ScoreBreakdown<TGroup>, "mode" | "groups" | "synergies" | "penalties">,
-	): ScoreBreakdown<TGroup> => {
+	const computeBreakdown = (props: ComputeScoreBreakdownProps<TGroup>): ScoreBreakdown<TGroup> => {
 		const { mode, groups, synergies, penalties } = props;
 
 		let total = 0;
@@ -95,6 +96,13 @@ export const makeScoringPolicy = <TGroup extends string>({
 		for (const group of groups) {
 			total += group.contribution;
 		}
+
+		const groupSubtotal = total;
+
+		const groupsWithPercent: ScoreBreakdown<TGroup>["groups"] = groups.map((group) => ({
+			...group,
+			contributionPercent: groupSubtotal === 0 ? 0 : group.contribution / groupSubtotal,
+		}));
 
 		for (const synergy of synergies) {
 			total += synergy.contribution;
@@ -118,7 +126,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 		const breakdown: ScoreBreakdown<TGroup> = {
 			mode,
-			groups,
+			groups: groupsWithPercent,
 			synergies,
 			subtotal,
 			penalties,
@@ -222,8 +230,8 @@ export const makeScoringPolicy = <TGroup extends string>({
 	};
 
 	const scoreWithoutGate = (evidences: Evidence<TGroup>[]): ScoreBreakdown<TGroup> => {
-		const groupsBreakdown: ScoreBreakdown<TGroup>["groups"] = [];
-		const penalties: ScoreBreakdown<TGroup>["penalties"] = [];
+		const groupsBreakdown: ComputeScoreBreakdownProps<TGroup>["groups"] = [];
+		const penalties: ComputeScoreBreakdownProps<TGroup>["penalties"] = [];
 		const { strongestEvidence, ignoredEvidences } = selectStrongestEvidence(evidences);
 		const ignoredStoredEvidences: StoredEvidence<TGroup>[] = ignoredEvidences.map((e) => ({
 			...e,
@@ -259,7 +267,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 			contribution: strongestEvidence.weight,
 		});
 
-		const ctx = computeSynergyContext(evidences);
+		const ctx = computeSynergyContext([strongestEvidence]);
 		const synergies = scoreSynergyWithoutGate(ctx);
 
 		return computeBreakdown({
@@ -302,8 +310,8 @@ export const makeScoringPolicy = <TGroup extends string>({
 		const ignoredEvidencesByGroup = new Map<TGroup, Evidence<TGroup>[]>();
 		const ignoredStoredEvidencesByGroup = new Map<TGroup, StoredEvidence<TGroup>[]>();
 		const contributionByGroup = new Map<TGroup, number>();
-		const groupsBreakdown: ScoreBreakdown<TGroup>["groups"] = [];
-		const penalties: ScoreBreakdown<TGroup>["penalties"] = [];
+		const groupsBreakdown: ComputeScoreBreakdownProps<TGroup>["groups"] = [];
+		const penalties: ComputeScoreBreakdownProps<TGroup>["penalties"] = [];
 		let gateCounter = 0;
 
 		// Get best evidence per group and ignore all the rest
@@ -392,7 +400,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 			});
 		}
 
-		const ctx = computeSynergyContext(evidence);
+		const ctx = computeSynergyContext([...bestEvidenceByGroup.values()]);
 		const synergies = scoreSynergyWithGate(ctx);
 
 		return computeBreakdown({ mode: "with_gate", groups: groupsBreakdown, synergies, penalties });

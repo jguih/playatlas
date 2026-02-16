@@ -26,4 +26,5 @@ export * from "./score-engine.port";
 export type * from "./score-engine.types";
 export * from "./scoring-policy";
 export type * from "./scoring-policy.port";
+export type * from "./scoring-policy.types";
 export * from "./survival";
