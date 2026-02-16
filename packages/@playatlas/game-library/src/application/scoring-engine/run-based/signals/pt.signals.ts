@@ -10,12 +10,24 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
 	RUN_LOOP_LANGUAGE_LABEL: [
 		"a cada run",
+		"a cada partida",
+		"a cada jogo",
 		"em cada run",
+		"em cada partida",
+		"em cada jogo",
 		"por run",
+		"por partida",
+		"por jogo",
 		"nova run",
+		"nova partida",
+		"novo jogo",
 		"outra run",
+		"outra partida",
 		"entre runs",
+		"entre partidas",
 		"run após run",
+		"partida após partida",
+		"jogo após jogo",
 	],
 	TRY_AGAIN_LOOP_LABEL: [
 		"tente novamente",
@@ -85,6 +97,8 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 		"variedade de builds",
 		"experimente builds",
 		"estilos de jogo variados",
+		"infinitas combinações de configurações",
+		"crie combinações",
 	],
 	GAMEPLAY_VARIETY_LABEL: [
 		"modificações de jogabilidade",
@@ -110,7 +124,11 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	ENDLESSLY_REPLAYABLE_LABEL: ["rejogabilidade infinita", "altamente rejogável"],
 	// #endregion
 	// #region: meta_progression
-	ROGUELITE_PROGRESSION_LABEL: ["progressão roguelite", "progressão estilo roguelite"],
+	ROGUELITE_PROGRESSION_LABEL: [
+		"progressão roguelite",
+		"progressão estilo roguelite",
+		"experiência roguelite",
+	],
 	META_PROGRESSION_SYSTEM_LABEL: ["sistema de meta progressão", "sistema de progressão permanente"],
 	PERMANENT_UPGRADES_LABEL: ["melhorias permanentes", "upgrades permanentes"],
 	PERMANENT_UNLOCKS_LABEL: ["desbloqueios permanentes", "desbloqueios persistentes"],
