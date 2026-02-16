@@ -1,4 +1,5 @@
-import type { EvidenceSource } from "@playatlas/common/domain";
+import type { CanonicalClassificationTier, EvidenceSource } from "@playatlas/common/domain";
+import type { ScoreEngineClassificationThresholdPolicy } from "./engine.classification-threshold.policy";
 import type { ScoreEngineSourcePolicy } from "./engine.evidence-source.policy";
 import type {
 	GateStackPolicy,
@@ -25,6 +26,7 @@ export type ScoringPolicyDeps<TGroup extends string> = {
 	noGatePolicy: NoGatePolicy;
 	gateStackPolicy: GateStackPolicy;
 	scoreCeilingPolicy: ScoreEngineScoreCeilingPolicy;
+	classificationThresholdPolicy: ScoreEngineClassificationThresholdPolicy;
 };
 
 export const makeScoringPolicy = <TGroup extends string>({
@@ -33,6 +35,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 	scoreCeilingPolicy,
 	noGatePolicy,
 	gateStackPolicy,
+	classificationThresholdPolicy,
 }: ScoringPolicyDeps<TGroup>): IScoringPolicyPort<TGroup> => {
 	const SOURCE_PRIORITY: Record<EvidenceSource, number> = {
 		text: 3,
@@ -59,6 +62,15 @@ export const makeScoringPolicy = <TGroup extends string>({
 			}
 		}
 		return false;
+	};
+
+	const computeClassificationTier = (normalizedScore: number): CanonicalClassificationTier => {
+		if (normalizedScore === 0) return "none";
+
+		if (normalizedScore >= classificationThresholdPolicy.core) return "core";
+		else if (normalizedScore >= classificationThresholdPolicy.strong) return "strong";
+		else if (normalizedScore >= classificationThresholdPolicy.adjacent) return "adjacent";
+		else return "weak";
 	};
 
 	const applyTagOnlyPenalty = ({
@@ -124,6 +136,12 @@ export const makeScoringPolicy = <TGroup extends string>({
 			total = Math.min(total, scoreCeilingPolicy.withoutGate);
 		}
 
+		const normalizedTotal =
+			mode === "with_gate"
+				? 0.15 + (total / scoreCeilingPolicy.withGate) * 0.85
+				: (total / scoreCeilingPolicy.withoutGate) * 0.15;
+		const tier = computeClassificationTier(normalizedTotal);
+
 		const breakdown: ScoreBreakdown<TGroup> = {
 			mode,
 			groups: groupsWithPercent,
@@ -131,6 +149,8 @@ export const makeScoringPolicy = <TGroup extends string>({
 			subtotal,
 			penalties,
 			total,
+			normalizedTotal,
+			tier,
 		};
 		return breakdown;
 	};
@@ -418,7 +438,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 				return {
 					mode: "without_gate",
 					score: breakdown.total,
-					normalizedScore: (breakdown.total / scoreCeilingPolicy.withoutGate) * 0.15,
+					normalizedScore: breakdown.normalizedTotal,
 					breakdown,
 				};
 			}
@@ -427,7 +447,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 			return {
 				mode: "with_gate",
 				score: breakdown.total,
-				normalizedScore: 0.15 + (breakdown.total / scoreCeilingPolicy.withGate) * 0.85,
+				normalizedScore: breakdown.normalizedTotal,
 				breakdown,
 			};
 		},

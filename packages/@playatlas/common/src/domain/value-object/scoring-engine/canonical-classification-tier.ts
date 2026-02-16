@@ -8,6 +8,7 @@ export type CanonicalClassificationThresholdTier =
 	(typeof canonicalClassificationThresholdTiers)[number];
 
 export const canonicalClassificationTiers = [
+	"none",
 	"weak",
 	...canonicalClassificationThresholdTiers,
 ] as const satisfies string[];
