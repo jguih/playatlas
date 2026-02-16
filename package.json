@@ -34,7 +34,8 @@
 		"prepare": "husky",
 		"format": "prettier . --write",
 		"lint": "eslint . --cache",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint . --fix",
+		"calibrate:tiers": "pnpm --filter @playatlas/bootstrap run calibrate:tiers"
 	},
 	"lint-staged": {
 		"*.{ts,tsx,js,jsx,svelte}": [
@@ -45,6 +46,7 @@
 	"devDependencies": {
 		"@eslint/compat": "^1.4.1",
 		"@eslint/js": "^9.39.2",
+		"dotenv": "^17.3.1",
 		"eslint": "^9.39.2",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.14.0",
@@ -55,6 +57,7 @@
 		"prettier-plugin-svelte": "^3.4.1",
 		"prettier-plugin-tailwindcss": "^0.7.2",
 		"standard-version": "^9.5.0",
+		"tsx": "^4.21.0",
 		"typescript": "catalog:",
 		"typescript-eslint": "^8.54.0"
 	},

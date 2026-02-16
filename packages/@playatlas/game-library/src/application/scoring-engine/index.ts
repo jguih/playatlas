@@ -1,3 +1,4 @@
+export * from "./classification-tier-calibration.service";
 export * from "./classification.factory";
 export * from "./classification.mapper";
 export * from "./engine.evidence-source.policy";

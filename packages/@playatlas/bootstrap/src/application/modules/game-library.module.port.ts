@@ -1,6 +1,7 @@
 import type {
 	IClassificationFactoryPort,
 	IClassificationMapperPort,
+	IClassificationTierCalibrationServicePort,
 	ICompanyFactoryPort,
 	ICompanyMapperPort,
 	ICompletionStatusFactoryPort,
@@ -104,6 +105,8 @@ export type IGameLibraryModulePort = Readonly<{
 
 		getScoreEngineRegistry: () => IScoreEngineRegistryPort;
 		getScoreBreakdownNormalizer: () => IScoreBreakdownNormalizerPort;
+
+		getClassificationTierCalibrationService: () => IClassificationTierCalibrationServicePort;
 	};
 
 	init: () => void;

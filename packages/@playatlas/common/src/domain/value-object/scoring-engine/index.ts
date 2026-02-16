@@ -1,3 +1,4 @@
+export * from "./canonical-classification-tier";
 export * from "./classification-category";
 export * from "./classification-id";
 export * from "./evidence-group-role";

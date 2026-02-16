@@ -46,6 +46,8 @@ export const bootstrapV1 = ({
 					getGetAllGameClassificationsQueryHandler:
 						gameLibrary.scoreEngine.queries.getGetAllGameClassificationsQueryHandler,
 				},
+				getClassificationTierCalibrationService:
+					gameLibrary.scoreEngine.getClassificationTierCalibrationService,
 			},
 		},
 		auth: {

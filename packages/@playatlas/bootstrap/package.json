@@ -9,6 +9,9 @@
 		"./application": "./src/application/index.ts",
 		"./testing": "./src/testing/index.ts"
 	},
+	"scripts": {
+		"calibrate:tiers": "tsx src/cli/calibrate-classification-tiers.ts"
+	},
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"@faker-js/faker": "catalog:",

@@ -13,6 +13,7 @@ import type {
 import type { IGetAllExtensionRegistrationsQueryHandlerPort } from "@playatlas/auth/queries";
 import type { IDomainEventBusPort, ILogServicePort } from "@playatlas/common/application";
 import type { ISystemConfigPort } from "@playatlas/common/infra";
+import type { IClassificationTierCalibrationServicePort } from "@playatlas/game-library/application";
 import type {
 	IGameAssetsContextFactoryPort,
 	IGameAssetsReindexerPort,
@@ -60,6 +61,7 @@ export type PlayAtlasApiV1 = {
 				getGetAllClassificationsQueryHandler: () => IGetAllClassificationsQueryHandler;
 				getGetAllGameClassificationsQueryHandler: () => IGetAllGameClassificationsQueryHandlerPort;
 			};
+			getClassificationTierCalibrationService: () => IClassificationTierCalibrationServicePort;
 		};
 	};
 	auth: {

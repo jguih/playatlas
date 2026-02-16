@@ -6,6 +6,7 @@ import type { DbGetter, IClockPort, ISystemConfigPort } from "@playatlas/common/
 import {
 	makeClassificationFactory,
 	makeClassificationMapper,
+	makeClassificationTierCalibrationService,
 	makeCompanyFactory,
 	makeCompanyMapper,
 	makeCompletionStatusFactory,
@@ -86,6 +87,7 @@ const makeGameLibraryScoreEngineModule = ({
 	getDb,
 	logServiceFactory,
 	clock,
+	fileSystemService,
 	genreRepository,
 	gameRepository,
 	tagRepository,
@@ -166,6 +168,15 @@ const makeGameLibraryScoreEngineModule = ({
 		logService: buildLog("GetAllGameClassificationsQueryHandler"),
 	});
 
+	const classificationTierCalibrationService = makeClassificationTierCalibrationService({
+		gameRepository,
+		genreRepository,
+		tagRepository,
+		scoreEngineRegistry,
+		fileSystemService,
+		logService: buildLog("ClassificationTierCalibrationService"),
+	});
+
 	return {
 		queries: {
 			getGetAllClassificationsQueryHandler: () => getAllClassificationsQueryHandler,
@@ -187,6 +198,8 @@ const makeGameLibraryScoreEngineModule = ({
 
 		getScoreEngineRegistry: () => scoreEngineRegistry,
 		getScoreBreakdownNormalizer: () => scoreBreakdownNormalizer,
+
+		getClassificationTierCalibrationService: () => classificationTierCalibrationService,
 	};
 };
 
