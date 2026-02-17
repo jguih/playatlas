@@ -3,6 +3,7 @@ import { EvidenceExtractorInvalidDataError } from "../../domain";
 import type {
 	SignalAndGroup,
 	SignalOrGroup,
+	SignalTerm,
 	TaxonomySignalItem,
 	TextSignalItem,
 } from "./engine.signals";
@@ -26,20 +27,24 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 		const { genres, tags, add } = props;
 		const genresList = genres.map(normalize);
 		const tagsList = tags.map(normalize);
+		const genresSet = new Set(genresList);
+		const tagsSet = new Set(tagsList);
 
-		const hasGenre = (x: string) => genresList.includes(normalize(x));
-		const hasTag = (x: string) => tagsList.includes(normalize(x));
+		const hasGenre = (x: SignalTerm) =>
+			typeof x === "string" ? genresSet.has(normalize(x)) : genresList.some((g) => x.test(g));
+		const hasTag = (x: SignalTerm) =>
+			typeof x === "string" ? tagsSet.has(normalize(x)) : tagsList.some((t) => x.test(t));
 
 		const extractFromGenre = (
 			signal: TaxonomySignalItem<TGroup>,
-			name: string | SignalAndGroup,
+			name: SignalTerm | SignalAndGroup,
 		) => {
 			if (Array.isArray(name)) {
 				if (name.every((n) => hasGenre(n)))
 					add({
 						source: "genre",
 						sourceHint: "taxonomy",
-						match: name.join(" + "),
+						match: name.map((n) => n.toString()).join(" + "),
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
@@ -49,7 +54,7 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 				add({
 					source: "genre",
 					sourceHint: "taxonomy",
-					match: name,
+					match: name.toString(),
 					group: signal.group,
 					weight: signal.weight,
 					tier: signal.tier,
@@ -58,13 +63,16 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			}
 		};
 
-		const extractFromTag = (signal: TaxonomySignalItem<TGroup>, name: string | SignalAndGroup) => {
+		const extractFromTag = (
+			signal: TaxonomySignalItem<TGroup>,
+			name: SignalTerm | SignalAndGroup,
+		) => {
 			if (Array.isArray(name)) {
 				if (name.every((n) => hasTag(n)))
 					add({
 						source: "tag",
 						sourceHint: "taxonomy",
-						match: name.join(" + "),
+						match: name.map((n) => n.toString()).join(" + "),
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
@@ -74,7 +82,7 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 				add({
 					source: "tag",
 					sourceHint: "taxonomy",
-					match: name,
+					match: name.toString(),
 					group: signal.group,
 					weight: signal.weight,
 					tier: signal.tier,
@@ -105,24 +113,31 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			phrase: SignalOrGroup[number],
 		) => {
 			if (Array.isArray(phrase)) {
-				const normalized = phrase.map(normalize);
-				if (normalized.every((p) => normalizedDescription.includes(p)))
+				const normalized = phrase.map((p) => (typeof p === "string" ? normalize(p) : p));
+				const match = normalized.every((p) =>
+					typeof p === "string" ? normalizedDescription.includes(p) : p.test(normalizedDescription),
+				);
+				if (match)
 					add({
 						source: "text",
 						sourceHint: "description",
-						match: normalized.join(" + "),
+						match: normalized.map((p) => p.toString()).join(" + "),
 						weight: signal.weight,
 						group: signal.group,
 						tier: signal.tier,
 						isGate: signal.isGate,
 					});
 			} else {
-				const normalized = normalize(phrase);
-				if (normalizedDescription.includes(normalized))
+				const normalized = typeof phrase === "string" ? normalize(phrase) : phrase;
+				const match =
+					typeof phrase === "string"
+						? normalizedDescription.includes(phrase)
+						: phrase.test(normalizedDescription);
+				if (match)
 					add({
 						source: "text",
 						sourceHint: "description",
-						match: normalized,
+						match: normalized.toString(),
 						weight: signal.weight,
 						group: signal.group,
 						tier: signal.tier,

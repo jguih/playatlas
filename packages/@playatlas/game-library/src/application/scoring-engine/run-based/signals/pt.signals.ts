@@ -1,33 +1,26 @@
+import { FILLER, SEP } from "../../engine.regexp.utils";
 import type {
 	LanguageTaxonomySignalsMap,
 	LanguageTextSignalsMap,
 } from "../../score-engine.language.types";
 import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical.signals";
 
+// recomeçar toda vez que morre
+
+const RUN_LANGUAGE = `(?:run|loop|sessao|ciclo|playthrough|jornada|aventura|partida)s?\\b`;
+const LOOP = `(?:toda\\s+vez\\s+que|sempre\\s+que|sempre|quando)\\b`;
+const REPETITION_LANGUAGE = `(?:(?:a|em|por)\\s+cada|outra|entre)\\b`;
+
+const WORLD_LANGUAGE = `(?:(?:mapa|mundo|level|masmorra|planeta|ambiente|castelo)s?|nível|níveis)\\b`;
+
 export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	// #region: run_based_identity
 	ROGUELIKE_LABEL: ["roguelike", "rogue-like"],
 	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
+	RUN_LOOP_STRUCTURE_LABEL: [new RegExp(`recomecar` + SEP + LOOP + SEP + `morre`, "i")],
 	RUN_LOOP_LANGUAGE_LABEL: [
-		"a cada run",
-		"a cada partida",
-		"a cada jogo",
-		"em cada run",
-		"em cada partida",
-		"em cada jogo",
-		"por run",
-		"por partida",
-		"por jogo",
-		"nova run",
-		"nova partida",
-		"novo jogo",
-		"outra run",
-		"outra partida",
-		"entre runs",
-		"entre partidas",
-		"run após run",
-		"partida após partida",
-		"jogo após jogo",
+		new RegExp(REPETITION_LANGUAGE + SEP + FILLER(1) + RUN_LANGUAGE, "i"),
+		new RegExp(RUN_LANGUAGE + SEP + `apos` + SEP + RUN_LANGUAGE, "i"),
 	],
 	TRY_AGAIN_LOOP_LABEL: [
 		"tente novamente",
@@ -39,11 +32,27 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	// #endregion
 	// #region: procedural_runs
 	PROCEDURAL_GENERATION_LABEL: [
-		"níveis gerados proceduralmente",
-		"mundo gerado proceduralmente",
-		"levels gerados proceduralmente",
+		new RegExp(
+			WORLD_LANGUAGE +
+				SEP +
+				FILLER(1) +
+				`(?:gerad(?:o|a)|criad(?:o|a))s?` +
+				SEP +
+				FILLER(1) +
+				`proceduralmente`,
+			"i",
+		),
+		new RegExp(
+			WORLD_LANGUAGE +
+				SEP +
+				FILLER(1) +
+				`proceduralmente` +
+				SEP +
+				FILLER(1) +
+				`(?:gerad(?:o|a)|criad(?:o|a))s?`,
+			"i",
+		),
 		"geração procedural",
-		"masmorras geradas proceduralmente",
 	],
 	RANDOMIZED_MAPS_LABEL: [
 		"fases aleatórias",
@@ -59,6 +68,7 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 		"níveis em constante mudança",
 		"castelo em constante mudança",
 	],
+	RANDOM_ENCOUNTERS_LABEL: [],
 	EVER_SHIFTING_LABEL: ["em constante mudança", "sempre mudando"],
 	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [
 		"ambientes em constante mudança",

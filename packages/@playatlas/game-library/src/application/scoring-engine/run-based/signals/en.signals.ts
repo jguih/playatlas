@@ -1,21 +1,44 @@
+import { FILLER, SEP, VERB } from "../../engine.regexp.utils";
 import type {
 	LanguageTaxonomySignalsMap,
 	LanguageTextSignalsMap,
 } from "../../score-engine.language.types";
 import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical.signals";
 
+const POSSESSIVE = `(?:her|his|the|your)\\b`;
+const RUN_LANGUAGE = `(?:run|loop|session|cycle|playthrough|journey|adventure)s?\\b`;
+const LOOP = `(?:every\\s+time|whenever|each\\s+time|when)\\b`;
+const SUBJECT_PRONOUN = `(?:she|he|you)\\b`;
+const DEATH = `die[s]?\\b`;
+const REPETITION_LANGUAGE = `(?:each|every|per|new|another)\\b`;
+
+const WORLD_LANGUAGE = `(?:map|world|level|dungeon|planet|environment|castle)s?\\b`;
+
 export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	// #region: run_based_identity
 	ROGUELIKE_LABEL: ["roguelike", "rogue-like"],
 	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
+	RUN_LOOP_STRUCTURE_LABEL: [
+		new RegExp(
+			VERB("restart") +
+				SEP +
+				POSSESSIVE +
+				SEP +
+				RUN_LANGUAGE +
+				SEP +
+				FILLER(1) +
+				LOOP +
+				SEP +
+				SUBJECT_PRONOUN +
+				SEP +
+				DEATH,
+			"i",
+		),
+	],
 	RUN_LOOP_LANGUAGE_LABEL: [
-		"each run",
-		"every run",
-		"per run",
-		"new run",
-		"another run",
-		"between runs",
-		"run after run",
+		new RegExp(REPETITION_LANGUAGE + SEP + RUN_LANGUAGE, "i"),
+		new RegExp(`between` + SEP + RUN_LANGUAGE, "i"),
+		new RegExp(RUN_LANGUAGE + SEP + `after` + SEP + RUN_LANGUAGE, "i"),
 	],
 	TRY_AGAIN_LOOP_LABEL: [
 		"try again",
@@ -26,41 +49,60 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	],
 	// #region: procedural_runs
 	PROCEDURAL_GENERATION_LABEL: [
-		"procedurally generated levels",
+		new RegExp(
+			`procedurally` + SEP + `(?:generated|created)` + SEP + FILLER(1) + WORLD_LANGUAGE,
+			"i",
+		),
 		"procedural generation",
-		"procedurally generated dungeons",
-		"generated dungeons",
-		"procedurally generated world",
-		"procedural environments",
+		new RegExp(`procedural` + SEP + FILLER(1) + WORLD_LANGUAGE, "i"),
 	],
 	RANDOMIZED_MAPS_LABEL: [
-		"randomized levels",
-		"randomized maps",
-		"randomly generated maps",
-		"randomly generated levels",
+		new RegExp(`randomized` + SEP + +WORLD_LANGUAGE, "i"),
+		new RegExp(`randomly` + SEP + `generated` + SEP + WORLD_LANGUAGE, "i"),
 		"randomly generated action RPG",
 		"unpredictable layouts",
 		"the layout differs each time",
-		"dynamic level generation",
-		"ever-changing levels",
-		"ever changing levels",
-		"ever-changing castle",
-		"ever changing castle",
+		new RegExp(`dynamic` + SEP + WORLD_LANGUAGE + SEP + `generation`, "i"),
+		new RegExp(`ever-changing` + SEP + WORLD_LANGUAGE, "i"),
+	],
+	RANDOM_ENCOUNTERS_LABEL: [
+		new RegExp(
+			`(?:(?:varied|generated|dynamic|changing|random)|procedurally\\s+generated)\\b` +
+				SEP +
+				FILLER(1) +
+				`(?:encounter|enemy\\s+layout)s?\\b`,
+			"i",
+		),
+		new RegExp(`fresh\\s+challenges` + SEP + REPETITION_LANGUAGE + SEP + RUN_LANGUAGE, "i"),
 	],
 	EVER_SHIFTING_LABEL: ["ever-shifting", "ever shifting"],
 	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [
-		"constantly changing environments",
-		"constantly changing environment",
-		"fresh layout every playthrough",
+		new RegExp(`constantly` + SEP + `changing` + SEP + WORLD_LANGUAGE, "i"),
+		new RegExp(`fresh` + SEP + `layout` + SEP + REPETITION_LANGUAGE + SEP + RUN_LANGUAGE, "i"),
 		"unique layouts each time",
 	],
 	// #endregion
 	// #region: permadeath_reset
 	PERMADEATH_LABEL: ["permadeath", "permanent death"],
 	RESET_ON_DEATH_LABEL: [
-		"death resets your run",
+		new RegExp(
+			VERB("restart") +
+				SEP +
+				POSSESSIVE +
+				SEP +
+				RUN_LANGUAGE +
+				SEP +
+				FILLER(1) +
+				LOOP +
+				SEP +
+				SUBJECT_PRONOUN +
+				SEP +
+				DEATH,
+			"i",
+		),
+		new RegExp(`death` + SEP + `resets` + SEP + POSSESSIVE + SEP + RUN_LANGUAGE, "i"),
+		new RegExp(RUN_LANGUAGE + SEP + `resets` + SEP + `on` + SEP + `death`, "i"),
 		"start over after death",
-		"run resets on death",
 		"begin again after failure",
 		"unforgiving death system",
 	],

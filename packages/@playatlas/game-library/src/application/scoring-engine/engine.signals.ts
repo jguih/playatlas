@@ -1,6 +1,6 @@
 import type { EvidenceTier, ScoreEngineLanguage } from "@playatlas/common/domain";
 
-export type SignalTerm = string;
+export type SignalTerm = string | RegExp;
 export type SignalAndGroup = SignalTerm[];
 export type SignalOrGroup = (SignalTerm | SignalAndGroup)[];
 

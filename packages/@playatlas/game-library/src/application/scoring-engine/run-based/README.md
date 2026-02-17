@@ -4,9 +4,28 @@ This classification measures how strongly a game is structured around discrete p
 
 ## Groups
 
+### run_based_identity
+
+Evidence of explicit run-based identity and recognizable genre conventions.
+
+- **userFacing**: false
+- **role**: `identity`
+
+Examples of signals:
+
+- roguelike genre labeling
+- roguelite genre labeling
+- run-loop related language
+- 'learning from failure' related language
+
+Foundation of run-based games, where the player plays through a session, finishing it by either dying or completing the main objective.
+
 ### procedural_runs
 
 Evidence that gameplay sessions are built from procedural or semi-procedural generation.
+
+- **userFacing**: true
+- **role**: `dimension`
 
 Examples of signals:
 
@@ -21,6 +40,9 @@ This is the structural backbone of **roguelikes** and **roguelites**.
 
 Evidence that failure causes a full or near-full run reset.
 
+- **userFacing**: true
+- **role**: `dimension`
+
 Examples of signals
 
 - permadeath
@@ -34,6 +56,9 @@ Distinguishes run-based games from checkpoint-driven progression.
 
 Evidence that each run meaningfully changes builds or playstyle.
 
+- **userFacing**: true
+- **role**: `dimension`
+
 Examples of signals
 
 - randomized items
@@ -46,6 +71,9 @@ About intra-run diversity, not just procedural maps.
 ### meta_progression
 
 Evidence of persistent progression across runs.
+
+- **userFacing**: true
+- **role**: `dimension`
 
 Examples of signals
 

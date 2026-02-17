@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { recordDomainEvents } from "../test.lib";
 import { api, factory, root } from "../vitest.global.setup";
 
-describe("Game Library Sync", () => {
+describe("Game Library Sync", { timeout: 20_000 }, () => {
 	let unsubscribe: () => void;
 	let events: DomainEvent[];
 

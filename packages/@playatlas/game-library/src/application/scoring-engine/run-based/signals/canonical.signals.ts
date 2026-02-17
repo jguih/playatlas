@@ -12,8 +12,14 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	ROGUELITE_LABEL: {
 		group: "run_based_identity",
 		tier: "A",
-		weight: 25,
+		weight: 28,
 		isGate: true,
+	},
+	RUN_LOOP_STRUCTURE_LABEL: {
+		group: "run_based_identity",
+		tier: "B",
+		weight: 28,
+		isGate: false,
 	},
 	RUN_LOOP_LANGUAGE_LABEL: {
 		group: "run_based_identity",
@@ -39,6 +45,12 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "procedural_runs",
 		tier: "B",
 		weight: 30,
+		isGate: false,
+	},
+	RANDOM_ENCOUNTERS_LABEL: {
+		group: "procedural_runs",
+		tier: "B",
+		weight: 28,
 		isGate: false,
 	},
 	EVER_SHIFTING_LABEL: {
