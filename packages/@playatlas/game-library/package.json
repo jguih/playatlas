@@ -3,6 +3,11 @@
 	"private": true,
 	"version": "1.0.0",
 	"type": "module",
+	"scripts": {
+		"test": "vitest run",
+		"test:unit": "vitest run --project unit",
+		"test:watch": "vitest --watch"
+	},
 	"exports": {
 		"./application": "./src/application/index.ts",
 		"./domain": "./src/domain/index.ts",

@@ -4,12 +4,7 @@ import type {
 	LanguageTextSignalsMap,
 } from "../../score-engine.language.types";
 import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical.signals";
-
-// recomeçar toda vez que morre
-
-const RUN_LANGUAGE = `(?:run|loop|sessao|ciclo|playthrough|jornada|aventura|partida)s?\\b`;
-const LOOP = `(?:toda\\s+vez\\s+que|sempre\\s+que|sempre|quando)\\b`;
-const REPETITION_LANGUAGE = `(?:(?:a|em|por)\\s+cada|outra|entre)\\b`;
+import { PATTERN } from "./pt.pattern.dict";
 
 const WORLD_LANGUAGE = `(?:(?:mapa|mundo|level|masmorra|planeta|ambiente|castelo)s?|nível|níveis)\\b`;
 
@@ -17,14 +12,10 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	// #region: run_based_identity
 	ROGUELIKE_LABEL: ["roguelike", "rogue-like"],
 	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
-	RUN_LOOP_STRUCTURE_LABEL: [new RegExp(`recomecar` + SEP + LOOP + SEP + `morre`, "i")],
-	RUN_LOOP_LANGUAGE_LABEL: [
-		new RegExp(REPETITION_LANGUAGE + SEP + FILLER(1) + RUN_LANGUAGE, "i"),
-		new RegExp(RUN_LANGUAGE + SEP + `apos` + SEP + RUN_LANGUAGE, "i"),
-	],
+	RUN_LOOP_STRUCTURE_LABEL: [PATTERN.RESTART_AFTER_DEATH],
+	RUN_LOOP_LANGUAGE_LABEL: [PATTERN.RUN_REPETITION, PATTERN.RUN_AFTER_RUN],
 	TRY_AGAIN_LOOP_LABEL: [
 		"tente novamente",
-		"tentativa após tentativa",
 		"aprenda com o fracasso",
 		"falhe e tente de novo",
 		"morra e tente novamente",
@@ -80,6 +71,7 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	// #region: permadeath_reset
 	PERMADEATH_LABEL: ["permadeath", "morte permanente"],
 	RESET_ON_DEATH_LABEL: [
+		PATTERN.RESTART_AFTER_DEATH,
 		"a morte reinicia sua run",
 		"comece de novo após morrer",
 		"a run reinicia ao morrer",
