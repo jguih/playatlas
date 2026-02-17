@@ -1,8 +1,10 @@
-import type { GameClassification, ScoreBreakdown } from "$lib/modules/game-library/domain";
+import type { GameClassification } from "$lib/modules/game-library/domain";
 import {
 	canonicalClassificationTiers,
+	evidenceGroupTiers,
 	type CanonicalClassificationTier,
 	type ClassificationId,
+	type EvidenceGroupTier,
 } from "@playatlas/common/domain";
 import { SvelteMap } from "svelte/reactivity";
 import type { GameAggregateStore } from "./game-aggregate-store.svelte";
@@ -13,7 +15,6 @@ import {
 	getScoreEngineLabel,
 	scoreEngineRegistry,
 	type EvidenceGroupMeta,
-	type EvidenceGroupTier,
 	type ScoreEngineMeta,
 } from "./score-engine-registry";
 
@@ -150,9 +151,18 @@ export class GameViewModel {
 					breakdownGroupDetails.push({
 						name: groupName,
 						visible: groupsMeta[groupName].userFacing,
-						tier: this.computeEvidenceGroupTier(group),
+						tier: group.tier,
 					});
 				}
+
+				breakdownGroupDetails.sort((a, b) => {
+					// Order by greatest tier descending first
+					const indexA = evidenceGroupTiers.indexOf(a.tier);
+					const indexB = evidenceGroupTiers.indexOf(b.tier);
+					if (indexA < indexB) return 1;
+					if (indexB > indexA) return -1;
+					return 0;
+				});
 
 				for (const breakdownGroupDetail of breakdownGroupDetails) {
 					const groupName = breakdownGroupDetail.name;
@@ -194,15 +204,6 @@ export class GameViewModel {
 		if (breakdown && excludedTiers.includes(breakdown.tier)) return true;
 		else if (!breakdown && gameClassification.NormalizedScore <= minScore) return true;
 		return false;
-	};
-
-	private computeEvidenceGroupTier = (
-		group: ScoreBreakdown["groups"][number],
-	): EvidenceGroupTier => {
-		if (group.contributionPercent === 0) return "none";
-		if (group.contributionPercent >= 0.5) return "strong";
-		if (group.contribution >= 0.2) return "moderate";
-		return "light";
 	};
 
 	get developersStringSignal(): string {

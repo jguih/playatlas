@@ -3,6 +3,7 @@ import {
 	CLASSIFICATION_IDS,
 	type CanonicalClassificationThresholdTier,
 	type ClassificationId,
+	type EvidenceGroupThresholdTier,
 } from "@playatlas/common/domain";
 import { join } from "path";
 import type { IGameRepositoryPort, IGenreRepositoryPort, ITagRepositoryPort } from "../../infra";
@@ -46,35 +47,54 @@ export const makeClassificationTierCalibrationService = ({
 			const tagsSnapshot = new Map(tags.map((t) => [t.getId(), t]));
 			const classificationTiersByEngine = new Map<
 				ClassificationId,
-				Record<CanonicalClassificationThresholdTier, number>
+				{
+					thresholds: Record<CanonicalClassificationThresholdTier, number>;
+					groups: Record<string, Record<EvidenceGroupThresholdTier, number>>;
+				}
 			>();
 			const scoresByClassification = new Map<ClassificationId, number[]>();
+			const scoresByGroup = new Map<ClassificationId, Map<string, number[]>>();
 
 			for (const classificationId of CLASSIFICATION_IDS) {
+				classificationTiersByEngine.set(classificationId, {
+					thresholds: { adjacent: 0, core: 0, strong: 0 },
+					groups: {},
+				});
 				scoresByClassification.set(classificationId, []);
+				scoresByGroup.set(classificationId, new Map());
 			}
 
 			for (const game of games) {
 				for (const classificationId of CLASSIFICATION_IDS) {
 					const engine = scoreEngineRegistry.get(classificationId);
 
-					const { normalizedScore } = engine.score({
+					const { normalizedScore, breakdown } = engine.score({
 						game,
 						genresSnapshot,
 						tagsSnapshot,
 					});
 
 					scoresByClassification.get(classificationId)!.push(normalizedScore);
+
+					for (const group of breakdown.groups) {
+						let groupScores = scoresByGroup.get(classificationId)!.get(group.group);
+						if (!groupScores) {
+							groupScores = [];
+							scoresByGroup.get(classificationId)!.set(group.group, groupScores);
+						}
+						groupScores.push(group.normalizedContribution);
+					}
 				}
 			}
 
 			for (const classificationId of CLASSIFICATION_IDS) {
 				const scores = scoresByClassification.get(classificationId)!;
 				const nonZeroScores = scores.filter((s) => s > 0);
-				let thresholds: Record<CanonicalClassificationThresholdTier, number>;
+				const engineTiers = classificationTiersByEngine.get(classificationId)!;
+				const groupScores = scoresByGroup.get(classificationId)!;
 
 				if (nonZeroScores.length === 0) {
-					thresholds = {
+					engineTiers.thresholds = {
 						adjacent: 0,
 						strong: 0,
 						core: 0,
@@ -82,14 +102,32 @@ export const makeClassificationTierCalibrationService = ({
 				} else {
 					nonZeroScores.sort((a, b) => a - b);
 
-					thresholds = {
+					engineTiers.thresholds = {
 						adjacent: thresholdByRank(nonZeroScores, 0.2),
 						strong: thresholdByRank(nonZeroScores, 0.5),
 						core: thresholdByRank(nonZeroScores, 0.8),
 					};
 				}
 
-				classificationTiersByEngine.set(classificationId, thresholds);
+				for (const [groupName, scores] of groupScores) {
+					const nonZeroGroupScores = scores.filter((s) => s > 0);
+
+					if (nonZeroGroupScores.length === 0) {
+						engineTiers.groups[groupName] = {
+							light: 0,
+							moderate: 0,
+							strong: 0,
+						};
+					} else {
+						nonZeroGroupScores.sort((a, b) => a - b);
+
+						engineTiers.groups[groupName] = {
+							light: thresholdByRank(nonZeroGroupScores, 0.2),
+							moderate: thresholdByRank(nonZeroGroupScores, 0.5),
+							strong: thresholdByRank(nonZeroGroupScores, 0.8),
+						};
+					}
+				}
 			}
 
 			const jsonObject = Object.fromEntries(classificationTiersByEngine);

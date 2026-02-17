@@ -1,5 +1,9 @@
 import { m } from "$lib/paraglide/messages";
-import type { CanonicalClassificationTier, ClassificationId } from "@playatlas/common/domain";
+import type {
+	CanonicalClassificationTier,
+	ClassificationId,
+	EvidenceGroupTier,
+} from "@playatlas/common/domain";
 import type {
 	HorrorEvidenceGroup,
 	RunBasedEvidenceGroup,
@@ -107,8 +111,6 @@ export const classificationTierRegistry = {
 	weak: () => m["score_engine.classificationTier.weak"](),
 	none: () => m["score_engine.classificationTier.none"](),
 } as const satisfies Record<CanonicalClassificationTier, () => string>;
-
-export type EvidenceGroupTier = "strong" | "moderate" | "light" | "none";
 
 export const evidenceGroupTierRegistry = {
 	strong: () => m["score_engine.evidenceGroupTier.strong"](),

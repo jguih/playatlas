@@ -1,4 +1,8 @@
-import type { CanonicalClassificationTier, EvidenceSource } from "@playatlas/common/domain";
+import type {
+	CanonicalClassificationTier,
+	EvidenceGroupTier,
+	EvidenceSource,
+} from "@playatlas/common/domain";
 import type { ScoreEngineClassificationTierThresholdPolicy } from "./engine.classification-tier-threshold.policy";
 import type { ScoreEngineSourcePolicy } from "./engine.evidence-source.policy";
 import type {
@@ -72,6 +76,17 @@ export const makeScoringPolicy = <TGroup extends string>({
 		return "weak";
 	};
 
+	const computeGroupTier = (
+		normalizedContribution: number,
+		evidenceTier?: Evidence<TGroup>["tier"],
+	): EvidenceGroupTier => {
+		if (normalizedContribution === 0 || !evidenceTier) return "none";
+		if (evidenceTier === "A" && normalizedContribution >= 0.5) return "strong";
+		if (evidenceTier === "A" && normalizedContribution < 0.5) return "moderate";
+		if (evidenceTier === "B") return "moderate";
+		return "light";
+	};
+
 	const estimateContribution = (evidence: Evidence<TGroup>): number => {
 		const groupPolicy = evidenceGroupPolicies[evidence.group];
 		const sourcePolicy = evidenceSourcePolicy[evidence.source];
@@ -121,10 +136,19 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 		const groupSubtotal = total;
 
-		const groupsWithPercent: ScoreBreakdown<TGroup>["groups"] = groups.map((group) => ({
-			...group,
-			contributionPercent: groupSubtotal === 0 ? 0 : group.contribution / groupSubtotal,
-		}));
+		const expandedGroups: ScoreBreakdown<TGroup>["groups"] = groups.map((group) => {
+			const groupPolicy = evidenceGroupPolicies[group.group];
+			const normalizedContribution = group.contribution / (groupPolicy.cap ?? group.contribution);
+			const contributionPercent = groupSubtotal === 0 ? 0 : group.contribution / groupSubtotal;
+			const tier = computeGroupTier(normalizedContribution, group.evidences.at(0)?.tier);
+
+			return {
+				...group,
+				contributionPercent,
+				normalizedContribution,
+				tier,
+			};
+		});
 
 		for (const synergy of synergies) {
 			total += synergy.contribution;
@@ -154,7 +178,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 		const breakdown: ScoreBreakdown<TGroup> = {
 			mode,
-			groups: groupsWithPercent,
+			groups: expandedGroups,
 			synergies,
 			subtotal,
 			penalties,

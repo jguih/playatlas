@@ -1,4 +1,8 @@
-import type { CanonicalClassificationTier, EngineScoreMode } from "@playatlas/common/domain";
+import type {
+	CanonicalClassificationTier,
+	EngineScoreMode,
+	EvidenceGroupTier,
+} from "@playatlas/common/domain";
 import type { Evidence } from "./evidence.record";
 import type { Penalty } from "./penalty.record";
 import type { Synergy } from "./synergy.record";
@@ -10,6 +14,8 @@ export type ScoreBreakdown = {
 		evidences: Array<Evidence>;
 		contribution: number;
 		contributionPercent: number;
+		normalizedContribution: number;
+		tier: EvidenceGroupTier;
 	}[];
 	synergies: Array<Synergy>;
 	subtotal: number;
