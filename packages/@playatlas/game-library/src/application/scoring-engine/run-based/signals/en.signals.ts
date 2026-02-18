@@ -3,6 +3,7 @@ import type {
 	LanguageTaxonomySignalsMap,
 	LanguageTextSignalsMap,
 } from "../../score-engine.language.types";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN as PATTERN } from "../regex/en.pattern.dict";
 import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical.signals";
 
 const POSSESSIVE = `(?:her|his|the|your)\\b`;
@@ -18,43 +19,20 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	// #region: run_based_identity
 	ROGUELIKE_LABEL: ["roguelike", "rogue-like"],
 	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
-	RUN_LOOP_STRUCTURE_LABEL: [
-		new RegExp(
-			VERB("restart") +
-				SEP +
-				POSSESSIVE +
-				SEP +
-				RUN_LANGUAGE +
-				SEP +
-				FILLER(1) +
-				LOOP +
-				SEP +
-				SUBJECT_PRONOUN +
-				SEP +
-				DEATH,
-			"i",
-		),
-	],
-	RUN_LOOP_LANGUAGE_LABEL: [
-		new RegExp(REPETITION_LANGUAGE + SEP + RUN_LANGUAGE, "i"),
-		new RegExp(`between` + SEP + RUN_LANGUAGE, "i"),
-		new RegExp(RUN_LANGUAGE + SEP + `after` + SEP + RUN_LANGUAGE, "i"),
-	],
+	RUN_LOOP_STRUCTURE_LABEL: [PATTERN.RESTART_AFTER_DEATH],
+	RUN_LOOP_LANGUAGE_LABEL: [PATTERN.RUN_REPETITION, PATTERN.RUN_AFTER_RUN, PATTERN.BETWEEN_RUNS],
 	TRY_AGAIN_LOOP_LABEL: [
-		"try again",
+		PATTERN.TRY_AGAIN,
 		"attempt after attempt",
 		"learn from failure",
 		"fail and retry",
-		"die and try again",
+		PATTERN.DIE_AND_TRY_AGAIN,
 	],
 	// #region: procedural_runs
 	PROCEDURAL_GENERATION_LABEL: [
-		new RegExp(
-			`procedurally` + SEP + `(?:generated|created)` + SEP + FILLER(1) + WORLD_LANGUAGE,
-			"i",
-		),
+		PATTERN.PROCEDURALLY_GENERATED_WORLD,
 		"procedural generation",
-		new RegExp(`procedural` + SEP + FILLER(1) + WORLD_LANGUAGE, "i"),
+		PATTERN.PROCEDURAL_WORLD,
 	],
 	RANDOMLY_GENERATED_MAPS_LABEL: [],
 	RANDOM_MAPS_LABEL: [

@@ -1,31 +1,34 @@
-import { filler, sequence, type ScoreEnginePatternDictionary } from "../../engine.language.grammar";
+import {
+	filler,
+	sequence,
+	window,
+	type ScoreEnginePatternDictionary,
+} from "../../engine.language.grammar";
 import { alternatives } from "../../engine.language.lexicon";
-import { RUN_BASED_ENGINE_LEXICON_PT as LEX } from "./pt.lex";
+import { RUN_BASED_ENGINE_LEXICON_EN as LEX } from "./en.lex";
 
-export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT = {
+export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN = {
 	RUN_REPETITION: sequence(
 		filler(LEX.REPETITION, {
 			n: 1,
-			f: alternatives("nov(?:a|o)", "proxim(?:a|o)", "seguinte", "diferente"),
+			f: alternatives("new", "subsequent", "different"),
 		}),
 		LEX.RUN,
 	),
-	RUN_AFTER_RUN: sequence(LEX.RUN, alternatives("apos"), LEX.RUN),
+	RUN_AFTER_RUN: sequence(LEX.RUN, alternatives("after"), LEX.RUN),
+	BETWEEN_RUNS: sequence(alternatives("between"), LEX.RUN),
 	RESTART_AFTER_DEATH: sequence(
 		LEX.RESTART,
-		filler(LEX.LOOP, { n: 1, f: alternatives("ela", "ele") }),
+		LEX.POSSESSIVE,
+		LEX.RUN,
+		LEX.LOOP,
+		LEX.SUBJECT_PRONOUN,
 		LEX.DIE,
 	),
-	PROCEDURALLY_GENERATED_WORLD: sequence(
-		filler(LEX.WORLD, {
-			n: 1,
-			f: alternatives("inteir(?:o|a)", "aleatoriamente", "totalmente"),
-		}),
-		LEX.CREATED,
-		LEX.PROCEDURALLY,
-	),
+	PROCEDURALLY_GENERATED_WORLD: window([LEX.WORLD, LEX.CREATE, LEX.PROCEDURALLY], 40),
+	PROCEDURAL_WORLD: sequence(LEX.PROCEDURAL, LEX.WORLD),
 	RANDOM_WORLDS: sequence(LEX.WORLD, LEX.RANDOM),
-	RANDOMLY_CREATED_WORLDS: sequence(LEX.WORLD, LEX.CREATED, LEX.RANDOMLY),
+	RANDOMLY_CREATED_WORLDS: sequence(LEX.WORLD, LEX.CREATE, LEX.RANDOMLY),
 	EVER_CHANGING_WORLDS: sequence(
 		filler(LEX.WORLD, { n: 1, f: alternatives("que", "que\\s+est(?:a|ao)") }),
 		LEX.EVER_CHANGING,
@@ -36,7 +39,10 @@ export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT = {
 	),
 	EVER_CHANGING: sequence(LEX.EVER_CHANGING),
 	TRY_AGAIN: sequence(LEX.TRY_AGAIN),
-	DIE_AND_TRY_AGAIN: sequence(LEX.DIE, alternatives("e(?:\\s+entao)?"), LEX.TRY_AGAIN),
+	DIE_AND_TRY_AGAIN: sequence(
+		filler(LEX.DIE, { n: 1, f: alternatives("(?:and|then)") }),
+		LEX.TRY_AGAIN,
+	),
 	DEATH_RESTARTS_YOUR_RUN: sequence(
 		LEX.DEATH,
 		LEX.RESTART,

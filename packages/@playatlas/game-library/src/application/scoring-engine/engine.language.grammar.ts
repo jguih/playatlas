@@ -17,3 +17,8 @@ export const filler = (a: string, opt: WithFillerOptions = {}) => {
 };
 
 export type ScoreEnginePatternDictionary = Record<string, RegExp>;
+
+export const window = (terms: string[], size: number) => {
+	const lookaheads = terms.map((t) => `(?=.{0,${size}}${t})`).join("");
+	return new RegExp(`${lookaheads}.{0,${size}}`, "i");
+};

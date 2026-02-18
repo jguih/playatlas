@@ -1,35 +1,23 @@
 import { alternatives, plural, type ScoreEngineRegexLexicon } from "../../engine.language.lexicon";
 
-export const RUN_BASED_ENGINE_LEXICON_PT = {
+export const RUN_BASED_ENGINE_LEXICON_EN = {
+	SUBJECT_PRONOUN: alternatives("he", "she", "you"),
 	RUN: alternatives(
-		plural("run", "loop", "ciclo", "playthrough", "jornada", "aventura", "partida", "tentativa"),
-		"sess(?:ao|oes)",
+		plural("run", "loop", "cycle", "playthrough", "journey", "adventure", "session"),
 	),
-	RESTART: alternatives("recomec(?:e|ar|a)", "reinici(?:e|ar|a)"),
-	LOOP: alternatives("toda\\s+vez\\s+que", "sempre\\s+que", "sempre", "quando"),
+	RESTART: alternatives("restart(?:ed|ing|s)?", "repeat(?:ed|ing|s)?"),
+	LOOP: alternatives("every\\s+time", "when", "whenever", "each\\s+time"),
+	POSSESSIVE: alternatives("her", "his", "your", "the"),
 	WORLD: alternatives(
-		plural(
-			"mapa",
-			"mundo",
-			"level",
-			"masmorra",
-			"planeta",
-			"ambiente",
-			"castelo",
-			"dungeon",
-			"fase",
-		),
+		plural("map", "world", "level", "dungeon", "planet", "castle", "universe", "layout"),
 		"nive(?:l|is)",
 	),
-	DIE: alternatives("falh(?:e|ar|ou|ando)", "morr(?:e|er|eu|endo|ia|a)"),
+	DIE: alternatives("die(?:s|ed)?", "fail(?:s|ed)?"),
 	DEATH: alternatives("(?:a\\s+)morte", "(?:a\\s+)falha"),
-	PROCEDURALLY: alternatives("proceduralmente", "de\\s+(?:forma|maneira)\\s+procedural"),
-	REPETITION: alternatives("(?:a|em|por)\\s+cada", "outra", "entre"),
-	CREATED: alternatives(
-		plural("gerad(?:o|a)", "criad(?:o|a)"),
-		"e\\s+gerad(?:o|a)",
-		"sao\\s+gerad(?:as|os)",
-	),
+	PROCEDURALLY: alternatives("procedurally"),
+	PROCEDURAL: alternatives("procedural"),
+	REPETITION: alternatives("every", "each"),
+	CREATE: alternatives("generat(?:ed|ing|e|s|es)", "creat(?:ed|ing|e|s|es)"),
 	RANDOM: alternatives(plural("aleatori(?:o|os|a|as)")),
 	RANDOMLY: alternatives("aleatoriamente", "de\\s+maneira\\s+aleatoria"),
 	EVER_CHANGING: alternatives(
@@ -37,12 +25,8 @@ export const RUN_BASED_ENGINE_LEXICON_PT = {
 		"(?:sempre\\s+)mud(?:a|ando|am)",
 		"mud(?:a|am)\\s+constantemente",
 	),
-	TRY_AGAIN: alternatives(
-		"tente\\s+de\\s+novo",
-		"tente\\s+novamente",
-		"tente\\s+uma\\s+segunda\\s+vez",
-	),
-	ENVIRONMENT: alternatives(plural("ambiente")),
+	TRY_AGAIN: alternatives("try\\s+again", "start\\s+over"),
+	ENVIRONMENT: alternatives(plural("environment")),
 	LOOT: alternatives("ite(?:m|ns)", "loot", plural("drop")),
 	LOOT_VOLUME_NUMERIC: alternatives("\\d+\\+?\\s+itens"),
 	ENEMY: alternatives("inimig(?:o|os)"),
