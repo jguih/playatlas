@@ -6,20 +6,20 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	ROGUELIKE_LABEL: {
 		group: "run_based_identity",
 		tier: "A",
-		weight: 30,
+		weight: 25,
 		isGate: true,
 	},
 	ROGUELITE_LABEL: {
 		group: "run_based_identity",
 		tier: "A",
-		weight: 28,
+		weight: 25,
 		isGate: true,
 	},
 	RUN_LOOP_STRUCTURE_LABEL: {
 		group: "run_based_identity",
-		tier: "B",
-		weight: 28,
-		isGate: false,
+		tier: "A",
+		weight: 35,
+		isGate: true,
 	},
 	RUN_LOOP_LANGUAGE_LABEL: {
 		group: "run_based_identity",
@@ -53,12 +53,7 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		weight: 18,
 		isGate: false,
 	},
-	RANDOM_ENCOUNTERS_LABEL: {
-		group: "procedural_runs",
-		tier: "B",
-		weight: 18,
-		isGate: false,
-	},
+
 	EVER_SHIFTING_LABEL: {
 		group: "procedural_runs",
 		tier: "C",
@@ -109,6 +104,18 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "run_variability",
 		tier: "B",
 		weight: 20,
+		isGate: false,
+	},
+	ENEMY_VOLUME_LABEL: {
+		group: "run_variability",
+		tier: "B",
+		weight: 22,
+		isGate: false,
+	},
+	RANDOMIZED_ENEMIES_LABEL: {
+		group: "procedural_runs",
+		tier: "B",
+		weight: 18,
 		isGate: false,
 	},
 	BUILD_VARIETY_LABEL: {

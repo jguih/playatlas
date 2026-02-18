@@ -45,6 +45,8 @@ export const RUN_BASED_ENGINE_LEXICON_PT = {
 	ENVIRONMENT: alternatives(plural("ambiente")),
 	LOOT: alternatives("ite(?:m|ns)", "loot"),
 	LOOT_VOLUME_NUMERIC: alternatives("\\d+\\+?\\s+itens"),
+	ENEMY: alternatives("inimig(?:o|os)"),
+	ENEMY_VOLUME_NUMERIC: alternatives("\\d+\\+?\\s+inimig(?:o|os)"),
 	SAME: alternatives("igual", "igual\\s+(?:a|ao)\\s+outr(?:a|o)"),
 	DIFFERENT: alternatives("diferente", "unica"),
 } as const satisfies ScoreEngineRegexLexicon;

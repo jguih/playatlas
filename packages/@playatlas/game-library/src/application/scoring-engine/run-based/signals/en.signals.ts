@@ -66,16 +66,6 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		new RegExp(`dynamic` + SEP + WORLD_LANGUAGE + SEP + `generation`, "i"),
 		new RegExp(`ever-changing` + SEP + WORLD_LANGUAGE, "i"),
 	],
-	RANDOM_ENCOUNTERS_LABEL: [
-		new RegExp(
-			`(?:(?:varied|generated|dynamic|changing|random)|procedurally\\s+generated)\\b` +
-				SEP +
-				FILLER(1) +
-				`(?:encounter|enemy\\s+layout)s?\\b`,
-			"i",
-		),
-		new RegExp(`fresh\\s+challenges` + SEP + REPETITION_LANGUAGE + SEP + RUN_LANGUAGE, "i"),
-	],
 	EVER_SHIFTING_LABEL: ["ever-shifting", "ever shifting"],
 	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [
 		new RegExp(`constantly` + SEP + `changing` + SEP + WORLD_LANGUAGE, "i"),
@@ -110,8 +100,13 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	NO_CHECKPOINTS_LABEL: ["no checkpoints"],
 	// #endregion
 	// #region: run_variability
-	CUSTOMIZE_YOUR_RUN_LABEL: ["customize your run"],
-	DAILY_CHALLENGES: ["daily challenges"],
+	GAMEPLAY_VARIETY_LABEL: [
+		"gameplay modifiers",
+		"no run will ever be the same",
+		"no two runs are the same",
+		"never experience the same game twice",
+		"randomized stages, enemies, and items",
+	],
 	ITEMS_VOLUME_LABEL: [],
 	RANDOMIZED_ITEMS_LABEL: [
 		"randomized items",
@@ -123,6 +118,10 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		"procedural loot",
 		"item variety",
 	],
+	ENEMY_VOLUME_LABEL: [],
+	RANDOMIZED_ENEMIES_LABEL: [],
+	CUSTOMIZE_YOUR_RUN_LABEL: ["customize your run"],
+	DAILY_CHALLENGES: ["daily challenges"],
 	BUILD_VARIETY_LABEL: [
 		"combine loot",
 		"different builds",
@@ -130,13 +129,6 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		"build variety",
 		"experiment with builds",
 		"varied playstyles",
-	],
-	GAMEPLAY_VARIETY_LABEL: [
-		"gameplay modifiers",
-		"no run will ever be the same",
-		"no two runs are the same",
-		"never experience the same game twice",
-		"randomized stages, enemies, and items",
 	],
 	ENDLESS_RUN_LABEL: ["continue your run indefinitely", "limitlessly increase in power"],
 	ENDLESSLY_REPLAYABLE_LABEL: ["endlessly replayable"],

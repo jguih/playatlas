@@ -53,6 +53,10 @@ export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT = {
 	LOOT_VOLUME_SPECIFIC: sequence(
 		filler(LEX.LOOT_VOLUME_NUMERIC, { n: 1, f: alternatives("mais\\s+(?:que|de)"), d: "before" }),
 	),
+	RANDOM_ENEMY: sequence(LEX.ENEMY, LEX.RANDOM),
+	ENEMY_VOLUME_SPECIFIC: sequence(
+		filler(LEX.ENEMY_VOLUME_NUMERIC, { n: 1, f: alternatives("mais\\s+(?:que|de)"), d: "before" }),
+	),
 	NO_RUN_IS_THE_SAME: sequence(
 		alternatives("nenhum(?:a)?"),
 		LEX.RUN,
