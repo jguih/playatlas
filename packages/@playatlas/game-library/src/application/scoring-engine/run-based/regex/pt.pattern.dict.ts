@@ -69,4 +69,8 @@ export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT = {
 		alternatives("e", "sera"),
 		LEX.DIFFERENT,
 	),
+	VARIETY_OF_BUILD_ITEMS: sequence(
+		filler(LEX.VARIETY, { n: 1, f: alternatives("de") }),
+		LEX.BUILD_ITEMS,
+	),
 } as const satisfies ScoreEnginePatternDictionary;

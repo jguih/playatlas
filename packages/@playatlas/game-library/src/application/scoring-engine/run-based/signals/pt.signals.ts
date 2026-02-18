@@ -46,16 +46,9 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 		PATTERN.EACH_RUN_IS_DIFFERENT,
 	],
 	ITEMS_VOLUME_LABEL: [PATTERN.LOOT_VOLUME_SPECIFIC],
-	RANDOMIZED_ITEMS_LABEL: [
-		PATTERN.RANDOM_LOOT,
-		"loot procedural",
-		"variedade de itens",
-		"variedade de loot",
-	],
-	ENEMY_VOLUME_LABEL: [PATTERN.ENEMY_VOLUME_SPECIFIC],
-	RANDOMIZED_ENEMIES_LABEL: [PATTERN.RANDOM_ENEMY],
-	CUSTOMIZE_YOUR_RUN_LABEL: ["personalize sua run", "customize sua run"],
-	DAILY_CHALLENGES: ["desafios diários"],
+	RANDOMIZED_ITEMS_LABEL: [PATTERN.RANDOM_LOOT, "loot procedural"],
+	ENCOUNTER_VOLUME_LABEL: [PATTERN.ENEMY_VOLUME_SPECIFIC],
+	RANDOMIZED_ENCOUNTERS_LABEL: [PATTERN.RANDOM_ENEMY],
 	BUILD_VARIETY_LABEL: [
 		"builds diferentes",
 		"builds únicas",
@@ -72,8 +65,10 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 		"sobreviver o máximo possível",
 		"veja o quanto você consegue sobreviver",
 		"escalonamento infinito",
-		["escalonamento", "poder ilimitado"],
 	],
+	CUSTOMIZE_YOUR_RUN_LABEL: ["personalize sua run", "customize sua run"],
+	BUILD_ITEM_VARIETY_LABEL: [PATTERN.VARIETY_OF_BUILD_ITEMS],
+	DAILY_CHALLENGES: ["desafios diários"],
 	ENDLESSLY_REPLAYABLE_LABEL: ["rejogabilidade infinita", "altamente rejogável"],
 	// #endregion
 	// #region: meta_progression

@@ -106,13 +106,13 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		weight: 20,
 		isGate: false,
 	},
-	ENEMY_VOLUME_LABEL: {
+	ENCOUNTER_VOLUME_LABEL: {
 		group: "run_variability",
 		tier: "B",
 		weight: 22,
 		isGate: false,
 	},
-	RANDOMIZED_ENEMIES_LABEL: {
+	RANDOMIZED_ENCOUNTERS_LABEL: {
 		group: "procedural_runs",
 		tier: "B",
 		weight: 18,
@@ -128,6 +128,12 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "run_variability",
 		tier: "B",
 		weight: 20,
+		isGate: false,
+	},
+	BUILD_ITEM_VARIETY_LABEL: {
+		group: "run_variability",
+		tier: "C",
+		weight: 12,
 		isGate: false,
 	},
 	DAILY_CHALLENGES: {

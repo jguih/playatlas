@@ -118,9 +118,10 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		"procedural loot",
 		"item variety",
 	],
-	ENEMY_VOLUME_LABEL: [],
-	RANDOMIZED_ENEMIES_LABEL: [],
+	ENCOUNTER_VOLUME_LABEL: [],
+	RANDOMIZED_ENCOUNTERS_LABEL: [],
 	CUSTOMIZE_YOUR_RUN_LABEL: ["customize your run"],
+	BUILD_ITEM_VARIETY_LABEL: [],
 	DAILY_CHALLENGES: ["daily challenges"],
 	BUILD_VARIETY_LABEL: [
 		"combine loot",

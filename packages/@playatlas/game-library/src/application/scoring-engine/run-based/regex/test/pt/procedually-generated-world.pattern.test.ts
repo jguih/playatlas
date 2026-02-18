@@ -17,6 +17,7 @@ describe("Portuguese / PROCEDURALLY_GENERATED_WORLD", () => {
 		"a dungeon é gerada de maneira procedural a cada partida",
 		"o jogo cria mundos gerados proceduralmente",
 		"as dungeons são geradas de maneira procedural",
+		"mapa gerado de forma procedural",
 	];
 
 	const shouldNotMatch = [
