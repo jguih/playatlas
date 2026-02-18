@@ -56,7 +56,8 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		"procedural generation",
 		new RegExp(`procedural` + SEP + FILLER(1) + WORLD_LANGUAGE, "i"),
 	],
-	RANDOMIZED_MAPS_LABEL: [
+	RANDOMLY_GENERATED_MAPS_LABEL: [],
+	RANDOM_MAPS_LABEL: [
 		new RegExp(`randomized` + SEP + +WORLD_LANGUAGE, "i"),
 		new RegExp(`randomly` + SEP + `generated` + SEP + WORLD_LANGUAGE, "i"),
 		"randomly generated action RPG",

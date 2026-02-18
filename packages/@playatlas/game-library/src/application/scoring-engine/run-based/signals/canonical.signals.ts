@@ -41,16 +41,22 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		weight: 35,
 		isGate: false,
 	},
-	RANDOMIZED_MAPS_LABEL: {
+	RANDOMLY_GENERATED_MAPS_LABEL: {
 		group: "procedural_runs",
 		tier: "B",
 		weight: 30,
 		isGate: false,
 	},
+	RANDOM_MAPS_LABEL: {
+		group: "procedural_runs",
+		tier: "B",
+		weight: 18,
+		isGate: false,
+	},
 	RANDOM_ENCOUNTERS_LABEL: {
 		group: "procedural_runs",
 		tier: "B",
-		weight: 28,
+		weight: 18,
 		isGate: false,
 	},
 	EVER_SHIFTING_LABEL: {

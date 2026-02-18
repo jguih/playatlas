@@ -1,12 +1,9 @@
-import { FILLER, SEP } from "../../engine.regexp.utils";
 import type {
 	LanguageTaxonomySignalsMap,
 	LanguageTextSignalsMap,
 } from "../../score-engine.language.types";
 import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical.signals";
 import { PATTERN } from "./pt.pattern.dict";
-
-const WORLD_LANGUAGE = `(?:(?:mapa|mundo|level|masmorra|planeta|ambiente|castelo)s?|nível|níveis)\\b`;
 
 export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	// #region: run_based_identity
@@ -22,42 +19,13 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	],
 	// #endregion
 	// #region: procedural_runs
-	PROCEDURAL_GENERATION_LABEL: [
-		new RegExp(
-			WORLD_LANGUAGE +
-				SEP +
-				FILLER(1) +
-				`(?:gerad(?:o|a)|criad(?:o|a))s?` +
-				SEP +
-				FILLER(1) +
-				`proceduralmente`,
-			"i",
-		),
-		new RegExp(
-			WORLD_LANGUAGE +
-				SEP +
-				FILLER(1) +
-				`proceduralmente` +
-				SEP +
-				FILLER(1) +
-				`(?:gerad(?:o|a)|criad(?:o|a))s?`,
-			"i",
-		),
-		"geração procedural",
-	],
-	RANDOMIZED_MAPS_LABEL: [
-		"fases aleatórias",
-		"níveis aleatórios",
-		"mapas aleatórios",
-		"mapas gerados aleatoriamente",
-		"níveis gerados aleatoriamente",
+	PROCEDURAL_GENERATION_LABEL: [PATTERN.PROCEDURALLY_GENERATED_WORLD, "geração procedural"],
+	RANDOM_MAPS_LABEL: [PATTERN.RANDOM_WORLDS, PATTERN.EVER_CHANGING_WORLDS],
+	RANDOMLY_GENERATED_MAPS_LABEL: [
+		PATTERN.RANDOMLY_CREATED_WORLDS,
 		"rpg de ação gerado aleatoriamente",
-		"layouts imprevisíveis",
-		"o layout muda a cada vez",
-		"o layout muda a cada partida",
+		"rpg de ação gerado de maneira aleatória",
 		"geração dinâmica de níveis",
-		"níveis em constante mudança",
-		"castelo em constante mudança",
 	],
 	RANDOM_ENCOUNTERS_LABEL: [],
 	EVER_SHIFTING_LABEL: ["em constante mudança", "sempre mudando"],
