@@ -1,9 +1,9 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { PATTERN } from "../../pt.pattern.dict";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dict";
 
 describe("Portuguese / RANDOMLY_CREATED_WORLDS", () => {
-	const re = PATTERN.RANDOMLY_CREATED_WORLDS;
+	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.RANDOMLY_CREATED_WORLDS;
 
 	const shouldMatch = [
 		"mapas gerados aleatoriamente",

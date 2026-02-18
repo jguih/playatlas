@@ -1,9 +1,9 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { PATTERN } from "../../pt.pattern.dict";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dict";
 
 describe("Portuguese / RUN_REPETITION_PATTERN", () => {
-	const re = PATTERN.RUN_REPETITION;
+	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.RUN_REPETITION;
 
 	const shouldMatch = [
 		"a cada partida",

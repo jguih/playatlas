@@ -62,13 +62,13 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	EVER_SHIFTING_LABEL: {
 		group: "procedural_runs",
 		tier: "C",
-		weight: 15,
+		weight: 12,
 		isGate: false,
 	},
 	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: {
 		group: "procedural_runs",
 		tier: "C",
-		weight: 15,
+		weight: 12,
 		isGate: false,
 	},
 	// #endregion
@@ -99,10 +99,16 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		weight: 30,
 		isGate: false,
 	},
+	ITEMS_VOLUME_LABEL: {
+		group: "run_variability",
+		tier: "B",
+		weight: 25,
+		isGate: false,
+	},
 	RANDOMIZED_ITEMS_LABEL: {
 		group: "run_variability",
 		tier: "B",
-		weight: 28,
+		weight: 20,
 		isGate: false,
 	},
 	BUILD_VARIETY_LABEL: {

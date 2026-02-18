@@ -1,13 +1,13 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { PATTERN } from "../../pt.pattern.dict";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dict";
 
-describe("Portuguese / RANDOM_WORLDS", () => {
-	const re = PATTERN.RANDOM_WORLDS;
+describe("Portuguese / EVER_CHANGING", () => {
+	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.EVER_CHANGING;
 
-	const shouldMatch = ["fases aleatórias", "níveis aleatórios", "mapas aleatórios"];
+	const shouldMatch = ["em constante mudança", "sempre mudando"];
 
-	const shouldNotMatch = ["situações aleatórias", "pessoas aleatórias"];
+	const shouldNotMatch = ["sempre alternando"];
 
 	it.each(shouldMatch)("matches: %s", (text) => {
 		expect(re.test(normalize(text))).toBe(true);

@@ -1,9 +1,9 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { PATTERN } from "../../pt.pattern.dict";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dict";
 
 describe("Portuguese / PROCEDURALLY_GENERATED_WORLD", () => {
-	const re = PATTERN.PROCEDURALLY_GENERATED_WORLD;
+	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.PROCEDURALLY_GENERATED_WORLD;
 
 	const shouldMatch = [
 		"mundo gerado proceduralmente",

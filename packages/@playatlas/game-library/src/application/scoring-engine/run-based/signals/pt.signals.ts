@@ -2,8 +2,8 @@ import type {
 	LanguageTaxonomySignalsMap,
 	LanguageTextSignalsMap,
 } from "../../score-engine.language.types";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT as PATTERN } from "../regex/pt.pattern.dict";
 import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical.signals";
-import { PATTERN } from "./pt.pattern.dict";
 
 export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	// #region: run_based_identity
@@ -11,12 +11,7 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
 	RUN_LOOP_STRUCTURE_LABEL: [PATTERN.RESTART_AFTER_DEATH],
 	RUN_LOOP_LANGUAGE_LABEL: [PATTERN.RUN_REPETITION, PATTERN.RUN_AFTER_RUN],
-	TRY_AGAIN_LOOP_LABEL: [
-		"tente novamente",
-		"aprenda com o fracasso",
-		"falhe e tente de novo",
-		"morra e tente novamente",
-	],
+	TRY_AGAIN_LOOP_LABEL: [PATTERN.TRY_AGAIN, "aprenda com o fracasso", PATTERN.DIE_AND_TRY_AGAIN],
 	// #endregion
 	// #region: procedural_runs
 	PROCEDURAL_GENERATION_LABEL: [PATTERN.PROCEDURALLY_GENERATED_WORLD, "geração procedural"],
@@ -28,39 +23,38 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 		"geração dinâmica de níveis",
 	],
 	RANDOM_ENCOUNTERS_LABEL: [],
-	EVER_SHIFTING_LABEL: ["em constante mudança", "sempre mudando"],
-	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [
-		"ambientes em constante mudança",
-		"ambiente em constante mudança",
-		"layout novo a cada jogada",
-		"layouts únicos a cada vez",
-	],
+	EVER_SHIFTING_LABEL: [PATTERN.EVER_CHANGING],
+	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [PATTERN.EVER_CHANGING_ENVIRONMENT],
 	// #endregion
 	// #region: permadeath_reset
 	PERMADEATH_LABEL: ["permadeath", "morte permanente"],
 	RESET_ON_DEATH_LABEL: [
 		PATTERN.RESTART_AFTER_DEATH,
-		"a morte reinicia sua run",
+		PATTERN.DEATH_RESTARTS_YOUR_RUN,
 		"comece de novo após morrer",
-		"a run reinicia ao morrer",
-		"recomece após falhar",
+		"comece de novo após falhar",
+		PATTERN.RUN_RESTARTS_ON_DEATH,
 		"sistema de morte implacável",
 	],
 	NO_CHECKPOINTS_LABEL: ["sem checkpoints", "sem pontos de controle"],
 	// #endregion
 	// #region: run_variability
+	GAMEPLAY_VARIETY_LABEL: [
+		PATTERN.NO_RUN_IS_THE_SAME,
+		"modificações de jogabilidade",
+		"fases, inimigos e itens aleatórios",
+		"nunca experimente o mesmo jogo duas vezes",
+		PATTERN.EACH_RUN_IS_DIFFERENT,
+	],
+	ITEMS_VOLUME_LABEL: [PATTERN.LOOT_VOLUME_SPECIFIC],
+	RANDOMIZED_ITEMS_LABEL: [
+		PATTERN.RANDOM_LOOT,
+		"loot procedural",
+		"variedade de itens",
+		"variedade de loot",
+	],
 	CUSTOMIZE_YOUR_RUN_LABEL: ["personalize sua run", "customize sua run"],
 	DAILY_CHALLENGES: ["desafios diários"],
-	RANDOMIZED_ITEMS_LABEL: [
-		"itens aleatórios",
-		"loot aleatório",
-		"melhorias aleatórias",
-		"power-ups aleatórios",
-		"loot procedural",
-		"combinações de efeitos",
-		"combinações de itens",
-		"variedade de itens",
-	],
 	BUILD_VARIETY_LABEL: [
 		"builds diferentes",
 		"builds únicas",
@@ -69,18 +63,6 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 		"estilos de jogo variados",
 		"infinitas combinações de configurações",
 		"crie combinações",
-	],
-	GAMEPLAY_VARIETY_LABEL: [
-		"modificações de jogabilidade",
-		"nenhuma partida será igual a outra",
-		"fases, inimigos e itens aleatórios",
-		"nenhuma run é igual",
-		"nenhuma partida é igual",
-		"nunca experimente o mesmo jogo duas vezes",
-		"nenhuma partida será igual a outra",
-		"nenhuma partida é igual à outra",
-		"cada partida é diferente",
-		"cada partida é única",
 	],
 	ENDLESS_RUN_LABEL: [
 		"continue infinitamente",

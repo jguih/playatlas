@@ -112,6 +112,7 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	// #region: run_variability
 	CUSTOMIZE_YOUR_RUN_LABEL: ["customize your run"],
 	DAILY_CHALLENGES: ["daily challenges"],
+	ITEMS_VOLUME_LABEL: [],
 	RANDOMIZED_ITEMS_LABEL: [
 		"randomized items",
 		"random items",
