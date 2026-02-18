@@ -2,7 +2,7 @@ import type { ScoreEngineClassificationTierThresholdPolicy } from "../engine.cla
 import type { ScoreEngineEvidenceGroupPolicy } from "../engine.policy";
 import type { ScoreEngineEvidenceGroupsMeta, ScoreEngineVersion } from "../score-engine.types";
 
-export const RUN_BASED_ENGINE_VERSION = "v1.0.12" as const satisfies ScoreEngineVersion;
+export const RUN_BASED_ENGINE_VERSION = "v1.0.14" as const satisfies ScoreEngineVersion;
 
 export const RUN_BASED_ENGINE_EVIDENCE_GROUPS = [
 	"run_based_identity",
@@ -31,7 +31,7 @@ export const RUN_BASED_ENGINE_EVIDENCE_GROUP_POLICY = {
 } as const satisfies ScoreEngineEvidenceGroupPolicy<RunBasedEvidenceGroup>;
 
 export const RUN_BASED_ENGINE_CLASSIFICATION_TIER_THRESHOLD_POLICY = {
-	adjacent: 0.252,
-	strong: 0.405,
+	adjacent: 0.07,
+	strong: 0.388,
 	core: 0.5325,
 } as const satisfies ScoreEngineClassificationTierThresholdPolicy;
