@@ -35,56 +35,15 @@ export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN = {
 	),
 	PROCEDURALLY_GENERATED_WORLD_WEAK: window([LEX.PROCEDURALLY, LEX.CREATE, LEX.WORLD], 40),
 	PROCEDURAL_WORLD: sequence(LEX.PROCEDURAL, LEX.WORLD),
-	RANDOM_WORLDS: sequence(LEX.WORLD, LEX.RANDOM),
-	RANDOMLY_CREATED_WORLDS: sequence(LEX.WORLD, LEX.CREATE, LEX.RANDOMLY),
-	EVER_CHANGING_WORLDS: sequence(
-		filler(LEX.WORLD, { n: 1, f: alternatives("que", "que\\s+est(?:a|ao)") }),
-		LEX.EVER_CHANGING,
-	),
-	EVER_CHANGING_ENVIRONMENT: sequence(
-		filler(LEX.ENVIRONMENT, { n: 1, f: alternatives("que", "que\\s+est(?:a|ao)") }),
-		LEX.EVER_CHANGING,
-	),
-	EVER_CHANGING: sequence(LEX.EVER_CHANGING),
 	TRY_AGAIN: sequence(LEX.TRY_AGAIN),
 	DIE_AND_TRY_AGAIN: sequence(
 		filler(LEX.DIE, { n: 1, f: alternatives("(?:and|then)") }),
 		LEX.TRY_AGAIN,
-	),
-	DEATH_RESTARTS_YOUR_RUN: sequence(
-		LEX.DEATH,
-		LEX.RESTART,
-		alternatives("(?:a\\s+)?sua", "(?:o\\s+)seu"),
-		LEX.RUN,
 	),
 	RUN_RESTARTS_ON_DEATH: sequence(
 		LEX.RUN,
 		LEX.RESTART,
 		alternatives("ao", "quando(?:\\s+voce)?"),
 		LEX.DIE,
-	),
-	RANDOM_LOOT: sequence(LEX.LOOT, LEX.RANDOM),
-	LOOT_VOLUME_SPECIFIC: sequence(
-		filler(LEX.LOOT_VOLUME_NUMERIC, { n: 1, f: alternatives("mais\\s+(?:que|de)"), d: "before" }),
-	),
-	RANDOM_ENEMY: sequence(LEX.ENEMY, LEX.RANDOM),
-	ENEMY_VOLUME_SPECIFIC: sequence(
-		filler(LEX.ENEMY_VOLUME_NUMERIC, { n: 1, f: alternatives("mais\\s+(?:que|de)"), d: "before" }),
-	),
-	NO_RUN_IS_THE_SAME: sequence(
-		alternatives("nenhum(?:a)?"),
-		LEX.RUN,
-		alternatives("e", "sera"),
-		LEX.SAME,
-	),
-	EACH_RUN_IS_DIFFERENT: sequence(
-		alternatives("cada"),
-		LEX.RUN,
-		alternatives("e", "sera"),
-		LEX.DIFFERENT,
-	),
-	VARIETY_OF_BUILD_ITEMS: sequence(
-		filler(LEX.VARIETY, { n: 1, f: alternatives("de") }),
-		LEX.BUILD_ITEMS,
 	),
 } as const satisfies ScoreEnginePatternDictionary;

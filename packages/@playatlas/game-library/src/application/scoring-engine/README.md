@@ -118,7 +118,7 @@ Breakdown deserialization is handled by a separate service called Score Breakdow
 Each engine lives under:
 
 ```
-/game-library/application/scoring-engine/<engine-name>
+/game-library/application/scoring-engine/engines/<engine-name>
 ```
 
 Example (Horror engine):
@@ -143,7 +143,7 @@ To add a new classification engine:
 ### 1. Create engine directory
 
 ```
-/scoring-engine/<new-engine>/
+/scoring-engine/engines/<new-engine>/
 ```
 
 Follow the same structure as existing engines.
