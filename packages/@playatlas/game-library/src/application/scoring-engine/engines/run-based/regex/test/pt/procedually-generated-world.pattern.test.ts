@@ -1,9 +1,14 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dict";
+import { makeScoreEngineDSL } from "../../../../../language";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dictionary";
 
 describe("Portuguese / PROCEDURALLY_GENERATED_WORLD", () => {
-	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.PROCEDURALLY_GENERATED_WORLD;
+	const dsl = makeScoreEngineDSL();
+	const source = dsl.normalizeCompile(
+		RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.PROCEDURALLY_GENERATED_WORLD,
+	);
+	const re = new RegExp(source, "i");
 
 	const shouldMatch = [
 		"mundo gerado proceduralmente",
@@ -11,6 +16,7 @@ describe("Portuguese / PROCEDURALLY_GENERATED_WORLD", () => {
 		"planeta gerado de maneira procedural",
 		"planeta gerado de forma procedural",
 		"mundo totalmente gerado proceduralmente",
+		"mundo gerado totalmente de forma procedural",
 		"mapa aleatoriamente gerado proceduralmente",
 		"um planeta inteiro gerado de forma procedural",
 		"cada run tem um mapa gerado proceduralmente",
@@ -18,6 +24,8 @@ describe("Portuguese / PROCEDURALLY_GENERATED_WORLD", () => {
 		"o jogo cria mundos gerados proceduralmente",
 		"as dungeons são geradas de maneira procedural",
 		"mapa gerado de forma procedural",
+		"o mundo é gerado de maneira procedural",
+		"os planetas são gerados proceduralmente",
 	];
 
 	const shouldNotMatch = [

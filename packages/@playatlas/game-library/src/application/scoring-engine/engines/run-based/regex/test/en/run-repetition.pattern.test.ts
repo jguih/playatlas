@@ -16,6 +16,7 @@ describe("English / RUN_REPETITION", () => {
 		"each playthrough",
 		"each new cycle",
 		"every new adventure",
+		"every subsequent cycle",
 	];
 
 	const shouldNotMatch = [
