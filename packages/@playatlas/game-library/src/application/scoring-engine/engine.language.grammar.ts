@@ -22,3 +22,21 @@ export const window = (terms: string[], size: number) => {
 	const lookaheads = terms.map((t) => `(?=.{0,${size}}${t})`).join("");
 	return new RegExp(`${lookaheads}.{0,${size}}`, "i");
 };
+
+export const anyOf = (...patterns: RegExp[]): RegExp => {
+	if (patterns.length === 0) {
+		throw new Error("anyOf requires at least one pattern");
+	}
+
+	const flags = patterns[0].flags;
+
+	for (const p of patterns) {
+		if (p.flags !== flags) {
+			throw new Error("All patterns passed to anyOf must have identical flags");
+		}
+	}
+
+	const source = patterns.map((p) => `(?:${p.source})`).join("|");
+
+	return new RegExp(source, flags);
+};

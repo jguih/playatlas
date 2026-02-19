@@ -53,7 +53,6 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		weight: 18,
 		isGate: false,
 	},
-
 	EVER_SHIFTING_LABEL: {
 		group: "procedural_runs",
 		tier: "C",
@@ -61,6 +60,12 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		isGate: false,
 	},
 	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: {
+		group: "procedural_runs",
+		tier: "C",
+		weight: 12,
+		isGate: false,
+	},
+	PROCEDURAL_WORLD_INDICATION_LABEL: {
 		group: "procedural_runs",
 		tier: "C",
 		weight: 12,

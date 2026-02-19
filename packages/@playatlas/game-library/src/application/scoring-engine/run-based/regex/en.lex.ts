@@ -2,6 +2,7 @@ import { alternatives, plural, type ScoreEngineRegexLexicon } from "../../engine
 
 export const RUN_BASED_ENGINE_LEXICON_EN = {
 	SUBJECT_PRONOUN: alternatives("he", "she", "you"),
+	BE: alternatives("is", "are", "was", "were", "be", "been", "being"),
 	RUN: alternatives(
 		plural("run", "loop", "cycle", "playthrough", "journey", "adventure", "session"),
 	),
@@ -10,7 +11,6 @@ export const RUN_BASED_ENGINE_LEXICON_EN = {
 	POSSESSIVE: alternatives("her", "his", "your", "the"),
 	WORLD: alternatives(
 		plural("map", "world", "level", "dungeon", "planet", "castle", "universe", "layout"),
-		"nive(?:l|is)",
 	),
 	DIE: alternatives("die(?:s|ed)?", "fail(?:s|ed)?"),
 	DEATH: alternatives("(?:a\\s+)morte", "(?:a\\s+)falha"),

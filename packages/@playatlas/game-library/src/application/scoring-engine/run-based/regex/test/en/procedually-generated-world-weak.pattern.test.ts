@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN } from "../../en.pattern.dict";
 
 describe("English / PROCEDURALLY_GENERATED_WORLD", () => {
-	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN.PROCEDURALLY_GENERATED_WORLD;
+	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN.PROCEDURALLY_GENERATED_WORLD_WEAK;
 
 	const shouldMatch = [
 		"procedurally created world",

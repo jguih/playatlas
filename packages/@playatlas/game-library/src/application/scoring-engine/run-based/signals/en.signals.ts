@@ -1,4 +1,4 @@
-import { FILLER, SEP, VERB } from "../../engine.regexp.utils";
+import { SEP } from "../../engine.regexp.utils";
 import type {
 	LanguageTaxonomySignalsMap,
 	LanguageTextSignalsMap,
@@ -8,9 +8,6 @@ import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical
 
 const POSSESSIVE = `(?:her|his|the|your)\\b`;
 const RUN_LANGUAGE = `(?:run|loop|session|cycle|playthrough|journey|adventure)s?\\b`;
-const LOOP = `(?:every\\s+time|whenever|each\\s+time|when)\\b`;
-const SUBJECT_PRONOUN = `(?:she|he|you)\\b`;
-const DEATH = `die[s]?\\b`;
 const REPETITION_LANGUAGE = `(?:each|every|per|new|another)\\b`;
 
 const WORLD_LANGUAGE = `(?:map|world|level|dungeon|planet|environment|castle)s?\\b`;
@@ -29,14 +26,10 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		PATTERN.DIE_AND_TRY_AGAIN,
 	],
 	// #region: procedural_runs
-	PROCEDURAL_GENERATION_LABEL: [
-		PATTERN.PROCEDURALLY_GENERATED_WORLD,
-		"procedural generation",
-		PATTERN.PROCEDURAL_WORLD,
-	],
+	PROCEDURAL_GENERATION_LABEL: [PATTERN.PROCEDURALLY_GENERATED_WORLD_STRONG],
 	RANDOMLY_GENERATED_MAPS_LABEL: [],
 	RANDOM_MAPS_LABEL: [
-		new RegExp(`randomized` + SEP + +WORLD_LANGUAGE, "i"),
+		new RegExp(`randomized` + SEP + WORLD_LANGUAGE, "i"),
 		new RegExp(`randomly` + SEP + `generated` + SEP + WORLD_LANGUAGE, "i"),
 		"randomly generated action RPG",
 		"unpredictable layouts",
@@ -50,25 +43,16 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		new RegExp(`fresh` + SEP + `layout` + SEP + REPETITION_LANGUAGE + SEP + RUN_LANGUAGE, "i"),
 		"unique layouts each time",
 	],
+	PROCEDURAL_WORLD_INDICATION_LABEL: [
+		"procedural generation",
+		PATTERN.PROCEDURAL_WORLD,
+		PATTERN.PROCEDURALLY_GENERATED_WORLD_WEAK,
+	],
 	// #endregion
 	// #region: permadeath_reset
 	PERMADEATH_LABEL: ["permadeath", "permanent death"],
 	RESET_ON_DEATH_LABEL: [
-		new RegExp(
-			VERB("restart") +
-				SEP +
-				POSSESSIVE +
-				SEP +
-				RUN_LANGUAGE +
-				SEP +
-				FILLER(1) +
-				LOOP +
-				SEP +
-				SUBJECT_PRONOUN +
-				SEP +
-				DEATH,
-			"i",
-		),
+		PATTERN.RESTART_AFTER_DEATH,
 		new RegExp(`death` + SEP + `resets` + SEP + POSSESSIVE + SEP + RUN_LANGUAGE, "i"),
 		new RegExp(RUN_LANGUAGE + SEP + `resets` + SEP + `on` + SEP + `death`, "i"),
 		"start over after death",
