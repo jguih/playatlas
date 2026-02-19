@@ -13,7 +13,7 @@ import type { IGameRepositoryPort } from "../../infra/game.repository.port";
 import type { IGenreRepositoryPort } from "../../infra/genre.repository.port";
 import type { IGameClassificationRepositoryPort } from "../../infra/scoring-engine/game-classification.repository";
 import type { ITagRepositoryPort } from "../../infra/tag.repository.port";
-import type { IScoreEngineRegistryPort } from "./engine.registry";
+import type { IScoreEngineRegistryPort } from "./engines/engine.registry";
 import type { IGameClassificationFactoryPort } from "./game-classification.factory";
 
 export type RescoreGameItem = {

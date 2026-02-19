@@ -1,0 +1,66 @@
+import { alternatives, plural, type ScoreEngineRegexLexicon } from "../../../language";
+
+export const RUN_BASED_ENGINE_LEXICON_PT = {
+	RUN: alternatives(
+		plural("run", "loop", "ciclo", "playthrough", "jornada", "aventura", "partida", "tentativa"),
+		"sess(?:ao|oes)",
+	),
+	RESTART: alternatives("recomec(?:e|ar|a)", "reinici(?:e|ar|a)"),
+	LOOP: alternatives("toda\\s+vez\\s+que", "sempre\\s+que", "sempre", "quando"),
+	WORLD: alternatives(
+		plural(
+			"mapa",
+			"mundo",
+			"level",
+			"masmorra",
+			"planeta",
+			"ambiente",
+			"castelo",
+			"dungeon",
+			"fase",
+		),
+		"nive(?:l|is)",
+	),
+	DIE: alternatives("falh(?:e|ar|ou|ando)", "morr(?:e|er|eu|endo|ia|a)"),
+	DEATH: alternatives("(?:a\\s+)morte", "(?:a\\s+)falha"),
+	PROCEDURALLY: alternatives("proceduralmente", "de\\s+(?:forma|maneira)\\s+procedural"),
+	REPETITION: alternatives("(?:a|em|por)\\s+cada", "outra", "entre"),
+	CREATED: alternatives(
+		plural("gerad(?:o|a)", "criad(?:o|a)"),
+		"e\\s+gerad(?:o|a)",
+		"sao\\s+gerad(?:as|os)",
+	),
+	RANDOM: alternatives(plural("aleatori(?:o|os|a|as)")),
+	RANDOMLY: alternatives("aleatoriamente", "de\\s+maneira\\s+aleatoria"),
+	EVER_CHANGING: alternatives(
+		"em\\s+constante\\s+mudanca",
+		"(?:sempre\\s+)mud(?:a|ando|am)",
+		"mud(?:a|am)\\s+constantemente",
+	),
+	TRY_AGAIN: alternatives(
+		"tente\\s+de\\s+novo",
+		"tente\\s+novamente",
+		"tente\\s+uma\\s+segunda\\s+vez",
+	),
+	ENVIRONMENT: alternatives(plural("ambiente")),
+	LOOT: alternatives("ite(?:m|ns)", "loot", plural("drop")),
+	LOOT_VOLUME_NUMERIC: alternatives("\\d+\\+?\\s+itens"),
+	ENEMY: alternatives("inimig(?:o|os)"),
+	ENEMY_VOLUME_NUMERIC: alternatives("\\d+\\+?\\s+inimig(?:o|os)"),
+	SAME: alternatives("igual", "igual\\s+(?:a|ao)\\s+outr(?:a|o)"),
+	DIFFERENT: alternatives("diferente", "unica"),
+	BUILD_ITEMS: alternatives(
+		"armas",
+		"itens",
+		"habilidades",
+		"equipamentos",
+		"poderes",
+		"cartas",
+		"melhorias",
+	),
+	VARIETY: alternatives(
+		plural("divers(?:a|o)", "vari(?:o|a)", "multipl(?:o|a)", "diferente"),
+		"variedade",
+		"diversidade",
+	),
+} as const satisfies ScoreEngineRegexLexicon;

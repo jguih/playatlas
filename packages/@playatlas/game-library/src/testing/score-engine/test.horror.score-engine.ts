@@ -3,7 +3,7 @@ import {
 	HORROR_ENGINE_EVIDENCE_GROUPS_META,
 	HORROR_ENGINE_VERSION,
 	type HorrorEvidenceGroup,
-} from "../../application/scoring-engine/horror/horror.score-engine.meta";
+} from "../../application/scoring-engine/engines/horror/horror.score-engine.meta";
 
 export type ITestHorrorScoreEnginePort = IScoreEnginePort<HorrorEvidenceGroup> & {
 	setScore: (s: number) => void;

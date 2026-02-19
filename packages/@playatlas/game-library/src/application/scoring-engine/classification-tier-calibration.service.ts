@@ -7,7 +7,7 @@ import {
 } from "@playatlas/common/domain";
 import { join } from "path";
 import type { IGameRepositoryPort, IGenreRepositoryPort, ITagRepositoryPort } from "../../infra";
-import type { IScoreEngineRegistryPort } from "./engine.registry";
+import type { IScoreEngineRegistryPort } from "./engines/engine.registry";
 
 export type IClassificationTierCalibrationServicePort = {
 	generatePoliciesAsync: () => Promise<string>;

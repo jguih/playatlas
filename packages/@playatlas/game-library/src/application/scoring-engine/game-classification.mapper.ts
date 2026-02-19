@@ -3,7 +3,7 @@ import { GameClassificationIdParser, GameIdParser } from "@playatlas/common/doma
 import type { GameClassification } from "../../domain";
 import type { GameClassificationResponseDto } from "../../dtos";
 import type { GameClassificationModel } from "../../infra";
-import type { IScoreEngineRegistryPort } from "./engine.registry";
+import type { IScoreEngineRegistryPort } from "./engines/engine.registry";
 import type { IGameClassificationFactoryPort } from "./game-classification.factory";
 import type { IScoreBreakdownNormalizerPort } from "./score-breakdown-normalizer.port";
 

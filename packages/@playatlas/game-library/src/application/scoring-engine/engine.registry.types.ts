@@ -1,4 +1,4 @@
-import type { classificationGroupMap } from "./engine.registry";
+import type { classificationGroupMap } from "./engines/engine.registry";
 import type { IScoreEnginePort } from "./score-engine.port";
 
 export type ClassificationGroupMap = {

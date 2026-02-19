@@ -1,11 +1,11 @@
 import type { ScoreEngineLanguage } from "@playatlas/common/domain";
+import type { EngineLanguageRegistry } from "./language";
 import type {
 	CanonicalTaxonomySignalsMap,
 	CanonicalTextSignalsMap,
 	ExpandedTaxonomySignalItem,
 	ExpandedTextSignalItem,
-} from "./engine.signals";
-import type { EngineLanguageRegistry } from "./score-engine.language.types";
+} from "./language/engine.signals";
 
 export const buildTextSignals = <
 	TTextId extends string,

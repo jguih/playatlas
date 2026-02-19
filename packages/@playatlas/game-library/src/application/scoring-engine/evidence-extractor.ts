@@ -1,14 +1,14 @@
 import { normalize } from "@playatlas/common/common";
 import { EvidenceExtractorInvalidDataError } from "../../domain";
+import type { IEvidenceExtractorPort } from "./evidence-extractor.port";
+import type { Evidence } from "./evidence.types";
 import type {
 	SignalAndGroup,
 	SignalOrGroup,
 	SignalTerm,
 	TaxonomySignalItem,
 	TextSignalItem,
-} from "./engine.signals";
-import type { IEvidenceExtractorPort } from "./evidence-extractor.port";
-import type { Evidence } from "./evidence.types";
+} from "./language/engine.signals";
 
 export type EvidenceExtractorDeps<TGroup> = {
 	taxonomySignals: Array<TaxonomySignalItem<TGroup>>;
