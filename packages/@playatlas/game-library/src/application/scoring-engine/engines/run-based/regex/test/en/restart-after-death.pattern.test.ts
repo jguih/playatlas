@@ -1,9 +1,12 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN } from "../../en.pattern.dict";
+import { makeScoreEngineDSL } from "../../../../../language";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN } from "../../en.pattern.dictionary";
 
 describe("English / RESTART_AFTER_DEATH", () => {
-	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN.RESTART_AFTER_DEATH;
+	const dsl = makeScoreEngineDSL();
+	const source = dsl.normalizeCompile(RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN.RESTART_AFTER_DEATH);
+	const re = new RegExp(source, "i");
 
 	const shouldMatch = [
 		"forced to restart her journey every time she dies",

@@ -1,3 +1,4 @@
+export * from "./engine.dsl";
 export * from "./engine.language.grammar";
 export * from "./engine.language.lexicon";
 export * from "./engine.signals";

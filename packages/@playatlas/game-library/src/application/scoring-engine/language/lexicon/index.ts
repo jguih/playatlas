@@ -1,1 +1,1 @@
-export * from "./en.core.lex";
+export * from "./en.core.lexicon";

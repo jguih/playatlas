@@ -1,11 +1,11 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { makeScoreEngineDSL } from "../../../../../language/engine.lexicon.api";
+import { makeScoreEngineDSL } from "../../../../../language";
 import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN } from "../../en.pattern.dictionary";
 
-describe("English / RUN_REPETITION_PATTERN", () => {
+describe("English / RUN_REPETITION", () => {
 	const dsl = makeScoreEngineDSL();
-	const source = dsl.compile(dsl.normalize(RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN.RUN_REPETITION));
+	const source = dsl.normalizeCompile(RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN.RUN_REPETITION);
 	const re = new RegExp(source, "i");
 
 	const shouldMatch = [

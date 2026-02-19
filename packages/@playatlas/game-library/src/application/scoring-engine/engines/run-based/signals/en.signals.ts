@@ -1,6 +1,10 @@
 import { SEP } from "../../../engine.regexp.utils";
-import type { LanguageTaxonomySignalsMap, LanguageTextSignalsMap } from "../../../language";
-import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN as PATTERN } from "../regex/en.pattern.dict";
+import {
+	makeScoreEngineDSL,
+	type LanguageTaxonomySignalsMap,
+	type LanguageTextSignalsMap,
+} from "../../../language";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN as PATTERN } from "../regex/en.pattern.dictionary";
 import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical.signals";
 
 const POSSESSIVE = `(?:her|his|the|your)\\b`;
@@ -9,21 +13,27 @@ const REPETITION_LANGUAGE = `(?:each|every|per|new|another)\\b`;
 
 const WORLD_LANGUAGE = `(?:map|world|level|dungeon|planet|environment|castle)s?\\b`;
 
+const dsl = makeScoreEngineDSL();
+
 export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	// #region: run_based_identity
 	ROGUELIKE_LABEL: ["roguelike", "rogue-like"],
 	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
-	RUN_LOOP_STRUCTURE_LABEL: [PATTERN.RESTART_AFTER_DEATH],
-	RUN_LOOP_LANGUAGE_LABEL: [PATTERN.RUN_REPETITION, PATTERN.RUN_AFTER_RUN, PATTERN.BETWEEN_RUNS],
+	RUN_LOOP_STRUCTURE_LABEL: [dsl.normalizeCompile(PATTERN.RESTART_AFTER_DEATH)],
+	RUN_LOOP_LANGUAGE_LABEL: [
+		dsl.normalizeCompile(PATTERN.RUN_REPETITION),
+		dsl.normalizeCompile(PATTERN.RUN_AFTER_RUN),
+		dsl.normalizeCompile(PATTERN.BETWEEN_RUNS),
+	],
 	TRY_AGAIN_LOOP_LABEL: [
-		PATTERN.TRY_AGAIN,
+		dsl.normalizeCompile(PATTERN.TRY_AGAIN),
 		"attempt after attempt",
 		"learn from failure",
 		"fail and retry",
-		PATTERN.DIE_AND_TRY_AGAIN,
+		dsl.normalizeCompile(PATTERN.DIE_AND_TRY_AGAIN),
 	],
 	// #region: procedural_runs
-	PROCEDURAL_GENERATION_LABEL: [PATTERN.PROCEDURALLY_GENERATED_WORLD_STRONG],
+	PROCEDURAL_GENERATION_LABEL: [dsl.normalizeCompile(PATTERN.PROCEDURALLY_GENERATED_WORLD_STRONG)],
 	RANDOMLY_GENERATED_MAPS_LABEL: [],
 	RANDOM_MAPS_LABEL: [
 		new RegExp(`randomized` + SEP + WORLD_LANGUAGE, "i"),
@@ -42,14 +52,14 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	],
 	PROCEDURAL_WORLD_INDICATION_LABEL: [
 		"procedural generation",
-		PATTERN.PROCEDURAL_WORLD,
-		PATTERN.PROCEDURALLY_GENERATED_WORLD_WEAK,
+		dsl.normalizeCompile(PATTERN.PROCEDURAL_WORLD),
+		dsl.normalizeCompile(PATTERN.PROCEDURALLY_GENERATED_WORLD_WEAK),
 	],
 	// #endregion
 	// #region: permadeath_reset
 	PERMADEATH_LABEL: ["permadeath", "permanent death"],
 	RESET_ON_DEATH_LABEL: [
-		PATTERN.RESTART_AFTER_DEATH,
+		dsl.normalizeCompile(PATTERN.RESTART_AFTER_DEATH),
 		new RegExp(`death` + SEP + `resets` + SEP + POSSESSIVE + SEP + RUN_LANGUAGE, "i"),
 		new RegExp(RUN_LANGUAGE + SEP + `resets` + SEP + `on` + SEP + `death`, "i"),
 		"start over after death",

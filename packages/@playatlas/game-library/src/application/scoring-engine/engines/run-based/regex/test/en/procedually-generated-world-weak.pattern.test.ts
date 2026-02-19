@@ -1,9 +1,14 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN } from "../../en.pattern.dict";
+import { makeScoreEngineDSL } from "../../../../../language";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN } from "../../en.pattern.dictionary";
 
-describe("English / PROCEDURALLY_GENERATED_WORLD", () => {
-	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN.PROCEDURALLY_GENERATED_WORLD_WEAK;
+describe("English / PROCEDURALLY_GENERATED_WORLD_WEAK", () => {
+	const dsl = makeScoreEngineDSL();
+	const source = dsl.normalizeCompile(
+		RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN.PROCEDURALLY_GENERATED_WORLD_WEAK,
+	);
+	const re = new RegExp(source, "i");
 
 	const shouldMatch = [
 		"procedurally created world",
