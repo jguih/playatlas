@@ -53,6 +53,15 @@ export class GameViewModel {
 
 	private store: GameAggregateStore;
 	private gameClassificationsOrderedByStrongest: SvelteMap<ClassificationId, GameClassification>;
+
+	private classificationTierRank = Object.fromEntries(
+		canonicalClassificationTiers.map((tier, i) => [tier, i]),
+	) as Record<CanonicalClassificationTier, number>;
+
+	private evidenceGroupTierRank = Object.fromEntries(
+		evidenceGroupTiers.map((tier, i) => [tier, i]),
+	) as Record<EvidenceGroupTier, number>;
+
 	strongestClassificationsLabelSignal: string[];
 	classificationsBreakdownSignal: ClassificationsBreakdownMap;
 
@@ -71,18 +80,20 @@ export class GameViewModel {
 				const breakdownA = a.Breakdown.type === "normalized" ? a.Breakdown.breakdown : null;
 				const breakdownB = b.Breakdown.type === "normalized" ? b.Breakdown.breakdown : null;
 
-				// Order by greatest tier descending first
-				if (breakdownA && breakdownB) {
-					const indexA = canonicalClassificationTiers.indexOf(breakdownA.tier);
-					const indexB = canonicalClassificationTiers.indexOf(breakdownB.tier);
-					if (indexA < indexB) return 1;
-					if (indexB > indexA) return -1;
-					return 0;
+				const tierA = breakdownA?.tier ?? "none";
+				const tierB = breakdownB?.tier ?? "none";
+
+				const rankA = this.classificationTierRank[tierA];
+				const rankB = this.classificationTierRank[tierB];
+
+				if (rankA !== rankB) {
+					return rankB - rankA;
 				}
 
-				// Fallback to by greatest score ascending
-				const diff = b.Score - a.Score;
-				if (diff !== 0) return diff;
+				if (a.Score !== b.Score) {
+					return b.Score - a.Score;
+				}
+
 				return b.Id.localeCompare(a.Id);
 			});
 
@@ -156,12 +167,17 @@ export class GameViewModel {
 				}
 
 				breakdownGroupDetails.sort((a, b) => {
-					// Order by greatest tier descending first
-					const indexA = evidenceGroupTiers.indexOf(a.tier);
-					const indexB = evidenceGroupTiers.indexOf(b.tier);
-					if (indexA < indexB) return 1;
-					if (indexB > indexA) return -1;
-					return 0;
+					const tierA = a.tier ?? "none";
+					const tierB = b.tier ?? "none";
+
+					const rankA = this.evidenceGroupTierRank[tierA];
+					const rankB = this.evidenceGroupTierRank[tierB];
+
+					if (rankA !== rankB) {
+						return rankB - rankA;
+					}
+
+					return b.name.localeCompare(a.name);
 				});
 
 				for (const breakdownGroupDetail of breakdownGroupDetails) {
