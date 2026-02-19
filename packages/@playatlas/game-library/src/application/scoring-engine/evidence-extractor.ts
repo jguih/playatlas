@@ -130,9 +130,10 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			} else {
 				const normalized = typeof phrase === "string" ? normalize(phrase) : phrase;
 				const match =
-					typeof phrase === "string"
-						? normalizedDescription.includes(phrase)
-						: phrase.test(normalizedDescription);
+					typeof normalized === "string"
+						? normalizedDescription.includes(normalized)
+						: normalized.test(normalizedDescription);
+
 				if (match)
 					add({
 						source: "text",

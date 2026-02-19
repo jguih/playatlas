@@ -328,6 +328,13 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 					getScoreBreakdownNormalizer: () =>
 						withSelf(({ gameLibrary }) => gameLibrary.scoreEngine.getScoreBreakdownNormalizer()),
 					getHorrorScoreEngine: () => withSelf(({ stubs }) => stubs.scoreEngine.horrorScoreEngine),
+
+					evidenceExtractors: {
+						getRunBasedEvidenceExtractor: () =>
+							withSelf(({ gameLibrary }) =>
+								gameLibrary.scoreEngine.evidenceExtractors.getRunBasedEvidenceExtractor(),
+							),
+					},
 				},
 			},
 		},

@@ -16,6 +16,8 @@ import type {
 	IGenreMapperPort,
 	IPlatformFactoryPort,
 	IPlatformMapperPort,
+	IRunBasedEvidenceExtractorPort,
+	IRunBasedScoreEngine,
 	IScoreBreakdownNormalizerPort,
 	IScoreEngineRegistryPort,
 	ITagFactoryPort,
@@ -92,6 +94,14 @@ export type IGameLibraryModulePort = Readonly<{
 
 		commands: {
 			getApplyDefaultClassificationsCommandHandler: () => IApplyDefaultClassificationsCommandHandlerPort;
+		};
+
+		evidenceExtractors: {
+			getRunBasedEvidenceExtractor: () => IRunBasedEvidenceExtractorPort;
+		};
+
+		engines: {
+			getRunBasedScoreEngine: () => IRunBasedScoreEngine;
 		};
 
 		getClassificationMapper: () => IClassificationMapperPort;

@@ -2,7 +2,7 @@ import type { ScoreEngineClassificationTierThresholdPolicy } from "../engine.cla
 import type { ScoreEngineEvidenceGroupPolicy } from "../engine.policy";
 import type { ScoreEngineEvidenceGroupsMeta, ScoreEngineVersion } from "../score-engine.types";
 
-export const RUN_BASED_ENGINE_VERSION = "v1.0.16" as const satisfies ScoreEngineVersion;
+export const RUN_BASED_ENGINE_VERSION = "v1.0.17" as const satisfies ScoreEngineVersion;
 
 export const RUN_BASED_ENGINE_EVIDENCE_GROUPS = [
 	"run_based_identity",

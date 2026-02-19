@@ -361,6 +361,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 	};
 
 	const scoreWithGate = (evidence: Evidence<TGroup>[]): ScoreBreakdown<TGroup> => {
+		const hasStrong = hasStrongSignal(evidence);
 		const evidencesByGroup = joinByGroup(evidence);
 		const bestEvidenceByGroup = new Map<TGroup, Evidence<TGroup>>();
 		const bestStoredEvidenceByGroup = new Map<TGroup, StoredEvidence<TGroup>>();
@@ -373,8 +374,6 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 		// Get best evidence per group and ignore all the rest
 		for (const [group, evidences] of evidencesByGroup) {
-			const hasStrong = hasStrongSignal(evidences);
-
 			for (const evidence of evidences) {
 				const ignore = (evidence: Evidence<TGroup>) => {
 					const ignoredList = ignoredEvidencesByGroup.get(group);

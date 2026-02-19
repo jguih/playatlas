@@ -187,6 +187,14 @@ const makeGameLibraryScoreEngineModule = ({
 			getApplyDefaultClassificationsCommandHandler: () => applyDefaultClassificationsCommandHandler,
 		},
 
+		evidenceExtractors: {
+			getRunBasedEvidenceExtractor: () => runBasedEvidenceExtractor,
+		},
+
+		engines: {
+			getRunBasedScoreEngine: () => runBasedScoreEngine,
+		},
+
 		getClassificationMapper: () => classificationMapper,
 		getClassificationFactory: () => classificationFactory,
 		getClassificationRepository: () => classificationRepository,
