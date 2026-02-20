@@ -4,6 +4,7 @@ export type Evidence<TGroup> = {
 	source: EvidenceSource;
 	sourceHint?: string;
 	match: string | number;
+	patternExplanation: string;
 	weight: number;
 	group: TGroup;
 	tier: EvidenceTier;

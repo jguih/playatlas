@@ -6,6 +6,7 @@ export type IScoreEngineDSLPort = {
 	compile: (pattern: ScoreEnginePattern) => string;
 	normalizeCompile: (pattern: ScoreEnginePattern) => string;
 	explain: (pattern: ScoreEnginePattern) => string;
+	normalizeExplain: (pattern: ScoreEnginePattern) => string;
 };
 
 export const makeScoreEngineDSL = (): IScoreEngineDSLPort => {
@@ -120,7 +121,8 @@ export const makeScoreEngineDSL = (): IScoreEngineDSLPort => {
 	return {
 		normalize,
 		compile,
-		normalizeCompile: (pattern: ScoreEnginePattern) => compile(normalize(pattern)),
+		normalizeCompile: (pattern) => compile(normalize(pattern)),
 		explain,
+		normalizeExplain: (pattern) => explain(normalize(pattern)),
 	};
 };

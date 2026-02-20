@@ -25,7 +25,7 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 }: EvidenceExtractorDeps<TGroup>): IEvidenceExtractorPort<TGroup> => {
 	const buildRegexFromPattern = (pattern: ScoreEnginePattern): RegExp => {
 		const source = DSL.normalizeCompile(pattern);
-		return new RegExp(source, "i");
+		return new RegExp(source, "gi");
 	};
 
 	const extractFromTaxonomy = (props: {
@@ -39,47 +39,57 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 		const genresSet = new Set(genresList);
 		const tagsSet = new Set(tagsList);
 
-		const hasGenre = (x: SignalTerm) => {
+		const hasGenre = (x: SignalTerm): string | null => {
 			if (typeof x === "string") {
-				return genresSet.has(normalize(x));
+				const normalized = normalize(x);
+				return genresSet.has(normalized) ? normalized : null;
 			}
+
 			const regex = buildRegexFromPattern(x);
-			return genresList.some((g) => regex.test(g));
+
+			for (const genre of genresList) {
+				const matched = regex.exec(genre)?.at(0);
+				if (matched) return matched;
+			}
+
+			return null;
 		};
 
 		const hasTag = (x: SignalTerm) => {
 			if (typeof x === "string") {
-				return tagsSet.has(normalize(x));
+				const normalized = normalize(x);
+				return tagsSet.has(normalized) ? normalized : null;
 			}
+
 			const regex = buildRegexFromPattern(x);
-			return tagsList.some((g) => regex.test(g));
+
+			for (const tag of tagsList) {
+				const matched = regex.exec(tag)?.at(0);
+				if (matched) return matched;
+			}
+
+			return null;
 		};
 
 		const extractFromGenre = (
 			signal: TaxonomySignalItem<TGroup>,
 			name: SignalTerm | SignalAndGroup,
 		) => {
-			if (Array.isArray(name)) {
-				if (name.every((n) => hasGenre(n)))
+			const genreNames = Array.isArray(name) ? name : [name];
+
+			for (const genreName of genreNames) {
+				const match = hasGenre(genreName);
+				if (match)
 					add({
 						source: "genre",
 						sourceHint: "taxonomy",
-						match: name.map((n) => (typeof n === "string" ? n : DSL.explain(n))).join(" + "),
+						match,
+						patternExplanation: match,
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
 						isGate: signal.isGate,
 					});
-			} else if (hasGenre(name)) {
-				add({
-					source: "genre",
-					sourceHint: "taxonomy",
-					match: typeof name === "string" ? name : DSL.explain(name),
-					group: signal.group,
-					weight: signal.weight,
-					tier: signal.tier,
-					isGate: signal.isGate,
-				});
 			}
 		};
 
@@ -87,27 +97,21 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			signal: TaxonomySignalItem<TGroup>,
 			name: SignalTerm | SignalAndGroup,
 		) => {
-			if (Array.isArray(name)) {
-				if (name.every((n) => hasTag(n)))
+			const tagNames = Array.isArray(name) ? name : [name];
+
+			for (const tagName of tagNames) {
+				const match = hasTag(tagName);
+				if (match)
 					add({
 						source: "tag",
 						sourceHint: "taxonomy",
-						match: name.map((n) => (typeof n === "string" ? n : DSL.explain(n))).join(" + "),
+						match,
+						patternExplanation: match,
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
 						isGate: signal.isGate,
 					});
-			} else if (hasTag(name)) {
-				add({
-					source: "tag",
-					sourceHint: "taxonomy",
-					match: typeof name === "string" ? name : DSL.explain(name),
-					group: signal.group,
-					weight: signal.weight,
-					tier: signal.tier,
-					isGate: signal.isGate,
-				});
 			}
 		};
 
@@ -132,45 +136,44 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			signal: TextSignalItem<TGroup>,
 			phrase: SignalOrGroup[number],
 		) => {
-			if (Array.isArray(phrase)) {
-				const match = phrase.every((p) => {
-					if (typeof p === "string") {
-						return normalizedDescription.includes(normalize(p));
-					}
-					const regex = buildRegexFromPattern(p);
-					return regex.test(normalizedDescription);
-				});
+			const phrases = Array.isArray(phrase) ? phrase : [phrase];
 
-				if (match)
-					add({
-						source: "text",
-						sourceHint: "description",
-						match: phrase.map((p) => (typeof p === "string" ? p : DSL.explain(p))).join(" + "),
-						weight: signal.weight,
-						group: signal.group,
-						tier: signal.tier,
-						isGate: signal.isGate,
-					});
-			} else {
-				let match = false;
-
+			for (const phrase of phrases) {
 				if (typeof phrase === "string") {
-					match = normalizedDescription.includes(normalize(phrase));
-				} else {
-					const regex = buildRegexFromPattern(phrase);
-					match = regex.test(normalizedDescription);
+					const normalized = normalize(phrase);
+					if (normalizedDescription.includes(normalized)) {
+						add({
+							source: "text",
+							sourceHint: "description",
+							match: normalized,
+							patternExplanation: normalized,
+							weight: signal.weight,
+							group: signal.group,
+							tier: signal.tier,
+							isGate: signal.isGate,
+						});
+						continue;
+					}
+					continue;
 				}
 
-				if (match)
-					add({
-						source: "text",
-						sourceHint: "description",
-						match: typeof phrase === "string" ? phrase : DSL.explain(phrase),
-						weight: signal.weight,
-						group: signal.group,
-						tier: signal.tier,
-						isGate: signal.isGate,
-					});
+				const regex = buildRegexFromPattern(phrase);
+				const matches = regex.exec(normalizedDescription);
+
+				if (matches) {
+					for (const match of matches) {
+						add({
+							source: "text",
+							sourceHint: "description",
+							match,
+							patternExplanation: DSL.normalizeExplain(phrase),
+							weight: signal.weight,
+							group: signal.group,
+							tier: signal.tier,
+							isGate: signal.isGate,
+						});
+					}
+				}
 			}
 		};
 
