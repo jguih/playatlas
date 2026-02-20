@@ -1,10 +1,18 @@
-import type { EvidenceSource, EvidenceTier, StoredEvidenceStatus } from "@playatlas/common/domain";
+import type {
+	EvidenceSource,
+	EvidenceTier,
+	ScoreEngineLanguage,
+	StoredEvidenceStatus,
+} from "@playatlas/common/domain";
+import type { CanonicalSignalId } from "./language";
 
 export type Evidence<TGroup> = {
 	source: EvidenceSource;
 	sourceHint?: string;
 	match: string | number;
 	patternExplanation: string;
+	lang: ScoreEngineLanguage;
+	signalId: CanonicalSignalId;
 	weight: number;
 	group: TGroup;
 	tier: EvidenceTier;
