@@ -2,6 +2,8 @@ import { normalize } from "@playatlas/common/common";
 import { EvidenceExtractorInvalidDataError } from "../../domain";
 import type { IEvidenceExtractorPort } from "./evidence-extractor.port";
 import type { Evidence } from "./evidence.types";
+import type { IScoreEngineDSLPort } from "./language";
+import type { ScoreEnginePattern } from "./language/engine.lexicon.api";
 import type {
 	SignalAndGroup,
 	SignalOrGroup,
@@ -13,12 +15,19 @@ import type {
 export type EvidenceExtractorDeps<TGroup> = {
 	taxonomySignals: Array<TaxonomySignalItem<TGroup>>;
 	textSignals: Array<TextSignalItem<TGroup>>;
+	scoreEngineDSL: IScoreEngineDSLPort;
 };
 
 export const makeEvidenceExtractor = <TGroup extends string>({
 	taxonomySignals,
 	textSignals,
+	scoreEngineDSL: DSL,
 }: EvidenceExtractorDeps<TGroup>): IEvidenceExtractorPort<TGroup> => {
+	const buildRegexFromPattern = (pattern: ScoreEnginePattern): RegExp => {
+		const source = DSL.normalizeCompile(pattern);
+		return new RegExp(source, "i");
+	};
+
 	const extractFromTaxonomy = (props: {
 		genres: string[];
 		tags: string[];
@@ -30,10 +39,21 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 		const genresSet = new Set(genresList);
 		const tagsSet = new Set(tagsList);
 
-		const hasGenre = (x: SignalTerm) =>
-			typeof x === "string" ? genresSet.has(normalize(x)) : genresList.some((g) => x.test(g));
-		const hasTag = (x: SignalTerm) =>
-			typeof x === "string" ? tagsSet.has(normalize(x)) : tagsList.some((t) => x.test(t));
+		const hasGenre = (x: SignalTerm) => {
+			if (typeof x === "string") {
+				return genresSet.has(normalize(x));
+			}
+			const regex = buildRegexFromPattern(x);
+			return genresList.some((g) => regex.test(g));
+		};
+
+		const hasTag = (x: SignalTerm) => {
+			if (typeof x === "string") {
+				return tagsSet.has(normalize(x));
+			}
+			const regex = buildRegexFromPattern(x);
+			return tagsList.some((g) => regex.test(g));
+		};
 
 		const extractFromGenre = (
 			signal: TaxonomySignalItem<TGroup>,
@@ -44,7 +64,7 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 					add({
 						source: "genre",
 						sourceHint: "taxonomy",
-						match: name.map((n) => n.toString()).join(" + "),
+						match: name.map((n) => (typeof n === "string" ? n : DSL.explain(n))).join(" + "),
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
@@ -54,7 +74,7 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 				add({
 					source: "genre",
 					sourceHint: "taxonomy",
-					match: name.toString(),
+					match: typeof name === "string" ? name : DSL.explain(name),
 					group: signal.group,
 					weight: signal.weight,
 					tier: signal.tier,
@@ -72,7 +92,7 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 					add({
 						source: "tag",
 						sourceHint: "taxonomy",
-						match: name.map((n) => n.toString()).join(" + "),
+						match: name.map((n) => (typeof n === "string" ? n : DSL.explain(n))).join(" + "),
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
@@ -82,7 +102,7 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 				add({
 					source: "tag",
 					sourceHint: "taxonomy",
-					match: name.toString(),
+					match: typeof name === "string" ? name : DSL.explain(name),
 					group: signal.group,
 					weight: signal.weight,
 					tier: signal.tier,
@@ -113,32 +133,39 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			phrase: SignalOrGroup[number],
 		) => {
 			if (Array.isArray(phrase)) {
-				const normalized = phrase.map((p) => (typeof p === "string" ? normalize(p) : p));
-				const match = normalized.every((p) =>
-					typeof p === "string" ? normalizedDescription.includes(p) : p.test(normalizedDescription),
-				);
+				const match = phrase.every((p) => {
+					if (typeof p === "string") {
+						return normalizedDescription.includes(normalize(p));
+					}
+					const regex = buildRegexFromPattern(p);
+					return regex.test(normalizedDescription);
+				});
+
 				if (match)
 					add({
 						source: "text",
 						sourceHint: "description",
-						match: normalized.map((p) => p.toString()).join(" + "),
+						match: phrase.map((p) => (typeof p === "string" ? p : DSL.explain(p))).join(" + "),
 						weight: signal.weight,
 						group: signal.group,
 						tier: signal.tier,
 						isGate: signal.isGate,
 					});
 			} else {
-				const normalized = typeof phrase === "string" ? normalize(phrase) : phrase;
-				const match =
-					typeof normalized === "string"
-						? normalizedDescription.includes(normalized)
-						: normalized.test(normalizedDescription);
+				let match = false;
+
+				if (typeof phrase === "string") {
+					match = normalizedDescription.includes(normalize(phrase));
+				} else {
+					const regex = buildRegexFromPattern(phrase);
+					match = regex.test(normalizedDescription);
+				}
 
 				if (match)
 					add({
 						source: "text",
 						sourceHint: "description",
-						match: normalized.toString(),
+						match: typeof phrase === "string" ? phrase : DSL.explain(phrase),
 						weight: signal.weight,
 						group: signal.group,
 						tier: signal.tier,

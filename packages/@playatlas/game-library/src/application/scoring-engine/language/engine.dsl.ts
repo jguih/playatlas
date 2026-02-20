@@ -1,7 +1,14 @@
 import { SEP } from "../engine.regexp.utils";
 import { literal, type FillerOptions, type ScoreEnginePattern } from "./engine.lexicon.api";
 
-export const makeScoreEngineDSL = () => {
+export type IScoreEngineDSLPort = {
+	normalize: (pattern: ScoreEnginePattern) => ScoreEnginePattern;
+	compile: (pattern: ScoreEnginePattern) => string;
+	normalizeCompile: (pattern: ScoreEnginePattern) => string;
+	explain: (pattern: ScoreEnginePattern) => string;
+};
+
+export const makeScoreEngineDSL = (): IScoreEngineDSLPort => {
 	const normalize = (pattern: ScoreEnginePattern): ScoreEnginePattern => {
 		if (pattern.type === "alternatives") {
 			const flattened: ScoreEnginePattern[] = [];
@@ -72,9 +79,48 @@ export const makeScoreEngineDSL = () => {
 		}
 	};
 
+	const explain = (pattern: ScoreEnginePattern): string => {
+		switch (pattern.type) {
+			case "literal":
+				return `"${pattern.value}"`;
+
+			case "alternatives":
+				return `one of (${pattern.children.map(explain).join(", ")})`;
+
+			case "sequence":
+				return pattern.children.map(explain).join(" then ");
+
+			case "plural":
+				return `${pattern.children.map(explain).join(" or ")} (optional plural)`;
+
+			case "filler": {
+				const options = {
+					n: 1,
+					d: "after",
+					...pattern.opt,
+				};
+
+				const inner = explain(pattern.child);
+
+				if (options.d === "after") {
+					return `${inner} followed by up to ${options.n} filler words`;
+				} else {
+					return `up to ${options.n} filler words before ${inner}`;
+				}
+			}
+
+			case "window":
+				return `within ${pattern.size} characters: ${pattern.children.map(explain).join(", ")}`;
+
+			case "word":
+				return `${explain(pattern.child)} as a full word`;
+		}
+	};
+
 	return {
 		normalize,
 		compile,
 		normalizeCompile: (pattern: ScoreEnginePattern) => compile(normalize(pattern)),
+		explain,
 	};
 };

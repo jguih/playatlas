@@ -1,6 +1,7 @@
 import type { ScoreEngineLanguage } from "@playatlas/common/domain";
 import { makeEvidenceExtractor } from "../../evidence-extractor";
 import type { IEvidenceExtractorPort } from "../../evidence-extractor.port";
+import type { IScoreEngineDSLPort } from "../../language";
 import { buildTaxonomySignals, buildTextSignals } from "../../score-engine.compiler";
 import { HORROR_ENGINE_LANGUAGE_REGISTRY } from "./horror.language.registry";
 import { type HorrorEvidenceGroup } from "./horror.score-engine.meta";
@@ -11,7 +12,13 @@ import {
 
 export type IHorrorEvidenceExtractorPort = IEvidenceExtractorPort<HorrorEvidenceGroup>;
 
-export const makeHorrorEvidenceExtractor = (): IHorrorEvidenceExtractorPort => {
+export type HorrorEvidenceExtractorDeps = {
+	scoreEngineDSL: IScoreEngineDSLPort;
+};
+
+export const makeHorrorEvidenceExtractor = (
+	deps: HorrorEvidenceExtractorDeps,
+): IHorrorEvidenceExtractorPort => {
 	const languages: ScoreEngineLanguage[] = ["en", "pt"];
 	const languageRegistry = HORROR_ENGINE_LANGUAGE_REGISTRY;
 
@@ -30,5 +37,6 @@ export const makeHorrorEvidenceExtractor = (): IHorrorEvidenceExtractorPort => {
 	return makeEvidenceExtractor({
 		taxonomySignals,
 		textSignals,
+		...deps,
 	});
 };

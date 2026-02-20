@@ -1,64 +1,52 @@
-import {
-	makeScoreEngineDSL,
-	type LanguageTaxonomySignalsMap,
-	type LanguageTextSignalsMap,
-} from "../../../language";
-import type { ScoreEnginePattern } from "../../../language/engine.lexicon.api";
+import { type LanguageTaxonomySignalsMap, type LanguageTextSignalsMap } from "../../../language";
 import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT as PATTERN } from "../regex/pt.pattern.dictionary";
 import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical.signals";
-
-const dsl = makeScoreEngineDSL();
-const c = (p: ScoreEnginePattern): RegExp => new RegExp(dsl.normalizeCompile(p), "i");
 
 export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	// #region: run_based_identity
 	ROGUELIKE_LABEL: ["roguelike", "rogue-like"],
 	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
-	RUN_LOOP_STRUCTURE_LABEL: [c(PATTERN.RESTART_AFTER_DEATH)],
-	RUN_LOOP_LANGUAGE_LABEL: [c(PATTERN.RUN_REPETITION), c(PATTERN.RUN_AFTER_RUN)],
-	TRY_AGAIN_LOOP_LABEL: [
-		c(PATTERN.TRY_AGAIN),
-		"aprenda com o fracasso",
-		c(PATTERN.DIE_AND_TRY_AGAIN),
-	],
+	RUN_LOOP_STRUCTURE_LABEL: [PATTERN.RESTART_AFTER_DEATH],
+	RUN_LOOP_LANGUAGE_LABEL: [PATTERN.RUN_REPETITION, PATTERN.RUN_AFTER_RUN],
+	TRY_AGAIN_LOOP_LABEL: [PATTERN.TRY_AGAIN, "aprenda com o fracasso", PATTERN.DIE_AND_TRY_AGAIN],
 	// #endregion
 	// #region: procedural_runs
-	PROCEDURAL_GENERATION_LABEL: [c(PATTERN.PROCEDURALLY_GENERATED_WORLD)],
+	PROCEDURAL_GENERATION_LABEL: [PATTERN.PROCEDURALLY_GENERATED_WORLD],
 	RANDOMLY_GENERATED_MAPS_LABEL: [
-		c(PATTERN.RANDOMLY_CREATED_WORLDS),
+		PATTERN.RANDOMLY_CREATED_WORLDS,
 		"rpg de ação gerado aleatoriamente",
 		"rpg de ação gerado de maneira aleatória",
 		"geração dinâmica de níveis",
 	],
-	RANDOM_MAPS_LABEL: [c(PATTERN.RANDOM_WORLDS), c(PATTERN.EVER_CHANGING_WORLDS)],
-	EVER_SHIFTING_LABEL: [c(PATTERN.EVER_CHANGING)],
-	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [c(PATTERN.EVER_CHANGING_ENVIRONMENT)],
+	RANDOM_MAPS_LABEL: [PATTERN.RANDOM_WORLDS, PATTERN.EVER_CHANGING_WORLDS],
+	EVER_SHIFTING_LABEL: [PATTERN.EVER_CHANGING],
+	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [PATTERN.EVER_CHANGING_ENVIRONMENT],
 	PROCEDURAL_WORLD_INDICATION_LABEL: ["geração procedural"],
 	// #endregion
 	// #region: permadeath_reset
 	PERMADEATH_LABEL: ["permadeath", "morte permanente"],
 	RESET_ON_DEATH_LABEL: [
-		c(PATTERN.RESTART_AFTER_DEATH),
-		c(PATTERN.DEATH_RESTARTS_YOUR_RUN),
+		PATTERN.RESTART_AFTER_DEATH,
+		PATTERN.DEATH_RESTARTS_YOUR_RUN,
 		"comece de novo após morrer",
 		"comece de novo após falhar",
-		c(PATTERN.RUN_RESTARTS_ON_DEATH),
+		PATTERN.RUN_RESTARTS_ON_DEATH,
 		"sistema de morte implacável",
 	],
 	NO_CHECKPOINTS_LABEL: ["sem checkpoints", "sem pontos de controle"],
 	// #endregion
 	// #region: run_variability
 	GAMEPLAY_VARIETY_LABEL: [
-		c(PATTERN.NO_RUN_IS_THE_SAME),
+		PATTERN.NO_RUN_IS_THE_SAME,
 		"modificações de jogabilidade",
 		"fases, inimigos e itens aleatórios",
 		"nunca experimente o mesmo jogo duas vezes",
-		c(PATTERN.EACH_RUN_IS_DIFFERENT),
+		PATTERN.EACH_RUN_IS_DIFFERENT,
 	],
-	ITEMS_VOLUME_LABEL: [c(PATTERN.LOOT_VOLUME_SPECIFIC)],
-	RANDOMIZED_ITEMS_LABEL: [c(PATTERN.RANDOM_LOOT), "loot procedural"],
-	ENCOUNTER_VOLUME_LABEL: [c(PATTERN.ENEMY_VOLUME_SPECIFIC)],
-	RANDOMIZED_ENCOUNTERS_LABEL: [c(PATTERN.RANDOM_ENEMY)],
+	ITEMS_VOLUME_LABEL: [PATTERN.LOOT_VOLUME_SPECIFIC],
+	RANDOMIZED_ITEMS_LABEL: [PATTERN.RANDOM_LOOT, "loot procedural"],
+	ENCOUNTER_VOLUME_LABEL: [PATTERN.ENEMY_VOLUME_SPECIFIC],
+	RANDOMIZED_ENCOUNTERS_LABEL: [PATTERN.RANDOM_ENEMY],
 	BUILD_VARIETY_LABEL: [
 		"builds diferentes",
 		"builds únicas",
@@ -77,7 +65,7 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 		"escalonamento infinito",
 	],
 	CUSTOMIZE_YOUR_RUN_LABEL: ["personalize sua run", "customize sua run"],
-	BUILD_ITEM_VARIETY_LABEL: [c(PATTERN.VARIETY_OF_BUILD_ITEMS)],
+	BUILD_ITEM_VARIETY_LABEL: [PATTERN.VARIETY_OF_BUILD_ITEMS],
 	DAILY_CHALLENGES: ["desafios diários"],
 	ENDLESSLY_REPLAYABLE_LABEL: ["rejogabilidade infinita", "altamente rejogável"],
 	// #endregion

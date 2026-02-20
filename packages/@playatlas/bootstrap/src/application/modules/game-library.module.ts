@@ -26,6 +26,7 @@ import {
 	makeRunBasedEvidenceExtractor,
 	makeRunBasedScoreEngine,
 	makeRunBasedScoringPolicy,
+	makeScoreEngineDSL,
 	makeScoreEngineRegistry,
 	makeSurvivalScoreEngine,
 	makeTagFactory,
@@ -95,7 +96,9 @@ const makeGameLibraryScoreEngineModule = ({
 }: GameLibraryScoreModuleDeps): IGameLibraryModulePort["scoreEngine"] => {
 	const buildLog = (ctx: string) => logServiceFactory.build(ctx);
 
-	const horrorEvidenceExtractor = makeHorrorEvidenceExtractor();
+	const scoreEngineDSL = makeScoreEngineDSL();
+
+	const horrorEvidenceExtractor = makeHorrorEvidenceExtractor({ scoreEngineDSL });
 	const horrorScoringPolicy = makeHorrorScoringPolicy();
 	const horrorScoreEngine =
 		scoreEngine?.engineOverride?.HORROR ??
@@ -104,7 +107,7 @@ const makeGameLibraryScoreEngineModule = ({
 			horrorScoringPolicy,
 		});
 
-	const runBasedEvidenceExtractor = makeRunBasedEvidenceExtractor();
+	const runBasedEvidenceExtractor = makeRunBasedEvidenceExtractor({ scoreEngineDSL });
 	const runBasedScoringPolicy = makeRunBasedScoringPolicy();
 	const runBasedScoreEngine =
 		scoreEngine?.engineOverride?.["RUN-BASED"] ??

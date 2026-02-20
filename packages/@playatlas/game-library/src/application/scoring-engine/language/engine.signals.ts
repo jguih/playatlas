@@ -1,6 +1,7 @@
 import type { EvidenceTier, ScoreEngineLanguage } from "@playatlas/common/domain";
+import type { ScoreEnginePattern } from "./engine.lexicon.api";
 
-export type SignalTerm = string | RegExp;
+export type SignalTerm = string | ScoreEnginePattern;
 export type SignalAndGroup = SignalTerm[];
 export type SignalOrGroup = (SignalTerm | SignalAndGroup)[];
 
