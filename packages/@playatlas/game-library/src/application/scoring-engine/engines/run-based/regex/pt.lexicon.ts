@@ -35,12 +35,25 @@ export const RUN_BASED_ENGINE_LEXICON_PT = {
 		l("nive(?:l|is)"),
 	),
 	LOOP: alternatives(CORE.QUANDO_SEMPRE, CORE.TODA_VEZ_QUE),
+	LOOT: alternatives(l("ite(?:m|ns)"), l("loot"), plural(l("drop")), plural(l("recompensa"))),
 	PROCEDURALMENTE: alternatives(l("proceduralmente"), l("de\\s+(?:forma|maneira)\\s+procedural")),
 	MODIFICADOR_GERACAO_MUNDO: alternatives(
 		l("inteir(?:o|a|amente)"),
 		l("aleatoriamente"),
 		l("totalmente"),
-		CORE.SER_ESTAR,
+		CORE.SER,
 	),
 	MODIFICADOR_MUDANCA: alternatives(l("que"), l("que\\s+est(?:a|ao)")),
+	TENTE_NOVAMENTE: alternatives(
+		l("tente\\s+(?:de\\s+novo|novamente)"),
+		l("tente\\s+uma\\s+(?:segunda|outra)\\s+vez"),
+	),
+	BUILD_ITEMS: alternatives(
+		l("armas"),
+		l("habilidades"),
+		l("equipamentos"),
+		l("poderes"),
+		l("melhorias"),
+	),
+	AMBIENTE: plural(l("ambiente")),
 } as const satisfies Record<string, ScoreEnginePattern>;

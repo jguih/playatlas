@@ -1,9 +1,12 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dict";
+import { makeScoreEngineDSL } from "../../../../../language";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dictionary";
 
 describe("Portuguese / NO_RUN_IS_THE_SAME", () => {
-	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.NO_RUN_IS_THE_SAME;
+	const dsl = makeScoreEngineDSL();
+	const source = dsl.normalizeCompile(RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.NO_RUN_IS_THE_SAME);
+	const re = new RegExp(source, "i");
 
 	const shouldMatch = [
 		"nenhuma run é igual",

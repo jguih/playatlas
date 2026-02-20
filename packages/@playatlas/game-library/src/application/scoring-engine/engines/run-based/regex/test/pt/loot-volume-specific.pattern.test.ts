@@ -1,11 +1,20 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dict";
+import { makeScoreEngineDSL } from "../../../../../language";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dictionary";
 
 describe("Portuguese / LOOT_VOLUME_SPECIFIC", () => {
-	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.LOOT_VOLUME_SPECIFIC;
+	const dsl = makeScoreEngineDSL();
+	const source = dsl.normalizeCompile(RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.LOOT_VOLUME_SPECIFIC);
+	const re = new RegExp(source, "i");
 
-	const shouldMatch = ["450+ itens", "120 itens", "mais que 400+ itens", "mais de 10 itens"];
+	const shouldMatch = [
+		"450+ itens",
+		"mais que 450 itens",
+		"120 itens",
+		"mais que 400+ itens",
+		"mais de 10 itens",
+	];
 
 	const shouldNotMatch = [
 		"120 fases",

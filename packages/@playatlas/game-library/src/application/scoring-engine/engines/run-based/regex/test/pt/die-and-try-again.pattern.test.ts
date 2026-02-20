@@ -1,9 +1,12 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dict";
+import { makeScoreEngineDSL } from "../../../../../language";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dictionary";
 
 describe("Portuguese / DIE_AND_TRY_AGAIN", () => {
-	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.DIE_AND_TRY_AGAIN;
+	const dsl = makeScoreEngineDSL();
+	const source = dsl.normalizeCompile(RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.DIE_AND_TRY_AGAIN);
+	const re = new RegExp(source, "i");
 
 	const shouldMatch = [
 		"morra e tente novamente",

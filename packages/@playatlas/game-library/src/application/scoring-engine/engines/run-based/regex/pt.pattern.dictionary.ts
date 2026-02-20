@@ -28,16 +28,62 @@ export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT = {
 			n: 1,
 			f: w(LEX.MODIFICADOR_GERACAO_MUNDO),
 		}),
-		filler(w(CORE.CRIAR_GERAR), {
+		filler(w(CORE.CRIADO_GERADO), {
 			n: 1,
 			f: w(LEX.MODIFICADOR_GERACAO_MUNDO),
 		}),
 		w(LEX.PROCEDURALMENTE),
 	),
 	RANDOM_WORLDS: sequence(w(LEX.MUNDO), w(CORE.ALEATORIO)),
-	RANDOMLY_CREATED_WORLDS: sequence(w(LEX.MUNDO), w(CORE.CRIAR_GERAR), w(CORE.ALEATORIAMENTE)),
+	RANDOMLY_CREATED_WORLDS: sequence(w(LEX.MUNDO), w(CORE.CRIADO_GERADO), w(CORE.ALEATORIAMENTE)),
 	EVER_CHANGING_WORLDS: sequence(
 		filler(w(LEX.MUNDO), { n: 1, f: w(LEX.MODIFICADOR_MUDANCA) }),
 		w(CORE.EM_CONSTANTE_MUDANCA),
+	),
+	EVER_CHANGING_ENVIRONMENT: sequence(
+		filler(w(LEX.AMBIENTE), { n: 1, f: w(LEX.MODIFICADOR_MUDANCA) }),
+		w(CORE.EM_CONSTANTE_MUDANCA),
+	),
+	EVER_CHANGING: sequence(w(CORE.EM_CONSTANTE_MUDANCA)),
+	TRY_AGAIN: sequence(w(LEX.TENTE_NOVAMENTE)),
+	DIE_AND_TRY_AGAIN: sequence(
+		w(CORE.MORRER_FALHAR),
+		w(alternatives(l("e(?:\\s+entao)?"))),
+		w(LEX.TENTE_NOVAMENTE),
+	),
+	DEATH_RESTARTS_YOUR_RUN: sequence(
+		w(l("a")),
+		w(CORE.MORTE_FALHA),
+		w(CORE.RECOMECA_REINICIA),
+		w(alternatives(l("(?:a\\s+)?sua"), l("(?:o\\s+)?seu"), l("(?:a|o)"))),
+		w(LEX.PARTIDA),
+	),
+	RUN_RESTARTS_ON_DEATH: sequence(
+		w(LEX.PARTIDA),
+		w(CORE.RECOMECA_REINICIA),
+		w(alternatives(l("ao"), l("quando(?:\\s+voce)?"))),
+		w(CORE.MORRER_FALHAR),
+	),
+	RANDOM_LOOT: sequence(w(LEX.LOOT), w(CORE.ALEATORIO)),
+	LOOT_VOLUME_SPECIFIC: sequence(
+		filler(l("\\d+\\+?"), { n: 1, f: w(l("mais\\s+(?:que|de)")), d: "before" }),
+		w(LEX.LOOT),
+	),
+	RANDOM_ENEMY: sequence(w(CORE.INIMIGO), w(CORE.ALEATORIO)),
+	ENEMY_VOLUME_SPECIFIC: sequence(
+		filler(l("\\d+\\+?"), { n: 1, f: w(l("mais\\s+(?:que|de)")), d: "before" }),
+		w(CORE.INIMIGO),
+	),
+	NO_RUN_IS_THE_SAME: sequence(w(l("nenhum(?:a)?")), w(LEX.PARTIDA), w(CORE.SER), w(CORE.IGUAL)),
+	EACH_RUN_IS_DIFFERENT: sequence(
+		w(l("cada")),
+		w(LEX.PARTIDA),
+		w(CORE.SER),
+		w(CORE.DIFFERENTE_UNICA),
+	),
+	VARIETY_OF_BUILD_ITEMS: alternatives(
+		sequence(w(CORE.VARIEDADE_DIVERSIDADE), w(l("de")), w(LEX.BUILD_ITEMS)),
+		sequence(w(CORE.VARIOS_DIVERSOS), w(LEX.BUILD_ITEMS)),
+		sequence(w(LEX.BUILD_ITEMS), w(CORE.VARIOS_DIVERSOS)),
 	),
 } as const satisfies Record<string, ScoreEnginePattern>;

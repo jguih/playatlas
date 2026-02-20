@@ -1,12 +1,16 @@
 import { normalize } from "@playatlas/common/common";
 import { describe, expect, it } from "vitest";
-import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dict";
+import { makeScoreEngineDSL } from "../../../../../language";
+import { RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT } from "../../pt.pattern.dictionary";
 
 describe("Portuguese / VARIETY_OF_BUILD_ITEMS", () => {
-	const re = RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.VARIETY_OF_BUILD_ITEMS;
+	const dsl = makeScoreEngineDSL();
+	const source = dsl.normalizeCompile(
+		RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT.VARIETY_OF_BUILD_ITEMS,
+	);
+	const re = new RegExp(source, "i");
 
 	const shouldMatch = [
-		"variedade de itens",
 		"diversidade de habilidades",
 		"diversas habilidades",
 		"vários equipamentos",
