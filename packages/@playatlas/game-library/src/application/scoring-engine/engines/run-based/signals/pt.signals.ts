@@ -43,19 +43,15 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 		"nunca experimente o mesmo jogo duas vezes",
 		PATTERN.EACH_RUN_IS_DIFFERENT,
 	],
+	BUILD_VARIETY_LABEL: [
+		PATTERN.ENDLESS_WAYS_TO_COMBINE_BUILD_ITEMS,
+		"infinitas combinações de configurações",
+	],
+	UNIQUE_BUILDS_LABEL: [PATTERN.UNIQUE_BUILDS],
 	ITEMS_VOLUME_LABEL: [PATTERN.LOOT_VOLUME_SPECIFIC],
 	RANDOMIZED_ITEMS_LABEL: [PATTERN.RANDOM_LOOT, "loot procedural"],
 	ENCOUNTER_VOLUME_LABEL: [PATTERN.ENEMY_VOLUME_SPECIFIC],
 	RANDOMIZED_ENCOUNTERS_LABEL: [PATTERN.RANDOM_ENEMY],
-	BUILD_VARIETY_LABEL: [
-		"builds diferentes",
-		"builds únicas",
-		"variedade de builds",
-		"experimente builds",
-		"estilos de jogo variados",
-		"infinitas combinações de configurações",
-		"crie combinações",
-	],
 	ENDLESS_RUN_LABEL: [
 		"continue infinitamente",
 		"continue seu jogo infinitamente",
@@ -64,8 +60,11 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 		"veja o quanto você consegue sobreviver",
 		"escalonamento infinito",
 	],
+	BUILD_ITEM_VARIETY_LABEL: [
+		PATTERN.VARIETY_OF_BUILD_ITEMS,
+		PATTERN.CONSTANTLY_CHANGING_BUILD_ITEMS,
+	],
 	CUSTOMIZE_YOUR_RUN_LABEL: ["personalize sua run", "customize sua run"],
-	BUILD_ITEM_VARIETY_LABEL: [PATTERN.VARIETY_OF_BUILD_ITEMS],
 	DAILY_CHALLENGES: ["desafios diários"],
 	ENDLESSLY_REPLAYABLE_LABEL: ["rejogabilidade infinita", "altamente rejogável"],
 	// #endregion

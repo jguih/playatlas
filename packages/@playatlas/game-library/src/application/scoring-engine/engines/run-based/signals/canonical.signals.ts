@@ -99,34 +99,40 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		weight: 30,
 		isGate: false,
 	},
-	ITEMS_VOLUME_LABEL: {
+	BUILD_VARIETY_LABEL: {
 		group: "run_variability",
 		tier: "B",
 		weight: 25,
 		isGate: false,
 	},
-	RANDOMIZED_ITEMS_LABEL: {
+	UNIQUE_BUILDS_LABEL: {
+		group: "run_variability",
+		tier: "B",
+		weight: 18,
+		isGate: false,
+	},
+	ITEMS_VOLUME_LABEL: {
 		group: "run_variability",
 		tier: "B",
 		weight: 20,
 		isGate: false,
 	},
+	RANDOMIZED_ITEMS_LABEL: {
+		group: "run_variability",
+		tier: "B",
+		weight: 15,
+		isGate: false,
+	},
 	ENCOUNTER_VOLUME_LABEL: {
 		group: "run_variability",
 		tier: "B",
-		weight: 22,
+		weight: 20,
 		isGate: false,
 	},
 	RANDOMIZED_ENCOUNTERS_LABEL: {
 		group: "procedural_runs",
 		tier: "B",
-		weight: 18,
-		isGate: false,
-	},
-	BUILD_VARIETY_LABEL: {
-		group: "run_variability",
-		tier: "B",
-		weight: 25,
+		weight: 15,
 		isGate: false,
 	},
 	ENDLESS_RUN_LABEL: {

@@ -59,6 +59,15 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		"never experience the same game twice",
 		"randomized stages, enemies, and items",
 	],
+	BUILD_VARIETY_LABEL: [
+		"combine loot",
+		"different builds",
+		"unique builds",
+		"build variety",
+		"experiment with builds",
+		"varied playstyles",
+	],
+	UNIQUE_BUILDS_LABEL: [],
 	ITEMS_VOLUME_LABEL: [],
 	RANDOMIZED_ITEMS_LABEL: [
 		"randomized items",
@@ -73,17 +82,9 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	ENCOUNTER_VOLUME_LABEL: [],
 	RANDOMIZED_ENCOUNTERS_LABEL: [],
 	CUSTOMIZE_YOUR_RUN_LABEL: ["customize your run"],
-	BUILD_ITEM_VARIETY_LABEL: [],
 	DAILY_CHALLENGES: ["daily challenges"],
-	BUILD_VARIETY_LABEL: [
-		"combine loot",
-		"different builds",
-		"unique builds",
-		"build variety",
-		"experiment with builds",
-		"varied playstyles",
-	],
 	ENDLESS_RUN_LABEL: ["continue your run indefinitely", "limitlessly increase in power"],
+	BUILD_ITEM_VARIETY_LABEL: [],
 	ENDLESSLY_REPLAYABLE_LABEL: ["endlessly replayable"],
 	// #endregion
 	// #region: meta_progression

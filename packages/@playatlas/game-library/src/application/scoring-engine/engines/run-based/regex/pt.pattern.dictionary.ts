@@ -79,11 +79,47 @@ export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT = {
 		w(l("cada")),
 		w(LEX.PARTIDA),
 		w(CORE.SER),
-		w(CORE.DIFFERENTE_UNICA),
+		alternatives(w(CORE.DIFERENTE_DISTINTO), w(CORE.UNICO)),
 	),
 	VARIETY_OF_BUILD_ITEMS: alternatives(
 		sequence(w(CORE.VARIEDADE_DIVERSIDADE), w(l("de")), w(LEX.BUILD_ITEMS)),
 		sequence(w(CORE.VARIOS_DIVERSOS), w(LEX.BUILD_ITEMS)),
 		sequence(w(LEX.BUILD_ITEMS), w(CORE.VARIOS_DIVERSOS)),
+	),
+	CONSTANTLY_CHANGING_BUILD_ITEMS: sequence(
+		filler(w(LEX.BUILD_ITEMS), { n: 1, f: w(LEX.MODIFICADOR_MUDANCA) }),
+		w(CORE.EM_CONSTANTE_MUDANCA),
+	),
+	UNIQUE_BUILDS: alternatives(
+		sequence(w(LEX.BUILD), w(alternatives(CORE.DIFERENTE_DISTINTO, CORE.UNICO))),
+		sequence(w(CORE.DIFERENTE_DISTINTO), w(LEX.BUILD)),
+		sequence(w(CORE.CONFIGURACAO), w(CORE.UNICO)),
+		sequence(w(CORE.CONFIGURACAO), w(l("poderos(?:a|as)"))),
+		sequence(
+			w(alternatives(CORE.VARIEDADE_DIVERSIDADE, CORE.POSSIBILIDADE)),
+			w(l("de")),
+			w(LEX.BUILD),
+		),
+		sequence(
+			w(CORE.VARIOS_NUMERICO),
+			w(LEX.BUILD),
+			w(alternatives(CORE.DIFERENTE_DISTINTO, CORE.UNICO)),
+		),
+	),
+	ENDLESS_WAYS_TO_COMBINE_BUILD_ITEMS: alternatives(
+		sequence(
+			filler(w(CORE.MANEIRA_FORMA), { n: 1, f: w(LEX.INTENSIFICADOR) }),
+			w(alternatives(CORE.ILIMITADO, CORE.SEM_LIMITE)),
+			w(l("de")),
+			filler(w(alternatives(CORE.COMBINAR, CORE.CRIAR)), { n: 1, f: w(CORE.PRONOME_POSSESSIVO) }),
+			w(alternatives(LEX.BUILD_ITEMS, CORE.SINERGIA, CORE.ESTILO_DE_JOGO, CORE.ESTRATEGIA)),
+		),
+		sequence(
+			w(alternatives(CORE.ILIMITADO, CORE.VARIOS_NUMERICO)),
+			filler(w(CORE.MANEIRA_FORMA), { n: 1, f: w(CORE.DIFERENTE_DISTINTO) }),
+			w(l("de")),
+			filler(w(alternatives(CORE.COMBINAR, CORE.CRIAR)), { n: 1, f: w(CORE.PRONOME_POSSESSIVO) }),
+			w(alternatives(LEX.BUILD_ITEMS, CORE.SINERGIA, CORE.ESTILO_DE_JOGO, CORE.ESTRATEGIA)),
+		),
 	),
 } as const satisfies Record<string, ScoreEnginePattern>;
