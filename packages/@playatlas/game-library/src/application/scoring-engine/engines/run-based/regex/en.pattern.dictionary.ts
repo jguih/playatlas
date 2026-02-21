@@ -65,4 +65,23 @@ export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN = {
 			w(CORE.DEATH_FAILURE),
 		),
 	),
+	RANDOM_WORLDS: sequence(w(alternatives(CORE.RANDOM, CORE.UNPREDICTABLE)), w(LEX.WORLD)),
+	RANDOMLY_CREATED_WORLDS: sequence(
+		w(alternatives(CORE.RANDOMLY, CORE.DYNAMICALLY)),
+		w(CORE.CREATE_GENERATE),
+		w(LEX.WORLD),
+	),
+	DYNAMIC_WORLD_GENERATION: sequence(
+		w(alternatives(CORE.DYNAMIC, CORE.RANDOM)),
+		w(LEX.WORLD),
+		w(CORE.CREATION_GENERATION),
+	),
+	EVER_CHANGING: sequence(w(CORE.EVER_CHANGING)),
+	EVER_CHANGING_ENVIRONMENT: sequence(
+		w(CORE.EVER_CHANGING),
+		w(alternatives(LEX.WORLD, LEX.ENVIRONMENT)),
+	),
+	FRESH_LAYOUT_EVERY_RUN: sequence(w(l("fresh")), w(l("layout")), w(CORE.EACH_EVERY), w(LEX.RUN)),
 } as const satisfies Record<string, ScoreEnginePattern>;
+
+export type RunBasedPatternIdEN = keyof typeof RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN;

@@ -35,7 +35,11 @@ export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT = {
 		w(LEX.PROCEDURALMENTE),
 	),
 	RANDOM_WORLDS: sequence(w(LEX.MUNDO), w(CORE.ALEATORIO)),
-	RANDOMLY_CREATED_WORLDS: sequence(w(LEX.MUNDO), w(CORE.CRIADO_GERADO), w(CORE.ALEATORIAMENTE)),
+	RANDOMLY_CREATED_WORLDS: sequence(
+		w(LEX.MUNDO),
+		w(CORE.CRIADO_GERADO),
+		w(alternatives(CORE.ALEATORIAMENTE, CORE.DINAMICAMENTE)),
+	),
 	EVER_CHANGING_WORLDS: sequence(
 		filler(w(LEX.MUNDO), { n: 1, f: w(LEX.MODIFICADOR_MUDANCA) }),
 		w(CORE.EM_CONSTANTE_MUDANCA),
@@ -123,3 +127,5 @@ export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT = {
 		),
 	),
 } as const satisfies Record<string, ScoreEnginePattern>;
+
+export type RunBasedPatternIdPT = keyof typeof RUN_BASED_ENGINE_PATTERN_DICTIONARY_PT;

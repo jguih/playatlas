@@ -49,14 +49,14 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	},
 	RANDOM_MAPS_LABEL: {
 		group: "procedural_runs",
-		tier: "B",
-		weight: 18,
+		tier: "C",
+		weight: 14,
 		isGate: false,
 	},
 	EVER_SHIFTING_LABEL: {
 		group: "procedural_runs",
 		tier: "C",
-		weight: 12,
+		weight: 8,
 		isGate: false,
 	},
 	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: {

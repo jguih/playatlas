@@ -1,4 +1,5 @@
 import type { LanguageTaxonomySignalsMap, LanguageTextSignalsMap } from "../../../language";
+import { HORROR_ENGINE_PATTERN_DICTIONARY_EN as PATTERN } from "../regex/en.pattern.dictionary";
 import type { HorrorTaxonomySignalId, HorrorTextSignalId } from "./canonical.signals";
 
 export const HORROR_ENGINE_TEXT_SIGNALS_EN = {
@@ -18,7 +19,7 @@ export const HORROR_ENGINE_TEXT_SIGNALS_EN = {
 	INVENTORY_MANAGEMENT_LABEL: ["inventory management", "inventory and ammo management"],
 	FIGHT_FOR_SURVIVAL_LABEL: ["fight for survival"],
 	// #region: psychological_horror
-	PSYCHOLOGICAL_HORROR_LABEL: ["psychological horror", "psychological-horror"],
+	PSYCHOLOGICAL_HORROR_LABEL: [PATTERN.PSYCHOLOGICAL_HORROR],
 	DESCEND_INTO_MADNESS_LABEL: ["descend into madness", "succumb to the madness"],
 	DISTURBING_LABEL: ["disturbing"],
 	NIGHTMARE_LABEL: ["nightmare"],
@@ -54,11 +55,7 @@ export const HORROR_ENGINE_TAXONOMY_SIGNALS_EN = {
 	SURVIVAL_TAXONOMY: ["survival"],
 	// #endregion
 	// #region: psychological_horror
-	PSYCHOLOGICAL_HORROR_TAXONOMY: [
-		"psychological horror",
-		"psychological-horror",
-		["psychological", "horror"],
-	],
+	PSYCHOLOGICAL_HORROR_TAXONOMY: [PATTERN.PSYCHOLOGICAL_HORROR, ["psychological", "horror"]],
 	SUPERNATURAL_TAXONOMY: ["supernatural"],
 	// #endregion
 } as const satisfies LanguageTaxonomySignalsMap<HorrorTaxonomySignalId>;

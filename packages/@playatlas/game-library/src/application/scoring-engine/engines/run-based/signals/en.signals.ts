@@ -17,19 +17,16 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	],
 	// #region: procedural_runs
 	PROCEDURAL_GENERATION_LABEL: [PATTERN.PROCEDURALLY_GENERATED_WORLD_STRONG],
-	RANDOMLY_GENERATED_MAPS_LABEL: [],
-	RANDOM_MAPS_LABEL: [
-		// new RegExp(`randomized` + SEP + WORLD_LANGUAGE, "i"),
-		// new RegExp(`randomly` + SEP + `generated` + SEP + WORLD_LANGUAGE, "i"),
+	RANDOMLY_GENERATED_MAPS_LABEL: [
+		PATTERN.RANDOMLY_CREATED_WORLDS,
+		PATTERN.DYNAMIC_WORLD_GENERATION,
 		"randomly generated action RPG",
-		"unpredictable layouts",
 		"the layout differs each time",
-		// new RegExp(`dynamic` + SEP + WORLD_LANGUAGE + SEP + `generation`, "i"),
-		// new RegExp(`ever-changing` + SEP + WORLD_LANGUAGE, "i"),
 	],
-	EVER_SHIFTING_LABEL: ["ever-shifting", "ever shifting"],
+	RANDOM_MAPS_LABEL: [PATTERN.RANDOM_WORLDS],
+	EVER_SHIFTING_LABEL: ["ever-shifting", "ever shifting", PATTERN.EVER_CHANGING],
 	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [
-		// new RegExp(`constantly` + SEP + `changing` + SEP + WORLD_LANGUAGE, "i"),
+		PATTERN.EVER_CHANGING_ENVIRONMENT,
 		// new RegExp(`fresh` + SEP + `layout` + SEP + REPETITION_LANGUAGE + SEP + RUN_LANGUAGE, "i"),
 		"unique layouts each time",
 	],

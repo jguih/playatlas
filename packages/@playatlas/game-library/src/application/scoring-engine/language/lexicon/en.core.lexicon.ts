@@ -14,7 +14,18 @@ export const SCORE_ENGINE_CORE_LEXICON_EN = {
 	WHEN_WHENEVER: alternatives(l("when"), l("whenever")),
 	RESTART_REPEAT: alternatives(l("restart(?:ed|ing|s)?"), l("repeat(?:ed|ing|s)?")),
 	CREATE_GENERATE: alternatives(l("generat(?:ed|ing|e|s|es)"), l("creat(?:ed|ing|e|s|es)")),
+	CREATION_GENERATION: alternatives(l("creation"), l("generation")),
 	DIE_FAIL: alternatives(l("die(?:s|ed)?"), l("fail(?:s|ed)?")),
 	DEATH_FAILURE: alternatives(l("death"), l("failure")),
 	END: alternatives(plural(l("end"))),
+	RANDOM: alternatives(l("random"), l("randomized")),
+	RANDOMLY: l("randomly"),
+	DYNAMIC: l("dynamic"),
+	DYNAMICALLY: l("dynamically"),
+	UNPREDICTABLE: l("unpredictable"),
+	EVER_CHANGING: alternatives(
+		l("ever-changing"),
+		l("ever\\s+changing"),
+		l("constantly\\s+changing"),
+	),
 } as const;

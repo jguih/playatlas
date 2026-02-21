@@ -26,6 +26,7 @@ export const SCORE_ENGINE_CORE_LEXICON_PT = {
 		l("randomicamente"),
 		l("de\\s+(?:maneira|forma)\\s+randomica"),
 	),
+	DINAMICAMENTE: alternatives(l("dinamicamente"), l("de\\s+(?:maneira|forma)\\s+dinamica")),
 	EM_CONSTANTE_MUDANCA: alternatives(
 		l("em\\s+constante\\s+mudanca"),
 		l("em\\s+mudanca\\s+constante"),
