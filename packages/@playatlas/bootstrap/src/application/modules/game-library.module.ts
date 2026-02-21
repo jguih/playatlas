@@ -26,6 +26,7 @@ import {
 	makeRunBasedEvidenceExtractor,
 	makeRunBasedScoreEngine,
 	makeRunBasedScoringPolicy,
+	makeScoreEngineCorpusMiner,
 	makeScoreEngineDSL,
 	makeScoreEngineRegistry,
 	makeSurvivalScoreEngine,
@@ -180,6 +181,11 @@ const makeGameLibraryScoreEngineModule = ({
 		logService: buildLog("ClassificationTierCalibrationService"),
 	});
 
+	const scoreEngineCorpusMiner = makeScoreEngineCorpusMiner({
+		fileSystemService,
+		logService: buildLog("ScoreEngineCorpusMiner"),
+	});
+
 	return {
 		queries: {
 			getGetAllClassificationsQueryHandler: () => getAllClassificationsQueryHandler,
@@ -211,6 +217,7 @@ const makeGameLibraryScoreEngineModule = ({
 		getScoreBreakdownNormalizer: () => scoreBreakdownNormalizer,
 
 		getClassificationTierCalibrationService: () => classificationTierCalibrationService,
+		getScoreEngineCorpusMiner: () => scoreEngineCorpusMiner,
 	};
 };
 

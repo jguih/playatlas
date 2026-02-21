@@ -10,7 +10,8 @@
 		"./testing": "./src/testing/index.ts"
 	},
 	"scripts": {
-		"calibrate:tiers": "tsx src/cli/calibrate-classification-tiers.ts"
+		"calibrate:tiers": "tsx src/cli/score-engine-calibrate-classification-tiers.ts",
+		"mine-corpus:run-based": "tsx src/cli/run-based-score-engine.corpus-miner.ts"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

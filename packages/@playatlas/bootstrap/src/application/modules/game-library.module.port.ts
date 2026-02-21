@@ -19,6 +19,7 @@ import type {
 	IRunBasedEvidenceExtractorPort,
 	IRunBasedScoreEngine,
 	IScoreBreakdownNormalizerPort,
+	IScoreEngineCorpusMinerPort,
 	IScoreEngineRegistryPort,
 	ITagFactoryPort,
 	ITagMapperPort,
@@ -117,6 +118,7 @@ export type IGameLibraryModulePort = Readonly<{
 		getScoreBreakdownNormalizer: () => IScoreBreakdownNormalizerPort;
 
 		getClassificationTierCalibrationService: () => IClassificationTierCalibrationServicePort;
+		getScoreEngineCorpusMiner: () => IScoreEngineCorpusMinerPort;
 	};
 
 	init: () => void;
