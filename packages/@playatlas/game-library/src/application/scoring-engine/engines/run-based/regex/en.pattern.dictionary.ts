@@ -1,4 +1,7 @@
-import { SCORE_ENGINE_CORE_LEXICON_EN as CORE } from "../../../language";
+import {
+	SCORE_ENGINE_CORE_LEXICON_EN as CORE,
+	type ScoreEnginePatternDictionary,
+} from "../../../language";
 import {
 	alternatives,
 	filler,
@@ -6,7 +9,6 @@ import {
 	sequence,
 	word as w,
 	window,
-	type ScoreEnginePattern,
 } from "../../../language/engine.lexicon.api";
 import { RUN_BASED_ENGINE_LEXICON_EN as LEX } from "./en.lexicon";
 
@@ -14,7 +16,7 @@ export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN = {
 	RUN_REPETITION: sequence(
 		filler(w(CORE.EACH_EVERY), {
 			n: 1,
-			f: w(alternatives(l("new"), l("subsequent"), l("different"))),
+			f: w(alternatives(l("(single\\s+)?new"), l("subsequent"), l("different"))),
 		}),
 		w(LEX.RUN),
 	),
@@ -81,7 +83,36 @@ export const RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN = {
 		w(CORE.EVER_CHANGING),
 		w(alternatives(LEX.WORLD, LEX.ENVIRONMENT)),
 	),
-	FRESH_LAYOUT_EVERY_RUN: sequence(w(l("fresh")), w(l("layout")), w(CORE.EACH_EVERY), w(LEX.RUN)),
-} as const satisfies Record<string, ScoreEnginePattern>;
+	FRESH_WORLD_EVERY_RUN: sequence(
+		w(alternatives(CORE.UNIQUE_DIFFERENT, l("fresh"))),
+		w(LEX.WORLD),
+		w(CORE.EACH_EVERY),
+		w(alternatives(LEX.RUN, l("time"))),
+	),
+	DEATH_RESETS_YOUR_RUN: alternatives(
+		sequence(
+			w(CORE.DEATH_FAILURE),
+			w(alternatives(CORE.RESET, CORE.RESTART_REPEAT)),
+			w(alternatives(CORE.POSSESSIVE_PRONOUN, l("the"))),
+			w(LEX.RUN),
+		),
+		sequence(
+			w(LEX.RUN),
+			w(alternatives(CORE.RESET, CORE.RESTART_REPEAT)),
+			w(l("on")),
+			w(CORE.DEATH_FAILURE),
+		),
+	),
+	START_FROM_THE_BEGINNING: sequence(
+		filler(w(LEX.START_FROM_RETURN_TO), { n: 1, f: w(l("the")) }),
+		w(CORE.BEGINNING_START),
+	),
+	EVERY_RUN_IS_DIFFERENT: sequence(
+		w(CORE.EACH_EVERY),
+		w(LEX.RUN),
+		w(l("is")),
+		w(CORE.UNIQUE_DIFFERENT),
+	),
+} as const satisfies ScoreEnginePatternDictionary;
 
 export type RunBasedPatternIdEN = keyof typeof RUN_BASED_ENGINE_PATTERN_DICTIONARY_EN;

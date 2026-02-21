@@ -6,7 +6,11 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	// #region: run_based_identity
 	ROGUELIKE_LABEL: ["roguelike", "rogue-like"],
 	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
-	RUN_LOOP_STRUCTURE_LABEL: [PATTERN.RESTART_AFTER_DEATH],
+	RUN_LOOP_STRUCTURE_LABEL: [
+		PATTERN.RESTART_AFTER_DEATH,
+		"run-based gameplay",
+		"run based gameplay",
+	],
 	RUN_LOOP_LANGUAGE_LABEL: [PATTERN.RUN_REPETITION, PATTERN.RUN_AFTER_RUN, PATTERN.BETWEEN_RUNS],
 	TRY_AGAIN_LOOP_LABEL: [
 		PATTERN.TRY_AGAIN,
@@ -27,8 +31,7 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	EVER_SHIFTING_LABEL: ["ever-shifting", "ever shifting", PATTERN.EVER_CHANGING],
 	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [
 		PATTERN.EVER_CHANGING_ENVIRONMENT,
-		// new RegExp(`fresh` + SEP + `layout` + SEP + REPETITION_LANGUAGE + SEP + RUN_LANGUAGE, "i"),
-		"unique layouts each time",
+		PATTERN.FRESH_WORLD_EVERY_RUN,
 	],
 	PROCEDURAL_WORLD_INDICATION_LABEL: [
 		"procedural generation",
@@ -37,11 +40,18 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	],
 	// #endregion
 	// #region: permadeath_reset
-	PERMADEATH_LABEL: ["permadeath", "permanent death"],
+	PERMADEATH_LABEL: [
+		"permadeath",
+		"permanent death",
+		"death is permanent",
+		"death is final",
+		"one life only",
+		"one life per run",
+	],
 	RESET_ON_DEATH_LABEL: [
 		PATTERN.RESTART_AFTER_DEATH,
-		// new RegExp(`death` + SEP + `resets` + SEP + POSSESSIVE + SEP + RUN_LANGUAGE, "i"),
-		// new RegExp(RUN_LANGUAGE + SEP + `resets` + SEP + `on` + SEP + `death`, "i"),
+		PATTERN.DEATH_RESETS_YOUR_RUN,
+		PATTERN.START_FROM_THE_BEGINNING,
 		"start over after death",
 		"begin again after failure",
 		"unforgiving death system",
@@ -50,7 +60,7 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	// #endregion
 	// #region: run_variability
 	GAMEPLAY_VARIETY_LABEL: [
-		"gameplay modifiers",
+		PATTERN.EVERY_RUN_IS_DIFFERENT,
 		"no run will ever be the same",
 		"no two runs are the same",
 		"never experience the same game twice",
@@ -59,12 +69,18 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	BUILD_VARIETY_LABEL: [
 		"combine loot",
 		"different builds",
-		"unique builds",
 		"build variety",
 		"experiment with builds",
 		"varied playstyles",
+		"synergistic builds",
+		"build-defining items",
+		"stackable upgrades",
+		"upgrade combinations",
+		"item synergies",
+		"powerful combinations",
+		"theorycraft your build",
 	],
-	UNIQUE_BUILDS_LABEL: [],
+	UNIQUE_BUILDS_LABEL: ["unique builds"],
 	ITEMS_VOLUME_LABEL: [],
 	RANDOMIZED_ITEMS_LABEL: [
 		"randomized items",
@@ -77,7 +93,14 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 		"item variety",
 	],
 	ENCOUNTER_VOLUME_LABEL: [],
-	RANDOMIZED_ENCOUNTERS_LABEL: [],
+	RANDOMIZED_ENCOUNTERS_LABEL: [
+		"random enemies",
+		"random enemy placement",
+		"random enemy spawns",
+		"enemy variety",
+		"diverse enemy types",
+		"procedurally generated enemies",
+	],
 	CUSTOMIZE_YOUR_RUN_LABEL: ["customize your run"],
 	DAILY_CHALLENGES: ["daily challenges"],
 	ENDLESS_RUN_LABEL: ["continue your run indefinitely", "limitlessly increase in power"],

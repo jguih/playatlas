@@ -17,6 +17,8 @@ export const runBasedPatternUniTestSampleEN = {
 			"change your graphical settings",
 			"ever-changing personality",
 			"constantly changing spells",
+			"ever so slightly changing weather",
+			"ever growing world",
 		],
 	},
 	DYNAMIC_WORLD_GENERATION: {
@@ -70,6 +72,11 @@ export const runBasedPatternUniTestSampleEN = {
 			"the map is automatically generated",
 			"new dungeons are generated every week",
 			"the dungeon is massive and filled with enemies. the system was procedurally optimized to generate loot tables.",
+			"procedurally optimized loot tables",
+			"procedurally balanced enemies",
+			"procedurally generated soundtrack",
+			"procedurally animated character",
+			"procedurally generated system",
 		],
 	},
 	PROCEDURALLY_GENERATED_WORLD_WEAK: {
@@ -92,6 +99,9 @@ export const runBasedPatternUniTestSampleEN = {
 			"the game creates its world procedurally",
 			"every run features a procedurally generated layout",
 			"infinite procedurally generated universe",
+			"the game procedurally generates its world",
+			"worlds are procedurally generated in this game",
+			"levels get generated procedurally",
 		],
 		shouldNotMatch: [
 			"all dungeon are generated",
@@ -104,6 +114,9 @@ export const runBasedPatternUniTestSampleEN = {
 			"the map is automatically generated",
 			"new dungeons are generated every week",
 			"the dungeon is massive and filled with enemies. the system was procedurally optimized to generate loot tables.",
+			"procedurally generated loot",
+			"procedurally generated enemies",
+			"procedurally generated system files",
 		],
 	},
 	PROCEDURAL_WORLD: {
@@ -114,6 +127,8 @@ export const runBasedPatternUniTestSampleEN = {
 			"procedurally generated dungeon",
 			"procedural solution",
 			"procedural algorithm",
+			"random world",
+			"randomized dungeon",
 		],
 	},
 	RANDOM_WORLDS: {
@@ -124,6 +139,8 @@ export const runBasedPatternUniTestSampleEN = {
 			"procedurally generated dungeon",
 			"procedural solution",
 			"procedural algorithm",
+			"procedural world generation",
+			"procedurally generated world",
 		],
 	},
 	RANDOMLY_CREATED_WORLDS: {
@@ -152,7 +169,7 @@ export const runBasedPatternUniTestSampleEN = {
 	RUN_AFTER_RUN: {
 		pattern: PATTERN.RUN_AFTER_RUN,
 		shouldMatch: ["run after run", "cycle after cycle", "loop after loop"],
-		shouldNotMatch: ["each run"],
+		shouldNotMatch: ["each run", "run after him", "run after the ball"],
 	},
 	RUN_REPETITION: {
 		pattern: PATTERN.RUN_REPETITION,
@@ -165,6 +182,7 @@ export const runBasedPatternUniTestSampleEN = {
 			"each new cycle",
 			"every new adventure",
 			"every subsequent cycle",
+			"every single new run",
 		],
 		shouldNotMatch: [
 			"a cada inimigo",
@@ -187,21 +205,69 @@ export const runBasedPatternUniTestSampleEN = {
 			"the computer was restarted",
 			"they failed to restart the computer",
 			"someone restarted the system after failure",
+			"the computer restarts on shutdown",
+			"the app ends when it crashes",
+			"the system resets on error",
 		],
 	},
 	TRY_AGAIN: {
 		pattern: PATTERN.TRY_AGAIN,
-		shouldMatch: ["try again", "start over"],
-		shouldNotMatch: ["he tried to run"],
+		shouldMatch: ["try again", "start over", "retry"],
+		shouldNotMatch: ["he tried to run", "he tried again yesterday"],
 	},
 	EVER_CHANGING: {
 		pattern: PATTERN.EVER_CHANGING,
 		shouldMatch: ["ever changing", "ever-changing", "constantly changing"],
-		shouldNotMatch: ["you've changed", "someone changed the operating system"],
+		shouldNotMatch: [
+			"you've changed",
+			"someone changed the operating system",
+			"ever so beautiful",
+			"he is changing",
+		],
 	},
-	FRESH_LAYOUT_EVERY_RUN: {
-		pattern: PATTERN.FRESH_LAYOUT_EVERY_RUN,
-		shouldMatch: ["fresh layout each run", "fresh layout every session"],
-		shouldNotMatch: ["fresh layout every time", "fresh new OS layout", "fresh software layout"],
+	FRESH_WORLD_EVERY_RUN: {
+		pattern: PATTERN.FRESH_WORLD_EVERY_RUN,
+		shouldMatch: [
+			"fresh layout each run",
+			"fresh layout every session",
+			"unique map every cycle",
+			"unique layouts each time",
+		],
+		shouldNotMatch: ["fresh new OS layout", "fresh software layout"],
+	},
+	DEATH_RESETS_YOUR_RUN: {
+		pattern: PATTERN.DEATH_RESETS_YOUR_RUN,
+		shouldMatch: [
+			"death resets your run",
+			"failure restarts the cycle",
+			"run restarts on failure",
+			"session resets on death",
+		],
+		shouldNotMatch: [
+			"he reset the system",
+			"the computer died",
+			"death resets your computer",
+			"failure resets your password",
+		],
+	},
+	START_FROM_THE_BEGINNING: {
+		pattern: PATTERN.START_FROM_THE_BEGINNING,
+		shouldMatch: [
+			"back to the beginning",
+			"return to the start",
+			"sent back to the start",
+			"start from scratch",
+		],
+		shouldNotMatch: ["restart again", "back to your question"],
+	},
+	EVERY_RUN_IS_DIFFERENT: {
+		pattern: PATTERN.EVERY_RUN_IS_DIFFERENT,
+		shouldMatch: [
+			"every run is different",
+			"each run is different",
+			"every playthrough is different",
+			"every journey is different",
+		],
+		shouldNotMatch: ["not"],
 	},
 } as const satisfies PatternUnitTestSample<RunBasedPatternIdEN>;

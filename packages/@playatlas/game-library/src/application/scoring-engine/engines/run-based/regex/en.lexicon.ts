@@ -1,10 +1,5 @@
-import { SCORE_ENGINE_CORE_LEXICON_EN as CORE } from "../../../language";
-import {
-	alternatives,
-	literal as l,
-	plural,
-	type ScoreEnginePattern,
-} from "../../../language/engine.lexicon.api";
+import { SCORE_ENGINE_CORE_LEXICON_EN as CORE, type ScoreEngineLexicon } from "../../../language";
+import { alternatives, literal as l, plural } from "../../../language/engine.lexicon.api";
 
 export const RUN_BASED_ENGINE_LEXICON_EN = {
 	RUN: plural(
@@ -29,7 +24,14 @@ export const RUN_BASED_ENGINE_LEXICON_EN = {
 	),
 	PROCEDURALLY: alternatives(l("procedurally"), l("algorithmically")),
 	PROCEDURAL: l("procedural"),
-	TRY_AGAIN: alternatives(l("try\\s+again"), l("start\\s+over")),
+	TRY_AGAIN: alternatives(l("try\\s+again"), l("start\\s+over"), l("retry")),
 	ENVIRONMENT: plural(l("environment")),
 	LOOT: alternatives(l("ite(?:m|ns)"), l("loot"), plural(l("drop"))),
-} as const satisfies Record<string, ScoreEnginePattern>;
+	START_FROM_RETURN_TO: alternatives(
+		l("back\\s+to"),
+		l("return\\s+to"),
+		l("sent\\s+back"),
+		l("start\\s+from"),
+		l("start\\s+over"),
+	),
+} as const satisfies ScoreEngineLexicon;

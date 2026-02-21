@@ -1,4 +1,4 @@
-export const SEP = `(?:\\s+|[,.!?;:—-]+\\s*)`;
+export const SEP = `(?:\\s+|[,.!?;:—–()/\\[\\]{}-]+\\s*)`;
 
 export const FILLER = (n: number) => `(?:${SEP}\\w+){0,${n}}`;
 

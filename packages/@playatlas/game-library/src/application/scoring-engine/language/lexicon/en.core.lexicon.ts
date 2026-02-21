@@ -1,4 +1,5 @@
 import { alternatives, literal as l, plural } from "../engine.lexicon.api";
+import type { ScoreEngineLexicon } from "../engine.lexicon.types";
 
 export const SCORE_ENGINE_CORE_LEXICON_EN = {
 	SUBJECT_PRONOUN: alternatives(l("he"), l("she"), l("it"), l("you"), l("they")),
@@ -28,4 +29,7 @@ export const SCORE_ENGINE_CORE_LEXICON_EN = {
 		l("ever\\s+changing"),
 		l("constantly\\s+changing"),
 	),
-} as const;
+	RESET: plural(l("reset")),
+	BEGINNING_START: alternatives(l("beginning"), l("start"), l("scratch")),
+	UNIQUE_DIFFERENT: alternatives(l("unique"), l("different")),
+} as const satisfies ScoreEngineLexicon;
