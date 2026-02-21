@@ -13,6 +13,7 @@ export type Evidence<TGroup> = {
 	patternExplanation: string;
 	lang: ScoreEngineLanguage;
 	signalId: CanonicalSignalId;
+	index?: number;
 	weight: number;
 	group: TGroup;
 	tier: EvidenceTier;

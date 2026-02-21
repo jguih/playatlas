@@ -69,16 +69,13 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 				const regex = buildRegexFromPattern(genreName);
 
 				for (const genre of genresList) {
-					const matches = regex.exec(genre);
-
-					if (!matches) continue;
-
-					for (const match of matches) {
+					for (const match of genre.matchAll(regex)) {
 						add({
 							source: "genre",
 							sourceHint: "taxonomy",
-							match,
-							patternExplanation: match,
+							match: match[0],
+							index: match.index,
+							patternExplanation: DSL.normalizeExplain(genreName),
 							signalId: signal.signalId,
 							lang: signal.language,
 							group: signal.group,
@@ -121,16 +118,13 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 				const regex = buildRegexFromPattern(tagName);
 
 				for (const tag of tagsList) {
-					const matches = regex.exec(tag);
-
-					if (!matches) continue;
-
-					for (const match of matches) {
+					for (const match of tag.matchAll(regex)) {
 						add({
 							source: "tag",
 							sourceHint: "taxonomy",
-							match,
-							patternExplanation: match,
+							match: match[0],
+							index: match.index,
+							patternExplanation: DSL.normalizeExplain(tagName),
 							signalId: signal.signalId,
 							lang: signal.language,
 							group: signal.group,
@@ -188,23 +182,21 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 				}
 
 				const regex = buildRegexFromPattern(phrase);
-				const matches = regex.exec(normalizedDescription);
 
-				if (matches) {
-					for (const match of matches) {
-						add({
-							source: "text",
-							sourceHint: "description",
-							match,
-							patternExplanation: DSL.normalizeExplain(phrase),
-							signalId: signal.signalId,
-							lang: signal.language,
-							weight: signal.weight,
-							group: signal.group,
-							tier: signal.tier,
-							isGate: signal.isGate,
-						});
-					}
+				for (const match of normalizedDescription.matchAll(regex)) {
+					add({
+						source: "text",
+						sourceHint: "description",
+						match: match[0],
+						index: match.index,
+						patternExplanation: DSL.normalizeExplain(phrase),
+						signalId: signal.signalId,
+						lang: signal.language,
+						weight: signal.weight,
+						group: signal.group,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
 				}
 			}
 		};
