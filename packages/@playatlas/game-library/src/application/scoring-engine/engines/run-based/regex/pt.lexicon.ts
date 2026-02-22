@@ -7,6 +7,14 @@ import {
 } from "../../../language/engine.lexicon.api";
 
 export const RUN_BASED_ENGINE_LEXICON_PT = {
+	ROGUELIKE_LITE: alternatives(
+		l("roguelike"),
+		l("rogue-like"),
+		l("roguelite"),
+		l("rogue-lite"),
+		l("roguevania"),
+		l("rogue-vania"),
+	),
 	PARTIDA: alternatives(
 		plural(
 			l("run"),
@@ -34,8 +42,6 @@ export const RUN_BASED_ENGINE_LEXICON_PT = {
 		),
 		l("nive(?:l|is)"),
 	),
-	LOOP: alternatives(CORE.QUANDO_SEMPRE, CORE.TODA_VEZ_QUE),
-	LOOT: alternatives(l("ite(?:m|ns)"), l("loot"), plural(l("drop")), plural(l("recompensa"))),
 	PROCEDURALMENTE: alternatives(l("proceduralmente"), l("de\\s+(?:forma|maneira)\\s+procedural")),
 	MODIFICADOR_GERACAO_MUNDO: alternatives(
 		l("inteir(?:o|a|amente)"),
@@ -43,25 +49,7 @@ export const RUN_BASED_ENGINE_LEXICON_PT = {
 		l("totalmente"),
 		CORE.SER,
 	),
-	MODIFICADOR_MUDANCA: alternatives(l("que"), l("que\\s+est(?:a|ao)")),
-	TENTE_NOVAMENTE: alternatives(
-		l("tente\\s+(?:de\\s+novo|novamente)"),
-		l("tente\\s+uma\\s+(?:segunda|outra)\\s+vez"),
-	),
-	BUILD_ITEMS: alternatives(
-		plural(
-			l("arma"),
-			l("habilidade"),
-			l("equipamento"),
-			l("melhoria"),
-			l("talento"),
-			l("feitico"),
-			l("encantamento"),
-		),
-		l("poder(es)?"),
-	),
 	BUILD: alternatives(plural(l("build"))),
-	AMBIENTE: plural(l("ambiente")),
 	INTENSIFICADOR: alternatives(
 		l("praticamente"),
 		l("quase"),

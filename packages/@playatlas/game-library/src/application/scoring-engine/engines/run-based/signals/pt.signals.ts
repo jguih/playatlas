@@ -4,69 +4,22 @@ import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical
 
 export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 	// #region: run_based_identity
-	ROGUELIKE_LABEL: ["roguelike", "rogue-like"],
-	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
-	RUN_LOOP_STRUCTURE_LABEL: [PATTERN.RESTART_AFTER_DEATH],
-	RUN_LOOP_LANGUAGE_LABEL: [PATTERN.RUN_REPETITION, PATTERN.RUN_AFTER_RUN],
-	TRY_AGAIN_LOOP_LABEL: [PATTERN.TRY_AGAIN, "aprenda com o fracasso", PATTERN.DIE_AND_TRY_AGAIN],
+	ROGUELIKE_ROGUELITE_LABEL: [PATTERN.ROGUELIKE_LITE],
 	// #endregion
 	// #region: procedural_runs
-	PROCEDURAL_GENERATION_LABEL: [PATTERN.PROCEDURALLY_GENERATED_WORLD],
-	RANDOMLY_GENERATED_MAPS_LABEL: [
-		PATTERN.RANDOMLY_CREATED_WORLDS,
-		"rpg de ação gerado aleatoriamente",
-		"rpg de ação gerado de maneira aleatória",
-		"geração dinâmica de níveis",
-	],
-	RANDOM_MAPS_LABEL: [PATTERN.RANDOM_WORLDS, PATTERN.EVER_CHANGING_WORLDS],
-	EVER_SHIFTING_LABEL: [PATTERN.EVER_CHANGING],
-	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [PATTERN.EVER_CHANGING_ENVIRONMENT],
-	PROCEDURAL_WORLD_INDICATION_LABEL: ["geração procedural"],
+	PROCEDURALLY_GENERATED_WORLD_LABEL: [PATTERN.PROCEDURALLY_GENERATED_WORLD],
+	PROCEDURAL_GENERATION_LABEL: ["procedural", "geração procedural"],
+	RANDOMLY_GENERATED_MAPS_LABEL: [PATTERN.RANDOMLY_CREATED_WORLDS],
 	// #endregion
 	// #region: permadeath_reset
 	PERMADEATH_LABEL: ["permadeath", "morte permanente"],
-	RESET_ON_DEATH_LABEL: [
-		PATTERN.RESTART_AFTER_DEATH,
-		PATTERN.DEATH_RESTARTS_YOUR_RUN,
-		"comece de novo após morrer",
-		"comece de novo após falhar",
-		PATTERN.RUN_RESTARTS_ON_DEATH,
-		"sistema de morte implacável",
-	],
-	NO_CHECKPOINTS_LABEL: ["sem checkpoints", "sem pontos de controle"],
 	// #endregion
 	// #region: run_variability
-	GAMEPLAY_VARIETY_LABEL: [
-		PATTERN.NO_RUN_IS_THE_SAME,
-		"modificações de jogabilidade",
-		"fases, inimigos e itens aleatórios",
-		"nunca experimente o mesmo jogo duas vezes",
-		PATTERN.EACH_RUN_IS_DIFFERENT,
-	],
-	BUILD_VARIETY_LABEL: [
-		PATTERN.ENDLESS_WAYS_TO_COMBINE_BUILD_ITEMS,
-		"infinitas combinações de configurações",
-	],
-	UNIQUE_BUILDS_LABEL: [PATTERN.UNIQUE_BUILDS],
-	ITEMS_VOLUME_LABEL: [PATTERN.LOOT_VOLUME_SPECIFIC],
-	RANDOMIZED_ITEMS_LABEL: [PATTERN.RANDOM_LOOT, "loot procedural"],
-	ENCOUNTER_VOLUME_LABEL: [PATTERN.ENEMY_VOLUME_SPECIFIC],
-	RANDOMIZED_ENCOUNTERS_LABEL: [PATTERN.RANDOM_ENEMY],
-	ENDLESS_RUN_LABEL: [
-		"continue infinitamente",
-		"continue seu jogo infinitamente",
-		"jogo infinito",
-		"sobreviver o máximo possível",
-		"veja o quanto você consegue sobreviver",
-		"escalonamento infinito",
-	],
-	BUILD_ITEM_VARIETY_LABEL: [
-		PATTERN.VARIETY_OF_BUILD_ITEMS,
-		PATTERN.CONSTANTLY_CHANGING_BUILD_ITEMS,
-	],
-	CUSTOMIZE_YOUR_RUN_LABEL: ["personalize sua run", "customize sua run"],
-	DAILY_CHALLENGES: ["desafios diários"],
-	ENDLESSLY_REPLAYABLE_LABEL: ["rejogabilidade infinita", "altamente rejogável"],
+	BUILD_VARIETY_LABEL: [PATTERN.UNIQUE_BUILDS, "infinitas combinações de configurações"],
+	SYNERGY_LABEL: ["sinergias", "combinações"],
+	RUN_LOOP_LANGUAGE_LABEL: [PATTERN.RUN_AFTER_RUN, PATTERN.RUN_REPETITION],
+	REPLAY_VALUE_LABEL: ["alta rejogabilidade", "alto valor de rejogabilidade"],
+	EVER_CHANGING_LABEL: [PATTERN.EVER_CHANGING],
 	// #endregion
 	// #region: meta_progression
 	ROGUELITE_PROGRESSION_LABEL: [
@@ -82,8 +35,7 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_PT = {
 
 export const RUN_BASED_ENGINE_TAXONOMY_SIGNALS_PT = {
 	// #region: run_based_identity
-	ROGUELIKE_TAXONOMY: ["roguelike", "rogue-like"],
-	ROGUELITE_TAXONOMY: ["roguelite", "rogue-lite"],
+	ROGUELIKE_ROGUELITE_TAXONOMY: [PATTERN.ROGUELIKE_LITE],
 	// #endregion
 	// #region: procedural_runs
 	PROCEDURAL_GENERATION_TAXONOMY: ["geração procedural", "geração-procedural"],

@@ -4,108 +4,25 @@ import type { RunBasedTaxonomySignalId, RunBasedTextSignalId } from "./canonical
 
 export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 	// #region: run_based_identity
-	ROGUELIKE_LABEL: ["roguelike", "rogue-like"],
-	ROGUELITE_LABEL: ["roguelite", "rogue-lite"],
-	RUN_LOOP_STRUCTURE_LABEL: [
-		PATTERN.RESTART_AFTER_DEATH,
-		"run-based gameplay",
-		"run based gameplay",
-	],
-	RUN_LOOP_LANGUAGE_LABEL: [PATTERN.RUN_REPETITION, PATTERN.RUN_AFTER_RUN, PATTERN.BETWEEN_RUNS],
-	TRY_AGAIN_LOOP_LABEL: [
-		PATTERN.TRY_AGAIN,
-		"attempt after attempt",
-		"learn from failure",
-		"fail and retry",
-		PATTERN.DIE_AND_TRY_AGAIN,
-	],
+	ROGUELIKE_ROGUELITE_LABEL: [PATTERN.ROGUELIKE_LITE],
 	// #region: procedural_runs
-	PROCEDURAL_GENERATION_LABEL: [PATTERN.PROCEDURALLY_GENERATED_WORLD_STRONG],
+	PROCEDURALLY_GENERATED_WORLD_LABEL: [PATTERN.PROCEDURALLY_GENERATED_WORLD_STRONG],
+	PROCEDURAL_GENERATION_LABEL: ["procedural", PATTERN.PROCEDURALLY_GENERATED_WORLD_WEAK],
 	RANDOMLY_GENERATED_MAPS_LABEL: [
+		"randomly generated",
 		PATTERN.RANDOMLY_CREATED_WORLDS,
-		PATTERN.DYNAMIC_WORLD_GENERATION,
-		"randomly generated action RPG",
-		"the layout differs each time",
-	],
-	RANDOM_MAPS_LABEL: [PATTERN.RANDOM_WORLDS],
-	EVER_SHIFTING_LABEL: ["ever-shifting", "ever shifting", PATTERN.EVER_CHANGING],
-	CONSTANTLY_CHANGING_ENVIRONMENT_LABEL: [
-		PATTERN.EVER_CHANGING_ENVIRONMENT,
-		PATTERN.FRESH_WORLD_EVERY_RUN,
-	],
-	PROCEDURAL_WORLD_INDICATION_LABEL: [
-		"procedural generation",
-		PATTERN.PROCEDURAL_WORLD,
-		PATTERN.PROCEDURALLY_GENERATED_WORLD_WEAK,
+		PATTERN.RANDOM_WORLDS,
 	],
 	// #endregion
 	// #region: permadeath_reset
-	PERMADEATH_LABEL: [
-		"permadeath",
-		"permanent death",
-		"death is permanent",
-		"death is final",
-		"one life only",
-		"one life per run",
-	],
-	RESET_ON_DEATH_LABEL: [
-		PATTERN.RESTART_AFTER_DEATH,
-		PATTERN.DEATH_RESETS_YOUR_RUN,
-		PATTERN.START_FROM_THE_BEGINNING,
-		"start over after death",
-		"begin again after failure",
-		"unforgiving death system",
-	],
-	NO_CHECKPOINTS_LABEL: ["no checkpoints"],
+	PERMADEATH_LABEL: ["permadeath", "permanent death"],
 	// #endregion
 	// #region: run_variability
-	GAMEPLAY_VARIETY_LABEL: [
-		PATTERN.EVERY_RUN_IS_DIFFERENT,
-		"no run will ever be the same",
-		"no two runs are the same",
-		"never experience the same game twice",
-		"randomized stages, enemies, and items",
-	],
-	BUILD_VARIETY_LABEL: [
-		"combine loot",
-		"different builds",
-		"build variety",
-		"experiment with builds",
-		"varied playstyles",
-		"synergistic builds",
-		"build-defining items",
-		"stackable upgrades",
-		"upgrade combinations",
-		"item synergies",
-		"powerful combinations",
-		"theorycraft your build",
-	],
-	UNIQUE_BUILDS_LABEL: ["unique builds"],
-	ITEMS_VOLUME_LABEL: [],
-	RANDOMIZED_ITEMS_LABEL: [
-		"randomized items",
-		"random items",
-		"random loot",
-		"random upgrades",
-		"random power-ups",
-		"random power ups",
-		"procedural loot",
-		"item variety",
-	],
-	ENCOUNTER_VOLUME_LABEL: [],
-	RANDOMIZED_ENCOUNTERS_LABEL: [
-		"random enemies",
-		"random enemy placement",
-		"random enemy spawns",
-		"enemy variety",
-		"diverse enemy types",
-		"procedurally generated enemies",
-	],
-	CUSTOMIZE_YOUR_RUN_LABEL: ["customize your run"],
-	DAILY_CHALLENGES: ["daily challenges"],
-	ENDLESS_RUN_LABEL: ["continue your run indefinitely", "limitlessly increase in power"],
-	BUILD_ITEM_VARIETY_LABEL: [],
-	ENDLESSLY_REPLAYABLE_LABEL: ["endlessly replayable"],
+	BUILD_VARIETY_LABEL: ["builds", PATTERN.UNIQUE_BUILDS],
+	SYNERGY_LABEL: ["synergies", "combinations"],
+	RUN_LOOP_LANGUAGE_LABEL: [PATTERN.RUN_AFTER_RUN, PATTERN.RUN_REPETITION, PATTERN.BETWEEN_RUNS],
+	REPLAY_VALUE_LABEL: ["replay value"],
+	EVER_CHANGING_LABEL: [PATTERN.EVER_CHANGING],
 	// #endregion
 	// #region: meta_progression
 	ROGUELITE_PROGRESSION_LABEL: ["roguelite progression", "rogue-lite progression"],
@@ -117,8 +34,7 @@ export const RUN_BASED_ENGINE_TEXT_SIGNALS_EN = {
 
 export const RUN_BASED_ENGINE_TAXONOMY_SIGNALS_EN = {
 	// #region: run_based_identity
-	ROGUELIKE_TAXONOMY: ["roguelike", "rogue-like"],
-	ROGUELITE_TAXONOMY: ["roguelite", "rogue-lite"],
+	ROGUELIKE_ROGUELITE_TAXONOMY: [PATTERN.ROGUELIKE_LITE],
 	// #endregion
 	// #region: procedural_runs
 	PROCEDURAL_GENERATION_TAXONOMY: ["procedural generation", "procedural-generation"],

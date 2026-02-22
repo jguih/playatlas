@@ -5,36 +5,15 @@ import {
 } from "../regex/en.pattern.dictionary";
 
 export const runBasedPatternUniTestSampleEN = {
-	EVER_CHANGING_ENVIRONMENT: {
-		pattern: PATTERN.EVER_CHANGING_ENVIRONMENT,
-		shouldMatch: [
-			"ever-changing environment",
-			"ever changing world",
-			"constantly changing dungeons",
-		],
-		shouldNotMatch: [
-			"the computer changed",
-			"change your graphical settings",
-			"ever-changing personality",
-			"constantly changing spells",
-			"ever so slightly changing weather",
-			"ever growing world",
-		],
+	ROGUELIKE_LITE: {
+		pattern: PATTERN.ROGUELIKE_LITE,
+		shouldMatch: ["roguelike", "roguelite", "rogue-like", "rogue-lite", "roguevania"],
+		shouldNotMatch: ["horror", "run-based"],
 	},
-	DYNAMIC_WORLD_GENERATION: {
-		pattern: PATTERN.DYNAMIC_WORLD_GENERATION,
-		shouldMatch: ["dynamic world generation", "dynamic map generation", "dynamic level creation"],
-		shouldNotMatch: [
-			"procedural editor",
-			"procedurally generated dungeon",
-			"procedural solution",
-			"procedural algorithm",
-		],
-	},
-	DIE_AND_TRY_AGAIN: {
-		pattern: PATTERN.DIE_AND_TRY_AGAIN,
-		shouldMatch: ["die, try again", "fail and start over", "fail, then try again"],
-		shouldNotMatch: ["he tried to run"],
+	UNIQUE_BUILDS: {
+		pattern: PATTERN.UNIQUE_BUILDS,
+		shouldMatch: ["unique builds", "different builds"],
+		shouldNotMatch: ["unique items", "random items", "unique computer", "different person"],
 	},
 	BETWEEN_RUNS: {
 		pattern: PATTERN.BETWEEN_RUNS,
@@ -119,18 +98,6 @@ export const runBasedPatternUniTestSampleEN = {
 			"procedurally generated system files",
 		],
 	},
-	PROCEDURAL_WORLD: {
-		pattern: PATTERN.PROCEDURAL_WORLD,
-		shouldMatch: ["procedural world", "procedural map", "procedural dungeon"],
-		shouldNotMatch: [
-			"procedural editor",
-			"procedurally generated dungeon",
-			"procedural solution",
-			"procedural algorithm",
-			"random world",
-			"randomized dungeon",
-		],
-	},
 	RANDOM_WORLDS: {
 		pattern: PATTERN.RANDOM_WORLDS,
 		shouldMatch: ["random world", "randomized map", "randomized dungeons", "unpredictable layouts"],
@@ -152,19 +119,6 @@ export const runBasedPatternUniTestSampleEN = {
 			"dynamically created levels",
 		],
 		shouldNotMatch: ["the system was randomly restarting", "the computer restarted randomly"],
-	},
-	RESTART_AFTER_DEATH: {
-		pattern: PATTERN.RESTART_AFTER_DEATH,
-		shouldMatch: [
-			"forced to restart her journey every time she dies",
-			"restart your journey every time you die",
-			"restart his journey every time he fails",
-			"restart the cycle every time you die",
-		],
-		shouldNotMatch: [
-			"restart the computer every time it dies",
-			"restart the printer each time it doesn't connect",
-		],
 	},
 	RUN_AFTER_RUN: {
 		pattern: PATTERN.RUN_AFTER_RUN,
@@ -192,29 +146,6 @@ export const runBasedPatternUniTestSampleEN = {
 			"every runner",
 		],
 	},
-	RUN_RESTARTS_ON_DEATH: {
-		pattern: PATTERN.RUN_RESTARTS_ON_DEATH,
-		shouldMatch: [
-			"run restarts on death",
-			"session restarts on failure",
-			"the playthrough restarts when you die",
-			"cycle ends when you die",
-		],
-		shouldNotMatch: [
-			"he restarted his computer",
-			"the computer was restarted",
-			"they failed to restart the computer",
-			"someone restarted the system after failure",
-			"the computer restarts on shutdown",
-			"the app ends when it crashes",
-			"the system resets on error",
-		],
-	},
-	TRY_AGAIN: {
-		pattern: PATTERN.TRY_AGAIN,
-		shouldMatch: ["try again", "start over", "retry"],
-		shouldNotMatch: ["he tried to run", "he tried again yesterday"],
-	},
 	EVER_CHANGING: {
 		pattern: PATTERN.EVER_CHANGING,
 		shouldMatch: ["ever changing", "ever-changing", "constantly changing"],
@@ -224,50 +155,5 @@ export const runBasedPatternUniTestSampleEN = {
 			"ever so beautiful",
 			"he is changing",
 		],
-	},
-	FRESH_WORLD_EVERY_RUN: {
-		pattern: PATTERN.FRESH_WORLD_EVERY_RUN,
-		shouldMatch: [
-			"fresh layout each run",
-			"fresh layout every session",
-			"unique map every cycle",
-			"unique layouts each time",
-		],
-		shouldNotMatch: ["fresh new OS layout", "fresh software layout"],
-	},
-	DEATH_RESETS_YOUR_RUN: {
-		pattern: PATTERN.DEATH_RESETS_YOUR_RUN,
-		shouldMatch: [
-			"death resets your run",
-			"failure restarts the cycle",
-			"run restarts on failure",
-			"session resets on death",
-		],
-		shouldNotMatch: [
-			"he reset the system",
-			"the computer died",
-			"death resets your computer",
-			"failure resets your password",
-		],
-	},
-	START_FROM_THE_BEGINNING: {
-		pattern: PATTERN.START_FROM_THE_BEGINNING,
-		shouldMatch: [
-			"back to the beginning",
-			"return to the start",
-			"sent back to the start",
-			"start from scratch",
-		],
-		shouldNotMatch: ["restart again", "back to your question"],
-	},
-	EVERY_RUN_IS_DIFFERENT: {
-		pattern: PATTERN.EVERY_RUN_IS_DIFFERENT,
-		shouldMatch: [
-			"every run is different",
-			"each run is different",
-			"every playthrough is different",
-			"every journey is different",
-		],
-		shouldNotMatch: ["not"],
 	},
 } as const satisfies PatternUnitTestSample<RunBasedPatternIdEN>;
