@@ -26,16 +26,25 @@ export const HORROR_ENGINE_TEXT_SIGNALS_PT = {
 	// #endregion
 	// #region: atmospheric_horror
 	CREEPING_DREAD_LABEL: ["pavor crescente", "medo crescente"],
-	TENSION_ATMOSPHERE_LABEL: ["atmosfera tensa", "tensão constante"],
-	TERRIFYING_WORLD_LABEL: ["mundo aterrorizante"],
-	DREAD_FILLED_ADVENTURE_LABEL: ["aventura repleta de pavor", "aventura cheia de terror"],
-	ATMOSPHERIC_JOURNEY_LABEL: ["jornada atmosférica", "jornada imersiva e atmosférica"],
-	DREAD_LABEL: ["pavor"],
-	EERIE_LABEL: ["sinistro", "assustador"],
-	SINISTER_LABEL: ["sinistro"],
-	HAUNTING_LABEL: ["assombrado", "assustador"],
-	TERRIFYING_LABEL: ["aterrorizante", "apavorante"],
-	UNSETTLING_LABEL: ["perturbador", "inquietante"],
+	UNSETTLING_ATMOSPHERE_LABEL: [
+		"aventura repleta de pavor",
+		"aventura cheia de terror",
+		"atmosfera tensa",
+		"tensão constante",
+		"jornada atmosférica",
+		"jornada imersiva e atmosférica",
+	],
+	UNSETTLING_WORLD_LABEL: ["mundo aterrorizante"],
+	ATMOSPHERIC_LANGUAGE_LABEL: [
+		"perturbador",
+		"inquietante",
+		"aterrorizante",
+		"apavorante",
+		"assombrado",
+		"assustador",
+		"sinistro",
+		"pavor",
+	],
 	// #endregion
 } as const satisfies LanguageTextSignalsMap<HorrorTextSignalId>;
 

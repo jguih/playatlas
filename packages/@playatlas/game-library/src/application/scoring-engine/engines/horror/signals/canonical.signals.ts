@@ -107,61 +107,19 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		weight: 25,
 		isGate: false,
 	},
-	TENSION_ATMOSPHERE_LABEL: {
+	UNSETTLING_WORLD_LABEL: {
 		group: "atmospheric_horror",
 		tier: "B",
 		weight: 20,
 		isGate: false,
 	},
-	TERRIFYING_WORLD_LABEL: {
+	UNSETTLING_ATMOSPHERE_LABEL: {
 		group: "atmospheric_horror",
 		tier: "B",
-		weight: 20,
+		weight: 22,
 		isGate: false,
 	},
-	DREAD_FILLED_ADVENTURE_LABEL: {
-		group: "atmospheric_horror",
-		tier: "B",
-		weight: 20,
-		isGate: false,
-	},
-	ATMOSPHERIC_JOURNEY_LABEL: {
-		group: "atmospheric_horror",
-		tier: "B",
-		weight: 18,
-		isGate: false,
-	},
-	DREAD_LABEL: {
-		group: "atmospheric_horror",
-		tier: "C",
-		weight: 14,
-		isGate: false,
-	},
-	EERIE_LABEL: {
-		group: "atmospheric_horror",
-		tier: "C",
-		weight: 14,
-		isGate: false,
-	},
-	SINISTER_LABEL: {
-		group: "atmospheric_horror",
-		tier: "C",
-		weight: 12,
-		isGate: false,
-	},
-	HAUNTING_LABEL: {
-		group: "atmospheric_horror",
-		tier: "C",
-		weight: 12,
-		isGate: false,
-	},
-	TERRIFYING_LABEL: {
-		group: "atmospheric_horror",
-		tier: "C",
-		weight: 15,
-		isGate: false,
-	},
-	UNSETTLING_LABEL: {
+	ATMOSPHERIC_LANGUAGE_LABEL: {
 		group: "atmospheric_horror",
 		tier: "C",
 		weight: 12,

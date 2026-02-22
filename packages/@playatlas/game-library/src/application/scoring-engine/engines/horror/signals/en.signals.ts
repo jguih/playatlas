@@ -27,16 +27,14 @@ export const HORROR_ENGINE_TEXT_SIGNALS_EN = {
 	// #endregion
 	// #region: atmospheric_horror
 	CREEPING_DREAD_LABEL: ["creeping dread"],
-	TENSION_ATMOSPHERE_LABEL: ["tension and thick atmosphere", "tension atmosphere"],
-	TERRIFYING_WORLD_LABEL: ["terrifying world"],
-	DREAD_FILLED_ADVENTURE_LABEL: ["dread-filled adventure", "dread filled adventure"],
-	ATMOSPHERIC_JOURNEY_LABEL: ["atmospheric journey"],
-	DREAD_LABEL: ["dread"],
-	EERIE_LABEL: ["eerie"],
-	SINISTER_LABEL: ["sinister"],
-	HAUNTING_LABEL: ["haunting"],
-	TERRIFYING_LABEL: ["terrifying"],
-	UNSETTLING_LABEL: ["unsettling"],
+	UNSETTLING_ATMOSPHERE_LABEL: [
+		PATTERN.UNSETTLING_ATMOSPHERE,
+		"atmospheric journey",
+		"tension and thick atmosphere",
+		"tension atmosphere",
+	],
+	UNSETTLING_WORLD_LABEL: [PATTERN.UNSETTLING_WORLD_ADVENTURE],
+	ATMOSPHERIC_LANGUAGE_LABEL: [PATTERN.UNSETTLING],
 	// #endregion
 } as const satisfies LanguageTextSignalsMap<HorrorTextSignalId>;
 

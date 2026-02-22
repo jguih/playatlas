@@ -20,8 +20,7 @@ export const penalizeTagOnly = <TGroup>(): ScoreEngineStructuralPenaltyPolicy<TG
 			}
 
 			if (uniqueSources.size === 1 && uniqueSources.has("tag")) {
-				const rawContribution = Math.ceil(subtotal * 0.4);
-				const contribution = rawContribution < 0 ? rawContribution : 0;
+				const contribution = subtotal * 0.4 * -1;
 
 				return {
 					type: "tags_only",

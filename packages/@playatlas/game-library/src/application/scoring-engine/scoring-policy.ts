@@ -6,7 +6,7 @@ import type {
 import type { ScoreEngineSourcePolicy } from "./engine.evidence-source.policy";
 import type { ScoreEngineEvidenceGroupPolicy } from "./engine.policy";
 import type { Evidence, StoredEvidence } from "./evidence.types";
-import type { ScoreEngineStructuralPenaltyPolicy } from "./policy";
+import type { ScoreEngineSourcePriorityPolicy, ScoreEngineStructuralPenaltyPolicy } from "./policy";
 import type { ScoreEngineClassificationTierThresholdPolicy } from "./policy/classification-tier-threshold.policy";
 import type { ScoreEngineGatePolicy } from "./policy/gate.policy";
 import type { ScoreEngineGroupTierThresholdPolicy } from "./policy/group-tier-threshold.policy";
@@ -23,12 +23,13 @@ type SynergyContext = {
 export type ScoringPolicyDeps<TGroup extends string> = {
 	readonly evidenceGroupMeta: ScoreEngineEvidenceGroupsMeta<TGroup>;
 	readonly evidenceGroupPolicies: ScoreEngineEvidenceGroupPolicy<TGroup>;
-	readonly evidenceSourcePolicy: ScoreEngineSourcePolicy;
+	readonly evidenceSourcePolicy: ScoreEngineSourcePolicy<TGroup>;
 	readonly classificationTierThresholdPolicy: ScoreEngineClassificationTierThresholdPolicy;
 	readonly groupTierThresholdPolicy: ScoreEngineGroupTierThresholdPolicy;
 	readonly gatePolicy: ScoreEngineGatePolicy<TGroup>;
 	readonly structuralPenaltyPolicies: ReadonlyArray<ScoreEngineStructuralPenaltyPolicy<TGroup>>;
 	readonly scoreCap: number;
+	readonly sourcePriorityPolicy: ScoreEngineSourcePriorityPolicy<TGroup>;
 };
 
 export const makeScoringPolicy = <TGroup extends string>({
@@ -39,13 +40,8 @@ export const makeScoringPolicy = <TGroup extends string>({
 	gatePolicy,
 	scoreCap,
 	structuralPenaltyPolicies,
+	sourcePriorityPolicy,
 }: ScoringPolicyDeps<TGroup>): IScoringPolicyPort<TGroup> => {
-	const SOURCE_PRIORITY: Record<EvidenceSource, number> = {
-		text: 3,
-		genre: 2,
-		tag: 1,
-	};
-
 	const joinByGroup = (evidence: Evidence<TGroup>[]): Map<TGroup, Evidence<TGroup>[]> => {
 		const evidenceMap = new Map<TGroup, Evidence<TGroup>[]>();
 
@@ -110,7 +106,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 		const penaltyTotal = penalties.reduce((sum, p) => sum + p.contribution, 0);
 
-		const semanticTotalAfterPenalty = semanticSubtotal + penaltyTotal;
+		const semanticTotalAfterPenalty = Math.max(semanticSubtotal + penaltyTotal, 0);
 
 		const cappedSemanticTotal = Math.min(semanticTotalAfterPenalty, scoreCap);
 
@@ -179,11 +175,21 @@ export const makeScoringPolicy = <TGroup extends string>({
 		];
 	};
 
-	const estimateEvidenceContribution = (evidence: Evidence<TGroup>): number => {
+	const estimateEvidenceContribution = (group: TGroup, evidence: Evidence<TGroup>): number => {
 		let evidenceContribution = evidence.weight;
-		const sourcePolicy = evidenceSourcePolicy[evidence.source];
+		const sourcePolicy = evidenceSourcePolicy[group][evidence.source];
 		if (sourcePolicy.multiplier) evidenceContribution *= sourcePolicy.multiplier;
 		return evidenceContribution;
+	};
+
+	const applySourcePolicy = (group: TGroup, evidence: Evidence<TGroup>): number => {
+		const sourcePolicy = evidenceSourcePolicy[group][evidence.source];
+		let contribution = evidence.weight;
+
+		if (sourcePolicy.multiplier) contribution *= sourcePolicy.multiplier;
+		if (sourcePolicy.cap) contribution = Math.min(contribution, sourcePolicy.cap);
+
+		return contribution;
 	};
 
 	const score = (evidence: Evidence<TGroup>[]): ScoreBreakdown<TGroup> => {
@@ -215,27 +221,28 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 		// Process Tier A evidences by group
 		for (const [group, evidences] of evidencesByGroup) {
+			const priorityPolicy = sourcePriorityPolicy[group];
 			let bestEvidence: Evidence<TGroup> | undefined;
-			let bestEvidenceContribution: number = 0;
+			let bestEvidenceEstimatedContribution: number = 0;
 
 			for (const evidence of evidences) {
 				if (evidence.tier !== "A") continue;
 
-				const evidenceContribution = estimateEvidenceContribution(evidence);
+				const evidenceContribution = estimateEvidenceContribution(group, evidence);
 
 				const current = bestEvidence;
-				const currentContribution = bestEvidenceContribution;
+				const currentContribution = bestEvidenceEstimatedContribution;
 
 				if (!current || evidenceContribution > currentContribution) {
 					bestEvidence = evidence;
-					bestEvidenceContribution = evidenceContribution;
+					bestEvidenceEstimatedContribution = evidenceContribution;
 					if (current) ignore(group, current);
 				} else if (
 					currentContribution === evidenceContribution &&
-					SOURCE_PRIORITY[evidence.source] > SOURCE_PRIORITY[current.source]
+					priorityPolicy[evidence.source] > priorityPolicy[current.source]
 				) {
 					bestEvidence = evidence;
-					bestEvidenceContribution = evidenceContribution;
+					bestEvidenceEstimatedContribution = evidenceContribution;
 					if (current) ignore(group, current);
 				} else {
 					ignore(group, evidence);
@@ -244,42 +251,75 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 			if (!bestEvidence) continue;
 
-			use(group, bestEvidence, bestEvidenceContribution);
-
-			const sourcePolicy = evidenceSourcePolicy[bestEvidence.source];
-
-			if (sourcePolicy.multiplier) bestEvidenceContribution *= sourcePolicy.multiplier;
-			if (sourcePolicy.cap)
-				bestEvidenceContribution = Math.min(bestEvidenceContribution, sourcePolicy.cap);
-
+			const bestEvidenceContribution = applySourcePolicy(group, bestEvidence);
 			contributionByGroup.set(group, bestEvidenceContribution);
+
+			use(group, bestEvidence, bestEvidenceContribution);
 		}
 
 		// Process Tier B evidences by group
 		for (const [group, evidences] of evidencesByGroup) {
-			let contribution = contributionByGroup.get(group);
+			const priorityPolicy = sourcePriorityPolicy[group];
+			let bestEvidence: Evidence<TGroup> | undefined;
+			let bestEvidenceEstimatedContribution: number = 0;
+			const remainingEvidences: Evidence<TGroup>[] = [];
 
-			if (!contribution) {
-				contribution = 0;
-				contributionByGroup.set(group, contribution);
-			}
+			const addRemaining = (evidence: Evidence<TGroup>) => {
+				remainingEvidences.push(evidence);
+			};
 
 			for (const evidence of evidences) {
 				if (evidence.tier !== "B") continue;
 
-				const sourcePolicy = evidenceSourcePolicy[evidence.source];
-				let evidenceContribution = evidence.weight;
+				const evidenceContribution = estimateEvidenceContribution(group, evidence);
 
-				if (sourcePolicy.multiplier) evidenceContribution *= sourcePolicy.multiplier;
-				if (sourcePolicy.cap)
-					evidenceContribution = Math.min(evidenceContribution, sourcePolicy.cap);
+				const current = bestEvidence;
+				const currentContribution = bestEvidenceEstimatedContribution;
 
-				contribution += evidenceContribution;
-
-				use(group, evidence, evidenceContribution);
+				if (!current || evidenceContribution > currentContribution) {
+					bestEvidence = evidence;
+					bestEvidenceEstimatedContribution = evidenceContribution;
+					if (current) addRemaining(current);
+				} else if (
+					currentContribution === evidenceContribution &&
+					priorityPolicy[evidence.source] > priorityPolicy[current.source]
+				) {
+					bestEvidence = evidence;
+					bestEvidenceEstimatedContribution = evidenceContribution;
+					if (current) addRemaining(current);
+				} else {
+					addRemaining(evidence);
+				}
 			}
 
-			contributionByGroup.set(group, contribution);
+			let totalContribution = contributionByGroup.get(group) ?? 0;
+
+			if (bestEvidence) {
+				const bestContribution = applySourcePolicy(group, bestEvidence);
+				use(group, bestEvidence, bestContribution);
+				totalContribution += bestContribution;
+			}
+
+			for (let i = 0; i < remainingEvidences.length; i++) {
+				const evidence = remainingEvidences[i];
+
+				const basePenalty = 0.7;
+				const incremental = 0.1;
+
+				const penaltyRate = Math.min(basePenalty + i * incremental, 0.95);
+
+				const contribution = applySourcePolicy(group, evidence);
+				use(group, evidence, contribution);
+				totalContribution += contribution;
+
+				penalties.push({
+					contribution: contribution * penaltyRate * -1,
+					details: `~${(penaltyRate * 100).toFixed(0)}% of ~${contribution.toFixed(2)} as penalty from evidence ${evidence.signalId}: ${remainingEvidences.length} Tier B evidences scored in group ${group}`,
+					type: "evidence_stacking",
+				});
+			}
+
+			contributionByGroup.set(group, totalContribution);
 		}
 
 		// Process Tier C evidences by group
@@ -294,17 +334,13 @@ export const makeScoringPolicy = <TGroup extends string>({
 			for (const evidence of evidences) {
 				if (evidence.tier !== "C") continue;
 
-				const sourcePolicy = evidenceSourcePolicy[evidence.source];
-				let evidenceContribution = evidence.weight;
-
-				if (sourcePolicy.multiplier) evidenceContribution *= sourcePolicy.multiplier;
-				if (sourcePolicy.cap)
-					evidenceContribution = Math.min(evidenceContribution, sourcePolicy.cap);
-
 				if (contribution === 0) {
 					ignore(group, evidence);
 					continue;
 				}
+
+				const evidenceContribution = applySourcePolicy(group, evidence);
+				use(group, evidence, evidenceContribution);
 
 				contribution += evidenceContribution;
 			}
@@ -321,7 +357,7 @@ export const makeScoringPolicy = <TGroup extends string>({
 			if (groupPolicy.multiplier) contribution *= groupPolicy.multiplier;
 			if (groupPolicy.cap) contribution = Math.min(contribution, groupPolicy.cap);
 
-			contribution = Math.ceil(contribution);
+			contribution = Math.max(contribution, 0);
 			contributionByGroup.set(group, contribution);
 
 			const normalizedContribution = contribution / (groupPolicy.cap ?? contribution);
