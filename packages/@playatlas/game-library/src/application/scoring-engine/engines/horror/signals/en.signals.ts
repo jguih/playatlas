@@ -58,4 +58,12 @@ export const HORROR_ENGINE_TAXONOMY_SIGNALS_EN = {
 	PSYCHOLOGICAL_HORROR_TAXONOMY: [PATTERN.PSYCHOLOGICAL_HORROR, ["psychological", "horror"]],
 	SUPERNATURAL_TAXONOMY: ["supernatural"],
 	// #endregion
+	// #region: atmospheric_horror
+	ATMOSPHERIC_HORROR_TAXONOMY: [
+		"atmospheric horror",
+		"atmospheric-horror",
+		["atmospheric", "horror"],
+	],
+	ATMOSPHERIC_TAXONOMY: ["atmospheric"],
+	// #endregion
 } as const satisfies LanguageTaxonomySignalsMap<HorrorTaxonomySignalId>;

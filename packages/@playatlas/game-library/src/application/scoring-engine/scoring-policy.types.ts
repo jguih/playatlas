@@ -1,15 +1,16 @@
-import type { EngineScoreMode } from "@playatlas/common/domain";
+import type { EvidenceGroupTier } from "@playatlas/common/domain";
 import type { StoredEvidence } from "./evidence.types";
-import type { Penalty } from "./penalty.types";
+import type { ScoreEnginePenalty } from "./policy/penalty.types";
 import type { Synergy } from "./synergy.types";
 
 export type ComputeScoreBreakdownProps<TGroup> = {
-	mode: EngineScoreMode;
-	groups: {
+	groups: Array<{
 		group: TGroup;
 		evidences: StoredEvidence<TGroup>[];
 		contribution: number;
-	}[];
+		normalizedContribution: number;
+		tier: EvidenceGroupTier;
+	}>;
 	synergies: Array<Synergy>;
-	penalties: Array<Penalty>;
+	penalties: Array<ScoreEnginePenalty>;
 };

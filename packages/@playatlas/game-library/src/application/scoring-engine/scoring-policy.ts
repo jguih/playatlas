@@ -3,16 +3,13 @@ import type {
 	EvidenceGroupTier,
 	EvidenceSource,
 } from "@playatlas/common/domain";
-import type { ScoreEngineClassificationTierThresholdPolicy } from "./engine.classification-tier-threshold.policy";
 import type { ScoreEngineSourcePolicy } from "./engine.evidence-source.policy";
-import type {
-	GateStackPolicy,
-	NoGatePolicy,
-	ScoreEngineEvidenceGroupPolicy,
-} from "./engine.policy";
-import type { ScoreEngineScoreCeilingPolicy } from "./engine.score-ceiling.policy";
+import type { ScoreEngineEvidenceGroupPolicy } from "./engine.policy";
 import type { Evidence, StoredEvidence } from "./evidence.types";
-import type { Penalty } from "./penalty.types";
+import type { ScoreEngineStructuralPenaltyPolicy } from "./policy";
+import type { ScoreEngineClassificationTierThresholdPolicy } from "./policy/classification-tier-threshold.policy";
+import type { ScoreEngineGatePolicy } from "./policy/gate.policy";
+import type { ScoreEngineGroupTierThresholdPolicy } from "./policy/group-tier-threshold.policy";
 import type { ScoreBreakdown } from "./score-breakdown";
 import type { ScoreEngineEvidenceGroupsMeta } from "./score-engine.types";
 import type { IScoringPolicyPort } from "./scoring-policy.port";
@@ -24,22 +21,24 @@ type SynergyContext = {
 };
 
 export type ScoringPolicyDeps<TGroup extends string> = {
-	evidenceGroupMeta: ScoreEngineEvidenceGroupsMeta<TGroup>;
-	evidenceGroupPolicies: ScoreEngineEvidenceGroupPolicy<TGroup>;
-	evidenceSourcePolicy: ScoreEngineSourcePolicy;
-	noGatePolicy: NoGatePolicy;
-	gateStackPolicy: GateStackPolicy;
-	scoreCeilingPolicy: ScoreEngineScoreCeilingPolicy;
-	classificationTierThresholdPolicy: ScoreEngineClassificationTierThresholdPolicy;
+	readonly evidenceGroupMeta: ScoreEngineEvidenceGroupsMeta<TGroup>;
+	readonly evidenceGroupPolicies: ScoreEngineEvidenceGroupPolicy<TGroup>;
+	readonly evidenceSourcePolicy: ScoreEngineSourcePolicy;
+	readonly classificationTierThresholdPolicy: ScoreEngineClassificationTierThresholdPolicy;
+	readonly groupTierThresholdPolicy: ScoreEngineGroupTierThresholdPolicy;
+	readonly gatePolicy: ScoreEngineGatePolicy<TGroup>;
+	readonly structuralPenaltyPolicies: ReadonlyArray<ScoreEngineStructuralPenaltyPolicy<TGroup>>;
+	readonly scoreCap: number;
 };
 
 export const makeScoringPolicy = <TGroup extends string>({
 	evidenceGroupPolicies,
 	evidenceSourcePolicy,
-	scoreCeilingPolicy,
-	noGatePolicy,
-	gateStackPolicy,
 	classificationTierThresholdPolicy,
+	groupTierThresholdPolicy,
+	gatePolicy,
+	scoreCap,
+	structuralPenaltyPolicies,
 }: ScoringPolicyDeps<TGroup>): IScoringPolicyPort<TGroup> => {
 	const SOURCE_PRIORITY: Record<EvidenceSource, number> = {
 		text: 3,
@@ -59,15 +58,6 @@ export const makeScoringPolicy = <TGroup extends string>({
 		return evidenceMap;
 	};
 
-	const hasStrongSignal = (evidence: Evidence<TGroup>[]): boolean => {
-		for (const e of evidence) {
-			if (e.tier === "A" || e.tier === "B") {
-				return true;
-			}
-		}
-		return false;
-	};
-
 	const computeClassificationTier = (normalizedScore: number): CanonicalClassificationTier => {
 		if (normalizedScore === 0) return "none";
 		if (normalizedScore >= classificationTierThresholdPolicy.core) return "core";
@@ -76,113 +66,71 @@ export const makeScoringPolicy = <TGroup extends string>({
 		return "weak";
 	};
 
-	const computeGroupTier = (
-		normalizedContribution: number,
-		evidenceTier?: Evidence<TGroup>["tier"],
-	): EvidenceGroupTier => {
-		if (normalizedContribution === 0 || !evidenceTier) return "none";
-		if (evidenceTier === "A" && normalizedContribution >= 0.5) return "strong";
-		if (evidenceTier === "A" && normalizedContribution < 0.5) return "moderate";
-		if (evidenceTier === "B") return "moderate";
+	const computeGroupTier = (normalizedContribution: number): EvidenceGroupTier => {
+		if (normalizedContribution === 0) return "none";
+		if (normalizedContribution >= groupTierThresholdPolicy.strong) return "strong";
+		if (normalizedContribution >= groupTierThresholdPolicy.moderate) return "moderate";
 		return "light";
 	};
 
-	const estimateContribution = (evidence: Evidence<TGroup>): number => {
-		const groupPolicy = evidenceGroupPolicies[evidence.group];
-		const sourcePolicy = evidenceSourcePolicy[evidence.source];
-		let contribution: number = evidence.weight;
-
-		if (groupPolicy.multiplier) contribution *= groupPolicy.multiplier;
-		if (sourcePolicy.multiplier) contribution *= sourcePolicy.multiplier;
-
-		return contribution;
-	};
-
-	const applyTagOnlyPenalty = ({
-		groups,
-		total,
-	}: Pick<ComputeScoreBreakdownProps<TGroup>, "groups"> & { total: number }):
-		| Penalty
-		| undefined => {
-		const uniqueSources = new Set<EvidenceSource>();
-
-		for (const group of groups) {
-			for (const evidence of group.evidences) {
-				if (evidence.status === "ignored") continue;
-				uniqueSources.add(evidence.source);
-			}
-		}
-
-		if (uniqueSources.size === 1 && uniqueSources.has("tag")) {
-			const rawContribution = scoreCeilingPolicy.tagsOnly - total;
-			const contribution = rawContribution < 0 ? rawContribution : 0;
-
-			return {
-				type: "tags_only",
-				contribution,
-				details: `Score capped to ${scoreCeilingPolicy.tagsOnly} because only tags provided evidence`,
-			};
-		}
-	};
-
 	const computeBreakdown = (props: ComputeScoreBreakdownProps<TGroup>): ScoreBreakdown<TGroup> => {
-		const { mode, groups, synergies, penalties } = props;
+		const { groups, synergies, penalties } = props;
 
-		let total = 0;
-
-		for (const group of groups) {
-			total += group.contribution;
-		}
-
-		const groupSubtotal = total;
+		const groupSubtotal = groups.reduce((sum, g) => sum + g.contribution, 0);
 
 		const expandedGroups: ScoreBreakdown<TGroup>["groups"] = groups.map((group) => {
-			const groupPolicy = evidenceGroupPolicies[group.group];
-			const normalizedContribution = group.contribution / (groupPolicy.cap ?? group.contribution);
 			const contributionPercent = groupSubtotal === 0 ? 0 : group.contribution / groupSubtotal;
-			const tier = computeGroupTier(normalizedContribution, group.evidences.at(0)?.tier);
 
 			return {
 				...group,
 				contributionPercent,
-				normalizedContribution,
-				tier,
 			};
 		});
 
-		for (const synergy of synergies) {
-			total += synergy.contribution;
+		const normalizedContributionByGroup = new Map(
+			groups.map((g) => [g.group, g.normalizedContribution]),
+		);
+		const groupTierByGroup = new Map(groups.map((g) => [g.group, g.tier]));
+
+		// TODO: Apply synergy policies here
+
+		const synergiesSubtotal = synergies.reduce((sum, s) => sum + s.contribution, 0);
+
+		const semanticSubtotal = groupSubtotal + synergiesSubtotal;
+
+		for (const policy of structuralPenaltyPolicies) {
+			const penalty = policy.apply({
+				groups,
+				normalizedContributionByGroup,
+				groupTierByGroup,
+				subtotal: semanticSubtotal,
+			});
+			if (penalty) penalties.push(penalty);
 		}
 
-		const subtotal = total;
+		const penaltyTotal = penalties.reduce((sum, p) => sum + p.contribution, 0);
 
-		for (const penalty of penalties) {
-			total += penalty.contribution;
-		}
+		const semanticTotalAfterPenalty = semanticSubtotal + penaltyTotal;
 
-		const tagOnlyPenalty = applyTagOnlyPenalty({ groups, total });
-		if (tagOnlyPenalty) {
-			penalties.push(tagOnlyPenalty);
-			total = Math.min(total, scoreCeilingPolicy.tagsOnly);
-		} else if (mode === "with_gate") {
-			total = Math.min(total, scoreCeilingPolicy.withGate);
-		} else if (mode === "without_gate") {
-			total = Math.min(total, scoreCeilingPolicy.withoutGate);
-		}
+		const cappedSemanticTotal = Math.min(semanticTotalAfterPenalty, scoreCap);
 
-		const normalizedTotal =
-			mode === "with_gate"
-				? 0.15 + (total / scoreCeilingPolicy.withGate) * 0.85
-				: (total / scoreCeilingPolicy.withoutGate) * 0.15;
+		const { mode, confidenceMultiplier } = gatePolicy.apply({
+			groups,
+			normalizedContributionByGroup,
+			groupTierByGroup,
+			subtotal: cappedSemanticTotal,
+		});
+
+		const normalizedTotal = (cappedSemanticTotal / scoreCap) * confidenceMultiplier;
 		const tier = computeClassificationTier(normalizedTotal);
 
 		const breakdown: ScoreBreakdown<TGroup> = {
 			mode,
 			groups: expandedGroups,
 			synergies,
-			subtotal,
+			subtotal: semanticSubtotal,
 			penalties,
-			total,
+			total: cappedSemanticTotal,
 			normalizedTotal,
 			tier,
 		};
@@ -204,135 +152,6 @@ export const makeScoringPolicy = <TGroup extends string>({
 			groupCount: groups.size,
 			distinctSources: sources,
 		};
-	};
-
-	const selectStrongestEvidence = (evidences: Evidence<TGroup>[]) => {
-		const ignoredEvidences: Evidence<TGroup>[] = [];
-		let strongestEvidence: Evidence<TGroup> | undefined;
-
-		for (const evidence of evidences) {
-			const ignore = (evidence: Evidence<TGroup>) => {
-				ignoredEvidences.push(evidence);
-			};
-
-			if (evidence.tier === "C") {
-				ignore(evidence);
-				continue;
-			}
-
-			const strongestContribution = strongestEvidence ? estimateContribution(strongestEvidence) : 0;
-			const evidenceContribution = estimateContribution(evidence);
-
-			if (!strongestEvidence || evidenceContribution > strongestContribution) {
-				strongestEvidence = evidence;
-			} else {
-				ignore(evidence);
-			}
-		}
-
-		return { strongestEvidence, ignoredEvidences };
-	};
-
-	const applyNoGatePolicy = (strongestEvidence: Evidence<TGroup>): Penalty => {
-		const rawRatio = noGatePolicy.tierPenalty[strongestEvidence.tier];
-		const ratio = Math.max(0, Math.min(rawRatio, 1));
-		const penaltyMagnitude = Math.floor(strongestEvidence.weight * ratio);
-		const penalty = -Math.min(penaltyMagnitude, strongestEvidence.weight);
-
-		return {
-			contribution: penalty,
-			type: "no_gate",
-			details: `${ratio * 100}% of ${strongestEvidence.weight} from group ${strongestEvidence.group}`,
-		};
-	};
-
-	const applyGateStackPolicy = (
-		contribution: number,
-		counter: number,
-		group: TGroup,
-	): Penalty | undefined => {
-		const rawRatio =
-			gateStackPolicy.diminishingMultipliers.at(counter) ?? gateStackPolicy.tailMultiplier;
-		const ratio = 1 - Math.max(0, Math.min(rawRatio, 1));
-		const penaltyContribution = -Math.floor(contribution * ratio);
-
-		if (penaltyContribution === 0) return;
-
-		return {
-			type: "multiple_gates",
-			contribution: penaltyContribution,
-			details: `${Math.floor(ratio * 100)}% of ${contribution} from group ${group}`,
-		};
-	};
-
-	const scoreSynergyWithoutGate = (ctx: SynergyContext): ScoreBreakdown<TGroup>["synergies"] => {
-		let total = 0;
-		let details: string = "scored in less than 2 groups";
-
-		if (ctx.groupCount === 2) {
-			total = 3;
-			details = `scored in 2 groups`;
-		} else if (ctx.groupCount >= 3) {
-			total = 4;
-			details = `scored in 3 groups or more`;
-		}
-
-		return [
-			{
-				type: "multiple_sources",
-				contribution: Math.floor(total),
-				details,
-			},
-		];
-	};
-
-	const scoreWithoutGate = (evidences: Evidence<TGroup>[]): ScoreBreakdown<TGroup> => {
-		const groupsBreakdown: ComputeScoreBreakdownProps<TGroup>["groups"] = [];
-		const penalties: ComputeScoreBreakdownProps<TGroup>["penalties"] = [];
-		const { strongestEvidence, ignoredEvidences } = selectStrongestEvidence(evidences);
-		const ignoredStoredEvidences: StoredEvidence<TGroup>[] = ignoredEvidences.map((e) => ({
-			...e,
-			status: "ignored",
-			contribution: 0,
-		}));
-		let strongestStoredEvidence: StoredEvidence<TGroup> | undefined;
-
-		if (!strongestEvidence)
-			return computeBreakdown({
-				mode: "without_gate",
-				groups: [],
-				synergies: [],
-				penalties: [],
-			});
-
-		if (strongestEvidence.tier === "A" || strongestEvidence.tier === "B") {
-			const penalty = applyNoGatePolicy(strongestEvidence);
-			penalties.push(penalty);
-
-			strongestStoredEvidence = {
-				...strongestEvidence,
-				status: "used",
-				contribution: strongestEvidence.weight,
-			};
-		}
-
-		groupsBreakdown.push({
-			group: strongestEvidence.group,
-			evidences: strongestStoredEvidence
-				? [strongestStoredEvidence, ...ignoredStoredEvidences]
-				: [...ignoredStoredEvidences],
-			contribution: strongestEvidence.weight,
-		});
-
-		const ctx = computeSynergyContext([strongestEvidence]);
-		const synergies = scoreSynergyWithoutGate(ctx);
-
-		return computeBreakdown({
-			mode: "without_gate",
-			groups: groupsBreakdown,
-			synergies,
-			penalties,
-		});
 	};
 
 	const scoreSynergyWithGate = (ctx: SynergyContext): ScoreBreakdown<TGroup>["synergies"] => {
@@ -360,133 +179,190 @@ export const makeScoringPolicy = <TGroup extends string>({
 		];
 	};
 
-	const scoreWithGate = (evidence: Evidence<TGroup>[]): ScoreBreakdown<TGroup> => {
-		const hasStrong = hasStrongSignal(evidence);
+	const estimateEvidenceContribution = (evidence: Evidence<TGroup>): number => {
+		let evidenceContribution = evidence.weight;
+		const sourcePolicy = evidenceSourcePolicy[evidence.source];
+		if (sourcePolicy.multiplier) evidenceContribution *= sourcePolicy.multiplier;
+		return evidenceContribution;
+	};
+
+	const score = (evidence: Evidence<TGroup>[]): ScoreBreakdown<TGroup> => {
 		const evidencesByGroup = joinByGroup(evidence);
-		const bestEvidenceByGroup = new Map<TGroup, Evidence<TGroup>>();
-		const bestStoredEvidenceByGroup = new Map<TGroup, StoredEvidence<TGroup>>();
-		const ignoredEvidencesByGroup = new Map<TGroup, Evidence<TGroup>[]>();
-		const ignoredStoredEvidencesByGroup = new Map<TGroup, StoredEvidence<TGroup>[]>();
+		const usedEvidencesByGroup = new Map<TGroup, StoredEvidence<TGroup>[]>();
+		const ignoredEvidencesByGroup = new Map<TGroup, StoredEvidence<TGroup>[]>();
 		const contributionByGroup = new Map<TGroup, number>();
+		const normalizedContributionByGroup = new Map<TGroup, number>();
 		const groupsBreakdown: ComputeScoreBreakdownProps<TGroup>["groups"] = [];
 		const penalties: ComputeScoreBreakdownProps<TGroup>["penalties"] = [];
-		let gateCounter = 0;
 
-		// Get best evidence per group and ignore all the rest
+		const use = (group: TGroup, evidence: Evidence<TGroup>, contribution: number) => {
+			let used = usedEvidencesByGroup.get(group);
+			if (!used) {
+				used = [];
+				usedEvidencesByGroup.set(group, used);
+			}
+			used.push({ ...evidence, status: "used", contribution });
+		};
+
+		const ignore = (group: TGroup, evidence: Evidence<TGroup>) => {
+			let ignored = ignoredEvidencesByGroup.get(group);
+			if (!ignored) {
+				ignored = [];
+				ignoredEvidencesByGroup.set(group, ignored);
+			}
+			ignored.push({ ...evidence, status: "ignored", contribution: 0 });
+		};
+
+		// Process Tier A evidences by group
 		for (const [group, evidences] of evidencesByGroup) {
+			let bestEvidence: Evidence<TGroup> | undefined;
+			let bestEvidenceContribution: number = 0;
+
 			for (const evidence of evidences) {
-				const ignore = (evidence: Evidence<TGroup>) => {
-					const ignoredList = ignoredEvidencesByGroup.get(group);
-					if (!ignoredList) ignoredEvidencesByGroup.set(group, []);
-					ignoredEvidencesByGroup.get(group)!.push(evidence);
-				};
+				if (evidence.tier !== "A") continue;
 
-				if (evidence.tier === "C" && !hasStrong) {
-					ignore(evidence);
-					continue;
-				}
+				const evidenceContribution = estimateEvidenceContribution(evidence);
 
-				const current = bestEvidenceByGroup.get(group);
-				const currentContribution = current ? estimateContribution(current) : 0;
-				const evidenceContribution = estimateContribution(evidence);
+				const current = bestEvidence;
+				const currentContribution = bestEvidenceContribution;
 
 				if (!current || evidenceContribution > currentContribution) {
-					bestEvidenceByGroup.set(group, evidence);
-					if (current) ignore(current);
+					bestEvidence = evidence;
+					bestEvidenceContribution = evidenceContribution;
+					if (current) ignore(group, current);
 				} else if (
 					currentContribution === evidenceContribution &&
 					SOURCE_PRIORITY[evidence.source] > SOURCE_PRIORITY[current.source]
 				) {
-					bestEvidenceByGroup.set(group, evidence);
-					if (current) ignore(current);
+					bestEvidence = evidence;
+					bestEvidenceContribution = evidenceContribution;
+					if (current) ignore(group, current);
 				} else {
-					ignore(evidence);
+					ignore(group, evidence);
 				}
 			}
+
+			if (!bestEvidence) continue;
+
+			use(group, bestEvidence, bestEvidenceContribution);
+
+			const sourcePolicy = evidenceSourcePolicy[bestEvidence.source];
+
+			if (sourcePolicy.multiplier) bestEvidenceContribution *= sourcePolicy.multiplier;
+			if (sourcePolicy.cap)
+				bestEvidenceContribution = Math.min(bestEvidenceContribution, sourcePolicy.cap);
+
+			contributionByGroup.set(group, bestEvidenceContribution);
 		}
 
-		// Compute contribution of all best evidences per group
-		for (const [group, evidence] of bestEvidenceByGroup) {
+		// Process Tier B evidences by group
+		for (const [group, evidences] of evidencesByGroup) {
+			let contribution = contributionByGroup.get(group);
+
+			if (!contribution) {
+				contribution = 0;
+				contributionByGroup.set(group, contribution);
+			}
+
+			for (const evidence of evidences) {
+				if (evidence.tier !== "B") continue;
+
+				const sourcePolicy = evidenceSourcePolicy[evidence.source];
+				let evidenceContribution = evidence.weight;
+
+				if (sourcePolicy.multiplier) evidenceContribution *= sourcePolicy.multiplier;
+				if (sourcePolicy.cap)
+					evidenceContribution = Math.min(evidenceContribution, sourcePolicy.cap);
+
+				contribution += evidenceContribution;
+
+				use(group, evidence, evidenceContribution);
+			}
+
+			contributionByGroup.set(group, contribution);
+		}
+
+		// Process Tier C evidences by group
+		for (const [group, evidences] of evidencesByGroup) {
+			let contribution = contributionByGroup.get(group);
+
+			if (!contribution) {
+				contribution = 0;
+				contributionByGroup.set(group, contribution);
+			}
+
+			for (const evidence of evidences) {
+				if (evidence.tier !== "C") continue;
+
+				const sourcePolicy = evidenceSourcePolicy[evidence.source];
+				let evidenceContribution = evidence.weight;
+
+				if (sourcePolicy.multiplier) evidenceContribution *= sourcePolicy.multiplier;
+				if (sourcePolicy.cap)
+					evidenceContribution = Math.min(evidenceContribution, sourcePolicy.cap);
+
+				if (contribution === 0) {
+					ignore(group, evidence);
+					continue;
+				}
+
+				contribution += evidenceContribution;
+			}
+
+			contributionByGroup.set(group, contribution);
+		}
+
+		// Process group policies
+		for (const [group] of evidencesByGroup) {
 			const groupPolicy = evidenceGroupPolicies[group];
-			const sourcePolicy = evidenceSourcePolicy[evidence.source];
-			let contribution: number = evidence.weight;
+
+			let contribution = contributionByGroup.get(group) ?? 0;
 
 			if (groupPolicy.multiplier) contribution *= groupPolicy.multiplier;
 			if (groupPolicy.cap) contribution = Math.min(contribution, groupPolicy.cap);
 
-			if (gateCounter > 0 && evidence.isGate) {
-				const penalty = applyGateStackPolicy(contribution, gateCounter, group);
-				if (penalty) penalties.push(penalty);
-			}
-
-			if (sourcePolicy.multiplier) contribution *= sourcePolicy.multiplier;
-			if (sourcePolicy.cap) contribution = Math.min(contribution, sourcePolicy.cap);
-
+			contribution = Math.ceil(contribution);
 			contributionByGroup.set(group, contribution);
 
-			bestStoredEvidenceByGroup.set(group, {
-				...evidence,
-				status: "used",
-				contribution,
-			});
-
-			if (evidence.isGate) gateCounter++;
-		}
-
-		// Expand ignored evidences
-		for (const [group, evidences] of ignoredEvidencesByGroup) {
-			for (const evidence of evidences) {
-				const current = ignoredStoredEvidencesByGroup.get(group);
-				if (!current) ignoredStoredEvidencesByGroup.set(group, []);
-				ignoredStoredEvidencesByGroup
-					.get(group)!
-					.push({ ...evidence, status: "ignored", contribution: 0 });
-			}
+			const normalizedContribution = contribution / (groupPolicy.cap ?? contribution);
+			normalizedContributionByGroup.set(group, normalizedContribution);
 		}
 
 		// Compute final groups breakdown
 		for (const [group] of evidencesByGroup) {
 			const contribution = contributionByGroup.get(group) ?? 0;
-			const bestEvidence = bestStoredEvidenceByGroup.get(group);
-			const ignoredEvidences = ignoredStoredEvidencesByGroup.get(group) ?? [];
-			const evidences = bestEvidence ? [bestEvidence, ...ignoredEvidences] : [...ignoredEvidences];
+			const normalizedContribution = normalizedContributionByGroup.get(group) ?? 0;
+			const tier = computeGroupTier(normalizedContribution);
+			const usedEvidences = usedEvidencesByGroup.get(group);
+			const ignoredEvidences = ignoredEvidencesByGroup.get(group) ?? [];
+			const evidences = usedEvidences
+				? [...usedEvidences, ...ignoredEvidences]
+				: [...ignoredEvidences];
 
 			groupsBreakdown.push({
 				group,
 				contribution,
+				normalizedContribution,
+				tier,
 				evidences,
 			});
 		}
 
-		const ctx = computeSynergyContext([...bestEvidenceByGroup.values()]);
+		const ctx = computeSynergyContext([...usedEvidencesByGroup.values()].flat());
 		const synergies = scoreSynergyWithGate(ctx);
 
-		return computeBreakdown({ mode: "with_gate", groups: groupsBreakdown, synergies, penalties });
+		return computeBreakdown({ groups: groupsBreakdown, synergies, penalties });
 	};
 
 	return {
 		apply: (evidence) => {
-			const gateEvidence = evidence.filter((e) => e.isGate);
-			const nonGateEvidence = evidence.filter((e) => !e.isGate);
-			const hasGate = gateEvidence.length > 0;
+			const breakdown = score(evidence);
 
-			if (!hasGate) {
-				const breakdown = scoreWithoutGate(nonGateEvidence);
-
-				return {
-					mode: "without_gate",
-					score: breakdown.total,
-					normalizedScore: breakdown.normalizedTotal,
-					breakdown,
-				};
-			}
-
-			const breakdown = scoreWithGate(evidence);
 			return {
-				mode: "with_gate",
+				mode: breakdown.mode,
+				breakdown,
 				score: breakdown.total,
 				normalizedScore: breakdown.normalizedTotal,
-				breakdown,
 			};
 		},
 	};

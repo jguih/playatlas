@@ -4,7 +4,7 @@ import type {
 	EvidenceGroupTier,
 } from "@playatlas/common/domain";
 import { type StoredEvidence } from "./evidence.types";
-import { type Penalty } from "./penalty.types";
+import { type ScoreEnginePenalty } from "./policy/penalty.types";
 import type { Synergy } from "./synergy.types";
 
 export type ScoreBreakdown<TGroup> = {
@@ -19,7 +19,7 @@ export type ScoreBreakdown<TGroup> = {
 	}[];
 	synergies: Array<Synergy>;
 	subtotal: number;
-	penalties: Array<Penalty>;
+	penalties: Array<ScoreEnginePenalty>;
 	total: number;
 	normalizedTotal: number;
 	tier: CanonicalClassificationTier;

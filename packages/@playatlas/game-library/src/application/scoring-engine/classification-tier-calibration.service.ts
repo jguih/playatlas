@@ -114,7 +114,6 @@ export const makeClassificationTierCalibrationService = ({
 
 					if (nonZeroGroupScores.length === 0) {
 						engineTiers.groups[groupName] = {
-							light: 0,
 							moderate: 0,
 							strong: 0,
 						};
@@ -122,7 +121,6 @@ export const makeClassificationTierCalibrationService = ({
 						nonZeroGroupScores.sort((a, b) => a - b);
 
 						engineTiers.groups[groupName] = {
-							light: thresholdByRank(nonZeroGroupScores, 0.2),
 							moderate: thresholdByRank(nonZeroGroupScores, 0.5),
 							strong: thresholdByRank(nonZeroGroupScores, 0.8),
 						};

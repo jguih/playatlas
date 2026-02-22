@@ -43,47 +43,87 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			signal: ExpandedTaxonomySignalItem<TGroup>,
 			name: SignalTerm | SignalAndGroup,
 		) => {
-			const genreNames = Array.isArray(name) ? name : [name];
+			if (Array.isArray(name)) {
+				const matches: Array<{ match: string; patternExplanation: string }> = [];
 
-			for (const genreName of genreNames) {
-				if (typeof genreName === "string") {
-					const normalized = normalize(genreName);
-					if (genresSet.has(normalized)) {
-						add({
-							source: "genre",
-							sourceHint: "taxonomy",
-							match: normalized,
-							patternExplanation: `genre list contains literal string '${normalized}'`,
-							signalId: signal.signalId,
-							lang: signal.language,
-							group: signal.group,
-							weight: signal.weight,
-							tier: signal.tier,
-							isGate: signal.isGate,
-						});
-						continue;
+				const match = name.every((n) => {
+					if (typeof n === "string") {
+						const normalized = normalize(n);
+						if (genresSet.has(normalized)) {
+							matches.push({
+								match: normalized,
+								patternExplanation: `genre list contains literal string '${normalized}'`,
+							});
+							return true;
+						}
+					} else {
+						const regex = buildRegexFromPattern(n);
+						let matched = false;
+
+						for (const genre of genresList) {
+							for (const match of genre.matchAll(regex)) {
+								matches.push({ match: match[0], patternExplanation: DSL.normalizeExplain(n) });
+								matched = true;
+							}
+						}
+
+						return matched;
 					}
-					continue;
+				});
+
+				if (match)
+					add({
+						source: "genre",
+						sourceHint: "taxonomy",
+						match: matches.map((m) => m.match).join(" + "),
+						patternExplanation: matches.map((m) => m.patternExplanation).join(" + "),
+						signalId: signal.signalId,
+						lang: signal.language,
+						group: signal.group,
+						weight: signal.weight,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
+
+				return;
+			}
+
+			if (typeof name === "string") {
+				const normalized = normalize(name);
+				if (genresSet.has(normalized)) {
+					add({
+						source: "genre",
+						sourceHint: "taxonomy",
+						match: normalized,
+						patternExplanation: `genre list contains literal string '${normalized}'`,
+						signalId: signal.signalId,
+						lang: signal.language,
+						group: signal.group,
+						weight: signal.weight,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
 				}
+				return;
+			}
 
-				const regex = buildRegexFromPattern(genreName);
+			const regex = buildRegexFromPattern(name);
 
-				for (const genre of genresList) {
-					for (const match of genre.matchAll(regex)) {
-						add({
-							source: "genre",
-							sourceHint: "taxonomy",
-							match: match[0],
-							index: match.index,
-							patternExplanation: DSL.normalizeExplain(genreName),
-							signalId: signal.signalId,
-							lang: signal.language,
-							group: signal.group,
-							weight: signal.weight,
-							tier: signal.tier,
-							isGate: signal.isGate,
-						});
-					}
+			for (const genre of genresList) {
+				for (const match of genre.matchAll(regex)) {
+					add({
+						source: "genre",
+						sourceHint: "taxonomy",
+						match: match[0],
+						index: match.index,
+						patternExplanation: DSL.normalizeExplain(name),
+						signalId: signal.signalId,
+						lang: signal.language,
+						group: signal.group,
+						weight: signal.weight,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
 				}
 			}
 		};
@@ -92,47 +132,87 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			signal: ExpandedTaxonomySignalItem<TGroup>,
 			name: SignalTerm | SignalAndGroup,
 		) => {
-			const tagNames = Array.isArray(name) ? name : [name];
+			if (Array.isArray(name)) {
+				const matches: Array<{ match: string; patternExplanation: string }> = [];
 
-			for (const tagName of tagNames) {
-				if (typeof tagName === "string") {
-					const normalized = normalize(tagName);
-					if (tagsSet.has(normalized)) {
-						add({
-							source: "tag",
-							sourceHint: "taxonomy",
-							match: normalized,
-							patternExplanation: `tag list contains literal string '${normalized}'`,
-							signalId: signal.signalId,
-							lang: signal.language,
-							group: signal.group,
-							weight: signal.weight,
-							tier: signal.tier,
-							isGate: signal.isGate,
-						});
-						continue;
+				const match = name.every((n) => {
+					if (typeof n === "string") {
+						const normalized = normalize(n);
+						if (tagsSet.has(normalized)) {
+							matches.push({
+								match: normalized,
+								patternExplanation: `tag list contains literal string '${normalized}'`,
+							});
+							return true;
+						}
+					} else {
+						const regex = buildRegexFromPattern(n);
+						let matched = false;
+
+						for (const tag of tagsList) {
+							for (const match of tag.matchAll(regex)) {
+								matches.push({ match: match[0], patternExplanation: DSL.normalizeExplain(n) });
+								matched = true;
+							}
+						}
+
+						return matched;
 					}
-					continue;
+				});
+
+				if (match)
+					add({
+						source: "tag",
+						sourceHint: "taxonomy",
+						match: matches.map((m) => m.match).join(" + "),
+						patternExplanation: matches.map((m) => m.patternExplanation).join(" + "),
+						signalId: signal.signalId,
+						lang: signal.language,
+						group: signal.group,
+						weight: signal.weight,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
+
+				return;
+			}
+
+			if (typeof name === "string") {
+				const normalized = normalize(name);
+				if (tagsSet.has(normalized)) {
+					add({
+						source: "tag",
+						sourceHint: "taxonomy",
+						match: normalized,
+						patternExplanation: `tag list contains literal string '${normalized}'`,
+						signalId: signal.signalId,
+						lang: signal.language,
+						group: signal.group,
+						weight: signal.weight,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
 				}
+				return;
+			}
 
-				const regex = buildRegexFromPattern(tagName);
+			const regex = buildRegexFromPattern(name);
 
-				for (const tag of tagsList) {
-					for (const match of tag.matchAll(regex)) {
-						add({
-							source: "tag",
-							sourceHint: "taxonomy",
-							match: match[0],
-							index: match.index,
-							patternExplanation: DSL.normalizeExplain(tagName),
-							signalId: signal.signalId,
-							lang: signal.language,
-							group: signal.group,
-							weight: signal.weight,
-							tier: signal.tier,
-							isGate: signal.isGate,
-						});
-					}
+			for (const tag of tagsList) {
+				for (const match of tag.matchAll(regex)) {
+					add({
+						source: "tag",
+						sourceHint: "taxonomy",
+						match: match[0],
+						index: match.index,
+						patternExplanation: DSL.normalizeExplain(name),
+						signalId: signal.signalId,
+						lang: signal.language,
+						group: signal.group,
+						weight: signal.weight,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
 				}
 			}
 		};
@@ -158,38 +238,41 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 			signal: ExpandedTextSignalItem<TGroup>,
 			phrase: SignalOrGroup[number],
 		) => {
-			const phrases = Array.isArray(phrase) ? phrase : [phrase];
+			if (Array.isArray(phrase)) {
+				const matches: Array<{ match: string; patternExplanation: string }> = [];
 
-			for (const phrase of phrases) {
-				if (typeof phrase === "string") {
-					const normalized = normalize(phrase);
-					if (normalizedDescription.includes(normalized)) {
-						add({
-							source: "text",
-							sourceHint: "description",
-							match: normalized,
-							patternExplanation: `description contains literal string '${normalized}'`,
-							signalId: signal.signalId,
-							lang: signal.language,
-							weight: signal.weight,
-							group: signal.group,
-							tier: signal.tier,
-							isGate: signal.isGate,
-						});
-						continue;
+				const match = phrase.every((p) => {
+					if (typeof p === "string") {
+						const normalized = normalize(p);
+						if (normalizedDescription.includes(normalized)) {
+							matches.push({
+								match: normalized,
+								patternExplanation: `description contains literal string '${normalized}'`,
+							});
+							return true;
+						}
+					} else {
+						const regex = buildRegexFromPattern(p);
+						let matched = false;
+
+						for (const match of normalizedDescription.matchAll(regex)) {
+							matches.push({
+								match: match[0],
+								patternExplanation: DSL.normalizeExplain(p),
+							});
+							matched = true;
+						}
+
+						return matched;
 					}
-					continue;
-				}
+				});
 
-				const regex = buildRegexFromPattern(phrase);
-
-				for (const match of normalizedDescription.matchAll(regex)) {
+				if (match) {
 					add({
 						source: "text",
 						sourceHint: "description",
-						match: match[0],
-						index: match.index,
-						patternExplanation: DSL.normalizeExplain(phrase),
+						match: matches.map((m) => m.match).join(" + "),
+						patternExplanation: matches.map((m) => m.patternExplanation).join(" + "),
 						signalId: signal.signalId,
 						lang: signal.language,
 						weight: signal.weight,
@@ -198,6 +281,45 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 						isGate: signal.isGate,
 					});
 				}
+
+				return;
+			}
+
+			if (typeof phrase === "string") {
+				const normalized = normalize(phrase);
+				if (normalizedDescription.includes(normalized)) {
+					add({
+						source: "text",
+						sourceHint: "description",
+						match: normalized,
+						patternExplanation: `description contains literal string '${normalized}'`,
+						signalId: signal.signalId,
+						lang: signal.language,
+						weight: signal.weight,
+						group: signal.group,
+						tier: signal.tier,
+						isGate: signal.isGate,
+					});
+				}
+				return;
+			}
+
+			const regex = buildRegexFromPattern(phrase);
+
+			for (const match of normalizedDescription.matchAll(regex)) {
+				add({
+					source: "text",
+					sourceHint: "description",
+					match: match[0],
+					index: match.index,
+					patternExplanation: DSL.normalizeExplain(phrase),
+					signalId: signal.signalId,
+					lang: signal.language,
+					weight: signal.weight,
+					group: signal.group,
+					tier: signal.tier,
+					isGate: signal.isGate,
+				});
 			}
 		};
 

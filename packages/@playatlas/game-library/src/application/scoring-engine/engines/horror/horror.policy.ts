@@ -1,9 +1,7 @@
+import { evidenceGroupTiers } from "@playatlas/common/domain";
 import { SCORE_ENGINE_DEFAULT_EVIDENCE_SOURCE_POLICY } from "../../engine.evidence-source.policy";
-import {
-	SCORE_ENGINE_DEFAULT_GATE_STACK_POLICY,
-	SCORE_ENGINE_DEFAULT_NO_GATE_POLICY,
-} from "../../engine.policy";
-import { SCORE_ENGINE_DEFAULT_SCORE_CEILING_POLICY } from "../../engine.score-ceiling.policy";
+import { penalizeTagOnly, type ScoreEngineGatePolicy } from "../../policy";
+import { SCORE_ENGINE_DEFAULT_GROUP_TIER_THRESHOLD_POLICY } from "../../policy/group-tier-threshold.policy";
 import { makeScoringPolicy } from "../../scoring-policy";
 import type { IScoringPolicyPort } from "../../scoring-policy.port";
 import {
@@ -13,15 +11,39 @@ import {
 	type HorrorEvidenceGroup,
 } from "./horror.score-engine.meta";
 
+const horrorGatePolicy: ScoreEngineGatePolicy<HorrorEvidenceGroup> = {
+	apply: ({ groupTierByGroup }) => {
+		const rank = (g: HorrorEvidenceGroup): number =>
+			evidenceGroupTiers.indexOf(groupTierByGroup.get(g) ?? "none");
+
+		const identity = rank("horror_identity");
+		const psychological = rank("psychological_horror");
+		const atmospheric = rank("atmospheric_horror");
+		const survival = rank("resource_survival");
+		const combat = rank("combat_engagement");
+
+		const coreMax = Math.max(identity, psychological);
+
+		const gateScore = coreMax * 2 + atmospheric + survival + (combat >= 2 ? 0.5 : 0);
+
+		if (gateScore >= 6) return { mode: "with_gate", confidenceMultiplier: 1 };
+
+		if (gateScore >= 4) return { mode: "with_gate", confidenceMultiplier: 0.9 };
+
+		return { mode: "without_gate", confidenceMultiplier: 0.8 };
+	},
+};
+
 export type IHorrorScoringPolicyPort = IScoringPolicyPort<HorrorEvidenceGroup>;
 
 export const makeHorrorScoringPolicy = (): IHorrorScoringPolicyPort =>
 	makeScoringPolicy({
+		scoreCap: 100,
 		evidenceGroupMeta: HORROR_ENGINE_EVIDENCE_GROUPS_META,
 		evidenceGroupPolicies: HORROR_ENGINE_EVIDENCE_GROUP_POLICY,
 		classificationTierThresholdPolicy: HORROR_ENGINE_CLASSIFICATION_TIER_THRESHOLD_POLICY,
-		gateStackPolicy: SCORE_ENGINE_DEFAULT_GATE_STACK_POLICY,
-		noGatePolicy: SCORE_ENGINE_DEFAULT_NO_GATE_POLICY,
+		groupTierThresholdPolicy: SCORE_ENGINE_DEFAULT_GROUP_TIER_THRESHOLD_POLICY,
 		evidenceSourcePolicy: SCORE_ENGINE_DEFAULT_EVIDENCE_SOURCE_POLICY,
-		scoreCeilingPolicy: SCORE_ENGINE_DEFAULT_SCORE_CEILING_POLICY,
+		structuralPenaltyPolicies: [penalizeTagOnly()],
+		gatePolicy: horrorGatePolicy,
 	});

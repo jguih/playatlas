@@ -216,7 +216,7 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	},
 	SURVIVAL_TAXONOMY: {
 		group: "resource_survival",
-		tier: "B",
+		tier: "C",
 		weight: 8,
 		isGate: false,
 	},
@@ -230,7 +230,21 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 	},
 	SUPERNATURAL_TAXONOMY: {
 		group: "psychological_horror",
-		tier: "B",
+		tier: "C",
+		weight: 8,
+		isGate: false,
+	},
+	// #endregion
+	// #region: atmospheric_horror
+	ATMOSPHERIC_HORROR_TAXONOMY: {
+		group: "atmospheric_horror",
+		tier: "A",
+		weight: 35,
+		isGate: true,
+	},
+	ATMOSPHERIC_TAXONOMY: {
+		group: "atmospheric_horror",
+		tier: "C",
 		weight: 8,
 		isGate: false,
 	},
