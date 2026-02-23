@@ -29,7 +29,7 @@ export class SyncRunner implements ISyncRunnerPort {
 
 		const entities = response.items.map((i) => map({ dto: i, now }));
 
-		await persistAsync({ entities });
+		if (entities.length > 0) await persistAsync({ entities });
 
 		syncState.setLastServerSyncCursor(syncTarget, response.nextCursor);
 	};

@@ -124,6 +124,7 @@ export class TestCompositionRoot {
 			gameSessionReadonlyStore: gameSession.gameSessionReadonlyStore,
 			gameVectorReadonlyStore: infra.gameVectorReadonlyStore,
 			gameVectorWriteStore: infra.gameVectorWriteStore,
+			eventBus: this.eventBus,
 		});
 		await gameLibrary.initializeAsync();
 

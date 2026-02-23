@@ -24,10 +24,8 @@
 	void store.loadGamesAsync();
 
 	onMount(() => {
-		const unsubscribe = api().EventBus.on("sync-finished", () => {
-			if (store.storeSignal.hero.items.length === 0) {
-				void store.loadGamesAsync();
-			}
+		const unsubscribe = api().EventBus.on("game-library-updated", () => {
+			void store.loadGamesAsync();
 		});
 
 		return () => unsubscribe();

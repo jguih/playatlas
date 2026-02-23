@@ -65,13 +65,13 @@ export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
 
 			setTimeout(() => {
 				progressReporter.report({ type: "sync-finished" });
-			}, remaining);
 
-			eventBus.emit({
-				id: crypto.randomUUID(),
-				name: "sync-finished",
-				occurredAt: this.deps.clock.now(),
-			});
+				eventBus.emit({
+					id: crypto.randomUUID(),
+					name: "sync-finished",
+					occurredAt: this.deps.clock.now(),
+				});
+			}, remaining);
 
 			this.syncing = false;
 		}

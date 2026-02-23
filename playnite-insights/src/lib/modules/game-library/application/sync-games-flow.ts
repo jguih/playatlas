@@ -1,3 +1,4 @@
+import type { IClockPort, IDomainEventBusPort } from "$lib/modules/common/application";
 import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
 import type {
 	ISyncRunnerPort,
@@ -16,6 +17,8 @@ export type SyncGameLibraryServiceDeps = {
 	syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
 	gameMapper: IGameMapperPort;
 	syncRunner: ISyncRunnerPort;
+	eventBus: IDomainEventBusPort;
+	clock: IClockPort;
 };
 
 export class SyncGamesFlow implements ISyncGamesFlowPort {
@@ -40,13 +43,21 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 	};
 
 	executeAsync: ISyncGamesFlowPort["executeAsync"] = async () => {
-		const { syncRunner, gameMapper, syncGamesCommandHandler } = this.deps;
+		const { syncRunner, gameMapper, syncGamesCommandHandler, eventBus, clock } = this.deps;
 
 		await syncRunner.runAsync({
 			syncTarget: "games",
 			fetchAsync: this.fetchAsync,
 			mapDtoToEntity: ({ dto, now }) => gameMapper.fromDto(dto, now),
-			persistAsync: ({ entities }) => syncGamesCommandHandler.executeAsync({ games: entities }),
+			persistAsync: async ({ entities }) => {
+				await syncGamesCommandHandler.executeAsync({ games: entities });
+
+				eventBus.emit({
+					id: crypto.randomUUID(),
+					name: "game-library-updated",
+					occurredAt: clock.now(),
+				});
+			},
 		});
 	};
 }

@@ -1,3 +1,4 @@
+import type { IDomainEventBusPort } from "$lib/modules/common/application";
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
 import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
 import { type ISyncRunnerPort } from "$lib/modules/common/application/sync-runner.port";
@@ -112,6 +113,7 @@ export type ClientGameLibraryModuleDeps = {
 	gameSessionReadonlyStore: IGameSessionReadonlyStore;
 	gameVectorWriteStore: IGameVectorWriteStore;
 	gameVectorReadonlyStore: IGameVectorReadonlyStore;
+	eventBus: IDomainEventBusPort;
 };
 
 export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
@@ -180,6 +182,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		gameSessionReadonlyStore,
 		gameVectorReadonlyStore,
 		gameVectorWriteStore,
+		eventBus,
 	}: ClientGameLibraryModuleDeps) {
 		// #region: Recommendation Engine
 		this.gameVectorProjectionService = new GameVectorProjectionService({
@@ -222,6 +225,8 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			playAtlasClient,
 			syncGamesCommandHandler: this.syncGamesCommandHandler,
 			syncRunner,
+			eventBus,
+			clock,
 		});
 
 		this.genreMapper = new GenreMapper({ clock });
@@ -319,6 +324,10 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			syncGameClassificationsCommandHandler: this.syncGameClassificationsCommandHandler,
 			syncRunner,
 			gameVectorProjectionWriter: this.gameVectorProjectionWriter,
+			gameVectorProjectionService: this.gameVectorProjectionService,
+			instancePreferenceModelService: this.instancePreferenceModelService,
+			eventBus,
+			clock,
 		});
 		// #endregion
 

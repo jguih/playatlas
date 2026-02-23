@@ -28,6 +28,15 @@ export default defineConfig({
 					include: ["src/lib/modules/integration-testing/**/*.{test,spec}.{js,ts}"],
 				},
 			},
+			{
+				extends: "./vite.config.ts",
+				test: {
+					name: "unit",
+					environment: "node",
+					include: ["src/lib/modules/**/*.{test,spec}.{js,ts}"],
+					exclude: ["src/lib/modules/integration-testing/**"],
+				},
+			},
 		],
 	},
 	build: {

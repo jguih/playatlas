@@ -82,6 +82,8 @@ export class GameVectorProjectionService implements IGameVectorProjectionService
 
 	rebuildFromClassifications: IGameVectorProjectionServicePort["rebuildFromClassifications"] =
 		async (gameClassifications) => {
+			if (gameClassifications.length === 0) return;
+
 			const gameIds: GameId[] = gameClassifications.map((gc) => gc.GameId);
 			const newVectors = await this.buildAsync(gameIds);
 

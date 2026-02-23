@@ -17,10 +17,12 @@ export class HomePageStore {
 
 	constructor(private readonly deps: HomePageStoreDeps) {}
 
-	private async withLoading<T>(
+	private async withLoading(
 		section: keyof HomePageStoreState,
-		fn: () => Promise<T>,
-	): Promise<T> {
+		fn: () => Promise<void>,
+	): Promise<void> {
+		if (this.storeSignal[section].loading) return;
+
 		this.storeSignal[section].loading = true;
 		try {
 			return await fn();
