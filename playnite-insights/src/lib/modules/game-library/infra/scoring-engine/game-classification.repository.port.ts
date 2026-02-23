@@ -8,4 +8,5 @@ export type IGameClassificationRepositoryPort = IClientEntityRepository<
 	GameClassificationId
 > & {
 	getByGameIdAsync: (gameId: GameId) => Promise<Map<ClassificationId, Set<GameClassification>>>;
+	getLatestByGameIdAsync: (gameId: GameId) => Promise<Map<ClassificationId, GameClassification>>;
 };

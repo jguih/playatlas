@@ -44,6 +44,7 @@ import type {
 	IGetGamesRankedQueryHandlerPort,
 	IGetGenreByIdQueryHandlerPort,
 	IGetGenresByIdsQueryHandlerPort,
+	IGetLatestGameClassificationByGameIdQueryHandler,
 	IGetPlatformsByIdsQueryHandlerPort,
 } from "$lib/modules/game-library/queries";
 
@@ -91,6 +92,7 @@ export interface IClientGameLibraryModulePort {
 	get gameClassificationRepository(): IGameClassificationRepositoryPort;
 	get getGameClassificationsByIdsQueryHandler(): IGetGameClassificationByIdsQueryHandler;
 	get getGameClassificationsByGameIdQueryHandler(): IGetGameClassificationByGameIdQueryHandler;
+	get getLatestGameClassificationByGameIdQueryHandler(): IGetLatestGameClassificationByGameIdQueryHandler;
 	get syncGameClassificationsCommandHandler(): ISyncGameClassificationsCommandHandlerPort;
 	get syncGameClassificationsFlow(): ISyncGameClassificationsFlowPort;
 

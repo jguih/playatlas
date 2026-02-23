@@ -109,4 +109,55 @@ export class GameClassificationRepository
 			);
 		});
 	};
+
+	getLatestByGameIdAsync: IGameClassificationRepositoryPort["getLatestByGameIdAsync"] = async (
+		gameId,
+	) => {
+		return await this.runTransaction([this.storeName], "readonly", async ({ tx }) => {
+			const store = tx.objectStore(this.storeName);
+			const idx = store.index(gameClassificationRepositoryMeta.index.BY_GAME_ID);
+			const gameClassifications = new Map<ClassificationId, GameClassification>();
+			const context = {
+				found: false,
+			};
+
+			const range = IDBKeyRange.bound([gameId, -Infinity, -Infinity], [gameId, Infinity, Infinity]);
+
+			return await new Promise<Map<ClassificationId, GameClassification>>((resolve, reject) => {
+				const request = idx.openCursor(range, "prev");
+
+				request.onerror = () => reject(request.error);
+
+				request.onsuccess = () => {
+					const cursor = request.result;
+
+					if (!cursor) {
+						resolve(gameClassifications);
+						return;
+					}
+
+					const gameClassificationModel: GameClassificationModel = cursor.value;
+					const gameClassification = this.mapper.toDomain(gameClassificationModel);
+
+					if (gameClassification.GameId === gameId) {
+						context.found = true;
+
+						if (this.shouldIgnore?.(gameClassification)) {
+							cursor.continue();
+							return;
+						}
+
+						if (!gameClassifications.has(gameClassification.ClassificationId)) {
+							gameClassifications.set(gameClassification.ClassificationId, gameClassification);
+						}
+					} else if (context.found) {
+						resolve(gameClassifications);
+						return;
+					}
+
+					cursor.continue();
+				};
+			});
+		});
+	};
 }

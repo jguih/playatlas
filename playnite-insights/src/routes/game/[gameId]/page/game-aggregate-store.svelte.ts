@@ -63,19 +63,15 @@ export class GameAggregateStore {
 
 		const { gameClassifications } = await this.deps
 			.api()
-			.GameLibrary.ScoringEngine.Query.GetGameClassificationsByGameId.executeAsync({
+			.GameLibrary.ScoringEngine.Query.GetLatestGameClassificationByGameId.executeAsync({
 				gameId: this.game.Id,
 			});
 
 		if (!gameClassifications) return;
 
-		const latestGameClassifications = new SvelteMap<ClassificationId, GameClassification>();
-
-		for (const [classificationId, gameClassificationSet] of gameClassifications) {
-			for (const gameClassification of gameClassificationSet) {
-				latestGameClassifications.set(classificationId, gameClassification);
-			}
-		}
+		const latestGameClassifications = new SvelteMap<ClassificationId, GameClassification>(
+			gameClassifications,
+		);
 
 		this.latestGameClassifications = latestGameClassifications;
 	};

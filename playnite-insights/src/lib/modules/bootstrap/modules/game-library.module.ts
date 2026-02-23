@@ -85,6 +85,7 @@ import {
 	type IGetGamesRankedQueryHandlerPort,
 	type IGetGenreByIdQueryHandlerPort,
 	type IGetGenresByIdsQueryHandlerPort,
+	type IGetLatestGameClassificationByGameIdQueryHandler,
 	type IGetPlatformsByIdsQueryHandlerPort,
 	GetCompaniesByIdsQueryHandler,
 	GetCompletionStatusesByIdsQueryHandler,
@@ -97,6 +98,7 @@ import {
 	GetGamesRankedQueryHandler,
 	GetGenresByIdQueryHandler,
 	GetGenresByIdsQueryHandler,
+	GetLatestGameClassificationsByGameIdQueryHandler,
 	GetPlatformsByIdsQueryHandler,
 } from "$lib/modules/game-library/queries";
 import type { IGameSessionReadonlyStore } from "$lib/modules/game-session/infra";
@@ -158,6 +160,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	readonly gameClassificationRepository: IGameClassificationRepositoryPort;
 	readonly getGameClassificationsByIdsQueryHandler: IGetGameClassificationByIdsQueryHandler;
 	readonly getGameClassificationsByGameIdQueryHandler: IGetGameClassificationByGameIdQueryHandler;
+	readonly getLatestGameClassificationByGameIdQueryHandler: IGetLatestGameClassificationByGameIdQueryHandler;
 	readonly syncGameClassificationsCommandHandler: ISyncGameClassificationsCommandHandlerPort;
 	readonly syncGameClassificationsFlow: ISyncGameClassificationsFlowPort;
 	// #endregion
@@ -301,6 +304,10 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		this.getGameClassificationsByGameIdQueryHandler =
 			new GetGameClassificationsByGameIdQueryHandler({
+				gameClassificationRepository: this.gameClassificationRepository,
+			});
+		this.getLatestGameClassificationByGameIdQueryHandler =
+			new GetLatestGameClassificationsByGameIdQueryHandler({
 				gameClassificationRepository: this.gameClassificationRepository,
 			});
 		this.syncGameClassificationsCommandHandler = new SyncGameClassificationsCommandHandler({

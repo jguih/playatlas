@@ -21,6 +21,7 @@ import type {
 	IGetGamesRankedQueryHandlerPort,
 	IGetGenreByIdQueryHandlerPort,
 	IGetGenresByIdsQueryHandlerPort,
+	IGetLatestGameClassificationByGameIdQueryHandler,
 	IGetPlatformsByIdsQueryHandlerPort,
 } from "$lib/modules/game-library/queries";
 import type { IGameSessionReadonlyStore } from "$lib/modules/game-session/infra";
@@ -35,6 +36,7 @@ export interface ClientApiV1 {
 			Query: {
 				GetGameClassifications: IGetGameClassificationByIdsQueryHandler;
 				GetGameClassificationsByGameId: IGetGameClassificationByGameIdQueryHandler;
+				GetLatestGameClassificationByGameId: IGetLatestGameClassificationByGameIdQueryHandler;
 			};
 			Command: {
 				UpsertGameClassifications: ISyncGameClassificationsCommandHandlerPort;

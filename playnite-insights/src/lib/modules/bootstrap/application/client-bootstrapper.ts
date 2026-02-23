@@ -33,6 +33,8 @@ export class ClientBootstrapper {
 					Query: {
 						GetGameClassifications: gameLibrary.getGameClassificationsByIdsQueryHandler,
 						GetGameClassificationsByGameId: gameLibrary.getGameClassificationsByGameIdQueryHandler,
+						GetLatestGameClassificationByGameId:
+							gameLibrary.getLatestGameClassificationByGameIdQueryHandler,
 					},
 					Command: {
 						UpsertGameClassifications: gameLibrary.syncGameClassificationsCommandHandler,
