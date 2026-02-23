@@ -1,3 +1,4 @@
+import { SCORE_ENGINE_CORE_LEXICON_EN as CORE } from "../../../language";
 import {
 	alternatives,
 	sequence,
@@ -14,6 +15,8 @@ export const HORROR_ENGINE_PATTERN_DICTIONARY_EN = {
 	),
 	UNSETTLING_ATMOSPHERE: sequence(w(LEX.UNSETTLING), w(LEX.ATMOSPHERE)),
 	UNSETTLING: w(LEX.UNSETTLING),
+	FIRST_PERSON_SHOOTER: w(CORE.FIRST_PERSON_SHOOTER),
+	THIRD_PERSON_SHOOTER: w(CORE.THIRD_PERSON_SHOOTER),
 } as const satisfies Record<string, ScoreEnginePattern>;
 
 export type HorrorPatternIdEN = keyof typeof HORROR_ENGINE_PATTERN_DICTIONARY_EN;

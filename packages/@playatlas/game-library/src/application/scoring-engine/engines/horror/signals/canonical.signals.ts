@@ -29,6 +29,18 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		weight: 6,
 		isGate: false,
 	},
+	FIRST_PERSON_SHOOTER_LABEL: {
+		group: "combat_engagement",
+		tier: "B",
+		weight: 16,
+		isGate: false,
+	},
+	THIRD_PERSON_SHOOTER_LABEL: {
+		group: "combat_engagement",
+		tier: "B",
+		weight: 14,
+		isGate: false,
+	},
 	// #endregion
 	// #region: resource_survival
 	SURVIVAL_HORROR_LABEL: {
@@ -101,7 +113,7 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 	},
 	// #endregion
 	// #region: atmospheric_horror
-	CREEPING_DREAD_LABEL: {
+	ATMOSPHERIC_HORROR: {
 		group: "atmospheric_horror",
 		tier: "B",
 		weight: 25,

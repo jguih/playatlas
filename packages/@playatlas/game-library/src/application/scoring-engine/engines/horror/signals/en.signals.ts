@@ -10,6 +10,8 @@ export const HORROR_ENGINE_TEXT_SIGNALS_EN = {
 	// #endregion
 	// #region: combat_engagement
 	TIMED_DODGES_LABEL: ["timed dodges"],
+	FIRST_PERSON_SHOOTER_LABEL: [PATTERN.FIRST_PERSON_SHOOTER],
+	THIRD_PERSON_SHOOTER_LABEL: [PATTERN.THIRD_PERSON_SHOOTER],
 	// #endregion
 	// #region: resource_survival
 	SURVIVAL_HORROR_LABEL: ["survival horror", "survival-horror"],
@@ -43,8 +45,8 @@ export const HORROR_ENGINE_TAXONOMY_SIGNALS_EN = {
 	HORROR_TAXONOMY: ["horror"],
 	// #endregion
 	// #region: combat_engagement
-	FIRST_PERSON_SHOOTER_TAXONOMY: ["first-person shooter", "first person shooter"],
-	THIRD_PERSON_SHOOTER_TAXONOMY: ["third-person shooter", "third person shooter"],
+	FIRST_PERSON_SHOOTER_TAXONOMY: [PATTERN.FIRST_PERSON_SHOOTER],
+	THIRD_PERSON_SHOOTER_TAXONOMY: [PATTERN.THIRD_PERSON_SHOOTER],
 	ACTION_TAXONOMY: ["action"],
 	COMBAT_TAXONOMY: ["combat"],
 	// #endregion

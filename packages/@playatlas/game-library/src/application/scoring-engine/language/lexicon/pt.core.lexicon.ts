@@ -63,4 +63,6 @@ export const SCORE_ENGINE_CORE_LEXICON_PT = {
 		l("milhares(\\s+de)?"),
 	),
 	CONFIGURACAO: l("configurac(?:ao|oes)"),
+	TIRO_EM_PRIMEIRA_PESSOA: l("tiro\\s+em\\s+primeira\\s+pessoa"),
+	TIRO_EM_TERCEIRA_PESSOA: l("tiro\\s+em\\s+terceira\\s+pessoa"),
 } as const;

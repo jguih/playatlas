@@ -32,4 +32,6 @@ export const SCORE_ENGINE_CORE_LEXICON_EN = {
 	RESET: plural(l("reset")),
 	BEGINNING_START: alternatives(l("beginning"), l("start"), l("scratch")),
 	UNIQUE_DIFFERENT: alternatives(l("unique"), l("different")),
+	FIRST_PERSON_SHOOTER: alternatives(l("first\\s+person\\s+shooter"), l("first-person\\s+shooter")),
+	THIRD_PERSON_SHOOTER: alternatives(l("third\\s+person\\s+shooter"), l("third-person\\s+shooter")),
 } as const satisfies ScoreEngineLexicon;

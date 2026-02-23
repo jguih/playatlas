@@ -17,6 +17,6 @@ export const HORROR_ENGINE_LEXICON_EN = {
 		l("dread\\s+filled"),
 	),
 	ATMOSPHERE: l("atmosphere"),
-	WORLD: alternatives(l("world"), l("atmosphere")),
+	WORLD: l("world"),
 	JOURNEY_ADVENTURE: alternatives(l("journey"), l("adventure")),
 } as const satisfies Record<string, ScoreEnginePattern>;

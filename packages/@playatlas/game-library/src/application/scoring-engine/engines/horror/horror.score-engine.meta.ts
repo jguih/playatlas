@@ -55,7 +55,7 @@ export const HORROR_ENGINE_EVIDENCE_SOURCE_POLICY = {
 	combat_engagement: {
 		text: { cap: Infinity },
 		genre: { cap: Infinity, multiplier: 0.8 },
-		tag: { cap: 10, multiplier: 0.6 },
+		tag: { cap: 15, multiplier: 0.6 },
 	},
 	psychological_horror: {
 		genre: { cap: Infinity, multiplier: 1.2 },
