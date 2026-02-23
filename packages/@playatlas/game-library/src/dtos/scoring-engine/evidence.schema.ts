@@ -8,7 +8,6 @@ export const evidenceSchema = z.object({
 	weight: z.number(),
 	group: z.string(),
 	tier: z.enum(evidenceTier),
-	isGate: z.boolean(),
 });
 
 export const storedEvidenceSchema = evidenceSchema.extend({

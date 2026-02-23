@@ -7,7 +7,6 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "run_based_identity",
 		tier: "A",
 		weight: 35,
-		isGate: true,
 	},
 	// #endregion
 	// #region: procedural_runs
@@ -15,19 +14,16 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "procedural_runs",
 		tier: "B",
 		weight: 20,
-		isGate: false,
 	},
 	PROCEDURAL_GENERATION_LABEL: {
 		group: "procedural_runs",
 		tier: "B",
 		weight: 15,
-		isGate: false,
 	},
 	RANDOMLY_GENERATED_MAPS_LABEL: {
 		group: "procedural_runs",
 		tier: "B",
 		weight: 12,
-		isGate: false,
 	},
 	// #endregion
 	// #region: permadeath_reset
@@ -35,7 +31,6 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "permadeath_reset",
 		tier: "B",
 		weight: 15,
-		isGate: false,
 	},
 	// #endregion
 	// #region: run_variability
@@ -43,31 +38,26 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "run_variability",
 		tier: "B",
 		weight: 12,
-		isGate: false,
 	},
 	SYNERGY_LABEL: {
 		group: "run_variability",
 		tier: "B",
 		weight: 10,
-		isGate: false,
 	},
 	RUN_LOOP_LANGUAGE_LABEL: {
 		group: "run_variability",
 		tier: "B",
 		weight: 15,
-		isGate: false,
 	},
 	REPLAY_VALUE_LABEL: {
 		group: "run_variability",
 		tier: "C",
 		weight: 8,
-		isGate: false,
 	},
 	EVER_CHANGING_LABEL: {
 		group: "run_variability",
 		tier: "C",
 		weight: 8,
-		isGate: false,
 	},
 	// #endregion
 	// #region: meta_progression
@@ -75,25 +65,21 @@ export const RUN_BASED_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "meta_progression",
 		tier: "A",
 		weight: 25,
-		isGate: false,
 	},
 	META_PROGRESSION_SYSTEM_LABEL: {
 		group: "meta_progression",
 		tier: "B",
 		weight: 15,
-		isGate: false,
 	},
 	PERMANENT_UPGRADES_LABEL: {
 		group: "meta_progression",
 		tier: "C",
 		weight: 10,
-		isGate: false,
 	},
 	PERMANENT_UNLOCKS_LABEL: {
 		group: "meta_progression",
 		tier: "C",
 		weight: 10,
-		isGate: false,
 	},
 	// #endregion
 } as const satisfies CanonicalTextSignalsMap<string, RunBasedEvidenceGroup>;
@@ -106,7 +92,6 @@ export const RUN_BASED_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 		group: "run_based_identity",
 		tier: "A",
 		weight: 35,
-		isGate: true,
 	},
 	// #endregion
 	// #region: procedural_runs
@@ -114,7 +99,6 @@ export const RUN_BASED_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 		group: "procedural_runs",
 		tier: "B",
 		weight: 25,
-		isGate: false,
 	},
 	// #endregion
 	// #region: permadeath_reset
@@ -122,7 +106,6 @@ export const RUN_BASED_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 		group: "permadeath_reset",
 		tier: "B",
 		weight: 20,
-		isGate: false,
 	},
 	// #endregion
 	// #region: run_variability
@@ -130,7 +113,6 @@ export const RUN_BASED_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 		group: "run_variability",
 		tier: "C",
 		weight: 12,
-		isGate: false,
 	},
 	// #endregion
 } as const satisfies CanonicalTaxonomySignalsMap<string, RunBasedEvidenceGroup>;

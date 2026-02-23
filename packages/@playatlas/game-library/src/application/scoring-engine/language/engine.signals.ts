@@ -11,7 +11,6 @@ type TextSignalItemBaseProps<TGroup> = {
 	weight: number;
 	group: TGroup;
 	tier: EvidenceTier;
-	isGate: boolean;
 };
 
 export type TextSignalItem<TGroup> = TextSignalItemBaseProps<TGroup> & {
@@ -34,7 +33,6 @@ type TaxonomySignalItemBaseProps<TGroup> = {
 	weight: number;
 	group: TGroup;
 	tier: EvidenceTier;
-	isGate: boolean;
 };
 
 export type TaxonomySignalItem<TGroup> = TaxonomySignalItemBaseProps<TGroup> & {

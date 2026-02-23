@@ -29,22 +29,25 @@ export const HORROR_ENGINE_TEXT_SIGNALS_PT = {
 	// #endregion
 	// #region: atmospheric_horror
 	ATMOSPHERIC_HORROR: ["terror atmosférico", "terror-atmosférico"],
-	UNSETTLING_ATMOSPHERE_LABEL: [
-		"aventura repleta de pavor",
-		"aventura cheia de terror",
+	HORROR_ATMOSPHERE_LABEL: [
+		PATTERN.MUNDO_ATERRORIZANTE,
+		PATTERN.MUNDO_REPLETO_DE_TERROR,
 		"atmosfera tensa",
 		"tensão constante",
 		"jornada atmosférica",
 		"jornada imersiva e atmosférica",
 	],
-	UNSETTLING_WORLD_LABEL: ["mundo aterrorizante"],
-	ATMOSPHERIC_LANGUAGE_LABEL: [PATTERN.PERTURBADOR],
+	HORROR_WORLD_LABEL: ["mundo aterrorizante"],
+	ATMOSPHERIC_LANGUAGE_LABEL: [PATTERN.TERROR_ADJ_NOME],
 	// #endregion
 } as const satisfies LanguageTextSignalsMap<HorrorTextSignalId>;
 
 export const HORROR_ENGINE_TAXONOMY_SIGNALS_PT = {
 	// #region: horror_identity
 	HORROR_TAXONOMY: ["terror"],
+	GOTHIC_TAXONOMY: ["gótico"],
+	DEMONS_ZOMBIES_TAXONOMY: [PATTERN.DEMONIOS_ZUMBIS],
+	DARK_TAXONOMY: ["sombrio"],
 	// #endregion
 	// #region: combat_engagement
 	FIRST_PERSON_SHOOTER_TAXONOMY: [PATTERN.FIRST_PERSON_SHOOTER],

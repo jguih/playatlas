@@ -7,19 +7,16 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "horror_identity",
 		tier: "A",
 		weight: 30,
-		isGate: true,
 	},
 	HORROR_ADVENTURE_LABEL: {
 		group: "horror_identity",
 		tier: "A",
 		weight: 30,
-		isGate: true,
 	},
 	GRUELING_HORROR_LABEL: {
 		group: "horror_identity",
 		tier: "B",
 		weight: 20,
-		isGate: true,
 	},
 	// #endregion
 	// #region: combat_engagement
@@ -27,19 +24,16 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "combat_engagement",
 		tier: "C",
 		weight: 6,
-		isGate: false,
 	},
 	FIRST_PERSON_SHOOTER_LABEL: {
 		group: "combat_engagement",
 		tier: "B",
 		weight: 16,
-		isGate: false,
 	},
 	THIRD_PERSON_SHOOTER_LABEL: {
 		group: "combat_engagement",
 		tier: "B",
 		weight: 14,
-		isGate: false,
 	},
 	// #endregion
 	// #region: resource_survival
@@ -47,37 +41,31 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "resource_survival",
 		tier: "A",
 		weight: 20,
-		isGate: true,
 	},
 	SURVIVAL_NIGHTMARE_LABEL: {
 		group: "resource_survival",
 		tier: "B",
 		weight: 16,
-		isGate: false,
 	},
 	RESOURCE_MANAGEMENT_LABEL: {
 		group: "resource_survival",
 		tier: "B",
 		weight: 14,
-		isGate: false,
 	},
 	LIMITED_RESOURCES_LABEL: {
 		group: "resource_survival",
 		tier: "B",
 		weight: 16,
-		isGate: false,
 	},
 	INVENTORY_MANAGEMENT_LABEL: {
 		group: "resource_survival",
 		tier: "C",
 		weight: 8,
-		isGate: false,
 	},
 	FIGHT_FOR_SURVIVAL_LABEL: {
 		group: "resource_survival",
 		tier: "C",
 		weight: 8,
-		isGate: false,
 	},
 	// #endregion
 	// #region: psychological_horror
@@ -85,31 +73,26 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "psychological_horror",
 		tier: "A",
 		weight: 35,
-		isGate: true,
 	},
 	DESCEND_INTO_MADNESS_LABEL: {
 		group: "psychological_horror",
 		tier: "B",
 		weight: 25,
-		isGate: false,
 	},
 	DISTURBING_LABEL: {
 		group: "psychological_horror",
 		tier: "C",
 		weight: 14,
-		isGate: false,
 	},
 	NIGHTMARE_LABEL: {
 		group: "psychological_horror",
 		tier: "C",
 		weight: 12,
-		isGate: false,
 	},
 	NIGHTMARISH_LABEL: {
 		group: "psychological_horror",
 		tier: "C",
 		weight: 12,
-		isGate: false,
 	},
 	// #endregion
 	// #region: atmospheric_horror
@@ -117,25 +100,21 @@ export const HORROR_ENGINE_CANONICAL_TEXT_SIGNALS = {
 		group: "atmospheric_horror",
 		tier: "B",
 		weight: 25,
-		isGate: false,
 	},
-	UNSETTLING_WORLD_LABEL: {
+	HORROR_WORLD_LABEL: {
 		group: "atmospheric_horror",
 		tier: "B",
 		weight: 20,
-		isGate: false,
 	},
-	UNSETTLING_ATMOSPHERE_LABEL: {
+	HORROR_ATMOSPHERE_LABEL: {
 		group: "atmospheric_horror",
 		tier: "B",
 		weight: 22,
-		isGate: false,
 	},
 	ATMOSPHERIC_LANGUAGE_LABEL: {
 		group: "atmospheric_horror",
-		tier: "C",
-		weight: 12,
-		isGate: false,
+		tier: "B",
+		weight: 8,
 	},
 	// #endregion
 } as const satisfies CanonicalTextSignalsMap<string, HorrorEvidenceGroup>;
@@ -148,7 +127,21 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 		group: "horror_identity",
 		tier: "A",
 		weight: 30,
-		isGate: true,
+	},
+	GOTHIC_TAXONOMY: {
+		group: "horror_identity",
+		tier: "C",
+		weight: 6,
+	},
+	DEMONS_ZOMBIES_TAXONOMY: {
+		group: "horror_identity",
+		tier: "C",
+		weight: 6,
+	},
+	DARK_TAXONOMY: {
+		group: "horror_identity",
+		tier: "C",
+		weight: 6,
 	},
 	// #endregion
 	// #region: combat_engagement
@@ -156,25 +149,21 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 		group: "combat_engagement",
 		tier: "B",
 		weight: 15,
-		isGate: false,
 	},
 	FIRST_PERSON_SHOOTER_TAXONOMY: {
 		group: "combat_engagement",
 		tier: "B",
 		weight: 15,
-		isGate: false,
 	},
 	ACTION_TAXONOMY: {
 		group: "combat_engagement",
 		tier: "C",
 		weight: 8,
-		isGate: false,
 	},
 	COMBAT_TAXONOMY: {
 		group: "combat_engagement",
 		tier: "C",
 		weight: 8,
-		isGate: false,
 	},
 	// #endregion
 	// #region: resource_survival
@@ -182,13 +171,11 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 		group: "resource_survival",
 		tier: "A",
 		weight: 30,
-		isGate: true,
 	},
 	SURVIVAL_TAXONOMY: {
 		group: "resource_survival",
 		tier: "C",
 		weight: 8,
-		isGate: false,
 	},
 	// #endregion
 	// #region: psychological_horror
@@ -196,13 +183,11 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 		group: "psychological_horror",
 		tier: "A",
 		weight: 35,
-		isGate: true,
 	},
 	SUPERNATURAL_TAXONOMY: {
 		group: "psychological_horror",
 		tier: "C",
 		weight: 8,
-		isGate: false,
 	},
 	// #endregion
 	// #region: atmospheric_horror
@@ -210,13 +195,11 @@ export const HORROR_ENGINE_CANONICAL_TAXONOMY_SIGNALS = {
 		group: "atmospheric_horror",
 		tier: "A",
 		weight: 35,
-		isGate: true,
 	},
 	ATMOSPHERIC_TAXONOMY: {
 		group: "atmospheric_horror",
 		tier: "C",
 		weight: 8,
-		isGate: false,
 	},
 	// #endregion
 } as const satisfies CanonicalTaxonomySignalsMap<string, HorrorEvidenceGroup>;

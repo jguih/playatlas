@@ -7,7 +7,6 @@ export type Evidence = {
 	weight: number;
 	group: string;
 	tier: EvidenceTier;
-	isGate: boolean;
 	status: StoredEvidenceStatus;
 	contribution: number;
 };

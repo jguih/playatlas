@@ -17,8 +17,6 @@ export type Evidence<TGroup> = {
 	weight: number;
 	group: TGroup;
 	tier: EvidenceTier;
-	// Whether the signal is identity defining or not
-	isGate: boolean;
 };
 
 export type StoredEvidence<TGroup> = Evidence<TGroup> & {

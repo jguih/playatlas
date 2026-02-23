@@ -28,21 +28,24 @@ export const HORROR_ENGINE_TEXT_SIGNALS_EN = {
 	NIGHTMARISH_LABEL: ["nightmarish"],
 	// #endregion
 	// #region: atmospheric_horror
-	CREEPING_DREAD_LABEL: ["creeping dread"],
-	UNSETTLING_ATMOSPHERE_LABEL: [
-		PATTERN.UNSETTLING_ATMOSPHERE,
+	ATMOSPHERIC_HORROR: ["atmospheric horror", "atmospheric-horror"],
+	HORROR_ATMOSPHERE_LABEL: [
+		PATTERN.HORROR_ATMOSPHERE,
 		"atmospheric journey",
 		"tension and thick atmosphere",
 		"tension atmosphere",
 	],
-	UNSETTLING_WORLD_LABEL: [PATTERN.UNSETTLING_WORLD_ADVENTURE],
-	ATMOSPHERIC_LANGUAGE_LABEL: [PATTERN.UNSETTLING],
+	HORROR_WORLD_LABEL: [PATTERN.HORROR_WORLD],
+	ATMOSPHERIC_LANGUAGE_LABEL: [PATTERN.HORROR_ADJECTIVES],
 	// #endregion
 } as const satisfies LanguageTextSignalsMap<HorrorTextSignalId>;
 
 export const HORROR_ENGINE_TAXONOMY_SIGNALS_EN = {
 	// #region: horror_identity
 	HORROR_TAXONOMY: ["horror"],
+	GOTHIC_TAXONOMY: ["gothic"],
+	DEMONS_ZOMBIES_TAXONOMY: [PATTERN.DEMONS_ZOMBIES],
+	DARK_TAXONOMY: ["dark"],
 	// #endregion
 	// #region: combat_engagement
 	FIRST_PERSON_SHOOTER_TAXONOMY: [PATTERN.FIRST_PERSON_SHOOTER],

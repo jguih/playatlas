@@ -10,8 +10,8 @@ export const horrorPatternUniTestSampleEN = {
 		shouldMatch: ["psychological horror", "psychological-horror"],
 		shouldNotMatch: ["horror movie"],
 	},
-	UNSETTLING: {
-		pattern: PATTERN.UNSETTLING,
+	HORROR_ADJECTIVES: {
+		pattern: PATTERN.HORROR_ADJECTIVES,
 		shouldMatch: [
 			"dread",
 			"eerie",
@@ -24,14 +24,29 @@ export const horrorPatternUniTestSampleEN = {
 		],
 		shouldNotMatch: ["car"],
 	},
-	UNSETTLING_ATMOSPHERE: {
-		pattern: PATTERN.UNSETTLING_ATMOSPHERE,
+	HORROR_ATMOSPHERE: {
+		pattern: PATTERN.HORROR_ATMOSPHERE,
 		shouldMatch: ["eerie atmosphere", "unsettling atmosphere", "terrifying atmosphere"],
 		shouldNotMatch: ["Earth's atmosphere", "Jupiter's atmosphere"],
 	},
-	UNSETTLING_WORLD_ADVENTURE: {
-		pattern: PATTERN.UNSETTLING_WORLD_ADVENTURE,
+	HORROR_WORLD: {
+		pattern: PATTERN.HORROR_WORLD,
 		shouldMatch: ["sinister world", "terrifying adventure"],
 		shouldNotMatch: ["nice adventure"],
+	},
+	FIRST_PERSON_SHOOTER: {
+		pattern: PATTERN.FIRST_PERSON_SHOOTER,
+		shouldMatch: ["first-person shooter", "first person shooter"],
+		shouldNotMatch: ["first-time shooter", "first time shooter"],
+	},
+	THIRD_PERSON_SHOOTER: {
+		pattern: PATTERN.THIRD_PERSON_SHOOTER,
+		shouldMatch: ["third-person shooter", "third person shooter"],
+		shouldNotMatch: ["third-time shooter", "third time shooter"],
+	},
+	DEMONS_ZOMBIES: {
+		pattern: PATTERN.DEMONS_ZOMBIES,
+		shouldMatch: ["demon", "demons", "zombie", "zombies"],
+		shouldNotMatch: ["angels"],
 	},
 } as const satisfies PatternUnitTestSample<HorrorPatternIdEN>;

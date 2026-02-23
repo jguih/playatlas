@@ -6,6 +6,7 @@ import type {
 import type { ScoreEngineSourcePolicy } from "./engine.evidence-source.policy";
 import type { ScoreEngineEvidenceGroupPolicy } from "./engine.policy";
 import type { Evidence, StoredEvidence } from "./evidence.types";
+import type { CanonicalSignalId } from "./language";
 import type { ScoreEngineSourcePriorityPolicy, ScoreEngineStructuralPenaltyPolicy } from "./policy";
 import type { ScoreEngineClassificationTierThresholdPolicy } from "./policy/classification-tier-threshold.policy";
 import type { ScoreEngineGatePolicy } from "./policy/gate.policy";
@@ -13,7 +14,7 @@ import type { ScoreEngineGroupTierThresholdPolicy } from "./policy/group-tier-th
 import type { ScoreBreakdown } from "./score-breakdown";
 import type { ScoreEngineEvidenceGroupsMeta } from "./score-engine.types";
 import type { IScoringPolicyPort } from "./scoring-policy.port";
-import type { ComputeScoreBreakdownProps } from "./scoring-policy.types";
+import type { ComputeScoreBreakdownProps, EvidenceSignalIdRegistry } from "./scoring-policy.types";
 
 type SynergyContext = {
 	groupCount: number;
@@ -192,7 +193,59 @@ export const makeScoringPolicy = <TGroup extends string>({
 		return contribution;
 	};
 
-	const score = (evidence: Evidence<TGroup>[]): ScoreBreakdown<TGroup> => {
+	const selectBestEvidence = (props: {
+		group: TGroup;
+		evidences: Evidence<TGroup>[];
+		onIgnore: (evidence: Evidence<TGroup>) => void;
+		shouldProcessEvidence: (evidence: Evidence<TGroup>) => boolean;
+		signalIdRegistry: EvidenceSignalIdRegistry<TGroup>;
+	}) => {
+		const { evidences, group, onIgnore, shouldProcessEvidence, signalIdRegistry } = props;
+
+		const priorityPolicy = sourcePriorityPolicy[group];
+		let bestEvidence: Evidence<TGroup> | undefined;
+		let bestEvidenceEstimatedContribution: number = 0;
+
+		for (const evidence of evidences) {
+			if (!shouldProcessEvidence(evidence)) continue;
+			if (signalIdRegistry.wasUsed(evidence)) {
+				onIgnore(evidence);
+				continue;
+			}
+
+			const evidenceContribution = estimateEvidenceContribution(group, evidence);
+
+			const current = bestEvidence;
+			const currentContribution = bestEvidenceEstimatedContribution;
+
+			if (!current || evidenceContribution > currentContribution) {
+				bestEvidence = evidence;
+				bestEvidenceEstimatedContribution = evidenceContribution;
+				if (current) onIgnore(current);
+			} else if (
+				currentContribution === evidenceContribution &&
+				priorityPolicy[evidence.source] > priorityPolicy[current.source]
+			) {
+				bestEvidence = evidence;
+				bestEvidenceEstimatedContribution = evidenceContribution;
+				if (current) onIgnore(current);
+			} else {
+				onIgnore(evidence);
+			}
+
+			signalIdRegistry.append(evidence);
+		}
+
+		return {
+			bestEvidence,
+			bestEvidenceEstimatedContribution,
+		};
+	};
+
+	const score = (
+		evidence: Evidence<TGroup>[],
+		signalIdRegistry: EvidenceSignalIdRegistry<TGroup>,
+	): ScoreBreakdown<TGroup> => {
 		const evidencesByGroup = joinByGroup(evidence);
 		const usedEvidencesByGroup = new Map<TGroup, StoredEvidence<TGroup>[]>();
 		const ignoredEvidencesByGroup = new Map<TGroup, StoredEvidence<TGroup>[]>();
@@ -221,33 +274,13 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 		// Process Tier A evidences by group
 		for (const [group, evidences] of evidencesByGroup) {
-			const priorityPolicy = sourcePriorityPolicy[group];
-			let bestEvidence: Evidence<TGroup> | undefined;
-			let bestEvidenceEstimatedContribution: number = 0;
-
-			for (const evidence of evidences) {
-				if (evidence.tier !== "A") continue;
-
-				const evidenceContribution = estimateEvidenceContribution(group, evidence);
-
-				const current = bestEvidence;
-				const currentContribution = bestEvidenceEstimatedContribution;
-
-				if (!current || evidenceContribution > currentContribution) {
-					bestEvidence = evidence;
-					bestEvidenceEstimatedContribution = evidenceContribution;
-					if (current) ignore(group, current);
-				} else if (
-					currentContribution === evidenceContribution &&
-					priorityPolicy[evidence.source] > priorityPolicy[current.source]
-				) {
-					bestEvidence = evidence;
-					bestEvidenceEstimatedContribution = evidenceContribution;
-					if (current) ignore(group, current);
-				} else {
-					ignore(group, evidence);
-				}
-			}
+			const { bestEvidence } = selectBestEvidence({
+				group,
+				evidences,
+				shouldProcessEvidence: (evidence) => evidence.tier === "A",
+				onIgnore: (evidence) => ignore(group, evidence),
+				signalIdRegistry,
+			});
 
 			if (!bestEvidence) continue;
 
@@ -259,38 +292,19 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 		// Process Tier B evidences by group
 		for (const [group, evidences] of evidencesByGroup) {
-			const priorityPolicy = sourcePriorityPolicy[group];
-			let bestEvidence: Evidence<TGroup> | undefined;
-			let bestEvidenceEstimatedContribution: number = 0;
 			const remainingEvidences: Evidence<TGroup>[] = [];
 
 			const addRemaining = (evidence: Evidence<TGroup>) => {
 				remainingEvidences.push(evidence);
 			};
 
-			for (const evidence of evidences) {
-				if (evidence.tier !== "B") continue;
-
-				const evidenceContribution = estimateEvidenceContribution(group, evidence);
-
-				const current = bestEvidence;
-				const currentContribution = bestEvidenceEstimatedContribution;
-
-				if (!current || evidenceContribution > currentContribution) {
-					bestEvidence = evidence;
-					bestEvidenceEstimatedContribution = evidenceContribution;
-					if (current) addRemaining(current);
-				} else if (
-					currentContribution === evidenceContribution &&
-					priorityPolicy[evidence.source] > priorityPolicy[current.source]
-				) {
-					bestEvidence = evidence;
-					bestEvidenceEstimatedContribution = evidenceContribution;
-					if (current) addRemaining(current);
-				} else {
-					addRemaining(evidence);
-				}
-			}
+			const { bestEvidence } = selectBestEvidence({
+				group,
+				evidences,
+				shouldProcessEvidence: (evidence) => evidence.tier === "B",
+				onIgnore: addRemaining,
+				signalIdRegistry,
+			});
 
 			let totalContribution = contributionByGroup.get(group) ?? 0;
 
@@ -314,9 +328,11 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 				penalties.push({
 					contribution: contribution * penaltyRate * -1,
-					details: `~${(penaltyRate * 100).toFixed(0)}% of ~${contribution.toFixed(2)} as penalty from evidence ${evidence.signalId}: ${remainingEvidences.length} Tier B evidences scored in group ${group}`,
+					details: `${(penaltyRate * 100).toFixed(0)}% of ~${contribution.toFixed(2)} as penalty from evidence ${evidence.signalId}: ${remainingEvidences.length} Tier B evidences scored in group ${group}`,
 					type: "evidence_stacking",
 				});
+
+				signalIdRegistry.append(evidence);
 			}
 
 			contributionByGroup.set(group, totalContribution);
@@ -333,6 +349,10 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 			for (const evidence of evidences) {
 				if (evidence.tier !== "C") continue;
+				if (signalIdRegistry.wasUsed(evidence)) {
+					ignore(group, evidence);
+					continue;
+				}
 
 				if (contribution === 0) {
 					ignore(group, evidence);
@@ -392,7 +412,14 @@ export const makeScoringPolicy = <TGroup extends string>({
 
 	return {
 		apply: (evidence) => {
-			const breakdown = score(evidence);
+			const signalIdRegistry = new Set<CanonicalSignalId>();
+
+			const evidenceSignalIdRegistry: EvidenceSignalIdRegistry<TGroup> = {
+				append: (evidence) => signalIdRegistry.add(evidence.signalId),
+				wasUsed: (evidence) => signalIdRegistry.has(evidence.signalId),
+			};
+
+			const breakdown = score(evidence, evidenceSignalIdRegistry);
 
 			return {
 				mode: breakdown.mode,

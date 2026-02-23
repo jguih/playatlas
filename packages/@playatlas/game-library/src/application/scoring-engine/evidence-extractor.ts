@@ -82,7 +82,6 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
-						isGate: signal.isGate,
 					});
 
 				return;
@@ -101,7 +100,6 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
-						isGate: signal.isGate,
 					});
 				}
 				return;
@@ -122,7 +120,6 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
-						isGate: signal.isGate,
 					});
 				}
 			}
@@ -171,7 +168,6 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
-						isGate: signal.isGate,
 					});
 
 				return;
@@ -190,7 +186,6 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
-						isGate: signal.isGate,
 					});
 				}
 				return;
@@ -211,7 +206,6 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 						group: signal.group,
 						weight: signal.weight,
 						tier: signal.tier,
-						isGate: signal.isGate,
 					});
 				}
 			}
@@ -278,7 +272,6 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 						weight: signal.weight,
 						group: signal.group,
 						tier: signal.tier,
-						isGate: signal.isGate,
 					});
 				}
 
@@ -298,7 +291,6 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 						weight: signal.weight,
 						group: signal.group,
 						tier: signal.tier,
-						isGate: signal.isGate,
 					});
 				}
 				return;
@@ -318,7 +310,6 @@ export const makeEvidenceExtractor = <TGroup extends string>({
 					weight: signal.weight,
 					group: signal.group,
 					tier: signal.tier,
-					isGate: signal.isGate,
 				});
 			}
 		};
