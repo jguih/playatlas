@@ -48,7 +48,6 @@ export const bootstrapV1 = ({
 				},
 				getClassificationTierCalibrationService:
 					gameLibrary.scoreEngine.getClassificationTierCalibrationService,
-				getScoreEngineCorpusMiner: gameLibrary.scoreEngine.getScoreEngineCorpusMiner,
 			},
 		},
 		auth: {

@@ -1,7 +1,6 @@
 export * from "./classification-tier-calibration.service";
 export * from "./classification.factory";
 export * from "./classification.mapper";
-export * from "./corpus";
 export * from "./engine.evidence-source.policy";
 export * from "./engine.policy";
 export type * from "./engine.registry.types";
