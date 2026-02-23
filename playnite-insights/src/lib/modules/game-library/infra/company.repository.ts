@@ -1,11 +1,12 @@
 import type { SyncStatus } from "$lib/modules/common/common";
-import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
+import { ClientEntityRepository } from "$lib/modules/common/infra";
 import type { ICompanyMapperPort } from "../application/company.mapper.port";
 import type { Company, CompanyId } from "../domain/company.entity";
 import type { ICompanyRepositoryPort } from "./company.repository.port";
 import { companyRepositoryMeta } from "./company.repository.schema";
 
-export type CompanyRepositoryDeps = ClientEntityRepositoryDeps & {
+export type CompanyRepositoryDeps = {
+	dbSignal: IDBDatabase;
 	companyMapper: ICompanyMapperPort;
 };
 

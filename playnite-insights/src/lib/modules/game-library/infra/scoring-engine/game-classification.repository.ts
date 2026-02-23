@@ -1,6 +1,6 @@
 import type { SyncStatus } from "$lib/modules/common/common";
 import type { GameClassificationId, GameId } from "$lib/modules/common/domain";
-import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
+import { ClientEntityRepository } from "$lib/modules/common/infra";
 import {
 	CLASSIFICATION_IDS,
 	type ClassificationId,
@@ -36,11 +36,8 @@ export type GameClassificationModel = {
 	};
 };
 
-export type GameClassificationRepositoryDeps = ClientEntityRepositoryDeps<
-	GameClassificationId,
-	GameClassification,
-	GameClassificationModel
-> & {
+export type GameClassificationRepositoryDeps = {
+	dbSignal: IDBDatabase;
 	gameClassificationMapper: IGameClassificationMapperPort;
 };
 

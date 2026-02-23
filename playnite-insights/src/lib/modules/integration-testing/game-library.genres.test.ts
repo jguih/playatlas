@@ -23,7 +23,7 @@ describe("GameLibrary / Genres", () => {
 		const genres = root.factories.genre.buildList(2000);
 		const genreIds = genres.map((g) => g.Id);
 
-		await api.GameLibrary.Command.UpsertGenres.executeAsync({ genres });
+		await api.GameLibrary.Command.SyncGenres.executeAsync({ genres });
 
 		// Act
 		const result = await api.GameLibrary.Query.GetGenresByIds.executeAsync({ genreIds });
@@ -38,7 +38,7 @@ describe("GameLibrary / Genres", () => {
 		const requested = genres.slice(0, 3);
 		const requestedIds = requested.map((g) => g.Id);
 
-		await api.GameLibrary.Command.UpsertGenres.executeAsync({ genres });
+		await api.GameLibrary.Command.SyncGenres.executeAsync({ genres });
 
 		// Act
 		const result = await api.GameLibrary.Query.GetGenresByIds.executeAsync({
@@ -56,7 +56,7 @@ describe("GameLibrary / Genres", () => {
 		const existingIds = genres.map((g) => g.Id);
 		const missingId = GenreIdParser.fromTrusted("non-existing-genre-id");
 
-		await api.GameLibrary.Command.UpsertGenres.executeAsync({ genres });
+		await api.GameLibrary.Command.SyncGenres.executeAsync({ genres });
 
 		// Act
 		const result = await api.GameLibrary.Query.GetGenresByIds.executeAsync({
@@ -85,7 +85,7 @@ describe("GameLibrary / Genres", () => {
 		// Arrange
 		const genres = root.factories.genre.buildList(5);
 
-		await api.GameLibrary.Command.UpsertGenres.executeAsync({ genres });
+		await api.GameLibrary.Command.SyncGenres.executeAsync({ genres });
 
 		const requestedIds = [genres[3].Id, genres[0].Id, genres[4].Id];
 
@@ -102,7 +102,7 @@ describe("GameLibrary / Genres", () => {
 		// Arrange
 		const genre = root.factories.genre.build();
 
-		await api.GameLibrary.Command.UpsertGenres.executeAsync({
+		await api.GameLibrary.Command.SyncGenres.executeAsync({
 			genres: genre,
 		});
 
@@ -113,7 +113,7 @@ describe("GameLibrary / Genres", () => {
 		};
 
 		// Act
-		await api.GameLibrary.Command.UpsertGenres.executeAsync({
+		await api.GameLibrary.Command.SyncGenres.executeAsync({
 			genres: updatedGenre,
 		});
 
@@ -131,7 +131,7 @@ describe("GameLibrary / Genres", () => {
 		const genres = root.factories.genre.buildList(20);
 		const genreIds = genres.map((g) => g.Id);
 
-		await api.GameLibrary.Command.UpsertGenres.executeAsync({
+		await api.GameLibrary.Command.SyncGenres.executeAsync({
 			genres,
 		});
 
@@ -144,7 +144,7 @@ describe("GameLibrary / Genres", () => {
 		});
 
 		// Act
-		await api.GameLibrary.Command.UpsertGenres.executeAsync({
+		await api.GameLibrary.Command.SyncGenres.executeAsync({
 			genres: updatedGenres,
 		});
 
@@ -162,10 +162,10 @@ describe("GameLibrary / Genres", () => {
 		const genres = root.factories.genre.buildList(3);
 		const genreIds = genres.map((g) => g.Id);
 
-		await api.GameLibrary.Command.UpsertGenres.executeAsync({ genres });
+		await api.GameLibrary.Command.SyncGenres.executeAsync({ genres });
 
 		// Act
-		await api.GameLibrary.Command.UpsertGenres.executeAsync({ genres: [] });
+		await api.GameLibrary.Command.SyncGenres.executeAsync({ genres: [] });
 
 		const result = await api.GameLibrary.Query.GetGenresByIds.executeAsync({
 			genreIds,

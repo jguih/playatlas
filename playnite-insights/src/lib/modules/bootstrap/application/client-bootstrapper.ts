@@ -40,12 +40,6 @@ export class ClientBootstrapper {
 				},
 				RecommendationEngine: {
 					Engine: gameLibrary.recommendationEngine,
-					Query: {
-						GetGameVectors: gameLibrary.getGameVectorsQueryHandler,
-					},
-					Command: {
-						ProjectGameVectors: gameLibrary.projectGameVectorsCommandHandler,
-					},
 				},
 				Query: {
 					GetGames: gameLibrary.getGamesQueryHandler,
@@ -59,11 +53,11 @@ export class ClientBootstrapper {
 					GetGameLibraryFilters: gameLibrary.getGameLibraryFiltersQueryHandler,
 				},
 				Command: {
-					UpsertGames: gameLibrary.syncGamesCommandHandler,
-					UpsertGenres: gameLibrary.syncGenresCommandHandler,
-					UpsertCompanies: gameLibrary.syncCompaniesCommandHandler,
-					UpsertPlatforms: gameLibrary.syncPlatformsCommandHandler,
-					UpsertCompletionStatuses: gameLibrary.syncCompletionStatusesCommandHandler,
+					SyncGames: gameLibrary.syncGamesCommandHandler,
+					SyncGenres: gameLibrary.syncGenresCommandHandler,
+					SyncCompanies: gameLibrary.syncCompaniesCommandHandler,
+					SyncPlatforms: gameLibrary.syncPlatformsCommandHandler,
+					SyncCompletionStatuses: gameLibrary.syncCompletionStatusesCommandHandler,
 					CreateGameLibraryFilter: gameLibrary.createGameLibraryFilterCommandHandler,
 				},
 			},

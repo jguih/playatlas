@@ -3,7 +3,6 @@ import type { IDomainEventBusPort } from "$lib/modules/common/application";
 import type { IRecommendationEnginePort } from "$lib/modules/game-library/application";
 import type {
 	ICreateGameLibraryCommandHandler,
-	IProjectGameVectorsCommandHandler,
 	ISyncCompaniesCommandHandlerPort,
 	ISyncCompletionStatusesCommandHandlerPort,
 	ISyncGameClassificationsCommandHandlerPort,
@@ -20,7 +19,6 @@ import type {
 	IGetGamesByIdsQueryHandlerPort,
 	IGetGamesQueryHandlerPort,
 	IGetGamesRankedQueryHandlerPort,
-	IGetGameVectorsQueryHandlerPort,
 	IGetGenreByIdQueryHandlerPort,
 	IGetGenresByIdsQueryHandlerPort,
 	IGetPlatformsByIdsQueryHandlerPort,
@@ -44,12 +42,6 @@ export interface ClientApiV1 {
 		};
 		RecommendationEngine: {
 			Engine: IRecommendationEnginePort;
-			Query: {
-				GetGameVectors: IGetGameVectorsQueryHandlerPort;
-			};
-			Command: {
-				ProjectGameVectors: IProjectGameVectorsCommandHandler;
-			};
 		};
 		Query: {
 			GetGames: IGetGamesQueryHandlerPort;
@@ -63,11 +55,11 @@ export interface ClientApiV1 {
 			GetGameLibraryFilters: IGetGameLibraryFiltersQueryHandlerPort;
 		};
 		Command: {
-			UpsertGames: ISyncGamesCommandHandlerPort;
-			UpsertGenres: ISyncGenresCommandHandlerPort;
-			UpsertCompanies: ISyncCompaniesCommandHandlerPort;
-			UpsertPlatforms: ISyncPlatformsCommandHandlerPort;
-			UpsertCompletionStatuses: ISyncCompletionStatusesCommandHandlerPort;
+			SyncGames: ISyncGamesCommandHandlerPort;
+			SyncGenres: ISyncGenresCommandHandlerPort;
+			SyncCompanies: ISyncCompaniesCommandHandlerPort;
+			SyncPlatforms: ISyncPlatformsCommandHandlerPort;
+			SyncCompletionStatuses: ISyncCompletionStatusesCommandHandlerPort;
 			CreateGameLibraryFilter: ICreateGameLibraryCommandHandler;
 		};
 	};

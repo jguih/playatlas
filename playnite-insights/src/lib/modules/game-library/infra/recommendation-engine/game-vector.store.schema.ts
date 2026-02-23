@@ -25,7 +25,7 @@ export const gameVectorStoreSchema: IIndexedDbSchema = {
 		if (!db.objectStoreNames.contains(storeName)) {
 			const keyPath: (keyof GameVectorReadModel)[] = ["GameId", "ClassificationId"];
 			const store = db.createObjectStore(storeName, { keyPath });
-			createIndex(store, index.BY_GAME_ID, ["GameId", "ClassificationId", "NormalizedScore"]);
+			createIndex(store, index.BY_GAME_ID, "GameId");
 		}
 	},
 };

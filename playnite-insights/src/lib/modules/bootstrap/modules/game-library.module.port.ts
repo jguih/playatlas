@@ -16,7 +16,6 @@ import type {
 } from "$lib/modules/game-library/application";
 import type {
 	ICreateGameLibraryCommandHandler,
-	IProjectGameVectorsCommandHandler,
 	ISyncCompaniesCommandHandlerPort,
 	ISyncCompletionStatusesCommandHandlerPort,
 	ISyncGameClassificationsCommandHandlerPort,
@@ -43,7 +42,6 @@ import type {
 	IGetGamesByIdsQueryHandlerPort,
 	IGetGamesQueryHandlerPort,
 	IGetGamesRankedQueryHandlerPort,
-	IGetGameVectorsQueryHandlerPort,
 	IGetGenreByIdQueryHandlerPort,
 	IGetGenresByIdsQueryHandlerPort,
 	IGetPlatformsByIdsQueryHandlerPort,
@@ -96,7 +94,7 @@ export interface IClientGameLibraryModulePort {
 	get syncGameClassificationsCommandHandler(): ISyncGameClassificationsCommandHandlerPort;
 	get syncGameClassificationsFlow(): ISyncGameClassificationsFlowPort;
 
-	get getGameVectorsQueryHandler(): IGetGameVectorsQueryHandlerPort;
 	get recommendationEngine(): IRecommendationEnginePort;
-	get projectGameVectorsCommandHandler(): IProjectGameVectorsCommandHandler;
+
+	initializeAsync: () => Promise<void>;
 }

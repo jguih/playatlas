@@ -44,20 +44,25 @@ export class RecommendationEngine implements IRecommendationEnginePort {
 	) => {
 		const { filters } = props;
 		const applyFilters = this.combineFilters(...(filters ?? []));
-		const gameVectors = await this.deps.gameVectorProjectionService.buildAsync();
-		const instanceVector = await this.deps.instancePreferenceModelService.buildAsync(gameVectors);
+		const instanceVector = this.deps.instancePreferenceModelService.getVector();
 		const results: RankedGame[] = [];
 
-		for (const [gameId, gameVector] of gameVectors) {
-			if (!applyFilters({ gameId, vector: gameVector })) continue;
+		if (!instanceVector) {
+			throw new Error(
+				"InstancePreferenceModelService not initialized. Call initializeAsync() before requesting recommendations.",
+			);
+		}
 
-			const sim = this.cosine(instanceVector, gameVector);
+		this.deps.gameVectorProjectionService.forEach((gameId, vector) => {
+			if (!applyFilters({ gameId, vector })) return;
+
+			const sim = this.cosine(instanceVector, vector);
 
 			results.push({
 				gameId,
 				similarity: sim,
 			});
-		}
+		});
 
 		results.sort((a, b) => {
 			const diff = b.similarity - a.similarity;

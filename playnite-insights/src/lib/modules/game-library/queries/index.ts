@@ -3,7 +3,6 @@ export * from "./get-completion-statuses-by-ids";
 export * from "./get-game-classifications-by-game-id";
 export * from "./get-game-classifications-by-ids";
 export * from "./get-game-library-filters";
-export * from "./get-game-vectors";
 export * from "./get-games";
 export * from "./get-games-by-ids";
 export * from "./get-games-ranked";

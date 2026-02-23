@@ -17,6 +17,8 @@ export class GameVectorProjectionWriter implements IGameVectorProjectionWriterPo
 	projectAsync: IGameVectorProjectionWriterPort["projectAsync"] = async ({
 		gameClassifications,
 	}) => {
+		if (gameClassifications.length === 0) return;
+
 		const normalizedScoresPerGame = new Map<GameId, Map<ClassificationId, number>>();
 		const toDelete: GameClassification[] = [];
 

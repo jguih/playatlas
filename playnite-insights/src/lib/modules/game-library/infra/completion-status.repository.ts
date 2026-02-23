@@ -1,10 +1,11 @@
-import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
+import { ClientEntityRepository } from "$lib/modules/common/infra";
 import type { ICompletionStatusMapperPort } from "../application";
 import type { CompletionStatus, CompletionStatusId } from "../domain/completion-status.entity";
 import type { ICompletionStatusRepositoryPort } from "./completion-status.repository.port";
 import { completionStatusRepositoryMeta } from "./completion-status.repository.schema";
 
-export type CompletionStatusRepositoryDeps = ClientEntityRepositoryDeps & {
+export type CompletionStatusRepositoryDeps = {
+	dbSignal: IDBDatabase;
 	completionStatusMapper: ICompletionStatusMapperPort;
 };
 

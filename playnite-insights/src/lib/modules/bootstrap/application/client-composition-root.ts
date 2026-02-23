@@ -97,6 +97,7 @@ export class ClientCompositionRoot {
 			gameVectorReadonlyStore: infra.gameVectorReadonlyStore,
 			gameVectorWriteStore: infra.gameVectorWriteStore,
 		});
+		await gameLibrary.initializeAsync();
 
 		const synchronization = new SynchronizationModule({
 			clock: this.clock,

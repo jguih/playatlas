@@ -1,6 +1,6 @@
 import type { GameId } from "$lib/modules/common/domain";
 import { IndexedDbRepository, type IndexedDbRepositoryDeps } from "$lib/modules/common/infra";
-import type { ClassificationId } from "@playatlas/common/domain";
+import { type ClassificationId } from "@playatlas/common/domain";
 import { gameVectorStoreMeta } from "./game-vector.store.schema";
 
 export type GameVectorReadModel = Readonly<{
@@ -11,7 +11,7 @@ export type GameVectorReadModel = Readonly<{
 
 export type IGameVectorReadonlyStore = {
 	getAllAsync: () => Promise<GameVectorReadModel[]>;
-	getByGameIdAsync: (gameId: GameId) => Promise<GameVectorReadModel[] | null>;
+	getByGameIdAsync: (gameId: GameId | GameId[]) => Promise<Map<GameId, GameVectorReadModel[]>>;
 };
 
 export type GameVectorReadonlyStoreDeps = IndexedDbRepositoryDeps;
@@ -34,7 +34,19 @@ export class GameVectorReadonlyStore
 		});
 	};
 
-	getByGameIdAsync: IGameVectorReadonlyStore["getByGameIdAsync"] = () => {
-		throw new Error("Not Implemented");
+	getByGameIdAsync: IGameVectorReadonlyStore["getByGameIdAsync"] = async (gameId) => {
+		const gameIds = Array.isArray(gameId) ? gameId : [gameId];
+		const classificationsMap = new Map<GameId, GameVectorReadModel[]>();
+
+		return await this.runTransaction([this.meta.storeName], "readonly", async ({ tx }) => {
+			const store = tx.objectStore(this.meta.storeName);
+
+			for (const gameId of gameIds) {
+				const models = await this.runRequest<GameVectorReadModel[]>(store.getAll(gameId));
+				classificationsMap.set(gameId, models);
+			}
+
+			return classificationsMap;
+		});
 	};
 }

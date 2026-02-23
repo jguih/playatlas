@@ -1,20 +1,26 @@
 import type { IClockPort } from "$lib/modules/common/application";
-import { GAME_CLASSIFICATION_DIMENSIONS, type GameId } from "$lib/modules/common/domain";
+import { GAME_CLASSIFICATION_DIMENSIONS } from "$lib/modules/common/domain";
 import type { GameSessionReadModel } from "$lib/modules/game-session/application";
 import type { IGameSessionReadonlyStore } from "$lib/modules/game-session/infra";
+import type { IGameVectorProjectionServicePort } from "./game-vector-projection.service";
 
 export type IInstancePreferenceModelService = {
-	buildAsync: (gameVectors: Map<GameId, Float32Array>) => Promise<Float32Array>;
+	initializeAsync: () => Promise<void>;
+	getVector: () => Float32Array | null;
+	invalidate: () => void;
+	rebuildAsync: () => Promise<void>;
 };
 
 export type InstancePreferenceModelServiceDeps = {
 	gameSessionReadonlyStore: IGameSessionReadonlyStore;
+	gameVectorProjectionService: IGameVectorProjectionServicePort;
 	clock: IClockPort;
 };
 
 export class InstancePreferenceModelService implements IInstancePreferenceModelService {
 	private readonly lambda: number = 0.05;
 	private readonly ONE_DAY_MS: number = 1000 * 60 * 60 * 24;
+	private cache: Float32Array | null = null;
 
 	constructor(private readonly deps: InstancePreferenceModelServiceDeps) {}
 
@@ -43,7 +49,7 @@ export class InstancePreferenceModelService implements IInstancePreferenceModelS
 		}
 	};
 
-	buildAsync: IInstancePreferenceModelService["buildAsync"] = async (gameVectors) => {
+	private buildAsync = async () => {
 		const instance = new Float32Array(GAME_CLASSIFICATION_DIMENSIONS);
 		const now = this.deps.clock.now();
 		const sessions = await this.deps.gameSessionReadonlyStore.getAllAsync();
@@ -51,7 +57,7 @@ export class InstancePreferenceModelService implements IInstancePreferenceModelS
 		for (const session of sessions) {
 			if (!session.EndTime) continue;
 
-			const vec = gameVectors.get(session.GameId);
+			const vec = this.deps.gameVectorProjectionService.getVector(session.GameId);
 			if (!vec) continue;
 
 			const w = this.sessionWeight(session, now.getTime());
@@ -65,5 +71,19 @@ export class InstancePreferenceModelService implements IInstancePreferenceModelS
 		this.normalize(instance);
 
 		return instance;
+	};
+
+	initializeAsync: IInstancePreferenceModelService["initializeAsync"] = async () => {
+		this.cache = await this.buildAsync();
+	};
+
+	getVector: IInstancePreferenceModelService["getVector"] = () => {
+		return this.cache ? Float32Array.from(this.cache) : null;
+	};
+
+	invalidate: IInstancePreferenceModelService["invalidate"] = () => (this.cache = null);
+
+	rebuildAsync: IInstancePreferenceModelService["rebuildAsync"] = async () => {
+		this.cache = await this.buildAsync();
 	};
 }

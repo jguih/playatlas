@@ -22,7 +22,7 @@ describe("GameLibrary / Games", () => {
 		// Arrange
 		const games = root.factories.game.buildList(200);
 
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
 
 		// Act
 		const { items } = await api.GameLibrary.Query.GetGames.executeAsync({
@@ -42,8 +42,8 @@ describe("GameLibrary / Games", () => {
 		const games = root.factories.game.buildList(50);
 
 		// Act
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games });
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 100,
@@ -59,7 +59,7 @@ describe("GameLibrary / Games", () => {
 		const now = new Date();
 		const games = root.factories.game.buildList(10);
 
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
 
 		const updated: Game[] = games.map((g) => ({
 			...g,
@@ -73,7 +73,7 @@ describe("GameLibrary / Games", () => {
 		}));
 
 		// Act
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games: updated });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games: updated });
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 10,
@@ -99,7 +99,7 @@ describe("GameLibrary / Games", () => {
 		const games = root.factories.game.buildList(1000);
 
 		// Act
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
 
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
 			limit: 1000,
@@ -116,10 +116,10 @@ describe("GameLibrary / Games", () => {
 			...root.factories.game.build(),
 			SourceLastUpdatedAt: new Date("2026-01-02"),
 		};
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games: game });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games: game });
 
 		// Act
-		await api.GameLibrary.Command.UpsertGames.executeAsync({
+		await api.GameLibrary.Command.SyncGames.executeAsync({
 			games: {
 				...game,
 				Playnite: game.Playnite
@@ -144,9 +144,9 @@ describe("GameLibrary / Games", () => {
 		// Arrange
 		const game: Game = { ...root.factories.game.build(), DeletedAt: faker.date.recent() };
 
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games: game });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games: game });
 
-		await api.GameLibrary.Command.UpsertGames.executeAsync({
+		await api.GameLibrary.Command.SyncGames.executeAsync({
 			games: {
 				...game,
 				DeletedAt: null,
@@ -177,7 +177,7 @@ describe("GameLibrary / Games", () => {
 			return { ...g, DeletedAt: faker.date.recent(), DeleteAfter: faker.date.future() };
 		});
 
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games: [...games, ...deletedGames] });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games: [...games, ...deletedGames] });
 
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
@@ -198,10 +198,10 @@ describe("GameLibrary / Games", () => {
 			SourceLastUpdatedAt: faker.date.future(),
 		};
 
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games: game });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games: game });
 
 		// Act
-		await api.GameLibrary.Command.UpsertGames.executeAsync({
+		await api.GameLibrary.Command.SyncGames.executeAsync({
 			games: {
 				...game,
 				DeletedAt: null,
@@ -221,10 +221,10 @@ describe("GameLibrary / Games", () => {
 	it("does not delete games missing from sync payload", async () => {
 		// Arrange
 		const games = root.factories.game.buildList(10);
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
 
 		// Act
-		await api.GameLibrary.Command.UpsertGames.executeAsync({
+		await api.GameLibrary.Command.SyncGames.executeAsync({
 			games: games[0],
 		});
 
@@ -264,7 +264,7 @@ describe("GameLibrary / Games", () => {
 			SourceLastUpdatedAt: newUpdatedAt,
 		};
 
-		await api.GameLibrary.Command.UpsertGames.executeAsync({
+		await api.GameLibrary.Command.SyncGames.executeAsync({
 			games: [...baseGames, matchingOld, matchingNew],
 		});
 
@@ -299,7 +299,7 @@ describe("GameLibrary / Games", () => {
 			SourceLastUpdatedAt: lateUpdatedAt,
 		};
 
-		await api.GameLibrary.Command.UpsertGames.executeAsync({
+		await api.GameLibrary.Command.SyncGames.executeAsync({
 			games: [...earlyNonMatching, matchingLate],
 		});
 
@@ -343,7 +343,7 @@ describe("GameLibrary / Games", () => {
 			SourceLastUpdatedAt: SourceLastUpdatedAt,
 		};
 
-		await api.GameLibrary.Command.UpsertGames.executeAsync({
+		await api.GameLibrary.Command.SyncGames.executeAsync({
 			games: [...older, matchingGame, ...newer],
 		});
 
@@ -363,7 +363,7 @@ describe("GameLibrary / Games", () => {
 		// Arrange
 		const games = root.factories.game.buildList(2000);
 
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
 
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({
@@ -384,7 +384,7 @@ describe("GameLibrary / Games", () => {
 		// Arrange
 		const games = root.factories.game.buildList(2000);
 
-		await api.GameLibrary.Command.UpsertGames.executeAsync({ games });
+		await api.GameLibrary.Command.SyncGames.executeAsync({ games });
 
 		// Act
 		const result = await api.GameLibrary.Query.GetGames.executeAsync({

@@ -1,5 +1,5 @@
 import type { GameLibraryFilterId } from "$lib/modules/common/domain";
-import { ClientEntityRepository, type ClientEntityRepositoryDeps } from "$lib/modules/common/infra";
+import { ClientEntityRepository } from "$lib/modules/common/infra";
 import type { GetGamesQueryFilter, GetGamesQuerySort } from "$lib/modules/common/queries";
 import type { IGameLibraryFilterMapperPort } from "../application/game-library-filter.mapper.port";
 import type { GameLibraryFilter } from "../domain/game-library-filter";
@@ -27,7 +27,8 @@ export type GameLibraryFilterModel = {
 	UseCount: number;
 };
 
-export type GameLibraryFilterRepositoryDeps = ClientEntityRepositoryDeps & {
+export type GameLibraryFilterRepositoryDeps = {
+	dbSignal: IDBDatabase;
 	gameLibraryFilterMapper: IGameLibraryFilterMapperPort;
 };
 

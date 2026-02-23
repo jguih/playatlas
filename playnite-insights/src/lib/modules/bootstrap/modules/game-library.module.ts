@@ -39,7 +39,6 @@ import {
 } from "$lib/modules/game-library/application";
 import {
 	type ICreateGameLibraryCommandHandler,
-	type IProjectGameVectorsCommandHandler,
 	type ISyncCompaniesCommandHandlerPort,
 	type ISyncCompletionStatusesCommandHandlerPort,
 	type ISyncGameClassificationsCommandHandlerPort,
@@ -47,7 +46,6 @@ import {
 	type ISyncGenresCommandHandlerPort,
 	type ISyncPlatformsCommandHandlerPort,
 	CreateGameLibraryFilterCommandHandler,
-	ProjectGameVectorsCommandHandler,
 	SyncCompaniesCommandHandler,
 	SyncCompletionStatusesCommandHandler,
 	SyncGameClassificationsCommandHandler,
@@ -85,7 +83,6 @@ import {
 	type IGetGamesQueryHandlerFilterBuilderPort,
 	type IGetGamesQueryHandlerPort,
 	type IGetGamesRankedQueryHandlerPort,
-	type IGetGameVectorsQueryHandlerPort,
 	type IGetGenreByIdQueryHandlerPort,
 	type IGetGenresByIdsQueryHandlerPort,
 	type IGetPlatformsByIdsQueryHandlerPort,
@@ -98,7 +95,6 @@ import {
 	GetGamesQueryHandler,
 	GetGamesQueryHandlerFilterBuilder,
 	GetGamesRankedQueryHandler,
-	GetGameVectorsQueryHandler,
 	GetGenresByIdQueryHandler,
 	GetGenresByIdsQueryHandler,
 	GetPlatformsByIdsQueryHandler,
@@ -169,10 +165,8 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	// #region: Recommendation Engine
 	readonly gameVectorProjectionService: IGameVectorProjectionServicePort;
 	readonly gameVectorProjectionWriter: IGameVectorProjectionWriterPort;
-	readonly getGameVectorsQueryHandler: IGetGameVectorsQueryHandlerPort;
 	readonly instancePreferenceModelService: IInstancePreferenceModelService;
 	readonly recommendationEngine: IRecommendationEnginePort;
-	readonly projectGameVectorsCommandHandler: IProjectGameVectorsCommandHandler;
 	// #endregion
 
 	constructor({
@@ -194,16 +188,11 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		this.instancePreferenceModelService = new InstancePreferenceModelService({
 			clock,
 			gameSessionReadonlyStore,
+			gameVectorProjectionService: this.gameVectorProjectionService,
 		});
 		this.recommendationEngine = new RecommendationEngine({
 			gameVectorProjectionService: this.gameVectorProjectionService,
 			instancePreferenceModelService: this.instancePreferenceModelService,
-		});
-		this.getGameVectorsQueryHandler = new GetGameVectorsQueryHandler({
-			gameVectorProjectionService: this.gameVectorProjectionService,
-		});
-		this.projectGameVectorsCommandHandler = new ProjectGameVectorsCommandHandler({
-			gameVectorProjectionWriter: this.gameVectorProjectionWriter,
 		});
 		// #endregion
 
@@ -343,4 +332,9 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		});
 		// #endregion
 	}
+
+	initializeAsync: IClientGameLibraryModulePort["initializeAsync"] = async () => {
+		await this.gameVectorProjectionService.initializeAsync();
+		await this.instancePreferenceModelService.initializeAsync();
+	};
 }
