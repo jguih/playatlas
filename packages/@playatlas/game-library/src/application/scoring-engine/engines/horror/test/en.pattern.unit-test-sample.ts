@@ -26,7 +26,7 @@ export const horrorPatternUniTestSampleEN = {
 	},
 	UNSETTLING_ATMOSPHERE: {
 		pattern: PATTERN.UNSETTLING_ATMOSPHERE,
-		shouldMatch: ["eerie atmosphere", "dark atmosphere", "terrifying atmosphere"],
+		shouldMatch: ["eerie atmosphere", "unsettling atmosphere", "terrifying atmosphere"],
 		shouldNotMatch: ["Earth's atmosphere", "Jupiter's atmosphere"],
 	},
 	UNSETTLING_WORLD_ADVENTURE: {
