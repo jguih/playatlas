@@ -8,6 +8,8 @@ import {
 	type IGameClassificationMapperPort,
 	type IGameLibraryFilterMapperPort,
 	type IGameMapperPort,
+	type IGameRecommendationRecordProjectionServicePort,
+	type IGameRecommendationRecordProjectionWriterPort,
 	type IGameVectorProjectionServicePort,
 	type IGameVectorProjectionWriterPort,
 	type IGenreMapperPort,
@@ -25,6 +27,8 @@ import {
 	GameClassificationMapper,
 	GameLibraryFilterMapper,
 	GameMapper,
+	GameRecommendationRecordProjectionService,
+	GameRecommendationRecordProjectionWriter,
 	GameVectorProjectionService,
 	GameVectorProjectionWriter,
 	GenreMapper,
@@ -60,6 +64,8 @@ import {
 	type IGameClassificationRepositoryPort,
 	type IGameLibraryFilterHasherPort,
 	type IGameLibraryFilterRepositoryPort,
+	type IGameRecommendationRecordReadonlyStore,
+	type IGameRecommendationRecordWriteStore,
 	type IGameRepositoryPort,
 	type IGameVectorReadonlyStore,
 	type IGameVectorWriteStore,
@@ -113,6 +119,8 @@ export type ClientGameLibraryModuleDeps = {
 	gameSessionReadonlyStore: IGameSessionReadonlyStore;
 	gameVectorWriteStore: IGameVectorWriteStore;
 	gameVectorReadonlyStore: IGameVectorReadonlyStore;
+	gameRecommendationRecordWriteStore: IGameRecommendationRecordWriteStore;
+	gameRecommendationRecordReadonlyStore: IGameRecommendationRecordReadonlyStore;
 	eventBus: IDomainEventBusPort;
 };
 
@@ -170,6 +178,8 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	// #region: Recommendation Engine
 	readonly gameVectorProjectionService: IGameVectorProjectionServicePort;
 	readonly gameVectorProjectionWriter: IGameVectorProjectionWriterPort;
+	readonly gameRecommendationRecordProjectionService: IGameRecommendationRecordProjectionServicePort;
+	readonly gameRecommendationRecordProjectionWriter: IGameRecommendationRecordProjectionWriterPort;
 	readonly instancePreferenceModelService: IInstancePreferenceModelService;
 	readonly recommendationEngine: IRecommendationEnginePort;
 	// #endregion
@@ -181,15 +191,25 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		syncRunner,
 		gameSessionReadonlyStore,
 		gameVectorReadonlyStore,
+		gameRecommendationRecordWriteStore,
+		gameRecommendationRecordReadonlyStore,
 		gameVectorWriteStore,
 		eventBus,
 	}: ClientGameLibraryModuleDeps) {
 		// #region: Recommendation Engine
 		this.gameVectorProjectionService = new GameVectorProjectionService({
-			gameVectorReadonlyStore: gameVectorReadonlyStore,
+			gameVectorReadonlyStore,
 		});
 		this.gameVectorProjectionWriter = new GameVectorProjectionWriter({
-			gameVectorWriteStore: gameVectorWriteStore,
+			gameVectorWriteStore,
+		});
+		this.gameRecommendationRecordProjectionService = new GameRecommendationRecordProjectionService({
+			gameRecommendationRecordReadonlyStore,
+		});
+		this.gameRecommendationRecordProjectionWriter = new GameRecommendationRecordProjectionWriter({
+			gameRecommendationRecordReadonlyStore,
+			gameRecommendationRecordWriteStore,
+			gameVectorProjectionService: this.gameVectorProjectionService,
 		});
 		this.instancePreferenceModelService = new InstancePreferenceModelService({
 			clock,
@@ -326,6 +346,8 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			gameVectorProjectionWriter: this.gameVectorProjectionWriter,
 			gameVectorProjectionService: this.gameVectorProjectionService,
 			instancePreferenceModelService: this.instancePreferenceModelService,
+			gameRecommendationRecordProjectionService: this.gameRecommendationRecordProjectionService,
+			gameRecommendationRecordProjectionWriter: this.gameRecommendationRecordProjectionWriter,
 			eventBus,
 			clock,
 		});
@@ -352,5 +374,6 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 	initializeAsync: IClientGameLibraryModulePort["initializeAsync"] = async () => {
 		await this.gameVectorProjectionService.initializeAsync();
 		await this.instancePreferenceModelService.initializeAsync();
+		await this.gameRecommendationRecordProjectionService.initializeAsync();
 	};
 }

@@ -15,6 +15,7 @@ import {
 	completionStatusRepositorySchema,
 	gameClassificationRepositorySchema,
 	gameLibraryFilterRepositorySchema,
+	gameRecommendationRecordStoreSchema,
 	gameRepositorySchema,
 	gameVectorStoreSchema,
 	genreRepositorySchema,
@@ -58,6 +59,7 @@ export class ClientCompositionRoot {
 				gameClassificationRepositorySchema,
 				gameVectorStoreSchema,
 				gameSessionStoreSchema,
+				gameRecommendationRecordStoreSchema,
 			],
 			clock: this.clock,
 		});
@@ -96,6 +98,8 @@ export class ClientCompositionRoot {
 			gameSessionReadonlyStore: gameSession.gameSessionReadonlyStore,
 			gameVectorReadonlyStore: infra.gameVectorReadonlyStore,
 			gameVectorWriteStore: infra.gameVectorWriteStore,
+			gameRecommendationRecordReadonlyStore: infra.gameRecommendationRecordReadonlyStore,
+			gameRecommendationRecordWriteStore: infra.gameRecommendationRecordWriteStore,
 			eventBus: this.eventBus,
 		});
 		await gameLibrary.initializeAsync();

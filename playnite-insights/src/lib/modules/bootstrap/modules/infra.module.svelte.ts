@@ -7,9 +7,13 @@ import {
 	type IIndexedDbSchema,
 } from "$lib/modules/common/infra";
 import {
+	GameRecommendationRecordReadonlyStore,
+	GameRecommendationRecordWriteStore,
 	GameVectorReadonlyStore,
 	GameVectorWriteStore,
 	PlayAtlasSyncState,
+	type IGameRecommendationRecordReadonlyStore,
+	type IGameRecommendationRecordWriteStore,
 	type IGameVectorReadonlyStore,
 	type IGameVectorWriteStore,
 } from "$lib/modules/game-library/infra";
@@ -27,6 +31,8 @@ export class ClientInfraModule implements IClientInfraModulePort {
 	private readonly indexedDbSignal: IndexedDbSignal;
 	#gameVectorReadonlyStore: IGameVectorReadonlyStore | null = null;
 	#gameVectorWriteStore: IGameVectorWriteStore | null = null;
+	#gameRecommendationRecordReadonlyStore: IGameRecommendationRecordReadonlyStore | null = null;
+	#gameRecommendationRecordWriteStore: IGameRecommendationRecordWriteStore | null = null;
 
 	readonly playAtlasSyncState: IPlayAtlasSyncStatePort;
 
@@ -40,6 +46,22 @@ export class ClientInfraModule implements IClientInfraModulePort {
 		if (!this.#gameVectorWriteStore)
 			this.#gameVectorWriteStore = new GameVectorWriteStore({ dbSignal: this.dbSignal });
 		return this.#gameVectorWriteStore;
+	}
+
+	get gameRecommendationRecordReadonlyStore(): IGameRecommendationRecordReadonlyStore {
+		if (!this.#gameRecommendationRecordReadonlyStore)
+			this.#gameRecommendationRecordReadonlyStore = new GameRecommendationRecordReadonlyStore({
+				dbSignal: this.dbSignal,
+			});
+		return this.#gameRecommendationRecordReadonlyStore;
+	}
+
+	get gameRecommendationRecordWriteStore(): IGameRecommendationRecordWriteStore {
+		if (!this.#gameRecommendationRecordWriteStore)
+			this.#gameRecommendationRecordWriteStore = new GameRecommendationRecordWriteStore({
+				dbSignal: this.dbSignal,
+			});
+		return this.#gameRecommendationRecordWriteStore;
 	}
 
 	get dbSignal(): IDBDatabase {

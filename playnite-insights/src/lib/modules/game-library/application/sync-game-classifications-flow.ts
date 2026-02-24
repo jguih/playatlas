@@ -7,6 +7,8 @@ import type {
 import type { GameClassificationResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncGameClassificationsCommandHandlerPort } from "../commands/sync-game-classifications/sync-game-classifications.command-handler";
 import type {
+	IGameRecommendationRecordProjectionServicePort,
+	IGameRecommendationRecordProjectionWriterPort,
 	IGameVectorProjectionServicePort,
 	IInstancePreferenceModelService,
 } from "./recommendation-engine";
@@ -25,6 +27,8 @@ export type SyncGameClassificationsFlowDeps = {
 	gameVectorProjectionWriter: IGameVectorProjectionWriterPort;
 	gameVectorProjectionService: IGameVectorProjectionServicePort;
 	instancePreferenceModelService: IInstancePreferenceModelService;
+	gameRecommendationRecordProjectionWriter: IGameRecommendationRecordProjectionWriterPort;
+	gameRecommendationRecordProjectionService: IGameRecommendationRecordProjectionServicePort;
 	eventBus: IDomainEventBusPort;
 	clock: IClockPort;
 };
@@ -58,6 +62,8 @@ export class SyncGameClassificationsFlow implements ISyncGameClassificationsFlow
 			gameVectorProjectionWriter,
 			gameVectorProjectionService,
 			instancePreferenceModelService,
+			gameRecommendationRecordProjectionService,
+			gameRecommendationRecordProjectionWriter,
 			eventBus,
 			clock,
 		} = this.deps;
@@ -71,6 +77,12 @@ export class SyncGameClassificationsFlow implements ISyncGameClassificationsFlow
 				await gameVectorProjectionWriter.projectAsync({ gameClassifications });
 				await gameVectorProjectionService.rebuildFromClassifications(gameClassifications);
 				await instancePreferenceModelService.rebuildAsync();
+				await gameRecommendationRecordProjectionWriter.projectFromGameClassificationAsync({
+					gameClassifications,
+				});
+				await gameRecommendationRecordProjectionService.rebuildFromClassifications(
+					gameClassifications,
+				);
 
 				eventBus.emit({
 					id: crypto.randomUUID(),

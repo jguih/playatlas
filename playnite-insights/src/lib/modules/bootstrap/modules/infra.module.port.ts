@@ -1,5 +1,7 @@
 import type { IPlayAtlasSyncStatePort } from "$lib/modules/common/application";
 import type {
+	IGameRecommendationRecordReadonlyStore,
+	IGameRecommendationRecordWriteStore,
 	IGameVectorReadonlyStore,
 	IGameVectorWriteStore,
 } from "$lib/modules/game-library/infra";
@@ -11,4 +13,6 @@ export interface IClientInfraModulePort {
 
 	get gameVectorWriteStore(): IGameVectorWriteStore;
 	get gameVectorReadonlyStore(): IGameVectorReadonlyStore;
+	get gameRecommendationRecordWriteStore(): IGameRecommendationRecordWriteStore;
+	get gameRecommendationRecordReadonlyStore(): IGameRecommendationRecordReadonlyStore;
 }
