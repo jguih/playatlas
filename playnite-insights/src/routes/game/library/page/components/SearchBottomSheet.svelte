@@ -44,7 +44,7 @@
 
 	const handleInput: FormEventHandler<HTMLInputElement> = (event) => {
 		const value = event.currentTarget.value;
-		onChange(value);
+		onChange?.(value);
 	};
 
 	onMount(() => {

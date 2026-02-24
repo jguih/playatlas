@@ -28,24 +28,16 @@
 	const search = new HomePageSearch();
 	const syncProgress = $derived(api().Synchronization.SyncProgressReporter.progressSignal);
 	const libraryFilterItems = $state<{ items: GameLibraryFilter[] }>({ items: [] });
-	let reloadPagerTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);
 	let main = $state<HTMLElement | undefined>(undefined);
 
-	const reloadPagerAsync = async () => {
-		pager.invalidateSignal();
-		await pager.loadMoreAsync();
-	};
-
-	const clearReloadPagerTimeout = () => {
-		if (reloadPagerTimeout !== undefined) {
-			clearTimeout(reloadPagerTimeout);
-			reloadPagerTimeout = undefined;
-		}
-	};
+	$inspect(pager.pagerStateSignal);
 
 	const commitSearchAsync = async () => {
 		const state = $state.snapshot(pager.pagerStateSignal) as unknown as GameLibraryPagerState;
+
+		pager.setQuery({ mode: "query", filters: { search: state.query.filters.search } });
+		await pager.loadMoreAsync();
 
 		const command: CreateGameLibraryFilterCommand = {
 			query: {
@@ -54,25 +46,8 @@
 			},
 		};
 
-		await Promise.allSettled([
-			reloadPagerAsync(),
-			api().GameLibrary.Command.CreateGameLibraryFilter.executeAsync(command),
-		]);
+		await api().GameLibrary.Command.CreateGameLibraryFilter.executeAsync(command);
 		await loadLibraryFiltersAsync();
-	};
-
-	const reloadPagerDebounced = () => {
-		clearReloadPagerTimeout();
-
-		if (!pager.pagerStateSignal.query.filters.search) {
-			void reloadPagerAsync();
-			return;
-		}
-
-		reloadPagerTimeout = setTimeout(() => {
-			void reloadPagerAsync();
-			reloadPagerTimeout = undefined;
-		}, 1_000);
 	};
 
 	const loadLibraryFiltersAsync = async () => {
@@ -108,16 +83,6 @@
 	});
 
 	onMount(() => {
-		const unsubscribe = api().EventBus.on("sync-finished", () => {
-			if (pager.pagerStateSignal.games.length === 0) {
-				void reloadPagerAsync();
-			}
-		});
-
-		return () => unsubscribe();
-	});
-
-	onMount(() => {
 		void loadLibraryFiltersAsync();
 	});
 
@@ -149,14 +114,10 @@
 {#if search.shouldOpen}
 	<SearchBottomSheet
 		onClose={() => {
-			clearReloadPagerTimeout();
-			search.close();
 			void commitSearchAsync();
+			search.close();
 		}}
 		bind:value={pager.pagerStateSignal.query.filters.search}
-		onChange={() => {
-			reloadPagerDebounced();
-		}}
 		libraryFilterItems={libraryFilterItems.items}
 		onApplyFilterItem={async (item) => {
 			pager.setQuery({ mode: "query", filters: { search: item.Query.filter?.search } });
