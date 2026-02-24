@@ -1,5 +1,29 @@
 # PlayAtlas
 
+<p align="center">
+<img src="docs/screenshots/playatlas.jpg" width="800" title="PlayAtlas Main Screenshot">
+</p>
+
+## Introduction
+
+TODO
+
+## Motivation
+
+Modern storefronts are highly optimized for acquisition-driven discovery. They excel at recommending games you don’t yet own.
+
+But a different question often goes unanswered:
+
+> From the 1,000+ games I already own, what should I play next?
+
+[**Playnite**](https://playnite.link/) already solves the hardest problem: aggregating and normalizing a user’s distributed game libraries into a single, unified source of truth.
+
+**PlayAtlas** builds on top of that foundation, introducing a deterministic, **multi-dimensional classification engine** that transforms a static library into a structured space of **explainable genre** intensity and structural patterns.
+
+Instead of recommending what to buy, **PlayAtlas helps users rediscover what they already have**.
+
+It does so without relying on external services, opaque algorithms, or cloud infrastructure.
+
 ## Application Architecture
 
 ### Scoring Engine Architecture
