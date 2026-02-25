@@ -54,26 +54,3 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 FROM playwright-deps AS playwright
 WORKDIR /usr/src/app
 ENTRYPOINT ["pnpm", "--filter", "playwright", "exec", "playwright", "test"]
-
-FROM python:3.14 AS mkdocs-build
-
-WORKDIR /app
-
-RUN pip install mkdocs-material
-
-COPY ./docs /app
-RUN mkdocs build -d ./dist
-
-FROM busybox:1.36 AS mkdocs-runtime
-
-WORKDIR /app
-
-RUN adduser -D mkdocs
-
-COPY --chown=mkdocs:mkdocs --from=mkdocs-build /app/dist /app
-
-EXPOSE 3001
-
-USER mkdocs
-
-ENTRYPOINT ["busybox", "httpd", "-f", "-v", "-p", "3001"]

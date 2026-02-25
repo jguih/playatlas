@@ -4,9 +4,25 @@ Here's a quick, no-choice way to install PlayAtlas so you can try it out as soon
 
 ## Requirements
 
-- A Linux host
-- Podman
-- A reverse-proxy to terminate TLS.
+#### 1. Linux host
+
+A dedicated Linux host that:
+
+- Can run Podman containers
+- Has a reverse-proxy to terminate TLS
+- Allows TCP connections on port 3000 over LAN
+
+#### 2. Windows host
+
+A personal Windows host with Playnite installed.
+
+#### 3. Mobile device
+
+A personal mobile device with Firefox or any Chromium-based browser installed.
+
+!!! warning
+
+    **PlayAtlas** is a distributed solution **requiring at least 3 distinct devices**. Installing PlayAtlas directly on your Windows Playnite host is not support nor recommended. Other ways of installing PlayAtlas not mentioned in this documentation are not supported.
 
 ## Step 1: Start the Container
 
@@ -18,26 +34,19 @@ podman run -d \
   -v playatlas-data:/app/data \
   -e TZ=America/Sao_Paulo \
   -e PLAYATLAS_LOG_LEVEL=0 \
-  -p 127.0.0.1:3000:3000 \
   docker.io/library/playatlas
 ```
 
-By default, the container is bound to `127.0.0.1`, meaning it is only accessible from the host machine.
-
-If you intend to access PlayAtlas from another device on your LAN (or from your Playnite host, for the PlayAtlas Exporter to be able to communicate with the server, for example), replace 127.0.0.1 with the server's private IPv4 or IPv6 address. For example:
-
-```bash
--p 192.168.1.10:3000:3000
-```
+Attaching the container to a network or pod may be required for the next step.
 
 **Important: Explicit Interface Binding**
 
 Do not expose PlayAtlas using `-p 3000:3000` without specifying an address.
-Doing so will bind the service to all network interfaces (0.0.0.0), potentially exposing it beyond your intended trust boundary.
+Doing so will bind the service to all network interfaces (`0.0.0.0` on IPv4 and `::` on IPv6), potentially exposing it beyond your intended trust boundary.
 
 **PlayAtlas is designed to operate within a controlled LAN environment** and may allow remote extension-triggered operations on your Playnite host. Binding explicitly ensures you maintain that boundary.
 
-## Step 2: Configure HTTPS (Required)
+## Step 2: Configure HTTPS
 
 When PlayAtlas is accessed from another device on your LAN, HTTPS is required.
 
@@ -47,10 +56,10 @@ The recommended approach is to use a reverse proxy.
 
 ### Example: Caddy
 
-Below is a minimal `Caddyfile` example:
+Below is a minimal `Caddyfile` example, assuming Caddy is also running in a Podman container in the same network or pod as PlayAtlas:
 
 ```caddyfile
 playatlas.local {
-  reverse_proxy 192.168.1.10:3000
+  reverse_proxy playatlas:3000
 }
 ```
