@@ -1,3 +1,4 @@
+import type { Game } from "../../domain/game.entity";
 import type { GameClassification } from "../../domain/scoring-engine/game-classification.entity";
 import type {
 	IGameRecommendationRecordReadonlyStore,
@@ -9,6 +10,7 @@ export type IGameRecommendationRecordProjectionWriterPort = {
 	projectFromGameClassificationAsync: (props: {
 		gameClassifications: GameClassification[];
 	}) => Promise<void>;
+	projectFromGameAsync: (props: { games: Game[] }) => Promise<void>;
 };
 
 export type GameRecommendationRecordProjectionWriterDeps = {
@@ -22,7 +24,7 @@ export class GameRecommendationRecordProjectionWriter implements IGameRecommenda
 
 	projectFromGameClassificationAsync: IGameRecommendationRecordProjectionWriterPort["projectFromGameClassificationAsync"] =
 		async ({ gameClassifications }) => {
-			const gameIds = gameClassifications.map((gc) => gc.GameId);
+			const gameIds = new Set(gameClassifications.map((gc) => gc.GameId));
 
 			for (const gameId of gameIds) {
 				const record =
@@ -38,6 +40,33 @@ export class GameRecommendationRecordProjectionWriter implements IGameRecommenda
 					await this.deps.gameRecommendationRecordWriteStore.upsertAsync({
 						GameId: gameId,
 						Vector: vector,
+					});
+				}
+			}
+		};
+
+	projectFromGameAsync: IGameRecommendationRecordProjectionWriterPort["projectFromGameAsync"] =
+		async ({ games }) => {
+			const gamesMap = new Map(games.map((g) => [g.Id, g]));
+
+			for (const [gameId, game] of gamesMap) {
+				const record =
+					await this.deps.gameRecommendationRecordReadonlyStore.getByGameIdAsync(gameId);
+				const vector = this.deps.gameVectorProjectionService.getVector(gameId);
+
+				if (vector && record)
+					await this.deps.gameRecommendationRecordWriteStore.upsertAsync({
+						...record,
+						Vector: vector,
+						IsHidden: game.Playnite?.Hidden,
+						SearchName: game.SearchName ?? undefined,
+					});
+				else if (vector) {
+					await this.deps.gameRecommendationRecordWriteStore.upsertAsync({
+						GameId: gameId,
+						Vector: vector,
+						IsHidden: game.Playnite?.Hidden,
+						SearchName: game.SearchName ?? undefined,
 					});
 				}
 			}

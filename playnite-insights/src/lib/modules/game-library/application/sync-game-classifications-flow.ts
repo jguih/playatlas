@@ -74,9 +74,11 @@ export class SyncGameClassificationsFlow implements ISyncGameClassificationsFlow
 			mapDtoToEntity: ({ dto, now }) => gameClassificationMapper.fromDto(dto, now),
 			persistAsync: async ({ entities: gameClassifications }) => {
 				await syncGameClassificationsCommandHandler.executeAsync({ gameClassifications });
+
 				await gameVectorProjectionWriter.projectAsync({ gameClassifications });
 				await gameVectorProjectionService.rebuildFromClassifications(gameClassifications);
 				await instancePreferenceModelService.rebuildAsync();
+
 				await gameRecommendationRecordProjectionWriter.projectFromGameClassificationAsync({
 					gameClassifications,
 				});

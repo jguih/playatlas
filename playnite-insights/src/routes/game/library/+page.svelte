@@ -31,8 +31,6 @@
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);
 	let main = $state<HTMLElement | undefined>(undefined);
 
-	$inspect(pager.pagerStateSignal);
-
 	const commitSearchAsync = async () => {
 		const state = $state.snapshot(pager.pagerStateSignal) as unknown as GameLibraryPagerState;
 

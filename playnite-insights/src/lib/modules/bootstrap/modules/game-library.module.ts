@@ -247,6 +247,7 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			syncRunner,
 			eventBus,
 			clock,
+			gameRecommendationRecordProjectionWriter: this.gameRecommendationRecordProjectionWriter,
 		});
 
 		this.genreMapper = new GenreMapper({ clock });
