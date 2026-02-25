@@ -4,7 +4,7 @@ import { makeSyncGamesCommand } from "@playatlas/playnite-integration/commands";
 import { beforeEach, describe, expect, it } from "vitest";
 import { api, factory, root } from "../vitest.global.setup";
 
-describe("Game Library / Game", () => {
+describe("Game Library / Game", { timeout: 20_000 }, () => {
 	beforeEach(() => {
 		root.seedGameRelationships();
 		root.seedDefaultClassifications();

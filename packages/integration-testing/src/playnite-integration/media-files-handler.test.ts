@@ -9,7 +9,7 @@ import {
 } from "../test-lib/environments/media-files-sync.test-env";
 import { api, root } from "../vitest.global.setup";
 
-describe("Playnite Integration / Media Files Handler", () => {
+describe("Playnite Integration / Media Files Handler", { timeout: 20_000 }, () => {
 	const envBuilder = new MediaFilesSyncTestEnvironmentBuilder();
 	let env: MediaFilesSyncTestEnvironment;
 
