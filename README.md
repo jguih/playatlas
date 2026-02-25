@@ -8,6 +8,10 @@ A self-hosted recommendation engine that turns your <strong>Playnite</strong> li
 <img src="docs/docs/screenshots/playatlas.jpg" width="800" title="PlayAtlas Main Screenshot">
 </p>
 
+## Links
+
+- [Docs](https://jguih.github.io/playatlas/)
+
 ## Introduction
 
 **PlayAtlas** is a self-hosted recommendation and classification engine designed to operate on top of a **Playnite**-managed gaming library.
