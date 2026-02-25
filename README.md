@@ -5,7 +5,7 @@ A self-hosted recommendation engine that turns your <strong>Playnite</strong> li
 </h3>
 
 <p align="center">
-<img src="docs/screenshots/playatlas.jpg" width="800" title="PlayAtlas Main Screenshot">
+<img src="docs/docs/screenshots/playatlas.jpg" width="800" title="PlayAtlas Main Screenshot">
 </p>
 
 ## Introduction
@@ -60,7 +60,23 @@ To learn more about the internals of score engines and how to create new ones, v
 
 ## Security Model
 
-TODO
+### Trust Boundary
+
+PlayAtlas is designed to operate inside a controlled LAN environment.
+
+It assumes:
+- The Linux host running PlayAtlas is trusted.
+- The Windows host running Playnite + Exporter is trusted.
+- LAN clients accessing the Web UI are trusted.
+- The application is not directly exposed to the public internet.
+
+PlayAtlas is not designed to be internet-facing.
+
+### Exporter Trust Model
+
+PlayAtlas enforces a strict trust boundary between the Playnite extension and the server. The server does not assume that any connecting extension is legitimate. **Initial registration requests are treated as untrusted** and **require explicit user approval** before the extension is granted access. Until approved, the extension cannot submit metadata, trigger synchronization, or interact with persistent state. This ensures that knowledge of the server endpoint alone is insufficient to gain access, preventing unauthorized clients from injecting or modifying data.
+
+From the extension’s perspective, configuration of the server address constitutes an initial trust assumption. The extension has no built-in mechanism to verify the authenticity of the remote endpoint and therefore assumes the user-provided address is correct. However, all interactions remains gated by the server’s authorization workflow. Trust is established explicitly at the application layer rather than implicitly at the network layer, reflecting a zero-trust design appropriate for self-hosted deployments.
 
 ## Development Setup
 
