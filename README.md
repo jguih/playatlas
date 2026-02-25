@@ -97,7 +97,6 @@ Alternatively, you may use this Podman Run command:
 ```bash
 podman run -d \
   --name playatlas \
-  --restart=always \
   -v playatlas-data:/app/data \
   -e TZ=America/Sao_Paulo \
   -e PLAYATLAS_LOG_LEVEL=0 \
