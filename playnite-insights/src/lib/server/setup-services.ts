@@ -7,7 +7,7 @@ import {
 	makePlayniteLibraryImporterService,
 	makePlayniteLibraryService,
 	makeSynchronizationService,
-} from '@playnite-insights/core';
+} from "@playnite-insights/core";
 import {
 	config,
 	makeLogService as infraMakeLogService,
@@ -30,9 +30,9 @@ import {
 	makeStreamUtilsService,
 	makeSynchronizationIdRepository,
 	makeUploadService,
-} from '@playnite-insights/infra';
-import { DatabaseSync } from 'node:sqlite';
-import { join } from 'path';
+} from "@playnite-insights/infra";
+import type { DatabaseSync } from "node:sqlite";
+import { join } from "path";
 
 export type ServerServicesDeps = {
 	getDb: () => DatabaseSync;
@@ -50,58 +50,58 @@ export const makeServerServices = (deps: ServerServicesDeps) => {
 	};
 	const fileSystemService = makeFileSystemService();
 	const streamUtilsService = makeStreamUtilsService();
-	const logService = makeLogService('SvelteBackend');
+	const logService = makeLogService("SvelteBackend");
 	// Repositories
 	const platformRepository = makePlatformRepository({
-		logService: makeLogService('PlatformRepository'),
+		logService: makeLogService("PlatformRepository"),
 		getDb,
 	});
 	const companyRepository = makeCompanyRepository({
-		logService: makeLogService('CompanyRepository'),
+		logService: makeLogService("CompanyRepository"),
 		getDb,
 	});
 	const genreRepository = makeGenreRepository({
-		logService: makeLogService('GenreRepository'),
+		logService: makeLogService("GenreRepository"),
 		getDb,
 	});
 	const playniteGameRepository = makePlayniteGameRepository({
-		logService: makeLogService('PlayniteGameRepository'),
+		logService: makeLogService("PlayniteGameRepository"),
 		getDb,
 	});
 	const playniteLibraryMetricsRepository = makePlayniteLibraryMetricsRepository({
-		logService: makeLogService('PlayniteLibraryMetricsRepository'),
+		logService: makeLogService("PlayniteLibraryMetricsRepository"),
 		getDb,
 	});
 	const gameSessionRepository = makeGameSessionRepository({
-		logService: makeLogService('GameSessionRepository'),
+		logService: makeLogService("GameSessionRepository"),
 		getDb,
 	});
 	const gameNoteRepository = makeGameNoteRepository({
-		logService: makeLogService('GameNoteRepository'),
+		logService: makeLogService("GameNoteRepository"),
 		getDb,
 	});
 	const imageRepository = makeImageRepository({
-		logService: makeLogService('ImageRepository'),
+		logService: makeLogService("ImageRepository"),
 		getDb,
 	});
 	const completionStatusRepository = makeCompletionStatusRepository({
-		logService: makeLogService('CompletionStatusRepository'),
+		logService: makeLogService("CompletionStatusRepository"),
 		getDb,
 	});
 	const extensionRegistrationRepository = makeExtensionRegistrationRepository({
-		logService: makeLogService('ExtensionRegistrationRepository'),
+		logService: makeLogService("ExtensionRegistrationRepository"),
 		getDb,
 	});
 	const instanceAuthenticationRepository = makeInstanceAuthenticationRepository({
-		logService: makeLogService('InstanceAuthenticationRepository'),
+		logService: makeLogService("InstanceAuthenticationRepository"),
 		getDb,
 	});
 	const instanceSessionsRepository = makeInstanceSessionsRepository({
-		logService: makeLogService('InstanceSessionsRepository'),
+		logService: makeLogService("InstanceSessionsRepository"),
 		getDb,
 	});
 	const synchronizationIdRepository = makeSynchronizationIdRepository({
-		logService: makeLogService('SynchronizationRepository'),
+		logService: makeLogService("SynchronizationRepository"),
 		getDb,
 	});
 	const repositories = {
@@ -131,51 +131,51 @@ export const makeServerServices = (deps: ServerServicesDeps) => {
 	const libraryManifestService = makeLibraryManifestService({
 		...commonDeps,
 		getManifestData: playniteGameRepository.getManifestData,
-		logService: makeLogService('LibraryManifestService'),
-		CONTENT_HASH_FILE_NAME: 'contentHash.txt',
-		FILES_DIR: join(env.DATA_DIR, '/files'),
-		LIBRARY_MANIFEST_FILE: join(env.DATA_DIR, '/manifest.json'),
+		logService: makeLogService("LibraryManifestService"),
+		CONTENT_HASH_FILE_NAME: "contentHash.txt",
+		FILES_DIR: join(env.DATA_DIR, "/files"),
+		LIBRARY_MANIFEST_FILE: join(env.DATA_DIR, "/manifest.json"),
 	});
 	const playniteLibraryImporterService = makePlayniteLibraryImporterService({
 		...commonDeps,
 		libraryManifestService: libraryManifestService,
-		logService: makeLogService('PlayniteLibraryImporterService'),
-		FILES_DIR: join(env.DATA_DIR, '/files'),
-		TMP_DIR: join(env.DATA_DIR, '/tmp'),
+		logService: makeLogService("PlayniteLibraryImporterService"),
+		FILES_DIR: join(env.DATA_DIR, "/files"),
+		TMP_DIR: join(env.DATA_DIR, "/tmp"),
 	});
 	const uploadService = makeUploadService({
 		...commonDeps,
-		logService: makeLogService('UploadService'),
+		logService: makeLogService("UploadService"),
 	});
 	const mediaFilesService = makeMediaFilesService({
 		...commonDeps,
 		...repositories,
 		uploadService: uploadService,
-		logService: makeLogService('MediaFilesService'),
-		FILES_DIR: join(env.DATA_DIR, '/files'),
-		SCREENSHOTS_DIR: join(env.DATA_DIR, '/upload', '/screenshots'),
+		logService: makeLogService("MediaFilesService"),
+		FILES_DIR: join(env.DATA_DIR, "/files"),
+		SCREENSHOTS_DIR: join(env.DATA_DIR, "/upload", "/screenshots"),
 	});
 	const gameSessionService = makeGameSessionService({
 		...commonDeps,
-		logService: makeLogService('GameSessionService'),
+		logService: makeLogService("GameSessionService"),
 	});
 	const playniteLibraryService = makePlayniteLibraryService({
 		...commonDeps,
-		logService: makeLogService('PlayniteLibraryService'),
+		logService: makeLogService("PlayniteLibraryService"),
 	});
 	const signatureService = makeSignatureService({
 		...commonDeps,
-		logService: makeLogService('SignatureService'),
-		SECURITY_DIR: join(env.DATA_DIR, '/security'),
+		logService: makeLogService("SignatureService"),
+		SECURITY_DIR: join(env.DATA_DIR, "/security"),
 	});
 	const extensionRegistrationService = makeExtensionRegistrationService({
 		...commonDeps,
-		logService: makeLogService('ExtensionRegistrationService'),
+		logService: makeLogService("ExtensionRegistrationService"),
 	});
 	const authService = makeAuthService({
 		...commonDeps,
 		signatureService,
-		logService: makeLogService('AuthService'),
+		logService: makeLogService("AuthService"),
 		cryptographyService,
 	});
 	const synchronizationService = makeSynchronizationService({ ...commonDeps });

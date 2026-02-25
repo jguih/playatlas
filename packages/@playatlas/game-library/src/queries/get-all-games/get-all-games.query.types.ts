@@ -1,10 +1,17 @@
-import { GameResponseDto } from "../../dtos/game.response";
-import { type GameRepository } from "../../infra/game.repository.port";
+import type { ILogServicePort } from "@playatlas/common/application";
+import type { IClockPort, SyncCursor } from "@playatlas/common/infra";
+import type { IGameMapperPort } from "../../application";
+import type { GameResponseDto } from "../../dtos/game.response.dto";
+import { type IGameRepositoryPort } from "../../infra/game.repository.port";
 
 export type GetAllGamesQueryHandlerDeps = {
-  gameRepository: GameRepository;
+	gameRepository: IGameRepositoryPort;
+	gameMapper: IGameMapperPort;
+	logService: ILogServicePort;
+	clock: IClockPort;
 };
 
-export type GetAllGamesResult =
-  | { type: "not_modified" }
-  | { type: "ok"; data: GameResponseDto[]; etag: string };
+export type GetAllGamesQueryResult = {
+	data: GameResponseDto[];
+	nextCursor: SyncCursor;
+};

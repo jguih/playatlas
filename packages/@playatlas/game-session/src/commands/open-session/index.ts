@@ -1,3 +1,4 @@
 export * from "./open-session.command";
+export * from "./open-session.command-handler";
 export * from "./open-session.request.dto";
-export * from "./open-session.service";
+export type * from "./open-session.types";

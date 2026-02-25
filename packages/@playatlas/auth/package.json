@@ -1,22 +1,25 @@
 {
-  "name": "@playatlas/auth",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "exports": {
-    "./app": "./src/app/index.ts",
-    "./core": "./src/core/index.ts",
-    "./infra": "./src/infra/index.ts"
-  },
-  "devDependencies": {
-    "@types/node": "^24.0.14"
-  },
-  "dependencies": {
-    "@faker-js/faker": "^9.9.0",
-    "vitest": "^3.2.4",
-    "@playatlas/common": "workspace:*",
-    "@types/busboy": "^1.5.4",
-    "busboy": "^1.6.0",
-    "zod": "^3.25.76"
-  }
+	"name": "@playatlas/auth",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		"./application": "./src/application/index.ts",
+		"./domain": "./src/domain/index.ts",
+		"./infra": "./src/infra/index.ts",
+		"./testing": "./src/testing/index.ts",
+		"./commands": "./src/commands/index.ts",
+		"./queries": "./src/queries/index.ts",
+		"./dtos": "./src/dtos/index.ts"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"@faker-js/faker": "catalog:",
+		"vitest": "catalog:"
+	},
+	"dependencies": {
+		"@playatlas/common": "workspace:*",
+		"zod": "catalog:",
+		"ulid": "catalog:"
+	}
 }

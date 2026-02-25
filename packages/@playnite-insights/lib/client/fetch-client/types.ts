@@ -1,9 +1,9 @@
-import type { IFetchClientStrategy } from './IFetchClientStrategy';
+import type { IFetchClientStrategy } from "./IFetchClientStrategy";
 
 type BaseHttpProps<Output> = {
 	endpoint?: string;
 	strategy: IFetchClientStrategy<Output>;
-} & Omit<RequestInit, 'method' | 'body'>;
+} & Omit<RequestInit, "method" | "body">;
 
 export type HttpGetProps<Output> = BaseHttpProps<Output>;
 

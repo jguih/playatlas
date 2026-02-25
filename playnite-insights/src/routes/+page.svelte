@@ -1,345 +1,118 @@
 <script lang="ts">
-	import { beforeNavigate, goto } from '$app/navigation';
-	import { page } from '$app/state';
-	import { getLocatorContext } from '$lib/client/app-state/serviceLocator.svelte';
-	import Dashboard from '$lib/client/components/bottom-nav/Dashboard.svelte';
-	import Home, { updateBottomNavHomeHref } from '$lib/client/components/bottom-nav/Home.svelte';
-	import Settings from '$lib/client/components/bottom-nav/Settings.svelte';
-	import BottomNav from '$lib/client/components/BottomNav.svelte';
-	import LightButton from '$lib/client/components/buttons/LightButton.svelte';
-	import SolidButton from '$lib/client/components/buttons/SolidButton.svelte';
-	import Header from '$lib/client/components/header/Header.svelte';
-	import FiltersButton from '$lib/client/components/home-page/FiltersButton.svelte';
-	import FiltersSidebar from '$lib/client/components/home-page/FiltersSidebar.svelte';
-	import BaseAppLayout from '$lib/client/components/layout/BaseAppLayout.svelte';
-	import Main from '$lib/client/components/Main.svelte';
-	import SearchBar from '$lib/client/components/SearchBar.svelte';
-	import { HomePageViewModel } from '$lib/client/viewmodel/homePageViewModel.svelte';
-	import { m } from '$lib/paraglide/messages.js';
-	import { ChevronLeft, ChevronRight } from '@lucide/svelte';
-	import {
-		gameSortBy,
-		gameSortOrder,
-		homePageSearchParamsFilterKeys,
-		homePageSearchParamsKeys,
-		parseHomePageSearchParams,
-		type HomePageSearchParamKeys,
-		type PlayniteGame,
-	} from '@playnite-insights/lib/client';
-	import type { HTMLSelectAttributes } from 'svelte/elements';
+	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
+	import { getClientApiContext } from "$lib/modules/bootstrap/application";
+	import BottomNav from "$lib/ui/components/BottomNav.svelte";
+	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
+	import Header from "$lib/ui/components/header/Header.svelte";
+	import Icon from "$lib/ui/components/Icon.svelte";
+	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
+	import Main from "$lib/ui/components/Main.svelte";
+	import Spinner from "$lib/ui/components/Spinner.svelte";
+	import { HomeIcon, LayoutDashboardIcon, SearchIcon, SettingsIcon } from "@lucide/svelte";
+	import { onMount } from "svelte";
+	import { GameLibraryPager } from "./game/library/page/game-library-pager.svelte";
+	import { SyncProgressViewModel } from "./game/library/page/sync-progress.view-model";
+	import HomePageHero from "./page/components/HomePageHero.svelte";
+	import { HomePageStore } from "./page/home-page-game-store.svelte";
 
-	const locator = getLocatorContext();
-	let main: HTMLElement | undefined = $state();
-	const homePageSearchParams = $derived.by(() => {
-		const params = new URLSearchParams(page.url.searchParams);
-		return parseHomePageSearchParams(params);
-	});
-	const vm = new HomePageViewModel({
-		gameStore: locator.gameStore,
-		getPageParams: () => homePageSearchParams,
-	});
+	const api = getClientApiContext();
+	const pager = new GameLibraryPager({ api });
+	const syncProgress = $derived(api().Synchronization.SyncProgressReporter.progressSignal);
+	const store = new HomePageStore({ api });
 
-	const handleOnPageSizeChange: HTMLSelectAttributes['onchange'] = (event) => {
-		const value = event.currentTarget.value;
-		const params = new URLSearchParams(page.url.searchParams);
-		params.set(homePageSearchParamsKeys.pageSize, value);
-		params.set(homePageSearchParamsKeys.page, '1');
-		const newUrl = `${page.url.pathname}?${params.toString()}`;
-		if (main) {
-			main.scrollTop = 0;
-		}
-		goto(newUrl, { replaceState: true });
-	};
+	void store.loadGamesAsync();
 
-	const handleOnPageChange = (value: number) => {
-		const newParams = new URLSearchParams(page.url.searchParams);
-		newParams.set(homePageSearchParamsKeys.page, String(value));
-		const newUrl = `${page.url.pathname}?${newParams.toString()}`;
-		if (main) {
-			main.scrollTop = 0;
-		}
-		goto(newUrl, { replaceState: true });
-	};
+	onMount(() => {
+		const unsubscribe = api().EventBus.on("game-library-updated", () => {
+			void store.loadGamesAsync();
+		});
 
-	const setSearchParam = (key: HomePageSearchParamKeys, value: string | boolean | null) => {
-		const params = new URLSearchParams(page.url.searchParams);
-		params.set(homePageSearchParamsKeys.page, '1');
-		if (!value) {
-			params.delete(key);
-		} else if (typeof value === 'string') {
-			if (value === '') params.delete(key);
-			else params.set(key, value);
-		} else if (typeof value === 'boolean') {
-			if (value) params.set(key, '1');
-			else params.delete(key);
-		}
-		const newUrl = `${page.url.pathname}?${params.toString()}`;
-		if (main) {
-			main.scrollTop = 0;
-		}
-		goto(newUrl, { replaceState: true, keepFocus: true });
-	};
-
-	const appendSearchParam = (key: HomePageSearchParamKeys, value: string) => {
-		const params = new URLSearchParams(page.url.searchParams);
-		params.set(homePageSearchParamsKeys.page, '1');
-		params.append(key, value);
-		const newUrl = `${page.url.pathname}?${params.toString()}`;
-		if (main) {
-			main.scrollTop = 0;
-		}
-		goto(newUrl, { replaceState: true, keepFocus: true });
-	};
-
-	const removeSearchParam = (key: HomePageSearchParamKeys, value?: string | null) => {
-		const params = new URLSearchParams(page.url.searchParams);
-		params.set(homePageSearchParamsKeys.page, '1');
-		if (value) params.delete(key, value);
-		else params.delete(key);
-		const newUrl = `${page.url.pathname}?${params.toString()}`;
-		if (main) {
-			main.scrollTop = 0;
-		}
-		goto(newUrl, { replaceState: true, keepFocus: true });
-	};
-
-	const removeAllFilterParams = () => {
-		const params = new URLSearchParams(page.url.searchParams);
-		params.set(homePageSearchParamsKeys.page, '1');
-		for (const filterParamKey of Object.values(homePageSearchParamsFilterKeys)) {
-			params.delete(filterParamKey);
-		}
-		const newUrl = `${page.url.pathname}?${params.toString()}`;
-		if (main) {
-			main.scrollTop = 0;
-		}
-		goto(newUrl, { replaceState: true, keepFocus: true });
-	};
-
-	// Save current applied filters before navigate
-	beforeNavigate(() => {
-		const params = new URLSearchParams(page.url.searchParams);
-		const newHref = params.size > 0 ? `${page.url.pathname}?${params.toString()}` : '';
-		updateBottomNavHomeHref(newHref);
+		return () => unsubscribe();
 	});
 </script>
 
-{#snippet gameCard(game: PlayniteGame, imageSrc: string)}
-	<li
-		class={[
-			'contain-size contain-layout contain-paint contain-style',
-			'm-0 aspect-[1/1.6] p-0 shadow outline-0',
-			'border-background-1 border-4 border-solid',
-			'hover:border-primary-light-hover-fg',
-			'active:border-primary-light-active-fg',
-			'focus:border-primary-light-active-fg',
-		]}
-	>
-		<a href={`/game/?id=${game.Id}`}>
-			<img
-				src={imageSrc}
-				width="300"
-				height="480"
-				decoding="async"
-				alt={`${game.Name} cover image`}
-				loading="lazy"
-				class="h-7/8 w-full object-cover"
-			/>
-			<div
-				class="bg-background-1 h-1/8 bottom-0 flex w-full flex-row items-center justify-center p-1"
-			>
-				<p class="mt-1 truncate text-center text-sm text-white">{game.Name}</p>
-			</div>
-		</a>
-	</li>
-{/snippet}
-
-{#snippet gameCardSkeleton()}
-	<li
-		class={['m-0 aspect-[1/1.6] p-0 shadow outline-0', 'border-background-1 border-4 border-solid']}
-	>
-		<div class="h-7/8 bg-background-3 w-full animate-pulse"></div>
-		<div
-			class="bg-background-1 h-1/8 bottom-0 flex w-full flex-row items-center justify-center p-1"
-		>
-			<div class="bg-background-3 h-4 w-3/4 animate-pulse rounded"></div>
-		</div>
-	</li>
-{/snippet}
-
-<FiltersSidebar
-	{setSearchParam}
-	{appendSearchParam}
-	{removeSearchParam}
-	installedParam={vm.pageParamsSignal.filter.installed}
-	notInstalledParam={vm.pageParamsSignal.filter.notInstalled}
-	sortByParam={vm.pageParamsSignal.sorting.sortBy}
-	sortOrderParam={vm.pageParamsSignal.sorting.sortOrder}
-	developersParam={vm.pageParamsSignal.filter.developers}
-	publishersParam={vm.pageParamsSignal.filter.publishers}
-	platformsParam={vm.pageParamsSignal.filter.platforms}
-	genresParam={vm.pageParamsSignal.filter.genres}
-	onClearAllFilters={removeAllFilterParams}
->
-	{#snippet renderSortOrderOptions()}
-		{#each gameSortOrder as sortOrder (sortOrder)}
-			<option value={sortOrder}>{vm.getSortOrderLabel(sortOrder)}</option>
-		{/each}
-	{/snippet}
-	{#snippet renderSortByOptions()}
-		{#each gameSortBy as sortBy (sortBy)}
-			<option value={sortBy}>{vm.getSortByLabel(sortBy)}</option>
-		{/each}
-	{/snippet}
-</FiltersSidebar>
-<BaseAppLayout>
-	<Header class={['flex flex-row items-center gap-2']}>
-		<a
-			href={`/?${page.url.searchParams.toString()}`}
-			class="h-fit w-fit"
-		>
-			<img
-				src="/app-icon.png"
-				class="aspect-auto h-8 w-10 rounded-md object-contain"
-				alt="app icon"
-			/>
-		</a>
-		<div class="flex grow flex-row items-center gap-2">
-			<SearchBar
-				value={vm.pageParamsSignal.filter.query}
-				onChange={(v) => setSearchParam(homePageSearchParamsKeys.query, v)}
-			/>
-			<FiltersButton
-				counter={vm.filtersCount}
-				disabled={vm.isLoading}
-			/>
-		</div>
-	</Header>
-	<Main bind:main>
-		<!-- <h1 class="text-lg">{m.home_title()}</h1>
-		<div class="mb-2">
-			{#if vm.isLoading}
-				<div class="mt-1 h-4 w-48 animate-pulse bg-neutral-300/60"></div>
-			{:else if vm.gamesCacheItem.total === 0}
-				<p class="text-sm text-neutral-300/60">{m.home_no_games_found()}</p>
-			{/if}
-			{#if vm.gamesCacheItem.total > 0}
-				<p class="text-sm text-neutral-300/60">
-					{m.home_showing_games_counter({
-						count1: vm.gamesCacheItem.countFrom,
-						count2: vm.gamesCacheItem.countTo,
-						totalCount: vm.gamesCacheItem.total,
-					})}
-				</p>
-			{/if}
-		</div>
-		<label
-			for="page_size"
-			class="text-md mb-2 flex items-center justify-end gap-2"
-		>
-			{m.home_label_items_per_page()}
-			<Select
-				onchange={handleOnPageSizeChange}
-				value={vm.pageParams.pagination.pageSize}
-				id="page_size"
-				class={['bg-background-1!']}
-				disabled={vm.isLoading}
-			>
-				{#each vm.pageSizes as option (option)}
-					<option value={option}>{option}</option>
-				{/each}
-			</Select>
-		</label> -->
-
-		{#if vm.isLoading}
-			<ul
-				class="mb-6 grid list-none grid-cols-2 gap-2 p-0 sm:grid-cols-3
-           md:grid-cols-4
-           lg:grid-cols-6
-           xl:grid-cols-8"
-			>
-				{#each new Array(Number(vm.pageParamsSignal.pagination.pageSize)).fill(null) as _}
-					{@render gameCardSkeleton()}
-				{/each}
-			</ul>
-		{:else if vm.gamesCacheItem.total > 0}
-			<ul
-				class="mb-6 grid list-none grid-cols-2 gap-2 p-0 sm:grid-cols-3
-           md:grid-cols-4
-           lg:grid-cols-6
-           xl:grid-cols-8"
-			>
-				{#each vm.gamesCacheItem.games as game (game.Id)}
-					{@render gameCard(game, vm.getImageURL(game.CoverImage))}
-				{/each}
-			</ul>
-		{:else}
-			<p class="text-md w-full text-center">{m.home_no_games_found()}</p>
-		{/if}
-
-		<nav class="mt-4 flex flex-row justify-center gap-2">
-			<LightButton
-				disabled={Number(vm.pageParamsSignal.pagination.page) <= 1}
-				onclick={() => handleOnPageChange(Number(vm.pageParamsSignal.pagination.page) - 1)}
-				class={['px-2 py-1']}
-				aria-label="previous page"
-			>
-				<ChevronLeft />
-			</LightButton>
-			{#each vm.paginationSequenceSignal as page, i (`${page}-${i}`)}
-				{#if page === null}
-					<span class="px-2">…</span>
-				{:else if page === Number(vm.pageParamsSignal.pagination.page)}
-					<SolidButton
-						selected
-						class={['px-2 py-1']}
-					>
-						{page}
-					</SolidButton>
-				{:else}
+<AppLayout>
+	{#snippet header()}
+		<Header>
+			<div class="flex justify-between items-center flex-nowrap">
+				<div class="min-w-16 flex gap-2 text-xs flex-nowrap">
+					{#if syncProgress.running}
+						<Spinner
+							size="sm"
+							variant="primary"
+						/>
+						<p class="font-medium text-foreground/80">
+							{SyncProgressViewModel.getSyncProgressLabel(syncProgress.activeFlow)}
+						</p>
+					{/if}
+				</div>
+				<div class="flex flex-nowrap">
 					<LightButton
-						onclick={() => handleOnPageChange(page)}
-						class={['px-2 py-1']}
+						variant="neutral"
+						iconOnly={!pager.pagerStateSignal.query.filters.search}
+						class="flex items-center gap-1 px-2!"
 					>
-						{page}</LightButton
-					>
-				{/if}
-			{/each}
-			<LightButton
-				onclick={() => handleOnPageChange(Number(vm.pageParamsSignal.pagination.page) + 1)}
-				disabled={Number(vm.pageParamsSignal.pagination.page) >= vm.gamesCacheItem.totalPages}
-				class={['px-2 py-1']}
-				aria-label="next page"
-			>
-				<ChevronRight />
-			</LightButton>
-		</nav>
-		<!-- {#if recentActivityVm.inProgressGame}
-			<div class="fixed bottom-[var(--bottom-nav-height)] left-0 z-20 w-full p-2">
-				<LightAnchor
-					class={['bg-background-1! flex w-full items-center justify-start gap-4 p-2 shadow']}
-					href={`/game/journal?id=${recentActivityVm.inProgressGame.Id}`}
-				>
-					<img
-						src={vm.getImageURL(recentActivityVm.inProgressGame.CoverImage)}
-						alt={`${recentActivityVm.inProgressGame.Name} cover image`}
-						loading="lazy"
-						class="h-13 max-w-13 truncate object-cover"
-					/>
-					<div class="leading-5">
-						<p class="text-md">{m.label_ongoing_session()}</p>
-						<p class="text-md font-semibold">{recentActivityVm.inProgressGame.Name}</p>
-					</div>
-					<ChevronRight class="size-lg ml-auto" />
-				</LightAnchor>
+						<Icon>
+							<SearchIcon />
+						</Icon>
+						{#if pager.pagerStateSignal.query.filters.search}
+							<span class="text-xs text-foreground/60 truncate max-w-12">
+								{pager.pagerStateSignal.query.filters.search}
+							</span>
+						{/if}
+					</LightButton>
+				</div>
 			</div>
-			<div class="pb-20"></div>
-		{/if} -->
+		</Header>
+	{/snippet}
+	{#snippet banner()}
+		<div></div>
+	{/snippet}
+
+	<Main>
+		<HomePageHero
+			games={store.storeSignal.hero.items}
+			loading={store.storeSignal.hero.loading}
+			onClickSeeMore={async () => {
+				pager.setQuery({ mode: "ranked" });
+				await goto(resolve("/game/library"));
+			}}
+		/>
 	</Main>
 
-	<BottomNav>
-		<Home selected={true} />
-		<Dashboard />
-		<Settings />
-	</BottomNav>
-</BaseAppLayout>
+	{#snippet bottomNav()}
+		<BottomNav>
+			<LightButton
+				size="lg"
+				iconOnly
+				state="active"
+				aria-label="Home"
+			>
+				<Icon>
+					<HomeIcon />
+				</Icon>
+			</LightButton>
+			<LightButton
+				size="lg"
+				variant="neutral"
+				iconOnly
+				aria-label="Dashboard"
+			>
+				<Icon>
+					<LayoutDashboardIcon />
+				</Icon>
+			</LightButton>
+			<LightButton
+				size="lg"
+				variant="neutral"
+				iconOnly
+				aria-label="Settings"
+			>
+				<Icon>
+					<SettingsIcon />
+				</Icon>
+			</LightButton>
+		</BottomNav>
+	{/snippet}
+</AppLayout>

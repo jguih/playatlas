@@ -1,16 +1,16 @@
 {
-  "name": "@playnite-insights/lib",
-  "private": true,
-  "version": "1.0.0",
-  "main": "./index.ts",
-  "types": "./index.ts",
-  "devDependencies": {
-    "@types/node": "^24.0.14"
-  },
-  "dependencies": {
-    "zod": "^3.25.76"
-  },
-  "exports": {
-    "./client": "./client/index.ts"
-  }
+	"name": "@playnite-insights/lib",
+	"private": true,
+	"version": "1.0.0",
+	"main": "./index.ts",
+	"types": "./index.ts",
+	"devDependencies": {
+		"@types/node": "catalog:"
+	},
+	"dependencies": {
+		"zod": "catalog:"
+	},
+	"exports": {
+		"./client": "./client/index.ts"
+	}
 }

@@ -1,23 +1,19 @@
 import type { PlayniteLibraryMetricsRepository } from "@playnite-insights/core";
-import {
-  type BaseRepositoryDeps,
-  getDefaultRepositoryDeps,
-  repositoryCall,
-} from "./base";
+import { type BaseRepositoryDeps, getDefaultRepositoryDeps, repositoryCall } from "./base";
 
 export const makePlayniteLibraryMetricsRepository = (
-  deps: Partial<BaseRepositoryDeps> = {}
+	deps: Partial<BaseRepositoryDeps> = {},
 ): PlayniteLibraryMetricsRepository => {
-  const { getDb, logService } = { ...getDefaultRepositoryDeps(), ...deps };
-  const TABLE_NAME = "playnite_library_metrics";
+	const { getDb, logService } = { ...getDefaultRepositoryDeps(), ...deps };
+	const TABLE_NAME = "playnite_library_metrics";
 
-  const add: PlayniteLibraryMetricsRepository["add"] = (newMetrics) => {
-    return repositoryCall(
-      logService,
-      () => {
-        const db = getDb();
-        const now = new Date().toISOString();
-        const query = `
+	const add: PlayniteLibraryMetricsRepository["add"] = (newMetrics) => {
+		return repositoryCall(
+			logService,
+			() => {
+				const db = getDb();
+				const now = new Date().toISOString();
+				const query = `
         INSERT INTO ${TABLE_NAME} (
           Timestamp, 
           TotalPlaytimeSeconds, 
@@ -27,25 +23,25 @@ export const makePlayniteLibraryMetricsRepository = (
         ) VALUES
           (?, ?, ?, ?, ?);
       `;
-        const stmt = db.prepare(query);
-        stmt.run(
-          now,
-          newMetrics.TotalPlaytimeSeconds,
-          newMetrics.TotalGames,
-          newMetrics.VisibleTotalPlaytimeSeconds,
-          newMetrics.VisibleTotalGames
-        );
-        return true;
-      },
-      `add(${newMetrics.TotalPlaytimeSeconds}, ${newMetrics.TotalGames})`
-    );
-  };
+				const stmt = db.prepare(query);
+				stmt.run(
+					now,
+					newMetrics.TotalPlaytimeSeconds,
+					newMetrics.TotalGames,
+					newMetrics.VisibleTotalPlaytimeSeconds,
+					newMetrics.VisibleTotalGames,
+				);
+				return true;
+			},
+			`add(${newMetrics.TotalPlaytimeSeconds}, ${newMetrics.TotalGames})`,
+		);
+	};
 
-  const getTotalPlaytimeOverLast6Months = (): number[] => {
-    return repositoryCall(
-      logService,
-      () => {
-        const query = `
+	const getTotalPlaytimeOverLast6Months = (): number[] => {
+		return repositoryCall(
+			logService,
+			() => {
+				const query = `
           SELECT totalPlaytimeSeconds FROM (
             SELECT MAX(TotalPlaytimeSeconds) as totalPlaytimeSeconds, strftime('%Y-%m', Timestamp) as yearMonth
             FROM ${TABLE_NAME}
@@ -54,74 +50,71 @@ export const makePlayniteLibraryMetricsRepository = (
             ORDER BY yearMonth
           );
         `;
-        const stmt = getDb().prepare(query);
-        const result = stmt.all();
-        const data: number[] = [];
-        for (const entry of result) {
-          const value = entry.totalPlaytimeSeconds as number;
-          data.push(value);
-        }
-        logService.debug(
-          `Successfully queried total playtime over last 6 months: ${JSON.stringify(
-            data
-          )}`
-        );
-        return data;
-      },
-      `getTotalPlaytimeOverLast6Months()`
-    );
-  };
+				const stmt = getDb().prepare(query);
+				const result = stmt.all();
+				const data: number[] = [];
+				for (const entry of result) {
+					const value = entry.totalPlaytimeSeconds as number;
+					data.push(value);
+				}
+				logService.debug(
+					`Successfully queried total playtime over last 6 months: ${JSON.stringify(data)}`,
+				);
+				return data;
+			},
+			`getTotalPlaytimeOverLast6Months()`,
+		);
+	};
 
-  const getGamesOwnedLastNMonths: PlayniteLibraryMetricsRepository["getGamesOwnedLastNMonths"] =
-    (n = 6) => {
-      return repositoryCall(
-        logService,
-        () => {
-          const getQuery = (column: "TotalGames" | "VisibleTotalGames") => `
+	const getGamesOwnedLastNMonths: PlayniteLibraryMetricsRepository["getGamesOwnedLastNMonths"] = (
+		n = 6,
+	) => {
+		return repositoryCall(
+			logService,
+			() => {
+				const getQuery = (column: "TotalGames" | "VisibleTotalGames") => `
           SELECT MAX(${column}) AS totalGamesOwned, strftime('%Y-%m', Timestamp) AS yearMonth
           FROM ${TABLE_NAME}
           WHERE Timestamp >= datetime('now', ?)
           GROUP BY yearMonth
           ORDER BY yearMonth DESC;
         `;
-          const allGamesResult = getDb()
-            .prepare(getQuery("TotalGames"))
-            .all(`-${n} months`);
-          const visibleGamesResult = getDb()
-            .prepare(getQuery("VisibleTotalGames"))
-            .all(`-${n} months`);
-          const allGames: number[] = new Array(6).fill(0);
-          const visibleGames: number[] = new Array(6).fill(0);
-          let i = 5;
-          for (const entry of allGamesResult) {
-            const value = entry.totalGamesOwned as number;
-            allGames[i] = value;
-            i--;
-          }
-          i = 5;
-          for (const entry of visibleGamesResult) {
-            const value = entry.totalGamesOwned as number;
-            visibleGames[i] = value;
-            i--;
-          }
-          logService.debug(
-            `Found total games owned over last 6 months: ${JSON.stringify({
-              all: allGames,
-              visibleOnly: visibleGames,
-            })}`
-          );
-          return { all: allGames, visibleOnly: visibleGames };
-        },
-        `getGamesOwnedLastNMonths(${n})`
-      );
-    };
+				const allGamesResult = getDb().prepare(getQuery("TotalGames")).all(`-${n} months`);
+				const visibleGamesResult = getDb()
+					.prepare(getQuery("VisibleTotalGames"))
+					.all(`-${n} months`);
+				const allGames: number[] = new Array(6).fill(0);
+				const visibleGames: number[] = new Array(6).fill(0);
+				let i = 5;
+				for (const entry of allGamesResult) {
+					const value = entry.totalGamesOwned as number;
+					allGames[i] = value;
+					i--;
+				}
+				i = 5;
+				for (const entry of visibleGamesResult) {
+					const value = entry.totalGamesOwned as number;
+					visibleGames[i] = value;
+					i--;
+				}
+				logService.debug(
+					`Found total games owned over last 6 months: ${JSON.stringify({
+						all: allGames,
+						visibleOnly: visibleGames,
+					})}`,
+				);
+				return { all: allGames, visibleOnly: visibleGames };
+			},
+			`getGamesOwnedLastNMonths(${n})`,
+		);
+	};
 
-  return {
-    add,
-    getGamesOwnedLastNMonths,
-    getTotalPlaytimeOverLast6Months,
-  };
+	return {
+		add,
+		getGamesOwnedLastNMonths,
+		getTotalPlaytimeOverLast6Months,
+	};
 };
 
 export const defaultPlayniteLibraryMetricsRepository: PlayniteLibraryMetricsRepository =
-  makePlayniteLibraryMetricsRepository();
+	makePlayniteLibraryMetricsRepository();

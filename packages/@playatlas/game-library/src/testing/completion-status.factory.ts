@@ -1,52 +1,76 @@
 import { faker } from "@faker-js/faker";
 import {
-  CompletionStatus,
-  makeCompletionStatus,
-} from "../domain/completion-status.entity";
-import { MakeCompletionStatusProps } from "../domain/completion-status.entity.types";
+	CompletionStatusIdParser,
+	PlayniteCompletionStatusIdParser,
+} from "@playatlas/common/domain";
+import type { TestEntityFactory } from "@playatlas/common/testing";
+import { monotonicFactory } from "ulid";
+import type { ICompletionStatusFactoryPort } from "../application/completion-status.factory";
+import { type CompletionStatus } from "../domain/completion-status.entity";
+import type { MakeCompletionStatusProps } from "../domain/completion-status.entity.types";
 
 const completionStatusName = {
-  playing: "playing",
-  played: "played",
-  completed: "completed",
-  abandoned: "abandoned",
-  toPlay: "to play",
+	playing: "playing",
+	played: "played",
+	completed: "completed",
+	abandoned: "abandoned",
+	toPlay: "to play",
 } as const;
 
-export type CompletionStatusFactory = {
-  buildCompletionStatus: (
-    props?: Partial<MakeCompletionStatusProps>
-  ) => CompletionStatus;
-  buildDefaultCompletionStatusList: () => CompletionStatus[];
+export type TestCompletionStatusFactory = TestEntityFactory<
+	MakeCompletionStatusProps,
+	CompletionStatus
+> & {
+	buildDefaultList: () => CompletionStatus[];
 };
 
-export const makeCompletionStatusFactory = (): CompletionStatusFactory => {
-  const buildCompletionStatus: CompletionStatusFactory["buildCompletionStatus"] =
-    (props = {}) => {
-      return makeCompletionStatus({
-        id: props.id ?? faker.string.uuid(),
-        name:
-          props.name ??
-          faker.helpers.arrayElement([
-            completionStatusName.playing,
-            completionStatusName.played,
-            completionStatusName.completed,
-            completionStatusName.abandoned,
-            completionStatusName.toPlay,
-          ]),
-      });
-    };
+export type TestCompletionStatusFactoryDeps = {
+	completionStatusFactory: ICompletionStatusFactoryPort;
+};
 
-  const buildDefaultCompletionStatusList: CompletionStatusFactory["buildDefaultCompletionStatusList"] =
-    () => {
-      const list: CompletionStatus[] = [];
-      for (const value of Object.values(completionStatusName))
-        list.push(buildCompletionStatus({ name: value }));
-      return list;
-    };
+export const makeTestCompletionStatusFactory = ({
+	completionStatusFactory,
+}: TestCompletionStatusFactoryDeps): TestCompletionStatusFactory => {
+	const createBuilder = (ulid = monotonicFactory()) => ({
+		build: (props: Partial<MakeCompletionStatusProps> = {}) => {
+			return completionStatusFactory.create({
+				id: CompletionStatusIdParser.fromExternal(props.id ?? ulid()),
+				name:
+					props.name ??
+					faker.helpers.arrayElement([
+						completionStatusName.playing,
+						completionStatusName.played,
+						completionStatusName.completed,
+						completionStatusName.abandoned,
+						completionStatusName.toPlay,
+					]),
+				playniteId:
+					props.playniteId ?? PlayniteCompletionStatusIdParser.fromTrusted(faker.string.uuid()),
+			});
+		},
+	});
 
-  return {
-    buildCompletionStatus,
-    buildDefaultCompletionStatusList,
-  };
+	const buildDefaultCompletionStatusList: TestCompletionStatusFactory["buildDefaultList"] = () => {
+		const list: CompletionStatus[] = [];
+		const builder = createBuilder();
+		for (const value of Object.values(completionStatusName))
+			list.push(builder.build({ name: value }));
+		return list;
+	};
+
+	const buildList: TestCompletionStatusFactory["buildList"] = (n, props) => {
+		const builder = createBuilder();
+		return Array.from({ length: n }, () => builder.build(props));
+	};
+
+	const build: TestCompletionStatusFactory["build"] = (props) => {
+		const builder = createBuilder();
+		return builder.build(props);
+	};
+
+	return {
+		build,
+		buildList,
+		buildDefaultList: buildDefaultCompletionStatusList,
+	};
 };

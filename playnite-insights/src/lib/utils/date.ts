@@ -1,4 +1,4 @@
-import { m } from '$lib/paraglide/messages';
+import { m } from "$lib/paraglide/messages";
 
 export const monthNames = [
 	m.month_january(),
@@ -42,7 +42,7 @@ export const getLastSixMonthsAbreviated = (inclusive: boolean = true): Array<str
 	const months: Array<string> = [];
 	for (let i = inclusive ? 5 : 6; i >= 0; i -= 1) {
 		date = new Date(today.getFullYear(), today.getMonth() - i, 1);
-		months.push(monthNames[date.getMonth()].substring(0, 3) + '.');
+		months.push(monthNames[date.getMonth()].substring(0, 3) + ".");
 	}
 	return months;
 };

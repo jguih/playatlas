@@ -1,0 +1,28 @@
+{
+	"name": "@playatlas/playnite-integration",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		"./domain": "./src/domain/index.ts",
+		"./infra": "./src/infra/index.ts",
+		"./application": "./src/application/index.ts",
+		"./commands": "./src/commands/index.ts",
+		"./testing": "./src/testing/index.ts"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"@types/busboy": "catalog:busboy1",
+		"@faker-js/faker": "catalog:",
+		"vitest": "catalog:"
+	},
+	"dependencies": {
+		"@playatlas/common": "workspace:*",
+		"@playatlas/game-library": "workspace:*",
+		"@playatlas/system": "workspace:*",
+		"busboy": "catalog:busboy1",
+		"zod": "catalog:",
+		"sharp": "catalog:",
+		"ulid": "catalog:"
+	}
+}

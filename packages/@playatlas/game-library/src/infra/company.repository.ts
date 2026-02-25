@@ -1,137 +1,99 @@
-import {
-  BaseRepositoryDeps,
-  makeRepositoryBase,
-} from "@playatlas/common/infra";
+import { ISODateSchema } from "@playatlas/common/common";
+import { companyIdSchema, playniteCompanyIdSchema } from "@playatlas/common/domain";
+import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
-import { companyMapper } from "../company.mapper";
-import { Company } from "../domain/company.entity";
-import type { CompanyRepository } from "./company.repository.port";
+import type { ICompanyMapperPort } from "../application";
+import type { ICompanyRepositoryPort } from "./company.repository.port";
+import type { CompanyRepositoryFilters } from "./company.repository.types";
 
 export const companySchema = z.object({
-  Id: z.string(),
-  Name: z.string(),
+	Id: companyIdSchema,
+	PlayniteId: playniteCompanyIdSchema.nullable(),
+	Name: z.string(),
+	LastUpdatedAt: ISODateSchema,
+	CreatedAt: ISODateSchema,
+	DeletedAt: ISODateSchema.nullable(),
+	DeleteAfter: ISODateSchema.nullable(),
 });
 
 export type CompanyModel = z.infer<typeof companySchema>;
 
+export type CompanyRepositoryDeps = BaseRepositoryDeps & {
+	companyMapper: ICompanyMapperPort;
+};
+
 export const makeCompanyRepository = ({
-  getDb,
-  logService,
-}: BaseRepositoryDeps): CompanyRepository => {
-  const TABLE_NAME = "company";
-  const base = makeRepositoryBase({ getDb, logService });
+	getDb,
+	logService,
+	companyMapper,
+}: CompanyRepositoryDeps): ICompanyRepositoryPort => {
+	const TABLE_NAME = "company";
+	const COLUMNS: (keyof CompanyModel)[] = [
+		"Id",
+		"PlayniteId",
+		"Name",
+		"LastUpdatedAt",
+		"CreatedAt",
+		"DeletedAt",
+		"DeleteAfter",
+	];
 
-  const add = (company: Company): boolean => {
-    const query = `
-      INSERT INTO ${TABLE_NAME}
-        (Id, Name)
-      VALUES
-        (?, ?);
-      `;
-    return base.run(({ db }) => {
-      const model = companyMapper.toPersistence(company);
-      const stmt = db.prepare(query);
-      stmt.run(model.Id, model.Name);
-      logService.debug(`Created company (${model.Id}, ${model.Name})`);
-      return true;
-    }, `add()`);
-  };
+	const getWhereClauseAndParamsFromFilters = (filters?: CompanyRepositoryFilters) => {
+		const where: string[] = [];
+		const params: (string | number)[] = [];
 
-  const upsertMany: CompanyRepository["upsertMany"] = (companies) => {
-    return base.run(({ db }) => {
-      const query = `
-          INSERT INTO ${TABLE_NAME}
-            (Id, Name)
-          VALUES
-            (?, ?)
-          ON CONFLICT DO UPDATE SET
-            Name = excluded.Name;
-          `;
-      const stmt = db.prepare(query);
-      db.exec("BEGIN TRANSACTION");
-      try {
-        for (const company of companies) {
-          const model = companyMapper.toPersistence(company);
-          stmt.run(model.Id, model.Name);
-        }
-        db.exec("COMMIT");
-      } catch (error) {
-        db.exec("ROLLBACK");
-        throw error;
-      }
-    }, `upsertMany(${companies.length} companies)`);
-  };
+		if (!filters) {
+			return { where: "", params };
+		}
 
-  const exists: CompanyRepository["exists"] = (id): boolean => {
-    const query = `
-      SELECT EXISTS (
-        SELECT 1 FROM company 
-        WHERE Id = (?)
-      );
-    `;
-    return base.run(({ db }) => {
-      const stmt = db.prepare(query);
-      const result = stmt.get(id);
-      if (result) {
-        return Object.values(result)[0] === 1;
-      }
-      return false;
-    }, `exists(${id})`);
-  };
+		if (filters.syncCursor) {
+			const syncCursor = filters.syncCursor;
 
-  const update = (company: Company): boolean => {
-    const query = `
-      UPDATE company
-      SET
-        Name = ?
-      WHERE Id = ?;
-    `;
-    return base.run(({ db }) => {
-      const model = companyMapper.toPersistence(company);
-      const stmt = db.prepare(query);
-      stmt.run(model.Name, model.Id);
-      logService.debug(`Updated company (${model.Id}, ${model.Name})`);
-      return true;
-    }, `update(${company.getId()}, ${company.getName()})`);
-  };
+			where.push(`(LastUpdatedAt > ? OR (LastUpdatedAt = ? AND Id > ?))`);
+			params.push(
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.lastUpdatedAt.toISOString(),
+				syncCursor.id,
+			);
+		}
 
-  const getById: CompanyRepository["getById"] = (id: string) => {
-    const query = `
-      SELECT *
-      FROM company
-      WHERE Id = ?;
-    `;
-    return base.run(({ db }) => {
-      const stmt = db.prepare(query);
-      const result = stmt.get(id);
-      const company = z.optional(companySchema).parse(result);
-      logService.debug(`Found company: ${company?.Name}`);
-      return company ? companyMapper.toDomain(company) : null;
-    }, `getById(${id})`);
-  };
+		return {
+			where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
+			params,
+		};
+	};
 
-  const all: CompanyRepository["all"] = () => {
-    const query = `SELECT * FROM company ORDER BY Name ASC`;
-    return base.run(({ db }) => {
-      const stmt = db.prepare(query);
-      const result = stmt.all();
-      const companyModels =
-        z.optional(z.array(companySchema)).parse(result) ?? [];
-      const companies: Company[] = [];
-      for (const model of companyModels) {
-        companies.push(companyMapper.toDomain(model));
-      }
-      logService.debug(`Found ${companies?.length ?? 0} companies`);
-      return companies;
-    }, `all()`);
-  };
+	const base = makeBaseRepository({
+		getDb,
+		logService,
+		config: {
+			tableName: TABLE_NAME,
+			idColumn: "Id",
+			insertColumns: COLUMNS,
+			updateColumns: COLUMNS.filter((c) => c !== "Id"),
+			mapper: companyMapper,
+			modelSchema: companySchema,
+			getWhereClauseAndParamsFromFilters,
+			getOrderBy: () => `ORDER BY LastUpdatedAt ASC, Id ASC`,
+		},
+	});
 
-  return {
-    add,
-    upsertMany,
-    update,
-    exists,
-    getById,
-    all,
-  };
+	const add: ICompanyRepositoryPort["add"] = (company) => {
+		base._add(company);
+	};
+
+	const upsert: ICompanyRepositoryPort["upsert"] = (company) => {
+		base._upsert(company);
+	};
+
+	const update: ICompanyRepositoryPort["update"] = (company) => {
+		base._update(company);
+	};
+
+	return {
+		...base.public,
+		add,
+		upsert,
+		update,
+	};
 };

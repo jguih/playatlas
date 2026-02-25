@@ -1,20 +1,28 @@
-import { withInstanceAuth } from '$lib/server/api/authentication';
-import { createHashForObject } from '$lib/server/api/hash';
-import { emptyResponse, getAllPlatformsResponseSchema } from '@playnite-insights/lib/client';
-import { json, type RequestHandler } from '@sveltejs/kit';
+import { instanceAuthMiddleware } from "$lib/server/api/middleware/auth.middleware";
+import { deserializeSyncCursor, serializeSyncCursor } from "@playatlas/common/infra";
+import type { GetPlatformResponseDto } from "@playatlas/game-library/dtos";
+import { json, type RequestHandler } from "@sveltejs/kit";
 
-export const GET: RequestHandler = ({ request, url, locals: { services } }) =>
-	withInstanceAuth(request, url, services, async () => {
-		const ifNoneMatch = request.headers.get('if-none-match');
-		const data = services.platformRepository.all();
-		if (!data || data.length === 0) {
-			return emptyResponse();
+export const GET: RequestHandler = ({ request, url, locals: { api } }) =>
+	instanceAuthMiddleware({ request, api }, async () => {
+		const sinceLastSync = url.searchParams.get("sinceLastSync");
+		const lastCursor = deserializeSyncCursor(sinceLastSync);
+
+		if (sinceLastSync && !lastCursor) {
+			return json({
+				success: false,
+				reason_code: "validation_error",
+				reason: "Invalid 'sinceLastSync' param, it must be a valid sync cursor",
+			} satisfies GetPlatformResponseDto);
 		}
-		getAllPlatformsResponseSchema.parse(data);
-		const hash = createHashForObject(data);
-		const etag = `"${hash}"`;
-		if (ifNoneMatch === etag) {
-			return emptyResponse(304);
-		}
-		return json(data, { headers: { 'Cache-Control': 'no-cache', ETag: etag } });
+
+		const result = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute({ lastCursor });
+
+		return json({
+			success: true,
+			platforms: result.data,
+			reason_code: "platforms_fetched_successfully",
+			reason: "Platforms fetched successfully",
+			nextCursor: serializeSyncCursor(result.nextCursor),
+		} satisfies GetPlatformResponseDto);
 	});

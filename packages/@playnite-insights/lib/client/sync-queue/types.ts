@@ -1,4 +1,4 @@
-import z from "zod";
-import { syncQueueItemSchema } from "./schemas";
+import type z from "zod";
+import type { syncQueueItemSchema } from "./schemas";
 
 export type SyncQueueItem = z.infer<typeof syncQueueItemSchema>;

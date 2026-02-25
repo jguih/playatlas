@@ -1,9 +1,9 @@
-import { createHash } from 'crypto';
+import { createHash } from "crypto";
 
 const sortKeys = (value: unknown): unknown => {
 	if (Array.isArray(value)) {
 		return value.map(sortKeys);
-	} else if (value && typeof value === 'object') {
+	} else if (value && typeof value === "object") {
 		return Object.keys(value)
 			.sort()
 			.reduce(
@@ -19,10 +19,10 @@ const sortKeys = (value: unknown): unknown => {
 
 export const createHashForObject = (data: unknown) => {
 	const jsonStr = JSON.stringify(sortKeys(data));
-	return createHash('sha1').update(jsonStr).digest('hex');
+	return createHash("sha1").update(jsonStr).digest("hex");
 };
 
 export const computeBase64HashAsync = async (str: string): Promise<string> => {
-	const hashBase64 = createHash('sha256').update(str, 'utf-8').digest('base64');
+	const hashBase64 = createHash("sha256").update(str, "utf-8").digest("base64");
 	return hashBase64;
 };

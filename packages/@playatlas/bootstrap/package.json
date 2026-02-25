@@ -1,23 +1,31 @@
 {
-  "name": "@playatlas/bootstrap",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "exports": {
-    "./domain": "./src/domain/index.ts",
-    "./infra": "./src/infra/index.ts",
-    "./application": "./src/application/index.ts",
-    "./testing": "./src/testing/index.ts"
-  },
-  "devDependencies": {
-    "@types/node": "^24.0.14"
-  },
-  "dependencies": {
-    "vitest": "^3.2.4",
-    "zod": "^3.25.76",
-    "@playatlas/common": "workspace:*",
-    "@playatlas/system": "workspace:*",
-    "@playatlas/game-session": "workspace:*",
-    "@playatlas/game-library": "workspace:*"
-  }
+	"name": "@playatlas/bootstrap",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		"./domain": "./src/domain/index.ts",
+		"./infra": "./src/infra/index.ts",
+		"./application": "./src/application/index.ts",
+		"./testing": "./src/testing/index.ts"
+	},
+	"scripts": {
+		"calibrate:tiers": "tsx src/cli/score-engine-calibrate-classification-tiers.ts",
+		"mine-corpus:run-based": "tsx src/cli/run-based-score-engine.corpus-miner.ts"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"@faker-js/faker": "catalog:",
+		"vitest": "catalog:"
+	},
+	"dependencies": {
+		"@playatlas/common": "workspace:*",
+		"@playatlas/system": "workspace:*",
+		"@playatlas/game-session": "workspace:*",
+		"@playatlas/game-library": "workspace:*",
+		"@playatlas/auth": "workspace:*",
+		"@playatlas/playnite-integration": "workspace:*",
+		"zod": "catalog:",
+		"ulid": "catalog:"
+	}
 }

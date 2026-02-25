@@ -1,0 +1,59 @@
+import { faker } from "@faker-js/faker";
+import { beforeEach, describe, expect, it } from "vitest";
+import { isCursorAfter } from "../../test.lib";
+import { api, factory, root } from "../../vitest.global.setup";
+
+describe("Game Library Synchronization / Game", () => {
+	beforeEach(() => {
+		root.seedGameRelationships();
+	});
+
+	it("Sync cursor invariant: correctly returns updated items across distinct timestamps", async () => {
+		// Arrange
+		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
+
+		const games = factory.getGameFactory().buildList(20);
+		root.seedGame(games);
+
+		const firstQueryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
+		const firstQueryIds = new Set(firstQueryResult.data.map((g) => g.Id));
+
+		root.testApi.getClock().advance(1000);
+
+		const gamesToUpdate = faker.helpers.arrayElements(games, 10);
+
+		for (const game of gamesToUpdate) {
+			const snapshot = root.getFactory().getGameFactory().buildPlayniteSnapshot();
+			game.updateFromPlaynite({
+				contentHash: `${faker.string.uuid()} (Updated)`,
+				playniteSnapshot: {
+					...snapshot,
+					name: `${snapshot.name} (Updated)`,
+				},
+				relationships: { developerIds: [], genreIds: [], platformIds: [], publisherIds: [] },
+			});
+		}
+
+		root.seedGame(gamesToUpdate);
+
+		// Act
+		const secondQueryResult = api.gameLibrary.queries
+			.getGetAllGamesQueryHandler()
+			.execute({ lastCursor: firstQueryResult.nextCursor });
+		const secondGames = secondQueryResult.data;
+
+		// Assert
+		expect(
+			isCursorAfter(secondQueryResult.nextCursor, firstQueryResult.nextCursor),
+			"Sync cursor must be strictly monotonic; Changes to repository's 'ORDER BY' clause may break incremental sync. All items must be ordered by LastUpdatedAt ASC, then Id ASC.",
+		).toBe(true);
+
+		expect(secondGames).toHaveLength(10);
+		expect(
+			secondGames.every((g) => firstQueryIds.has(g.Id)),
+			"Query must return updated versions of previously-synced items",
+		).toBe(true);
+		expect(secondGames.every((g) => g.Playnite!.Name?.match(/(updated)/i))).toBe(true);
+		expect(secondGames.every((g) => g.ContentHash?.match(/updated/i))).toBe(true);
+	});
+});

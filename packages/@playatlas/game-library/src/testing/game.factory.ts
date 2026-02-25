@@ -1,97 +1,111 @@
 import { faker } from "@faker-js/faker";
-import { type CompanyId } from "../domain/company.entity";
-import { type CompletionStatusId } from "../domain/completion-status.entity";
-import { makeGame, type Game } from "../domain/game.entity";
-import { type MakeGameProps } from "../domain/game.entity.types";
-import { type GenreId } from "../domain/genre.entity";
-import { type PlatformId } from "../domain/platform.entity";
+import {
+	GameIdParser,
+	PlayniteGameIdParser,
+	type CompanyId,
+	type CompletionStatusId,
+	type GenreId,
+	type PlatformId,
+	type TagId,
+} from "@playatlas/common/domain";
+import type { TestEntityFactory } from "@playatlas/common/testing";
+import { monotonicFactory } from "ulid";
+import type { IGameFactoryPort, IGameMapperPort } from "../application";
+import { type Game } from "../domain/game.entity";
+import { type MakeGameProps, type PlayniteGameSnapshot } from "../domain/game.entity.types";
+import type { GameResponseDto } from "../dtos";
 
 export type GameFactoryDeps = {
-  completionStatusOptions: CompletionStatusId[];
-  companyOptions: CompanyId[];
-  genreOptions: GenreId[];
-  platformOptions: PlatformId[];
+	completionStatusOptions: CompletionStatusId[];
+	companyOptions: CompanyId[];
+	genreOptions: GenreId[];
+	platformOptions: PlatformId[];
+	tagOptions: TagId[];
+	gameFactory: IGameFactoryPort;
+	gameMapper: IGameMapperPort;
 };
 
-export type GameFactory = {
-  buildGame: (props?: Partial<MakeGameProps>) => Game;
-  buildGameList: (n: number, props?: Partial<MakeGameProps>) => Game[];
+export type TestGameFactory = TestEntityFactory<MakeGameProps, Game> & {
+	buildDto: (props?: Partial<MakeGameProps>) => GameResponseDto;
+	buildDtoList: (n: number, props?: Partial<MakeGameProps>) => GameResponseDto[];
+	buildPlayniteSnapshot: (
+		override?: Partial<MakeGameProps["playniteSnapshot"]>,
+	) => PlayniteGameSnapshot;
 };
 
-export const makeGameFactory = ({
-  completionStatusOptions,
-  companyOptions,
-  genreOptions,
-  platformOptions,
-}: GameFactoryDeps): GameFactory => {
-  const propOrDefault = <T, V>(prop: T | undefined, value: V) => {
-    if (prop === undefined) return value;
-    return prop;
-  };
+export const makeTestGameFactory = ({
+	completionStatusOptions,
+	companyOptions,
+	genreOptions,
+	platformOptions,
+	tagOptions,
+	gameFactory,
+	gameMapper,
+}: GameFactoryDeps): TestGameFactory => {
+	const pickMany = <T>(options: readonly T[], { min, max }: { min: number; max: number }) =>
+		faker.helpers.arrayElements(options, { min, max });
 
-  const buildGame = (props: Partial<MakeGameProps> = {}): Game => {
-    const completionStatusId = propOrDefault(
-      props.completionStatusId,
-      faker.helpers.arrayElement(completionStatusOptions)
-    );
-    const developerIds = propOrDefault(
-      props.developerIds,
-      faker.helpers.arrayElements(companyOptions, { min: 1, max: 3 })
-    );
-    const publisherIds = propOrDefault(
-      props.publisherIds,
-      faker.helpers.arrayElements(companyOptions, { min: 1, max: 3 })
-    );
-    const genreIds = propOrDefault(
-      props.genreIds,
-      faker.helpers.arrayElements(genreOptions, { min: 1, max: 15 })
-    );
-    const platformIds = propOrDefault(
-      props.platformIds,
-      faker.helpers.arrayElements(platformOptions, { min: 1, max: 5 })
-    );
+	const pickOne = <T>(options: readonly T[]) => faker.helpers.arrayElement(options);
 
-    return makeGame({
-      id: props.id ?? faker.string.uuid(),
-      name: propOrDefault(props.name, faker.commerce.productName()),
-      description: propOrDefault(props.description, faker.lorem.sentence()),
-      releaseDate: propOrDefault(props.releaseDate, faker.date.past()),
-      playtime: propOrDefault(
-        props.playtime,
-        faker.number.int({ min: 0, max: 500 })
-      ),
-      lastActivity: propOrDefault(props.lastActivity, faker.date.recent()),
-      added: propOrDefault(props.added, faker.date.past()),
-      installDirectory: propOrDefault(
-        props.installDirectory,
-        faker.system.directoryPath()
-      ),
-      isInstalled: propOrDefault(props.isInstalled, faker.datatype.boolean()),
-      backgroundImage: propOrDefault(props.backgroundImage, faker.image.url()),
-      coverImage: propOrDefault(props.coverImage, faker.image.url()),
-      icon: propOrDefault(props.icon, faker.image.url()),
-      contentHash: propOrDefault(
-        props.contentHash,
-        faker.string.hexadecimal({ length: 32 })
-      ),
-      hidden: propOrDefault(props.hidden, faker.datatype.boolean()),
-      completionStatusId,
-      developerIds,
-      genreIds,
-      platformIds,
-      publisherIds,
-    });
-  };
+	const p = <T, V>(value: V, prop?: T) => {
+		if (prop === undefined) return value;
+		return prop;
+	};
 
-  const buildGameList = (
-    n: number,
-    props: Partial<MakeGameProps> = {}
-  ): Game[] => {
-    return Array.from({ length: n }, () => buildGame(props));
-  };
+	const buildPlayniteSnapshot: TestGameFactory["buildPlayniteSnapshot"] = (override = {}) => {
+		return {
+			id: PlayniteGameIdParser.fromExternal(override?.id ?? faker.string.uuid()),
+			name: p(faker.commerce.productName(), override?.name),
+			description: p(faker.lorem.sentence(), override?.description),
+			releaseDate: p(faker.date.past(), override?.releaseDate),
+			playtime: p(faker.number.int({ min: 0, max: 50000 }), override?.playtime),
+			lastActivity: p(faker.date.recent(), override?.lastActivity),
+			added: p(faker.date.past(), override?.added),
+			installDirectory: p(faker.system.directoryPath(), override?.installDirectory),
+			isInstalled: p(faker.datatype.boolean(), override?.isInstalled),
+			backgroundImagePath: p(faker.image.url(), override?.backgroundImagePath),
+			coverImagePath: p(faker.image.url(), override?.coverImagePath),
+			iconImagePath: p(faker.image.url(), override?.iconImagePath),
+			hidden: p(faker.datatype.boolean(), override?.hidden),
+			completionStatusId: p(pickOne(completionStatusOptions), override?.completionStatusId),
+		};
+	};
 
-  return Object.freeze({
-    buildGame,
-    buildGameList,
-  });
+	const createBuilder = (ulid = monotonicFactory()) => ({
+		build: (props: Partial<MakeGameProps> = {}) =>
+			gameFactory.create({
+				id: GameIdParser.fromExternal(props.id ?? ulid()),
+				playniteSnapshot: buildPlayniteSnapshot(props.playniteSnapshot),
+				contentHash: p(faker.string.hexadecimal({ length: 32 }), props.contentHash),
+				developerIds: p(pickMany(companyOptions, { min: 1, max: 3 }), props.developerIds),
+				publisherIds: p(pickMany(companyOptions, { min: 1, max: 3 }), props.publisherIds),
+				genreIds: p(pickMany(genreOptions, { min: 1, max: 15 }), props.genreIds),
+				platformIds: p(pickMany(platformOptions, { min: 1, max: 5 }), props.platformIds),
+				tagIds: p(pickMany(tagOptions, { min: 3, max: 15 }), props.tagIds),
+				completionStatusId: null,
+			}),
+	});
+
+	const build = (props?: Partial<MakeGameProps>) => createBuilder().build(props);
+
+	const buildList = (n: number, props?: Partial<MakeGameProps>) => {
+		const builder = createBuilder();
+		return Array.from({ length: n }, () => builder.build(props));
+	};
+
+	const buildDto = (props?: Partial<MakeGameProps>) =>
+		gameMapper.toDto(createBuilder().build(props));
+
+	const buildDtoList = (n: number, props?: Partial<MakeGameProps>) => {
+		const builder = createBuilder();
+		return Array.from({ length: n }, () => gameMapper.toDto(builder.build(props)));
+	};
+
+	return Object.freeze({
+		build,
+		buildPlayniteSnapshot,
+		buildList,
+		buildDto,
+		buildDtoList,
+	});
 };

@@ -1,25 +1,25 @@
 import { AppError } from "../../types";
 
 export type FetchClientStrategyErrorProps = {
-  message: string;
-  statusCode: number;
-  data?: unknown;
+	message: string;
+	statusCode: number;
+	data?: unknown;
 };
 
 export class FetchClientStrategyError extends AppError {
-  statusCode: number;
-  data?: unknown;
+	statusCode: number;
+	data?: unknown;
 
-  constructor({ statusCode, message, data }: FetchClientStrategyErrorProps) {
-    super();
-    this.statusCode = statusCode;
-    this.message = message;
-    this.data = data;
-  }
+	constructor({ statusCode, message, data }: FetchClientStrategyErrorProps) {
+		super();
+		this.statusCode = statusCode;
+		this.message = message;
+		this.data = data;
+	}
 }
 
 export class HttpClientNotSetError extends AppError {
-  constructor() {
-    super();
-  }
+	constructor() {
+		super();
+	}
 }

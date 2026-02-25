@@ -1,3 +1,0 @@
-### Get manifest
-GET {{protocol}}://{{host}}/api/sync/manifest
-Content-Type: {{contentType}}

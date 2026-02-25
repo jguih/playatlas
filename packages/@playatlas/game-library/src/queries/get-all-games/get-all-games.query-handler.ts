@@ -1,37 +1,46 @@
-import { QueryHandler } from "@playatlas/common/common";
-import { createHashForObject } from "@playatlas/common/infra";
-import { gameMapper } from "../../game.mapper";
-import {
-  GetAllGamesQueryHandlerDeps,
-  GetAllGamesResult,
+import type { IQueryHandlerPort } from "@playatlas/common/application";
+import { computeNextSyncCursor } from "@playatlas/common/infra";
+import type { GameFilters } from "../../infra/game.repository.types";
+import type { GetAllGamesQuery } from "./get-all-games.query";
+import type {
+	GetAllGamesQueryHandlerDeps,
+	GetAllGamesQueryResult,
 } from "./get-all-games.query.types";
-import { GetAllGamesQuery } from "./get-all-games.request.dto";
 
-export type GetAllGamesQueryHandler = QueryHandler<
-  GetAllGamesQuery,
-  GetAllGamesResult
+export type IGetAllGamesQueryHandlerPort = IQueryHandlerPort<
+	GetAllGamesQuery,
+	GetAllGamesQueryResult
 >;
 
 export const makeGetAllGamesQueryHandler = ({
-  gameRepository,
-}: GetAllGamesQueryHandlerDeps): GetAllGamesQueryHandler => {
-  return {
-    execute: ({ ifNoneMatch } = {}) => {
-      const games = gameRepository.all({ load: true });
+	gameRepository,
+	gameMapper,
+	logService,
+	clock,
+}: GetAllGamesQueryHandlerDeps): IGetAllGamesQueryHandlerPort => {
+	return {
+		execute: ({ lastCursor } = {}) => {
+			const filters: GameFilters | undefined = lastCursor
+				? {
+						syncCursor: lastCursor,
+					}
+				: undefined;
 
-      if (!games || games.length === 0) {
-        return { type: "ok", data: [], etag: '"empty"' };
-      }
+			const games = gameRepository.all({ load: true }, filters);
 
-      const gameDtos = gameMapper.toDtoList(games);
-      const hash = createHashForObject(gameDtos);
-      const etag = `"${hash}"`;
+			if (lastCursor) {
+				const elapsedMs = clock.now().getTime() - lastCursor.lastUpdatedAt.getTime();
+				const elapsedSeconds = Math.floor(elapsedMs / 1000);
+				logService.debug(
+					`Found ${games.length} games (updated since last sync: ${elapsedSeconds}s ago)`,
+				);
+			} else {
+				logService.debug(`Found ${games.length} games (no filters)`);
+			}
 
-      if (ifNoneMatch === etag) {
-        return { type: "not_modified" };
-      }
-
-      return { type: "ok", data: gameDtos, etag };
-    },
-  };
+			const gameDtos = gameMapper.toDtoList(games);
+			const nextCursor = computeNextSyncCursor(games, lastCursor);
+			return { data: gameDtos, nextCursor };
+		},
+	};
 };

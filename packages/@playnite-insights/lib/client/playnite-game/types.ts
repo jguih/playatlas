@@ -1,12 +1,12 @@
-import z from "zod";
-import {
-  fullGameRawSchema,
-  fullGameSchema,
-  gameManifestDataSchema,
-  gamePageSizes,
-  gameSortBy,
-  gameSortOrder,
-  playniteGameSchema,
+import type z from "zod";
+import type {
+	fullGameRawSchema,
+	fullGameSchema,
+	gameManifestDataSchema,
+	gamePageSizes,
+	gameSortBy,
+	gameSortOrder,
+	playniteGameSchema,
 } from "./schemas";
 
 export type PlayniteGame = z.infer<typeof playniteGameSchema>;
@@ -17,14 +17,14 @@ export type GameSortBy = (typeof gameSortBy)[number];
 export type GameSortOrder = (typeof gameSortOrder)[number];
 
 export type GameFilters = {
-  query?: string;
-  installed?: boolean;
-  hidden?: boolean;
+	query?: string;
+	installed?: boolean;
+	hidden?: boolean;
 };
 
 export type GameSorting = {
-  order: GameSortOrder;
-  by: GameSortBy;
+	order: GameSortOrder;
+	by: GameSortBy;
 };
 
 export type GamePageSizes = typeof gamePageSizes;

@@ -2,16 +2,14 @@ import z from "zod";
 import { gameNoteSchema } from "../../game-notes/schemas";
 
 export const clientSyncReconciliationCommandSchema = z.object({
-  notes: z.array(gameNoteSchema),
+	notes: z.array(gameNoteSchema),
 });
-export type ClientSyncReconciliationCommand = z.infer<
-  typeof clientSyncReconciliationCommandSchema
->;
+export type ClientSyncReconciliationCommand = z.infer<typeof clientSyncReconciliationCommandSchema>;
 
 export const serverSyncReconciliationResponseSchema = z.object({
-  syncId: z.string(),
-  notes: z.array(gameNoteSchema),
+	syncId: z.string(),
+	notes: z.array(gameNoteSchema),
 });
 export type ServerSyncReconciliationResponse = z.infer<
-  typeof serverSyncReconciliationResponseSchema
+	typeof serverSyncReconciliationResponseSchema
 >;

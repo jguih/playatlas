@@ -1,33 +1,46 @@
 import { faker } from "@faker-js/faker";
-import { makePlatform, Platform } from "../domain/platform.entity";
-import { MakePlatformProps } from "../domain/platform.entity.types";
+import { PlatformIdParser, PlaynitePlatformIdParser } from "@playatlas/common/domain";
+import type { TestEntityFactory } from "@playatlas/common/testing";
+import { monotonicFactory } from "ulid";
+import type { IPlatformFactoryPort } from "../application";
+import { type Platform } from "../domain/platform.entity";
+import type { MakePlatformProps } from "../domain/platform.entity.types";
+import { makeBaseTestFactory } from "./base.factory";
 
-export type PlatformFactory = {
-  buildPlatform: (props?: Partial<MakePlatformProps>) => Platform;
-  buildPlatformList: (
-    n: number,
-    props?: Partial<MakePlatformProps>
-  ) => Platform[];
+export type PlatformFactory = TestEntityFactory<MakePlatformProps, Platform>;
+
+export type PlatformFactoryDeps = {
+	platformFactory: IPlatformFactoryPort;
 };
 
-export const makePlatformFactory = (): PlatformFactory => {
-  const buildPlatform: PlatformFactory["buildPlatform"] = (props = {}) => {
-    return makePlatform({
-      id: props.id ?? faker.string.uuid(),
-      name: props.name ?? faker.lorem.words({ min: 1, max: 4 }),
-      specificationId: props.specificationId ?? faker.string.uuid(),
-      background: props.background ?? faker.internet.url(),
-      cover: props.cover ?? faker.internet.url(),
-      icon: props.icon ?? faker.internet.url(),
-    });
-  };
+export const makePlatformFactory = ({ platformFactory }: PlatformFactoryDeps): PlatformFactory => {
+	const { p } = makeBaseTestFactory();
 
-  const buildPlatformList: PlatformFactory["buildPlatformList"] = (
-    n,
-    props = {}
-  ) => {
-    return Array.from({ length: n }, () => buildPlatform(props));
-  };
+	const createBuilder = (ulid = monotonicFactory()) => ({
+		build: (props: Partial<MakePlatformProps> = {}) => {
+			return platformFactory.create({
+				id: p(PlatformIdParser.fromTrusted(ulid()), props.id),
+				name: p(faker.lorem.words({ min: 1, max: 3 }), props.name),
+				playniteSnapshot: {
+					id: p(
+						PlaynitePlatformIdParser.fromTrusted(faker.string.uuid()),
+						props.playniteSnapshot?.id,
+					),
+					specificationId: p(faker.string.uuid(), props.playniteSnapshot?.specificationId),
+				},
+			});
+		},
+	});
 
-  return { buildPlatform, buildPlatformList };
+	const build: PlatformFactory["build"] = (props = {}) => {
+		const builder = createBuilder();
+		return builder.build(props);
+	};
+
+	const buildList: PlatformFactory["buildList"] = (n, props = {}) => {
+		const builder = createBuilder();
+		return Array.from({ length: n }, () => builder.build(props));
+	};
+
+	return { build, buildList };
 };

@@ -1,10 +1,10 @@
-import type { GameSession, GameSessionId } from "../domain/game-session.entity";
-import type { GameSessionFilters } from "./game-session.repository";
+import type { GameSessionId } from "@playatlas/common/domain";
+import type { IEntityRepositoryPort } from "@playatlas/common/infra";
+import type { GameSession } from "../domain/game-session.entity";
+import type { GameSessionRepositoryFilters } from "./game-session.repository.filters";
 
-export type GameSessionRepository = {
-  add: (newSession: GameSession) => boolean;
-  update: (session: GameSession) => boolean;
-  all: () => GameSession[];
-  getById: (sessionId: GameSessionId) => GameSession | null;
-  getAllBy: (params: { filters?: GameSessionFilters }) => GameSession[];
-};
+export type IGameSessionRepositoryPort = IEntityRepositoryPort<
+	GameSessionId,
+	GameSession,
+	GameSessionRepositoryFilters
+>;

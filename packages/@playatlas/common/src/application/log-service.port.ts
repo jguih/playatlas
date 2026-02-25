@@ -1,11 +1,12 @@
-export type LogService = {
-  error: (message: string, error?: unknown) => void;
-  warning: (message: string) => void;
-  info: (message: string) => void;
-  success: (message: string) => void;
-  debug: (message: string) => void;
+export type ILogServicePort = {
+	error: (message: string, error?: unknown) => void;
+	warning: (message: string, details?: unknown) => void;
+	info: (message: string, details?: unknown) => void;
+	success: (message: string, details?: unknown) => void;
+	debug: (message: string, details?: unknown) => void;
+	getRequestDescription: (request: Request) => string;
 };
 
-export type LogServiceFactory = {
-  build: (context?: string) => LogService;
+export type ILogServiceFactoryPort = {
+	build: (context?: string) => ILogServicePort;
 };

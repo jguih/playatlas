@@ -1,9 +1,10 @@
-import { CompletionStatus } from "../domain/completion-status.entity";
+import type { CompletionStatusId } from "@playatlas/common/domain";
+import type { IEntityRepositoryPort } from "@playatlas/common/infra";
+import type { CompletionStatus } from "../domain/completion-status.entity";
+import type { CompletionStatusRepositoryFilters } from "./completion-status.repository.types";
 
-export type CompletionStatusRepository = {
-  add: (completionStatus: CompletionStatus) => void;
-  update: (completionStatus: CompletionStatus) => void;
-  getById: (id: string) => CompletionStatus | null;
-  all: () => CompletionStatus[];
-  upsertMany: (completionStatusRepository: CompletionStatus[]) => void;
-};
+export type ICompletionStatusRepositoryPort = IEntityRepositoryPort<
+	CompletionStatusId,
+	CompletionStatus,
+	CompletionStatusRepositoryFilters
+>;

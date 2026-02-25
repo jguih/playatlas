@@ -1,85 +1,162 @@
+import { validation } from "@playatlas/common/application";
 import {
-  createRelationship,
-  type Relationship,
-} from "@playatlas/common/common";
-import { CompanyId } from "./company.entity";
-import { MakeGameProps } from "./game.entity.types";
-import { GenreId } from "./genre.entity";
-import { PlatformId } from "./platform.entity";
+	createRelationship,
+	InvalidStateError,
+	makeSoftDeletable,
+	type BaseEntity,
+	type CompletionStatusId,
+	type EntitySoftDeleteProps,
+	type GameId,
+	type GameImageType,
+} from "@playatlas/common/domain";
+import type {
+	GameRelationshipProps,
+	MakeGameDeps,
+	MakeGameProps,
+	PlayniteGameSnapshot,
+	RehydrateGameProps,
+	UpdateGameFromPlayniteProps,
+} from "./game.entity.types";
 
-export type GameId = string;
+export type Game = BaseEntity<GameId> &
+	EntitySoftDeleteProps &
+	Readonly<{
+		getBackgroundImagePath: () => string | null;
+		getCoverImagePath: () => string | null;
+		getIconImagePath: () => string | null;
+		getImagePath: (name: GameImageType) => string | null;
+		getPlayniteSnapshot: () => PlayniteGameSnapshot | null;
+		getContentHash: () => string;
+		setImageReference: (props: { name: GameImageType; path: { filename: string } }) => void;
+		relationships: GameRelationshipProps;
+		getCompletionStatusId: () => CompletionStatusId | null;
+		updateFromPlaynite: (value: UpdateGameFromPlayniteProps) => boolean;
+	}>;
 
-export type GameRelationshipMap = {
-  developers: CompanyId;
-  publishers: CompanyId;
-  genres: GenreId;
-  platforms: PlatformId;
+export const makeGame = (props: MakeGameProps, { clock }: MakeGameDeps): Game => {
+	const now = clock.now();
+
+	const _id = props.id;
+	const _created_at = props.createdAt ?? now;
+	let _content_hash = props.contentHash;
+	let _last_updated_at = props.lastUpdatedAt ?? now;
+	let _playnite_snapshot: PlayniteGameSnapshot | null = props.playniteSnapshot ?? null;
+	const _completion_status_id = props.completionStatusId ?? null;
+
+	const developers = createRelationship(props.developerIds ?? null);
+	const genres = createRelationship(props.genreIds ?? null);
+	const platforms = createRelationship(props.platformIds ?? null);
+	const publishers = createRelationship(props.publisherIds ?? null);
+	const tags = createRelationship(props.tagIds ?? null);
+
+	const _validate = () => {
+		if (_playnite_snapshot && _playnite_snapshot.playtime < 0)
+			throw new InvalidStateError("Playnite playtime must not be negative");
+		if (validation.isEmptyString(_content_hash))
+			throw new InvalidStateError("ContentHash must not be an empty string");
+	};
+
+	const _touch = () => {
+		_last_updated_at = clock.now();
+	};
+
+	_validate();
+
+	const softDelete = makeSoftDeletable(
+		{
+			deletedAt: props.deletedAt,
+			deleteAfter: props.deleteAfter,
+		},
+		{ clock, touch: _touch, validate: _validate },
+	);
+
+	const game: Game = {
+		getId: () => _id,
+		getSafeId: () => _id,
+		getBackgroundImagePath: () => _playnite_snapshot?.backgroundImagePath ?? null,
+		getCoverImagePath: () => _playnite_snapshot?.coverImagePath ?? null,
+		getIconImagePath: () => _playnite_snapshot?.iconImagePath ?? null,
+		getImagePath: (name) => {
+			switch (name) {
+				case "background": {
+					return _playnite_snapshot?.backgroundImagePath ?? null;
+					break;
+				}
+				case "cover": {
+					return _playnite_snapshot?.coverImagePath ?? null;
+					break;
+				}
+				case "icon": {
+					return _playnite_snapshot?.iconImagePath ?? null;
+					break;
+				}
+			}
+		},
+		...softDelete,
+		getPlayniteSnapshot: () => _playnite_snapshot,
+		getContentHash: () => _content_hash,
+		getLastUpdatedAt: () => _last_updated_at,
+		getCreatedAt: () => _created_at,
+		relationships: {
+			developers,
+			genres,
+			platforms,
+			publishers,
+			tags,
+		},
+		getCompletionStatusId: () => _completion_status_id,
+		setImageReference: ({ name, path }) => {
+			if (validation.isNullOrEmptyString(path.filename))
+				throw new InvalidStateError("Filename must not be an empty string or null");
+			if (!_playnite_snapshot) throw new InvalidStateError("Playnite game snapshot not set");
+
+			const filepath = `${_playnite_snapshot.id}/${path.filename}`;
+			switch (name) {
+				case "background": {
+					_playnite_snapshot.backgroundImagePath = filepath;
+					break;
+				}
+				case "cover": {
+					_playnite_snapshot.coverImagePath = filepath;
+					break;
+				}
+				case "icon": {
+					_playnite_snapshot.iconImagePath = filepath;
+					break;
+				}
+			}
+			_touch();
+			_validate();
+		},
+		updateFromPlaynite: (value) => {
+			let updated = false;
+
+			if (softDelete.isDeleted()) {
+				softDelete.restore();
+				updated = true;
+			}
+
+			if (_content_hash !== value.contentHash) updated = true;
+
+			if (!updated) return updated;
+
+			_playnite_snapshot = value.playniteSnapshot;
+			_content_hash = value.contentHash;
+
+			developers.set(value.relationships.developerIds);
+			publishers.set(value.relationships.publisherIds);
+			platforms.set(value.relationships.platformIds);
+			genres.set(value.relationships.genreIds);
+			tags.set(value.relationships.tagIds);
+
+			_touch();
+			_validate();
+			return updated;
+		},
+		validate: _validate,
+	};
+	return Object.freeze(game);
 };
 
-export type GameRelationship = keyof GameRelationshipMap;
-
-export type GameRelationshipProps = {
-  [K in GameRelationship]: Relationship<GameRelationshipMap[K]>;
-};
-
-export type Game = Readonly<{
-  getId: () => GameId;
-  getName: () => string | null;
-  getDescription: () => string | null;
-  getReleaseDate: () => Date | null;
-  getPlaytime: () => number;
-  getLastActivity: () => Date | null;
-  getAdded: () => Date | null;
-  getInstallDirectory: () => string | null;
-  isInstalled: () => boolean;
-  isHidden: () => boolean;
-  getBackgroundImage: () => string | null;
-  getCoverImage: () => string | null;
-  getIcon: () => string | null;
-  getCompletionStatusId: () => string | null;
-  getContentHash: () => string;
-  relationships: GameRelationshipProps;
-}>;
-
-export const makeGame = (props: MakeGameProps): Game => {
-  const _id = props.id;
-  let _name = props.name ?? null;
-  let _description = props.description ?? null;
-  let _releaseDate = props.releaseDate ?? null;
-  let _playtime = props.playtime ?? 0;
-  let _lastActivity = props.lastActivity ?? null;
-  let _added = props.added ?? null;
-  let _installDirectory = props.installDirectory ?? null;
-  let _isInstalled = Boolean(props.isInstalled);
-  let _backgroundImage = props.backgroundImage ?? null;
-  let _coverImage = props.coverImage ?? null;
-  let _icon = props.icon ?? null;
-  let _hidden = Boolean(props.hidden);
-  let _completionStatusId = props.completionStatusId ?? null;
-  const _contentHash = props.contentHash;
-
-  const game: Game = {
-    getId: () => _id,
-    getName: () => _name,
-    getDescription: () => _description,
-    getReleaseDate: () => _releaseDate,
-    getPlaytime: () => _playtime,
-    getLastActivity: () => _lastActivity,
-    getAdded: () => _added,
-    getInstallDirectory: () => _installDirectory,
-    isInstalled: () => _isInstalled,
-    isHidden: () => _hidden,
-    getBackgroundImage: () => _backgroundImage,
-    getCoverImage: () => _coverImage,
-    getIcon: () => _icon,
-    getCompletionStatusId: () => _completionStatusId,
-    getContentHash: () => _contentHash,
-    relationships: {
-      developers: createRelationship(props.developerIds ?? null),
-      genres: createRelationship(props.genreIds ?? null),
-      platforms: createRelationship(props.platformIds ?? null),
-      publishers: createRelationship(props.publisherIds ?? null),
-    },
-  };
-  return Object.freeze(game);
-};
+export const rehydrateGame = (props: RehydrateGameProps, deps: MakeGameDeps) =>
+	makeGame(props, deps);

@@ -1,0 +1,11 @@
+---
+playatlas_service_name: "playatlas"
+playatlas_scope: user
+playatlas_version: latest
+playatlas_tz: "America/Sao_Paulo"
+playatlas_log_level: 0
+playatlas_bind_ipv4_addresses:
+  - 192.168.1.10
+playatlas_bind_ipv6_addresses:
+  - fd00::1
+playatlas_container_network: home-server.network

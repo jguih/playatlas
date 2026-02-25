@@ -1,10 +1,10 @@
-import { Platform, PlatformId } from "../domain/platform.entity";
+import type { PlatformId } from "@playatlas/common/domain";
+import type { IEntityRepositoryPort } from "@playatlas/common/infra";
+import type { Platform } from "../domain/platform.entity";
+import type { PlatformRepositoryFilters } from "./platform.repository.types";
 
-export type PlatformRepository = {
-  add: (platform: Platform) => void;
-  exists: (id: PlatformId) => boolean;
-  update: (platform: Platform) => void;
-  getById: (id: PlatformId) => Platform | null;
-  all: () => Platform[];
-  upsertMany: (platforms: Platform[]) => void;
-};
+export type IPlatformRepositoryPort = IEntityRepositoryPort<
+	PlatformId,
+	Platform,
+	PlatformRepositoryFilters
+>;

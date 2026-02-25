@@ -1,35 +1,48 @@
-import type { sessionStatus } from "./game-session.constants";
-import type { GameSession } from "./game-session.entity";
+import type { GameId, GameSessionId, GameSessionStatus } from "@playatlas/common/domain";
+import type { IClockPort } from "@playatlas/common/infra";
 
-export type GameSessionStatusInProgress = (typeof sessionStatus)["inProgress"];
-export type GameSessionStatusClosed = (typeof sessionStatus)["closed"];
-export type GameSessionStatusStale = (typeof sessionStatus)["stale"];
-export type GameSessionStatus =
-  | GameSessionStatusClosed
-  | GameSessionStatusInProgress
-  | GameSessionStatusStale;
-
-export type GameActivity = {
-  status: "in_progress" | "not_playing";
-  gameName: string | null;
-  gameId: string | null;
-  totalPlaytime: number;
-  sessions: GameSession[];
+type ClosedSessionProps = {
+	endTime: Date | null;
+	duration: number | null;
 };
 
-export type MakeGameSessionProps = {
-  sessionId: string;
-  startTime: Date;
-  gameId?: string | null;
-  gameName?: string | null;
+type BaseProps = {
+	sessionId: GameSessionId;
+	startTime: Date;
+	status: GameSessionStatus;
+	gameId: GameId;
+	gameName: string | null;
 };
 
-export type MakeClosedGameSessionProps = MakeGameSessionProps & {
-  endTime: Date;
-  duration: number;
+type SyncProps = {
+	lastUpdatedAt: Date;
+	createdAt: Date;
 };
+
+type SoftDeleteProps = {
+	deletedAt: Date | null;
+	deleteAfter: Date | null;
+};
+
+export type BuildGameSessionProps = Partial<SyncProps> &
+	Partial<ClosedSessionProps> &
+	BaseProps &
+	Partial<SoftDeleteProps>;
+
+export type MakeGameSessionProps = Omit<BaseProps, "status">;
+
+export type MakeClosedGameSessionProps = MakeGameSessionProps & ClosedSessionProps;
 
 export type CloseGameSessionProps = {
-  endTime: Date;
-  duration: number;
+	endTime: Date;
+	duration: number;
+};
+
+export type RehydrateGameSessionProps = SyncProps &
+	ClosedSessionProps &
+	BaseProps &
+	SoftDeleteProps;
+
+export type MakeGameSessionDeps = {
+	clock: IClockPort;
 };

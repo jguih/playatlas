@@ -1,25 +1,30 @@
 {
-  "name": "@playatlas/game-session",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "exports": {
-    "./commands/close-session": "./src/commands/close-session/index.ts",
-    "./commands/open-session": "./src/commands/open-session/index.ts",
-    "./domain": "./src/domain/index.ts",
-    "./infra": "./src/infra/index.ts"
-  },
-  "scripts": {
-    "test:unit": "vitest run",
-    "test:watch": "vitest --watch"
-  },
-  "devDependencies": {
-    "@types/node": "^24.0.14"
-  },
-  "dependencies": {
-    "@faker-js/faker": "^9.9.0",
-    "vitest": "^3.2.4",
-    "@playatlas/common": "workspace:*",
-    "zod": "^3.25.76"
-  }
+	"name": "@playatlas/game-session",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"test": "vitest run",
+		"test:unit": "vitest run --project unit",
+		"test:watch": "vitest --watch"
+	},
+	"exports": {
+		"./commands": "./src/commands/index.ts",
+		"./queries": "./src/queries/index.ts",
+		"./domain": "./src/domain/index.ts",
+		"./infra": "./src/infra/index.ts",
+		"./types": "./src/types/index.ts",
+		"./application": "./src/application/index.ts",
+		"./dtos": "./src/dtos/index.ts"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"@faker-js/faker": "catalog:",
+		"vitest": "catalog:"
+	},
+	"dependencies": {
+		"@playatlas/common": "workspace:*",
+		"zod": "catalog:",
+		"ulid": "catalog:"
+	}
 }

@@ -1,144 +1,30 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
-	import {
-		ClientServiceLocator,
-		setLocatorContext,
-	} from '$lib/client/app-state/serviceLocator.svelte';
-	import { toast } from '$lib/client/app-state/toast.svelte';
-	import Loading from '$lib/client/components/Loading.svelte';
-	import Toast from '$lib/client/components/Toast.svelte';
-	import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
-	import { AppClientError } from '@playnite-insights/lib/client';
-	import { onMount } from 'svelte';
-	import '../app.css';
-	import type { LayoutProps } from './$types';
+	import { ClientCompositionRoot, type ClientApiV1 } from "$lib/modules/bootstrap/application";
+	import { setClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
+	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
+	import Main from "$lib/ui/components/Main.svelte";
+	import "../app.css";
 
-	let { children }: LayoutProps = $props();
-	let appProcessingInterval: ReturnType<typeof setInterval> | null = $state(null);
-	let loading = $state<Set<string>>(new Set('all'));
-	const locator = new ClientServiceLocator();
+	const { children } = $props();
+	const root = new ClientCompositionRoot();
+	const apiPromise: Promise<ClientApiV1> = root.buildAsync();
 
-	setLocatorContext(locator);
+	let api: ClientApiV1;
+	const getApi = (): ClientApiV1 => api;
 
-	const addLoading = (value: string) => {
-		const newLoading = new Set(loading);
-		newLoading.add(value);
-		loading = newLoading;
-	};
-
-	const removeLoading = (value: string) => {
-		const newLoading = new Set(loading);
-		newLoading.delete(value);
-		loading = newLoading;
-	};
-
-	const initInstance = async () => {
-		try {
-			addLoading('instanceRegistered');
-			const registered = await locator.instanceManager.isRegistered();
-			if (!registered) {
-				await goto('/auth/register', { replaceState: true });
-			}
-		} catch (error) {
-			if (error instanceof AppClientError) {
-				if (error.code === 'server_error')
-					toast.error({
-						category: 'app',
-						message: 'Failed to check instance registration, please check application logs.',
-					});
-			}
-		} finally {
-			removeLoading('instanceRegistered');
-		}
-		try {
-			addLoading('applicationSettings');
-			await locator.applicationSettingsStore.loadSettings();
-		} catch {
-			// Logs only
-		} finally {
-			removeLoading('applicationSettings');
-		}
-		try {
-			addLoading('ensureSyncId');
-			await locator.syncService.ensureValidLocalSyncId({
-				onFinishReconcile: () => {
-					toast.info({ category: 'app', message: `Reconciled data with server.` });
-				},
-			});
-		} catch (error) {
-			if (error instanceof AppClientError) {
-				if (error.code === 'invalid_syncid')
-					toast.warning({
-						category: 'app',
-						message: `Invalid SyncId detected, reconciling local dataset with server...`,
-					});
-				if (error.code === 'reconciliation_failed')
-					toast.error({
-						category: 'app',
-						message: `Failed to reconcile data with server, please check application logs.`,
-					});
-			}
-		} finally {
-			removeLoading('ensureSyncId');
-		}
-		loading = new Set();
-	};
-
-	initInstance();
-
-	const appProcessingHandler = () => {
-		try {
-			return Promise.all([
-				locator.serverTimeStore.loadServerTime(),
-				locator.syncQueue.processQueueAsync(),
-			]);
-		} catch {}
-	};
-
-	const handleFocus = () => {
-		if (!page.url.pathname.startsWith('/auth')) {
-			try {
-				locator.gameSessionStore.loadRecentSessions();
-				locator.gameStore.loadGames();
-			} catch (error) {
-				handleClientErrors(error, `[handleFocus] failed`);
-			}
-		}
-	};
-
-	onMount(() => {
-		appProcessingInterval = setInterval(appProcessingHandler, 60_000);
-		locator.eventSourceManager.setupGlobalListeners();
-		locator.serviceWorkerManager.setupGlobalListeners();
-		locator.serviceWorkerManager.watchServiceWorkerUpdates();
-		locator.gameNoteStore.loadNotesFromServerAsync();
-
-		if (!page.url.pathname.startsWith('/auth')) {
-			locator.eventSourceManager.connect().then(() => {
-				locator.loadStoresData();
-				locator.syncQueue.processQueueAsync();
-			});
-		}
-
-		window.addEventListener('focus', handleFocus);
-		return () => {
-			window.removeEventListener('focus', handleFocus);
-			if (appProcessingInterval) clearInterval(appProcessingInterval);
-			locator.serviceWorkerManager.clearGlobalListeners();
-			locator.eventSourceManager.clearGlobalListeners();
-			locator.eventSourceManager.close();
-		};
+	void apiPromise.then(async (clientApi) => {
+		api = clientApi;
 	});
+
+	setClientApiContext(getApi);
 </script>
 
-<Toast />
-{#if loading.size > 0}
-	<main class="flex h-full w-full items-center justify-center">
-		<div class="block">
-			<Loading size="lg" />
-		</div>
-	</main>
-{:else}
+{#await apiPromise}
+	<AppLayout>
+		<Main class="p-0!"></Main>
+	</AppLayout>
+{:then}
 	{@render children()}
-{/if}
+{:catch}
+	<p class="text-error">Failed to initialize application</p>
+{/await}

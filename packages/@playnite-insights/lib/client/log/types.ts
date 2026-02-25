@@ -1,3 +1,3 @@
-import { LOG_LEVELS } from "./schemas";
+import type { LOG_LEVELS } from "./schemas";
 
 export type ValidLogLevels = typeof LOG_LEVELS;

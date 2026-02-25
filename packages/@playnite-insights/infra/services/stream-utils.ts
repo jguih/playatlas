@@ -4,12 +4,11 @@ import * as stream from "stream";
 import * as streamAsync from "stream/promises";
 
 export const makeStreamUtilsService = (): StreamUtilsService => {
-  return {
-    createWriteStream: fs.createWriteStream,
-    pipeline: streamAsync.pipeline,
-    readableFromWeb: stream.Readable.fromWeb,
-  };
+	return {
+		createWriteStream: fs.createWriteStream,
+		pipeline: streamAsync.pipeline,
+		readableFromWeb: stream.Readable.fromWeb,
+	};
 };
 
-export const defaultStreamUtilsService: StreamUtilsService =
-  makeStreamUtilsService();
+export const defaultStreamUtilsService: StreamUtilsService = makeStreamUtilsService();

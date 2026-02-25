@@ -1,94 +1,88 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { getLocatorContext } from '$lib/client/app-state/serviceLocator.svelte';
-	import { toast } from '$lib/client/app-state/toast.svelte';
-	import SolidButton from '$lib/client/components/buttons/SolidButton.svelte';
-	import BaseInput from '$lib/client/components/forms/BaseInput.svelte';
-	import { handleClientErrors } from '$lib/client/utils/handleClientErrors.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import {
-		AppError,
-		HttpClientNotSetError,
-		JsonStrategy,
-		loginInstanceResponseSchema,
-		type LoginInstanceCommand,
-	} from '@playnite-insights/lib/client';
-	import type { FormEventHandler } from 'svelte/elements';
+	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
+	import type { AuthFlowLoginResult } from "$lib/modules/auth/application";
+	import { getClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
+	import { m } from "$lib/paraglide/messages";
+	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
+	import Input from "$lib/ui/components/forms/Input.svelte";
+	import Main from "$lib/ui/components/Main.svelte";
+	import type { EventHandler } from "svelte/elements";
 
-	const locator = getLocatorContext();
-	let password: string | null = $state(null);
-	let isLoading: boolean = $state(false);
+	const api = getClientApiContext();
+	const loginState = $state<{
+		loading: boolean;
+		result: AuthFlowLoginResult | null;
+		password: string;
+	}>({
+		loading: false,
+		result: null,
+		password: "",
+	});
 
-	const loginInstance = async () => {
-		if (!password) throw new AppError('Instance password cannot be null');
-		if (!locator.httpClient) throw new HttpClientNotSetError();
-		const command: LoginInstanceCommand = { password };
-		const response = await locator.httpClient.httpPostAsync({
-			endpoint: '/api/auth/login',
-			strategy: new JsonStrategy(loginInstanceResponseSchema),
-			body: command,
-		});
-		return response;
+	const loginAsync = async () => {
+		try {
+			loginState.loading = true;
+			loginState.result = null;
+
+			const result = await api().Auth.Flow.loginAsync({ password: loginState.password });
+
+			loginState.result = result;
+
+			if (result.success) await goto(resolve("/"));
+		} finally {
+			loginState.loading = false;
+		}
 	};
 
-	const handleOnSubmit: FormEventHandler<HTMLFormElement> = (e) => {
-		e.preventDefault();
-		isLoading = true;
-		loginInstance()
-			.then(async ({ sessionId, syncId }) => {
-				await locator.keyValueRepository.putAsync({
-					keyvalue: { Key: 'session-id', Value: sessionId },
-				});
-				await locator.keyValueRepository.putAsync({
-					keyvalue: { Key: 'sync-id', Value: syncId },
-				});
-				await locator.eventSourceManager.connect();
-				await locator.loadStoresData();
-				await goto('/', { replaceState: true });
-				isLoading = false;
-			})
-			.catch((error) => {
-				handleClientErrors(error, `[loginInstance] failed`);
-				toast.error({
-					category: 'app',
-					title: m.toast_failed_to_login_title(),
-					message: m.toast_failed_to_login_message(),
-				});
-				isLoading = false;
-			});
+	const handleSubmit: EventHandler<SubmitEvent, HTMLFormElement> = async (event) => {
+		event.preventDefault();
+		if (loginState.loading) return;
+		await loginAsync();
 	};
 </script>
 
-<main class="flex h-full w-full items-center justify-center">
+<Main class="h-dvh w-dvw flex items-center justify-center">
 	<form
-		class="block max-w-80"
-		onsubmit={handleOnSubmit}
+		class="flex flex-col gap-4 w-64"
+		onsubmit={handleSubmit}
 	>
-		<label for="instance-password">
-			<h1 class="mb-4 text-3xl">
-				{@html m.login_label_enter_password({
-					begin_span: '<span class="text-primary-light-active-fg">',
-					end_span: '</span>',
-				})}
-			</h1>
-			<BaseInput
-				class={['bg-background-1 p-2']}
-				type="password"
-				id="instance-password"
-				name="password"
-				bind:value={password}
-				placeholder={m.auth_placeholder_instance_password()}
-				minlength={4}
-				required
-			/>
-		</label>
-		<SolidButton
-			class={['ml-auto mt-4 block']}
-			size="lg"
-			type="submit"
-			{isLoading}
+		<label
+			class="text-3xl"
+			for="instance-password"
 		>
-			{m.label_login()}
+			{m["login_page.title.prefix"]()}
+			<span class="text-primary-light-active-fg">
+				{m["login_page.title.product"]()}
+			</span>
+			{m["login_page.title.suffix"]()}
+		</label>
+		<Input
+			placeholder={m["login_page.placeholder_instance_password"]()}
+			id="instance-password"
+			type="password"
+			variant={loginState.result?.success === false ? "error" : "primary"}
+			required
+			autofocus
+			enterkeyhint="done"
+			autocomplete="current-password"
+			oninput={() => (loginState.result = null)}
+			bind:value={loginState.password}
+		/>
+		{#if loginState.result && !loginState.result.success}
+			<p class="text-sm text-error-light-fg">
+				{loginState.result.reason_code === "instance_not_registered"
+					? m["login_page.validation.instance_not_registered"]()
+					: m["login_page.error_generic"]()}
+			</p>
+		{/if}
+		<SolidButton
+			class="self-end w-fit block"
+			type="submit"
+			disabled={loginState.loading || !loginState.password}
+			state={loginState.loading ? "loading" : !loginState.password ? "disabled" : "default"}
+		>
+			Login
 		</SolidButton>
 	</form>
-</main>
+</Main>

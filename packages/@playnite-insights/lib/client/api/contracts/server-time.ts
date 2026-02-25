@@ -2,9 +2,7 @@ import z from "zod";
 import { ISODateSchema } from "../../schemas";
 
 export const getServerUtcNowResponseSchema = z.object({
-  utcNow: ISODateSchema,
+	utcNow: ISODateSchema,
 });
 
-export type GetServerUtcNowResponse = z.infer<
-  typeof getServerUtcNowResponseSchema
->;
+export type GetServerUtcNowResponse = z.infer<typeof getServerUtcNowResponseSchema>;

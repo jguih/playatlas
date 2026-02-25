@@ -1,47 +1,68 @@
 {
-  "name": "playnite-insights-project",
-  "version": "1.0.0-beta.2",
-  "private": true,
-  "workspaces": [
-    "playnite-insights",
-    "playwright",
-    "packages/@playnite-insights/lib",
-    "packages/@playnite-insights/infra",
-    "packages/@playnite-insights/core",
-    "packages/@playnite-insights/testing",
-    "packages/@playatlas/auth",
-    "packages/@playatlas/game-library",
-    "packages/@playatlas/game-note",
-    "packages/@playatlas/game-session",
-    "packages/@playatlas/common",
-    "packages/@playatlas/system",
-    "packages/@playatlas/bootstrap",
-    "packages/integration-testing"
-  ],
-  "scripts": {
-    "dev": "pnpm --filter playnite-insights run dev",
-    "prod": "docker compose up -d --build --force-recreate app-prod",
-    "mkdocs": "docker compose up -d --build --force-recreate app-docs",
-    "build": "pnpm --filter playnite-insights run build",
-    "preview": "pnpm --filter playnite-insights run preview",
-    "test:unit": "pnpm -r run test:unit",
-    "test:integration": "pnpm -r run test:integration",
-    "test": "pnpm test:unit && pnpm test:integration",
-    "release-beta": "standard-version --prerelease beta",
-    "release": "standard-version",
-    "prepare": "husky"
-  },
-  "devDependencies": {
-    "husky": "^9.1.7",
-    "standard-version": "^9.5.0"
-  },
-  "files": [
-    "build",
-    "package.json"
-  ],
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  }
+	"name": "playnite-insights-project",
+	"type": "module",
+	"version": "1.0.0-beta.2",
+	"private": true,
+	"workspaces": [
+		"playnite-insights",
+		"playwright",
+		"packages/@playnite-insights/lib",
+		"packages/@playnite-insights/infra",
+		"packages/@playnite-insights/core",
+		"packages/@playnite-insights/testing",
+		"packages/@playatlas/auth",
+		"packages/@playatlas/game-library",
+		"packages/@playatlas/game-note",
+		"packages/@playatlas/game-session",
+		"packages/@playatlas/common",
+		"packages/@playatlas/system",
+		"packages/@playatlas/bootstrap",
+		"packages/@playatlas/playnite-integration",
+		"packages/integration-testing"
+	],
+	"scripts": {
+		"dev": "pnpm --filter playnite-insights run dev",
+		"prod": "docker compose up -d --build --force-recreate app-prod",
+		"build": "pnpm --filter playnite-insights run build",
+		"preview": "pnpm --filter playnite-insights run preview",
+		"test:unit": "pnpm -r run test:unit",
+		"test:integration": "pnpm -r run test:integration",
+		"test": "pnpm -r test",
+		"release-beta": "standard-version --prerelease beta",
+		"release": "standard-version",
+		"prepare": "husky",
+		"format": "prettier . --write",
+		"lint": "eslint . --cache",
+		"lint:fix": "eslint . --fix",
+		"calibrate:tiers": "pnpm --filter @playatlas/bootstrap run calibrate:tiers"
+	},
+	"lint-staged": {
+		"*.{ts,tsx,js,jsx,svelte}": [
+			"prettier --write",
+			"eslint --fix"
+		]
+	},
+	"devDependencies": {
+		"@eslint/compat": "^1.4.1",
+		"@eslint/js": "^9.39.2",
+		"dotenv": "^17.3.1",
+		"eslint": "^9.39.2",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-svelte": "^3.14.0",
+		"globals": "^16.5.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"prettier": "^3.8.1",
+		"prettier-plugin-svelte": "^3.4.1",
+		"prettier-plugin-tailwindcss": "^0.7.2",
+		"standard-version": "^9.5.0",
+		"tsx": "^4.21.0",
+		"typescript": "catalog:",
+		"typescript-eslint": "^8.54.0"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild"
+		]
+	}
 }

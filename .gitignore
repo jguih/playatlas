@@ -1,5 +1,7 @@
 test-results
 node_modules
+.eslintcache
+venv
 
 # Output
 .output
@@ -8,6 +10,7 @@ node_modules
 .wrangler
 .svelte-kit
 build
+packages/@playatlas/bootstrap/dist
 
 # OS
 .DS_Store

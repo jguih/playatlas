@@ -1,0 +1,44 @@
+### Get all companies
+GET {{protocol}}://{{host}}/api/company
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+### Get all platforms
+GET {{protocol}}://{{host}}/api/platform
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+### Get all genres
+GET {{protocol}}://{{host}}/api/genre
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+### Get all tags
+GET {{protocol}}://{{host}}/api/tag
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+### Get all games
+GET {{protocol}}://{{host}}/api/game
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+### Get all games classifications
+GET {{protocol}}://{{host}}/api/game/classification
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+### Get all games sessions
+GET {{protocol}}://{{host}}/api/game/session
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+### Reindex all game assets
+GET {{protocol}}://{{host}}/api/game/reindex-assets
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+### Get all completion statuses
+GET {{protocol}}://{{host}}/api/completion-status
+Content-Type: {{contentType}}
+Authorization: {{authorization}}

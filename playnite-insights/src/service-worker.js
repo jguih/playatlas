@@ -3,7 +3,7 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-import { build, files, version } from '$service-worker';
+import { build, files, version } from "$service-worker";
 
 const sw = /** @type {ServiceWorkerGlobalScope} */ (/** @type {unknown} */ (self));
 
@@ -13,14 +13,11 @@ const sw = /** @type {ServiceWorkerGlobalScope} */ (/** @type {unknown} */ (self
 const cacheKey = (name) => `${name}-data-${version}`;
 
 const CacheKeys = {
-	APP: cacheKey('app'),
-	GAMES: cacheKey('games'),
-	COMPANY: cacheKey('company'),
-	GENRE: cacheKey('genre'),
-	PLATFORM: cacheKey('platform'),
-	RECENT_SESSION: cacheKey('recent-session'),
-	LIBRARY_METRICS: cacheKey('library-metrics'),
-	SCREENSHOT_METADATA: cacheKey('screenshot_metadata'),
+	APP: cacheKey("app"),
+	GAMES: cacheKey("games"),
+	COMPANY: cacheKey("company"),
+	GENRE: cacheKey("genre"),
+	PLATFORM: cacheKey("platform"),
 };
 
 const cacheKeysArr = Object.values(CacheKeys);
@@ -43,42 +40,25 @@ const cacheKeysArr = Object.values(CacheKeys);
 /**
  *  @type {ApiRoute[]}
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const apiRoutes = [
-	['/api/game', CacheKeys.GAMES, { type: 'GAMES_UPDATE' }, staleWhileRevalidate],
-	['/api/company', CacheKeys.COMPANY, { type: 'COMPANY_UPDATE' }, staleWhileRevalidate],
-	['/api/genre', CacheKeys.GENRE, { type: 'GENRE_UPDATE' }, staleWhileRevalidate],
-	['/api/platform', CacheKeys.PLATFORM, { type: 'PLATFORM_UPDATE' }, staleWhileRevalidate],
-	[
-		'/api/session/recent',
-		CacheKeys.RECENT_SESSION,
-		{ type: 'RECENT_SESSION_UPDATE' },
-		networkFirst,
-	],
-	[
-		'/api/library/metrics',
-		CacheKeys.LIBRARY_METRICS,
-		{ type: 'LIBRARY_METRICS_UPDATE' },
-		staleWhileRevalidate,
-	],
-	[
-		'/api/assets/image/screenshot/all',
-		CacheKeys.SCREENSHOT_METADATA,
-		{ type: 'ALL_SCREENSHOT_UPDATE' },
-		staleWhileRevalidate,
-	],
+	["/api/game", CacheKeys.GAMES, { type: "GAMES_UPDATE" }, networkFirst],
+	["/api/company", CacheKeys.COMPANY, { type: "COMPANY_UPDATE" }, networkFirst],
+	["/api/genre", CacheKeys.GENRE, { type: "GENRE_UPDATE" }, networkFirst],
+	["/api/platform", CacheKeys.PLATFORM, { type: "PLATFORM_UPDATE" }, networkFirst],
 ];
 
 /**
  * @type {string[]}
  */
-const shellRoutes = ['/', '/game', '/game/journal', '/dash', '/settings'];
+const shellRoutes = ["/"];
 
 const ASSETS = [
 	...build, // the app itself
 	...files, // everything in `static`
 ];
 
-sw.addEventListener('install', (event) => {
+sw.addEventListener("install", (event) => {
 	// Create a new cache and add all files to it
 	async function addFilesToCache() {
 		const cache = await caches.open(CacheKeys.APP);
@@ -87,7 +67,7 @@ sw.addEventListener('install', (event) => {
 			try {
 				const response = await fetch(shellRoute);
 				if (!(response instanceof Response)) {
-					throw new Error('Invalid response from fetch');
+					throw new Error("Invalid response from fetch");
 				}
 				if (shouldCache(response)) {
 					await cache.put(shellRoute, response.clone());
@@ -101,7 +81,7 @@ sw.addEventListener('install', (event) => {
 	event.waitUntil(addFilesToCache());
 });
 
-sw.addEventListener('activate', (event) => {
+sw.addEventListener("activate", (event) => {
 	// Remove previous cached data from disk
 	async function deleteOldCaches() {
 		for (const key of await caches.keys()) {
@@ -112,12 +92,12 @@ sw.addEventListener('activate', (event) => {
 	event.waitUntil(Promise.all([deleteOldCaches(), sw.clients.claim()]));
 });
 
-sw.addEventListener('message', (event) => {
+sw.addEventListener("message", (event) => {
 	if (!event.data) return;
 
 	switch (event.data.action) {
-		case 'skipWaiting': {
-			sw.skipWaiting();
+		case "skipWaiting": {
+			void sw.skipWaiting();
 			break;
 		}
 	}
@@ -128,7 +108,7 @@ sw.addEventListener('message', (event) => {
  * @param {UpdateMessage} message
  */
 function notifyClients(message) {
-	sw.clients.matchAll().then((clients) => {
+	void sw.clients.matchAll().then((clients) => {
 		clients.forEach((client) => {
 			client.postMessage(message);
 		});
@@ -140,7 +120,7 @@ function notifyClients(message) {
  * @param {Response} response
  */
 function shouldCache(response) {
-	return response.type !== 'opaque' && response.ok;
+	return response.type !== "opaque" && response.ok;
 }
 
 /**
@@ -149,17 +129,18 @@ function shouldCache(response) {
  * @param {string} cacheName
  * @param {UpdateMessage} updateMessage
  */
-async function staleWhileRevalidate(request, cacheName, updateMessage = { type: 'UNKNOWN' }) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function staleWhileRevalidate(request, cacheName, updateMessage = { type: "UNKNOWN" }) {
 	const cache = await caches.open(cacheName);
 	const cachedResponse = await cache.match(request);
-	const cachedETag = cachedResponse?.headers.get('ETag');
+	const cachedETag = cachedResponse?.headers.get("ETag");
 
 	const fetchAndUpdate = fetch(request)
 		.then((networkResponse) => {
 			if (shouldCache(networkResponse)) {
-				cache.put(request, networkResponse.clone());
+				void cache.put(request, networkResponse.clone());
 			}
-			const networkETag = networkResponse.headers.get('ETag');
+			const networkETag = networkResponse.headers.get("ETag");
 			if (networkResponse.ok && cachedETag && networkETag && cachedETag !== networkETag) {
 				notifyClients(updateMessage);
 			}
@@ -167,7 +148,7 @@ async function staleWhileRevalidate(request, cacheName, updateMessage = { type: 
 		})
 		.catch(() => {
 			return (
-				cachedResponse || new Response(null, { status: 503, statusText: 'Service Unavailable' })
+				cachedResponse || new Response(null, { status: 503, statusText: "Service Unavailable" })
 			);
 		});
 
@@ -185,10 +166,10 @@ async function networkFirst(request, cacheName) {
 	try {
 		const networkResponse = await fetch(request);
 		if (!(networkResponse instanceof Response)) {
-			throw new Error('Invalid response from fetch');
+			throw new Error("Invalid response from fetch");
 		}
 		if (shouldCache(networkResponse)) {
-			cache.put(request, networkResponse.clone());
+			void cache.put(request, networkResponse.clone());
 		}
 		return networkResponse;
 	} catch {
@@ -198,7 +179,7 @@ async function networkFirst(request, cacheName) {
 			return cachedResponse;
 		}
 
-		return new Response('Service Unavailable', { status: 503 });
+		return new Response("Service Unavailable", { status: 503 });
 	}
 }
 
@@ -213,10 +194,10 @@ async function shellRouteStrategy(pathname, cacheName, request) {
 	try {
 		const networkResponse = await fetch(request);
 		if (!(networkResponse instanceof Response)) {
-			throw new Error('Invalid response from fetch');
+			throw new Error("Invalid response from fetch");
 		}
 		if (shouldCache(networkResponse)) {
-			cache.put(pathname, networkResponse.clone());
+			void cache.put(pathname, networkResponse.clone());
 		}
 		return networkResponse;
 	} catch {
@@ -224,15 +205,47 @@ async function shellRouteStrategy(pathname, cacheName, request) {
 		if (cachedResponse) {
 			return cachedResponse;
 		}
-		return new Response('Service Unavailable', { status: 503 });
+		return new Response("Service Unavailable", { status: 503 });
 	}
 }
 
-sw.addEventListener('fetch', async (event) => {
-	if (event.request.method !== 'GET') return;
-	if (event.request.headers.get('Accept')?.includes('text/event-stream')) return;
+/**
+ *
+ * @param {Request} request
+ */
+async function handleImageRequest(request) {
+	try {
+		const response = await fetch(request);
+		if (!response.ok) {
+			throw new Error("Image fetch failed");
+		}
+		return response;
+	} catch {
+		if (request.url.includes("/cover")) {
+			return fetch("/placeholder/cover.png");
+		}
+
+		if (request.url.includes("/icon")) {
+			return fetch("/placeholder/icon.png");
+		}
+
+		if (request.url.includes("/background")) {
+			return fetch("/placeholder/background.png");
+		}
+
+		return fetch("/placeholder/default.png");
+	}
+}
+
+sw.addEventListener("fetch", async (event) => {
+	if (event.request.method !== "GET") return;
+	if (event.request.headers.get("Accept")?.includes("text/event-stream")) return;
 
 	const url = new URL(event.request.url);
+
+	if (url.pathname.endsWith("manifest.webmanifest")) {
+		return;
+	}
 
 	// Always return cached assets
 	if (ASSETS.includes(url.pathname)) {
@@ -251,18 +264,16 @@ sw.addEventListener('fetch', async (event) => {
 		return;
 	}
 
-	// Network first for everything that is not from api
-	if (!url.pathname.startsWith('/api')) {
-		event.respondWith(networkFirst(event.request, CacheKeys.APP));
+	// Handle images
+	if (event.request.destination === "image" && event.request.url.includes("/api/assets/image/")) {
+		event.respondWith(handleImageRequest(event.request));
 		return;
 	}
 
-	// Handle api caching
-	for (const [prefix, cacheKey, updateMessage, strategy] of apiRoutes) {
-		if (url.pathname.startsWith(prefix)) {
-			event.respondWith(strategy(event.request, cacheKey, updateMessage));
-			return;
-		}
+	// Network first for everything that is not from api
+	if (!url.pathname.startsWith("/api")) {
+		event.respondWith(networkFirst(event.request, CacheKeys.APP));
+		return;
 	}
 
 	return;

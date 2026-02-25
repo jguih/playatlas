@@ -1,0 +1,70 @@
+import { type EntityMapper } from "@playatlas/common/application";
+import {
+	CompletionStatusIdParser,
+	PlayniteCompletionStatusIdParser,
+} from "@playatlas/common/domain";
+import type { ICompletionStatusFactoryPort } from ".";
+import { type CompletionStatus } from "../domain/completion-status.entity";
+import type { CompletionStatusResponseDto } from "../dtos/completion-status.response.dto";
+import type { CompletionStatusModel } from "../infra/completion-status.repository";
+
+export type ICompletionStatusMapperPort = EntityMapper<
+	CompletionStatus,
+	CompletionStatusModel,
+	CompletionStatusResponseDto
+>;
+
+export type CompletionStatusMapperDeps = {
+	completionStatusFactory: ICompletionStatusFactoryPort;
+};
+
+export const makeCompletionStatusMapper = ({
+	completionStatusFactory,
+}: CompletionStatusMapperDeps): ICompletionStatusMapperPort => {
+	const _toDto: ICompletionStatusMapperPort["toDto"] = (entity) => {
+		return {
+			Id: entity.getId(),
+			Name: entity.getName(),
+			Sync: {
+				LastUpdatedAt: entity.getLastUpdatedAt().toISOString(),
+				DeletedAt: entity.getDeletedAt()?.toISOString() ?? null,
+				DeleteAfter: entity.getDeleteAfter()?.toISOString() ?? null,
+			},
+		};
+	};
+
+	return {
+		toPersistence: (completionStatus: CompletionStatus): CompletionStatusModel => {
+			const record: CompletionStatusModel = {
+				Id: completionStatus.getId(),
+				PlayniteId: completionStatus.getPlayniteId(),
+				Name: completionStatus.getName(),
+				LastUpdatedAt: completionStatus.getLastUpdatedAt().toISOString(),
+				CreatedAt: completionStatus.getCreatedAt().toISOString(),
+				DeleteAfter: null,
+				DeletedAt: null,
+			};
+			return record;
+		},
+		toDomain: (completionStatus: CompletionStatusModel): CompletionStatus => {
+			const entity: CompletionStatus = completionStatusFactory.rehydrate({
+				id: CompletionStatusIdParser.fromTrusted(completionStatus.Id),
+				playniteId: completionStatus.PlayniteId
+					? PlayniteCompletionStatusIdParser.fromTrusted(completionStatus.PlayniteId)
+					: null,
+				name: completionStatus.Name,
+				lastUpdatedAt: new Date(completionStatus.LastUpdatedAt),
+				createdAt: new Date(completionStatus.CreatedAt),
+				deletedAt: completionStatus.DeletedAt ? new Date(completionStatus.DeletedAt) : undefined,
+				deleteAfter: completionStatus.DeleteAfter
+					? new Date(completionStatus.DeleteAfter)
+					: undefined,
+			});
+			return entity;
+		},
+		toDto: _toDto,
+		toDtoList: (entities) => {
+			return entities.map(_toDto);
+		},
+	};
+};

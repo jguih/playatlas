@@ -1,0 +1,38 @@
+### Login instance (returns sessionId)
+# @name login
+# @prompt password
+POST {{protocol}}://{{host}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "password": "{{password}}"
+}
+
+###
+
+### Register instance
+# @name register
+# @prompt password
+POST {{protocol}}://{{host}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "password": "{{password}}"
+}
+
+###
+
+### Get extension registrations
+GET {{protocol}}://{{host}}/api/extension-registration
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+###
+
+### Approve an extension registration
+# @prompt registrationId
+POST {{protocol}}://{{host}}/api/extension-registration/{{registrationId}}/approve
+Content-Type: {{contentType}}
+Authorization: {{authorization}}
+
+###

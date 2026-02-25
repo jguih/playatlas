@@ -1,7 +1,7 @@
-import { withExtensionAuth } from '$lib/server/api/authentication';
-import { json, type RequestHandler } from '@sveltejs/kit';
+import { extensionAuthMiddleware } from "$lib/server/api/middleware/auth.middleware";
+import { json, type RequestHandler } from "@sveltejs/kit";
 
-export const GET: RequestHandler = async ({ request, url, locals: { services } }) =>
-	withExtensionAuth(request, url, services, 'none', () => {
-		return json({ status: 'OK' });
+export const GET: RequestHandler = async ({ request, locals: { api } }) =>
+	extensionAuthMiddleware({ request, api }, async () => {
+		return json({ status: "OK" });
 	});

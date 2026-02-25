@@ -1,5 +1,13 @@
+export type * from "./command-handler.port";
 export type * from "./entity-mapper.port";
+export type * from "./entity.factory.port";
+export * from "./event-bus";
+export type * from "./event-bus.port";
+export type * from "./event-bus.types";
 export type * from "./file-system.service.port";
 export * from "./log-service.constants";
 export type * from "./log-service.port";
 export * from "./log-service.rules";
+export type * from "./query-handler.port";
+export type * from "./signature.service.port";
+export * from "./validations";

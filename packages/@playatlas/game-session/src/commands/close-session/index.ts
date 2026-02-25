@@ -1,3 +1,4 @@
 export * from "./close-session.command";
+export * from "./close-session.command-handler";
 export * from "./close-session.request.dto";
-export * from "./close-session.service";
+export type * from "./close-session.types";

@@ -1,125 +1,170 @@
 import {
-  EndTimeBeforeStartTimeError,
-  GameSessionAlreadyClosedError,
-  GameSessionAlreadyStaleError,
-  GameSessionNotInProgressError,
-  InvalidGameSessionDurationError,
-} from "./game-session.errors";
+	InvalidStateError,
+	makeSoftDeletable,
+	type BaseEntity,
+	type EntitySoftDeleteProps,
+	type GameId,
+	type GameSessionId,
+	type GameSessionStatus,
+} from "@playatlas/common/domain";
+import { GameSessionNotInProgressError } from "./game-session.errors";
 import type {
-  CloseGameSessionProps,
-  GameSessionStatus,
-  MakeClosedGameSessionProps,
-  MakeGameSessionProps,
+	BuildGameSessionProps,
+	CloseGameSessionProps,
+	MakeClosedGameSessionProps,
+	MakeGameSessionDeps,
+	MakeGameSessionProps,
+	RehydrateGameSessionProps,
 } from "./game-session.types";
 
-export type GameSessionId = string;
 type GameSessionStartTime = Date;
 type GameSessionEndTime = Date | null;
-type GameSessionGameId = string | null;
+type GameSessionGameId = GameId;
 type GameSessionGameName = string | null;
 export type GameSessionDuration = number | null;
 
-export type GameSession = Readonly<{
-  getSessionId: () => GameSessionId;
-  getStartTime: () => GameSessionStartTime;
-  getStatus: () => GameSessionStatus;
-  getEndTime: () => GameSessionEndTime;
-  getGameId: () => GameSessionGameId;
-  getGameName: () => GameSessionGameName;
-  getDuration: () => GameSessionDuration;
-  close(props: CloseGameSessionProps): void;
-  stale: () => void;
-}>;
+export type GameSession = BaseEntity<GameSessionId> &
+	EntitySoftDeleteProps &
+	Readonly<{
+		getSessionId: () => GameSessionId;
+		getStartTime: () => GameSessionStartTime;
+		getStatus: () => GameSessionStatus;
+		getEndTime: () => GameSessionEndTime;
+		getGameId: () => GameSessionGameId;
+		getGameName: () => GameSessionGameName;
+		getDuration: () => GameSessionDuration;
+		close(props: CloseGameSessionProps): void;
+		stale: () => void;
+		isInProgress: () => boolean;
+		isClosed: () => boolean;
+		isStale: () => boolean;
+	}>;
 
-export const makeGameSession = (props: MakeGameSessionProps): GameSession => {
-  const _sessionId: GameSessionId = props.sessionId;
-  const _startTime: GameSessionStartTime = props.startTime;
-  const _gameId: GameSessionGameId = props.gameId ?? null;
-  const _gameName: GameSessionGameName = props.gameName ?? null;
-  let _status: GameSessionStatus = "in_progress";
-  let _endTime: GameSessionEndTime = null;
-  let _duration: GameSessionDuration = null;
+const buildGameSession = (
+	props: BuildGameSessionProps,
+	{ clock }: MakeGameSessionDeps,
+): GameSession => {
+	const now = clock.now();
 
-  const newSession: GameSession = Object.freeze({
-    getSessionId: () => _sessionId,
-    getStatus: () => _status,
-    getStartTime: () => _startTime,
-    getEndTime: () => _endTime,
-    getGameId: () => _gameId,
-    getGameName: () => _gameName,
-    getDuration: () => _duration,
-    close: (props) => {
-      if (_status !== "in_progress") throw new GameSessionNotInProgressError();
-      if (props.endTime < _startTime) throw new EndTimeBeforeStartTimeError();
-      if (props.duration < 0)
-        throw new InvalidGameSessionDurationError({
-          sessionDuration: props.duration,
-        });
-      _endTime = props.endTime;
-      _duration = props.duration;
-      _status = "closed";
-    },
-    stale: () => {
-      _status = "stale";
-    },
-  });
-  return Object.freeze(newSession);
+	const _sessionId: GameSessionId = props.sessionId;
+	const _startTime: GameSessionStartTime = props.startTime;
+	let _status: GameSessionStatus = props.status;
+	const _gameId: GameSessionGameId = props.gameId;
+	const _gameName: GameSessionGameName = props.gameName ?? null;
+	let _endTime: GameSessionEndTime = props.endTime ?? null;
+	let _duration: GameSessionDuration = props.duration ?? null;
+	let _last_updated_at = props.lastUpdatedAt ?? now;
+	const _created_at = props.createdAt ?? now;
+
+	const _validate = () => {
+		if (_endTime && _startTime && _endTime <= _startTime)
+			throw new InvalidStateError(
+				"Game session end time must not be equal or earlier than start time",
+			);
+		if (_duration !== null && _duration !== undefined && _duration <= 0)
+			throw new InvalidStateError(
+				"Game session duration must be a positive integer greater than 0",
+			);
+	};
+
+	_validate();
+
+	const _touch = () => {
+		_last_updated_at = clock.now();
+	};
+
+	const softDelete = makeSoftDeletable(
+		{ deletedAt: props.deletedAt, deleteAfter: props.deleteAfter },
+		{ clock, touch: _touch, validate: _validate },
+	);
+
+	const newSession: GameSession = {
+		getId: () => _sessionId,
+		getSafeId: () => _sessionId,
+		getSessionId: () => _sessionId,
+		getLastUpdatedAt: () => _last_updated_at,
+		getCreatedAt: () => _created_at,
+		getStatus: () => _status,
+		getStartTime: () => _startTime,
+		getEndTime: () => _endTime,
+		getGameId: () => _gameId,
+		getGameName: () => _gameName,
+		getDuration: () => _duration,
+		close: (props) => {
+			if (_status !== "in_progress") throw new GameSessionNotInProgressError();
+
+			_endTime = props.endTime;
+			_duration = props.duration;
+			_status = "closed";
+
+			_touch();
+			_validate();
+		},
+		stale: () => {
+			if (_status !== "in_progress") throw new GameSessionNotInProgressError();
+
+			_status = "stale";
+
+			_touch();
+			_validate();
+		},
+		...softDelete,
+		validate: _validate,
+		isClosed: () => _status === "closed",
+		isInProgress: () => _status === "in_progress",
+		isStale: () => _status === "stale",
+	};
+	return Object.freeze(newSession);
 };
+
+export const makeGameSession = (
+	props: MakeGameSessionProps,
+	deps: MakeGameSessionDeps,
+): GameSession =>
+	buildGameSession(
+		{
+			sessionId: props.sessionId,
+			startTime: props.startTime,
+			gameId: props.gameId,
+			status: "in_progress",
+			gameName: props.gameName,
+		},
+		deps,
+	);
 
 export const makeClosedGameSession = (
-  props: MakeClosedGameSessionProps
-): GameSession => {
-  const _sessionId: GameSessionId = props.sessionId;
-  const _startTime: GameSessionStartTime = props.startTime;
-  const _gameId: GameSessionGameId = props.gameId ?? null;
-  const _gameName: GameSessionGameName = props.gameName ?? null;
-  let _status: GameSessionStatus = "closed";
-  let _endTime: GameSessionEndTime = props.endTime;
-  let _duration: GameSessionDuration = props.duration;
-
-  const newSession: GameSession = Object.freeze({
-    getSessionId: () => _sessionId,
-    getStatus: () => _status,
-    getStartTime: () => _startTime,
-    getEndTime: () => _endTime,
-    getGameId: () => _gameId,
-    getGameName: () => _gameName,
-    getDuration: () => _duration,
-    close: () => {
-      throw new GameSessionAlreadyClosedError();
-    },
-    stale: () => {
-      throw new GameSessionAlreadyClosedError();
-    },
-  });
-  return newSession;
-};
+	props: MakeClosedGameSessionProps,
+	deps: MakeGameSessionDeps,
+): GameSession =>
+	buildGameSession(
+		{
+			sessionId: props.sessionId,
+			startTime: props.startTime,
+			gameId: props.gameId,
+			status: "closed",
+			gameName: props.gameName,
+			duration: props.duration,
+			endTime: props.endTime,
+		},
+		deps,
+	);
 
 export const makeStaleGameSession = (
-  props: MakeGameSessionProps
-): GameSession => {
-  const _sessionId: GameSessionId = props.sessionId;
-  const _startTime: GameSessionStartTime = props.startTime;
-  const _gameId: GameSessionGameId = props.gameId ?? null;
-  const _gameName: GameSessionGameName = props.gameName ?? null;
-  let _status: GameSessionStatus = "stale";
-  let _endTime: GameSessionEndTime = null;
-  let _duration: GameSessionDuration = null;
+	props: MakeGameSessionProps,
+	deps: MakeGameSessionDeps,
+): GameSession =>
+	buildGameSession(
+		{
+			sessionId: props.sessionId,
+			startTime: props.startTime,
+			gameId: props.gameId,
+			status: "stale",
+			gameName: props.gameName,
+		},
+		deps,
+	);
 
-  const newSession: GameSession = Object.freeze({
-    getSessionId: () => _sessionId,
-    getStatus: () => _status,
-    getStartTime: () => _startTime,
-    getEndTime: () => _endTime,
-    getGameId: () => _gameId,
-    getGameName: () => _gameName,
-    getDuration: () => _duration,
-    close: () => {
-      throw new GameSessionAlreadyStaleError();
-    },
-    stale: () => {
-      throw new GameSessionAlreadyStaleError();
-    },
-  });
-  return newSession;
-};
+export const rehydrateGameSession = (
+	props: RehydrateGameSessionProps,
+	deps: MakeGameSessionDeps,
+): GameSession => buildGameSession(props, deps);
