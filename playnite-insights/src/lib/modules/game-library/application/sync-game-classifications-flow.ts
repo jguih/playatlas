@@ -77,6 +77,7 @@ export class SyncGameClassificationsFlow implements ISyncGameClassificationsFlow
 
 				await gameVectorProjectionWriter.projectAsync({ gameClassifications });
 				await gameVectorProjectionService.rebuildFromClassifications(gameClassifications);
+
 				await instancePreferenceModelService.rebuildAsync();
 
 				await gameRecommendationRecordProjectionWriter.projectFromGameClassificationAsync({

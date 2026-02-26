@@ -84,12 +84,16 @@ export class GameVectorProjectionService implements IGameVectorProjectionService
 		async (gameClassifications) => {
 			if (gameClassifications.length === 0) return;
 
-			const gameIds: GameId[] = gameClassifications.map((gc) => gc.GameId);
-			const newVectors = await this.buildAsync(gameIds);
+			const cache: GameVectorProjection = new Map();
+
+			const gameIds = new Set(gameClassifications.map((gc) => gc.GameId));
+			const newVectors = await this.buildAsync(gameIds.values().toArray());
 
 			for (const gameId of gameIds) {
 				const newVector = newVectors.get(gameId);
-				if (newVector) this.cache?.set(gameId, newVector);
+				if (newVector) cache.set(gameId, newVector);
 			}
+
+			this.cache = cache;
 		};
 }

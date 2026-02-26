@@ -54,17 +54,17 @@ export class GameRecommendationRecordProjectionWriter implements IGameRecommenda
 					await this.deps.gameRecommendationRecordReadonlyStore.getByGameIdAsync(gameId);
 				const vector = this.deps.gameVectorProjectionService.getVector(gameId);
 
-				if (vector && record)
+				if (record)
 					await this.deps.gameRecommendationRecordWriteStore.upsertAsync({
 						...record,
-						Vector: vector,
+						Vector: vector ?? new Float32Array(),
 						IsHidden: game.Playnite?.Hidden,
 						SearchName: game.SearchName ?? undefined,
 					});
-				else if (vector) {
+				else {
 					await this.deps.gameRecommendationRecordWriteStore.upsertAsync({
 						GameId: gameId,
-						Vector: vector,
+						Vector: vector ?? new Float32Array(),
 						IsHidden: game.Playnite?.Hidden,
 						SearchName: game.SearchName ?? undefined,
 					});
