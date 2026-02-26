@@ -3,6 +3,14 @@
 	import { getClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
 	import type { CreateGameLibraryFilterCommand } from "$lib/modules/game-library/commands";
 	import type { GameLibraryFilter } from "$lib/modules/game-library/domain";
+	import {
+		GameLibraryFiltersSidebar,
+		GameLibraryPager,
+		type GameLibraryPagerState,
+		GameLibrarySearch,
+		SyncProgressViewModel,
+		gameLibraryPageScrollState,
+	} from "$lib/page/game/library";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import GameCard from "$lib/ui/components/game-card/GameCard.svelte";
 	import GameCardSkeleton from "$lib/ui/components/game-card/GameCardSkeleton.svelte";
@@ -14,13 +22,7 @@
 	import Spinner from "$lib/ui/components/Spinner.svelte";
 	import { ArrowLeftIcon, ListFilter, SearchIcon } from "@lucide/svelte";
 	import { onMount, tick } from "svelte";
-	import SearchBottomSheet from "./page/components/SearchBottomSheet.svelte";
-	import { GameLibraryFiltersSidebar } from "./page/game-library-filters-sidebar";
-	import { GameLibraryPager } from "./page/game-library-pager.svelte";
-	import { type GameLibraryPagerState } from "./page/game-library-pager.types";
-	import { gameLibraryPageScrollState } from "./page/game-library-scroll-position.svelte";
-	import { GameLibrarySearch } from "./page/game-library-search.svelte";
-	import { SyncProgressViewModel } from "./page/sync-progress.view-model";
+	import SearchBottomSheet from "../../../lib/page/game/library/components/SearchBottomSheet.svelte";
 
 	const api = getClientApiContext();
 	const pager = new GameLibraryPager({ api });

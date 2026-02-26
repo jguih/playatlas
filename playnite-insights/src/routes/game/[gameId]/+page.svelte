@@ -2,6 +2,13 @@
 	import { resolve } from "$app/paths";
 	import { getClientApiContext } from "$lib/modules/bootstrap/application";
 	import { GameIdParser } from "$lib/modules/common/domain";
+	import { GameAggregateStore, GameViewModel } from "$lib/page/game/gameId";
+	import ActionButtonContainer from "$lib/page/game/gameId/components/ActionButtonContainer.svelte";
+	import ActionButtonLabel from "$lib/page/game/gameId/components/ActionButtonLabel.svelte";
+	import CompletionStatusButton from "$lib/page/game/gameId/components/CompletionStatusButton.svelte";
+	import GameDetailSkeleton from "$lib/page/game/gameId/components/GameDetailSkeleton.svelte";
+	import GameInfoSection from "$lib/page/game/gameId/components/GameInfoSection.svelte";
+	import GenreBreakdown from "$lib/page/game/gameId/components/genre-breakdown/GenreBreakdown.svelte";
 	import LightButton from "$lib/ui/components/buttons/LightButton.svelte";
 	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
 	import SolidChip from "$lib/ui/components/chip/SolidChip.svelte";
@@ -15,14 +22,6 @@
 	import { onMount, tick } from "svelte";
 	import { cubicInOut } from "svelte/easing";
 	import { fade } from "svelte/transition";
-	import ActionButtonContainer from "./page/components/ActionButtonContainer.svelte";
-	import ActionButtonLabel from "./page/components/ActionButtonLabel.svelte";
-	import CompletionStatusButton from "./page/components/CompletionStatusButton.svelte";
-	import GameDetailSkeleton from "./page/components/GameDetailSkeleton.svelte";
-	import GameInfoSection from "./page/components/GameInfoSection.svelte";
-	import GenreBreakdown from "./page/components/genre-breakdown/GenreBreakdown.svelte";
-	import { GameAggregateStore } from "./page/game-aggregate-store.svelte";
-	import { GameViewModel } from "./page/game-view-model.svelte";
 
 	const { params } = $props();
 	const getGameId = () => GameIdParser.fromTrusted(params.gameId);
