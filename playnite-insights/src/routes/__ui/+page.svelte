@@ -42,7 +42,7 @@
 
 	const showFiltersSidebar = () => {
 		pushState("", {
-			showHomePageFiltersSidebar: true,
+			showGameLibraryFiltersSidebar: true,
 		});
 	};
 
@@ -52,16 +52,16 @@
 
 	const showSearchDrawer = () => {
 		pushState("", {
-			showHomePageSearchDrawer: true,
+			showGameLibrarySearchDrawer: true,
 		});
 	};
 </script>
 
-{#if page.state.showHomePageFiltersSidebar}
+{#if page.state.showGameLibraryFiltersSidebar}
 	<Sidebar onClose={closeFiltersSidebar} />
 {/if}
 
-{#if page.state.showHomePageSearchDrawer}
+{#if page.state.showGameLibrarySearchDrawer}
 	<BottomSheet onClose={closeSearchDrawer} />
 {/if}
 

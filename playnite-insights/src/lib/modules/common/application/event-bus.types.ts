@@ -3,6 +3,9 @@ export type DomainEvent = { id: string; occurredAt: Date } & (
 			name: "login-successful";
 	  }
 	| {
+			name: "registration-successful";
+	  }
+	| {
 			name: "sync-finished";
 	  }
 	| {

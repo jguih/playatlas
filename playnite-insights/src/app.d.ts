@@ -13,8 +13,8 @@ declare global {
 		}
 		// interface PageData {}
 		interface PageState {
-			showHomePageFiltersSidebar?: true;
-			showHomePageSearchDrawer?: true;
+			showGameLibraryFiltersSidebar?: true;
+			showGameLibrarySearchDrawer?: true;
 		}
 		// interface Platform {}
 	}

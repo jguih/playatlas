@@ -65,8 +65,13 @@ export const POST: RequestHandler = async ({ request, locals: { api } }) => {
 		} satisfies RegisterInstanceResponseDto);
 	} catch (error) {
 		api.getLogService().error(`${requestDescription}: Login failed`, error);
+
 		return json(
-			{ success: false, reason: "Internal server error" } satisfies RegisterInstanceResponseDto,
+			{
+				success: false,
+				reason_code: "unknown_error",
+				reason: "Internal server error",
+			} satisfies RegisterInstanceResponseDto,
 			{
 				status: 500,
 			},

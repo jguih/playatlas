@@ -67,4 +67,59 @@ export class AuthFlow implements IAuthFlowPort {
 			throw error;
 		}
 	};
+
+	registerAsync: IAuthFlowPort["registerAsync"] = async ({ password }) => {
+		const { authService, eventBus, logService, clock } = this.deps;
+
+		if (!password || password.trim() === "")
+			return {
+				success: false,
+				reason_code: "validation_error",
+			};
+
+		try {
+			const registerResult = await authService.registerAsync({ password });
+
+			if (!registerResult.success) {
+				switch (registerResult.reason_code) {
+					case "instance_already_registered":
+						return {
+							success: false,
+							reason_code: "instance_already_registered",
+						};
+					case "invalid_json":
+					case "validation_error":
+						return {
+							success: false,
+							reason_code: "validation_error",
+						};
+					default:
+						return {
+							success: false,
+							reason_code: "unknown_error",
+						};
+				}
+			}
+
+			eventBus.emit({
+				id: crypto.randomUUID(),
+				name: "registration-successful",
+				occurredAt: clock.now(),
+			});
+
+			return { success: true, reason_code: "registered" };
+		} catch (error) {
+			if (error instanceof ValidationError) {
+				return {
+					success: false,
+					reason_code: "validation_error",
+				};
+			}
+			if (error instanceof TypeError) {
+				logService.error("Login request failed due to network error", error);
+				return { success: false, reason_code: "network_error" };
+			}
+			throw error;
+		}
+	};
 }

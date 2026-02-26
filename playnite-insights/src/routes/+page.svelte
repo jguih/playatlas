@@ -12,6 +12,7 @@
 	import { HomeIcon, LayoutDashboardIcon, SearchIcon, SettingsIcon } from "@lucide/svelte";
 	import { onMount } from "svelte";
 	import { GameLibraryPager } from "./game/library/page/game-library-pager.svelte";
+	import { GameLibrarySearch } from "./game/library/page/game-library-search.svelte";
 	import { SyncProgressViewModel } from "./game/library/page/sync-progress.view-model";
 	import HomePageHero from "./page/components/HomePageHero.svelte";
 	import { HomePageStore } from "./page/home-page-game-store.svelte";
@@ -20,6 +21,7 @@
 	const pager = new GameLibraryPager({ api });
 	const syncProgress = $derived(api().Synchronization.SyncProgressReporter.progressSignal);
 	const store = new HomePageStore({ api });
+	const search = new GameLibrarySearch();
 
 	void store.loadGamesAsync();
 
@@ -52,15 +54,13 @@
 						variant="neutral"
 						iconOnly={!pager.pagerStateSignal.query.filters.search}
 						class="flex items-center gap-1 px-2!"
+						onclick={() => {
+							void goto(resolve("/game/library")).then(() => search.open());
+						}}
 					>
 						<Icon>
 							<SearchIcon />
 						</Icon>
-						{#if pager.pagerStateSignal.query.filters.search}
-							<span class="text-xs text-foreground/60 truncate max-w-12">
-								{pager.pagerStateSignal.query.filters.search}
-							</span>
-						{/if}
 					</LightButton>
 				</div>
 			</div>

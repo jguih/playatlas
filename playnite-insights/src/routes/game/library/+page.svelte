@@ -19,13 +19,13 @@
 	import { GameLibraryPager } from "./page/game-library-pager.svelte";
 	import { type GameLibraryPagerState } from "./page/game-library-pager.types";
 	import { gameLibraryPageScrollState } from "./page/game-library-scroll-position.svelte";
-	import { HomePageSearch } from "./page/home-page-search.svelte";
+	import { GameLibrarySearch } from "./page/game-library-search.svelte";
 	import { SyncProgressViewModel } from "./page/sync-progress.view-model";
 
 	const api = getClientApiContext();
 	const pager = new GameLibraryPager({ api });
 	const filters = new GameLibraryFiltersSidebar();
-	const search = new HomePageSearch();
+	const search = new GameLibrarySearch();
 	const syncProgress = $derived(api().Synchronization.SyncProgressReporter.progressSignal);
 	const libraryFilterItems = $state<{ items: GameLibraryFilter[] }>({ items: [] });
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);

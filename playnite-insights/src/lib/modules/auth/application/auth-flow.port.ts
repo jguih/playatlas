@@ -13,6 +13,18 @@ export type AuthFlowLoginResult =
 				| "unknown_error";
 	  };
 
+export type AuthFlowRegisterResult =
+	| { success: true; reason_code: "registered" }
+	| {
+			success: false;
+			reason_code:
+				| "validation_error"
+				| "network_error"
+				| "instance_already_registered"
+				| "unknown_error";
+	  };
+
 export interface IAuthFlowPort {
 	loginAsync: (props: { password: string }) => Promise<AuthFlowLoginResult>;
+	registerAsync: (props: { password: string }) => Promise<AuthFlowRegisterResult>;
 }

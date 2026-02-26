@@ -1,10 +1,10 @@
 import { pushState } from "$app/navigation";
 import { page } from "$app/state";
 
-export class HomePageSearch {
+export class GameLibrarySearch {
 	open = () => {
 		pushState("", {
-			showHomePageSearchDrawer: true,
+			showGameLibrarySearchDrawer: true,
 		});
 	};
 
@@ -13,6 +13,6 @@ export class HomePageSearch {
 	};
 
 	get shouldOpen() {
-		return page.state.showHomePageSearchDrawer;
+		return page.state.showGameLibrarySearchDrawer;
 	}
 }

@@ -4,7 +4,7 @@ import { page } from "$app/state";
 export class GameLibraryFiltersSidebar {
 	open = () => {
 		pushState("", {
-			showHomePageFiltersSidebar: true,
+			showGameLibraryFiltersSidebar: true,
 		});
 	};
 
@@ -13,6 +13,6 @@ export class GameLibraryFiltersSidebar {
 	};
 
 	get shouldOpen() {
-		return page.state.showHomePageFiltersSidebar;
+		return page.state.showGameLibraryFiltersSidebar;
 	}
 }
