@@ -6,17 +6,7 @@ import {
 	INDEXEDDB_NAME,
 	type IIndexedDbSchema,
 } from "$lib/modules/common/infra";
-import {
-	GameRecommendationRecordReadonlyStore,
-	GameRecommendationRecordWriteStore,
-	GameVectorReadonlyStore,
-	GameVectorWriteStore,
-	PlayAtlasSyncState,
-	type IGameRecommendationRecordReadonlyStore,
-	type IGameRecommendationRecordWriteStore,
-	type IGameVectorReadonlyStore,
-	type IGameVectorWriteStore,
-} from "$lib/modules/game-library/infra";
+import { PlayAtlasSyncState } from "$lib/modules/game-library/infra";
 import type { IClientInfraModulePort } from "./infra.module.port";
 
 export type IndexedDbSignal = { db: IDBDatabase | null; dbReady: boolean };
@@ -29,40 +19,7 @@ export type ClientInfraModuleDeps = {
 
 export class ClientInfraModule implements IClientInfraModulePort {
 	private readonly indexedDbSignal: IndexedDbSignal;
-	#gameVectorReadonlyStore: IGameVectorReadonlyStore | null = null;
-	#gameVectorWriteStore: IGameVectorWriteStore | null = null;
-	#gameRecommendationRecordReadonlyStore: IGameRecommendationRecordReadonlyStore | null = null;
-	#gameRecommendationRecordWriteStore: IGameRecommendationRecordWriteStore | null = null;
-
 	readonly playAtlasSyncState: IPlayAtlasSyncStatePort;
-
-	get gameVectorReadonlyStore(): IGameVectorReadonlyStore {
-		if (!this.#gameVectorReadonlyStore)
-			this.#gameVectorReadonlyStore = new GameVectorReadonlyStore({ dbSignal: this.dbSignal });
-		return this.#gameVectorReadonlyStore;
-	}
-
-	get gameVectorWriteStore(): IGameVectorWriteStore {
-		if (!this.#gameVectorWriteStore)
-			this.#gameVectorWriteStore = new GameVectorWriteStore({ dbSignal: this.dbSignal });
-		return this.#gameVectorWriteStore;
-	}
-
-	get gameRecommendationRecordReadonlyStore(): IGameRecommendationRecordReadonlyStore {
-		if (!this.#gameRecommendationRecordReadonlyStore)
-			this.#gameRecommendationRecordReadonlyStore = new GameRecommendationRecordReadonlyStore({
-				dbSignal: this.dbSignal,
-			});
-		return this.#gameRecommendationRecordReadonlyStore;
-	}
-
-	get gameRecommendationRecordWriteStore(): IGameRecommendationRecordWriteStore {
-		if (!this.#gameRecommendationRecordWriteStore)
-			this.#gameRecommendationRecordWriteStore = new GameRecommendationRecordWriteStore({
-				dbSignal: this.dbSignal,
-			});
-		return this.#gameRecommendationRecordWriteStore;
-	}
 
 	get dbSignal(): IDBDatabase {
 		if (!this.indexedDbSignal.dbReady || !this.indexedDbSignal.db)

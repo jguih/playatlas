@@ -24,7 +24,7 @@ import type {
 	IGetLatestGameClassificationByGameIdQueryHandler,
 	IGetPlatformsByIdsQueryHandlerPort,
 } from "$lib/modules/game-library/queries";
-import type { IGameSessionReadonlyStore } from "$lib/modules/game-session/infra";
+import type { IGameSessionReadonlyStorePort } from "$lib/modules/game-session/infra";
 import type {
 	IPlayAtlasSyncManagerPort,
 	ISyncProgressReporterPort,
@@ -73,7 +73,7 @@ export interface ClientApiV1 {
 		Flow: IAuthFlowPort;
 	};
 	GameSession: {
-		GameSessionReadonlyStore: IGameSessionReadonlyStore;
+		GameSessionReadonlyStore: IGameSessionReadonlyStorePort;
 	};
 	EventBus: IDomainEventBusPort;
 }

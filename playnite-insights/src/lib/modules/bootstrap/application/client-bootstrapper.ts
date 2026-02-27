@@ -41,7 +41,7 @@ export class ClientBootstrapper {
 					},
 				},
 				RecommendationEngine: {
-					Engine: gameLibrary.recommendationEngine,
+					Engine: gameLibrary.recommendationEngineModule.recommendationEngine,
 				},
 				Query: {
 					GetGames: gameLibrary.getGamesQueryHandler,

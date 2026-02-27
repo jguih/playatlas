@@ -26,7 +26,7 @@ import {
 	GenreFactory,
 	PlatformFactory,
 } from "$lib/modules/game-library/testing";
-import { gameSessionStoreSchema } from "$lib/modules/game-session/infra";
+import { GameSessionReadonlyStore, gameSessionStoreSchema } from "$lib/modules/game-session/infra";
 import { SyncRunner } from "$lib/modules/synchronization/application/sync-runner";
 import { type ClientApiV1 } from "../application/client-api.v1";
 import { ClientBootstrapper } from "../application/client-bootstrapper";
@@ -110,27 +110,28 @@ export class TestCompositionRoot {
 		const playAtlasClient = new PlayAtlasClient({ httpClient: this.mocks.httpClient });
 		const syncRunner = new SyncRunner({ clock: this.clock, syncState: infra.playAtlasSyncState });
 
+		const gameSessionReadonlyStore = new GameSessionReadonlyStore({ dbSignal: infra.dbSignal });
+
+		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
+			dbSignal: infra.dbSignal,
+			playAtlasClient,
+			clock: this.clock,
+			syncRunner,
+			gameSessionReadonlyStore: gameSessionReadonlyStore,
+			eventBus: this.eventBus,
+		});
+		await gameLibrary.initializeAsync();
+
 		const gameSession: IClientGameSessionModulePort = new GameSessionModule({
 			clock: this.clock,
 			dbSignal: infra.dbSignal,
 			logService: this.mocks.logService,
 			playAtlasClient,
 			syncRunner,
+			gameSessionReadonlyStore,
+			instancePreferenceModelInvalidation:
+				gameLibrary.recommendationEngineModule.instancePreferenceModelService,
 		});
-
-		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
-			dbSignal: infra.dbSignal,
-			clock: this.clock,
-			playAtlasClient,
-			syncRunner,
-			gameSessionReadonlyStore: gameSession.gameSessionReadonlyStore,
-			gameVectorReadonlyStore: infra.gameVectorReadonlyStore,
-			gameVectorWriteStore: infra.gameVectorWriteStore,
-			gameRecommendationRecordReadonlyStore: infra.gameRecommendationRecordReadonlyStore,
-			gameRecommendationRecordWriteStore: infra.gameRecommendationRecordWriteStore,
-			eventBus: this.eventBus,
-		});
-		await gameLibrary.initializeAsync();
 
 		const synchronization = new SynchronizationModule({
 			clock: this.clock,
@@ -142,6 +143,8 @@ export class TestCompositionRoot {
 			syncGenresFlow: gameLibrary.syncGenresFlow,
 			syncPlatformsFlow: gameLibrary.syncPlatformsFlow,
 			syncGameSessionsFlow: gameSession.syncGameSessionsFlow,
+			instancePreferenceModelService:
+				gameLibrary.recommendationEngineModule.instancePreferenceModelService,
 		});
 
 		const bootstrapper = new ClientBootstrapper({

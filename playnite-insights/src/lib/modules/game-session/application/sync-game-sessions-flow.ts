@@ -1,4 +1,5 @@
 import type {
+	IInstancePreferenceModelInvalidationPort,
 	IPlayAtlasClientPort,
 	ISyncRunnerPort,
 	SyncRunnerFetchResult,
@@ -16,6 +17,7 @@ export type SyncGameSessionsFlowDeps = {
 	gameSessionsWriteStore: IGameSessionWriteStorePort;
 	gameSessionMapper: IGameSessionReadModelMapperPort;
 	syncRunner: ISyncRunnerPort;
+	instancePreferenceModelInvalidation: IInstancePreferenceModelInvalidationPort;
 };
 
 export class SyncGameSessionsFlow implements ISyncGameSessionsFlowPort {
@@ -40,14 +42,21 @@ export class SyncGameSessionsFlow implements ISyncGameSessionsFlowPort {
 	};
 
 	executeAsync: ISyncGameSessionsFlowPort["executeAsync"] = async () => {
-		const { syncRunner, gameSessionMapper, gameSessionsWriteStore } = this.deps;
+		const {
+			syncRunner,
+			gameSessionMapper,
+			gameSessionsWriteStore,
+			instancePreferenceModelInvalidation,
+		} = this.deps;
 
 		await syncRunner.runAsync({
 			syncTarget: "gameSessions",
 			fetchAsync: this.fetchAsync,
 			mapDtoToEntity: ({ dto, now }) => gameSessionMapper.fromDto(dto, now),
-			persistAsync: ({ entities }) =>
-				gameSessionsWriteStore.upsertAsync({ gameSessionDto: entities }),
+			persistAsync: async ({ entities }) => {
+				await gameSessionsWriteStore.upsertAsync({ gameSessionDto: entities });
+				instancePreferenceModelInvalidation.invalidate();
+			},
 		});
 	};
 }

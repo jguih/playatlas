@@ -11,6 +11,9 @@ export type DomainEvent = { id: string; occurredAt: Date } & (
 	| {
 			name: "game-library-updated";
 	  }
+	| {
+			name: "game-sessions-updated";
+	  }
 );
 
 export type Listener<T extends DomainEvent = DomainEvent> = (event: T) => void;

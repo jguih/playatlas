@@ -21,7 +21,7 @@ import {
 	genreRepositorySchema,
 	platformRepositorySchema,
 } from "$lib/modules/game-library/infra";
-import { gameSessionStoreSchema } from "$lib/modules/game-session/infra";
+import { GameSessionReadonlyStore, gameSessionStoreSchema } from "$lib/modules/game-session/infra";
 import { SyncRunner } from "$lib/modules/synchronization/application/sync-runner";
 import {
 	ClientGameLibraryModule,
@@ -82,27 +82,28 @@ export class ClientCompositionRoot {
 		const playAtlasClient = new PlayAtlasClient({ httpClient: playAtlasHttpClient });
 		const syncRunner = new SyncRunner({ clock: this.clock, syncState: infra.playAtlasSyncState });
 
-		const gameSession: IClientGameSessionModulePort = new GameSessionModule({
-			clock: this.clock,
-			dbSignal: infra.dbSignal,
-			logService: this.logService,
-			playAtlasClient,
-			syncRunner,
-		});
+		const gameSessionReadonlyStore = new GameSessionReadonlyStore({ dbSignal: infra.dbSignal });
 
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			dbSignal: infra.dbSignal,
 			playAtlasClient,
 			clock: this.clock,
 			syncRunner,
-			gameSessionReadonlyStore: gameSession.gameSessionReadonlyStore,
-			gameVectorReadonlyStore: infra.gameVectorReadonlyStore,
-			gameVectorWriteStore: infra.gameVectorWriteStore,
-			gameRecommendationRecordReadonlyStore: infra.gameRecommendationRecordReadonlyStore,
-			gameRecommendationRecordWriteStore: infra.gameRecommendationRecordWriteStore,
+			gameSessionReadonlyStore: gameSessionReadonlyStore,
 			eventBus: this.eventBus,
 		});
 		await gameLibrary.initializeAsync();
+
+		const gameSession: IClientGameSessionModulePort = new GameSessionModule({
+			clock: this.clock,
+			dbSignal: infra.dbSignal,
+			logService: this.logService,
+			playAtlasClient,
+			syncRunner,
+			gameSessionReadonlyStore,
+			instancePreferenceModelInvalidation:
+				gameLibrary.recommendationEngineModule.instancePreferenceModelService,
+		});
 
 		const synchronization = new SynchronizationModule({
 			clock: this.clock,
@@ -114,6 +115,8 @@ export class ClientCompositionRoot {
 			syncGenresFlow: gameLibrary.syncGenresFlow,
 			syncPlatformsFlow: gameLibrary.syncPlatformsFlow,
 			syncGameSessionsFlow: gameSession.syncGameSessionsFlow,
+			instancePreferenceModelService:
+				gameLibrary.recommendationEngineModule.instancePreferenceModelService,
 		});
 
 		this.startLibrarySync({ auth, synchronization });

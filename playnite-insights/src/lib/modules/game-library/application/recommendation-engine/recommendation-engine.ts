@@ -1,6 +1,6 @@
 import type { GameId } from "$lib/modules/common/domain";
 import type { IGameVectorProjectionServicePort } from "./game-vector-projection.service";
-import type { IInstancePreferenceModelService } from "./instance-preference-model.service";
+import type { IInstancePreferenceModelServicePort } from "./instance-preference-model.service";
 import type {
 	RecommendationEngineFilter,
 	RecommendationEngineFilterProps,
@@ -19,7 +19,7 @@ export type IRecommendationEnginePort = {
 
 export type RecommendationEngineDeps = {
 	gameVectorProjectionService: IGameVectorProjectionServicePort;
-	instancePreferenceModelService: IInstancePreferenceModelService;
+	instancePreferenceModelService: IInstancePreferenceModelServicePort;
 };
 
 export class RecommendationEngine implements IRecommendationEnginePort {

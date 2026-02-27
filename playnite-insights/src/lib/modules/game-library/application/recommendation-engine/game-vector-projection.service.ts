@@ -3,7 +3,6 @@ import {
 	GAME_CLASSIFICATION_INDEX,
 	type GameId,
 } from "$lib/modules/common/domain";
-import type { GameClassification } from "../../domain/scoring-engine/game-classification.entity";
 import type {
 	GameVectorReadModel,
 	IGameVectorReadonlyStore,
@@ -17,7 +16,7 @@ export type IGameVectorProjectionServicePort = {
 	forEach: (callback: (gameId: GameId, vector: Float32Array) => void) => void;
 	invalidate: () => void;
 	rebuildAsync: () => Promise<void>;
-	rebuildFromClassifications: (gameClassifications: GameClassification[]) => Promise<void>;
+	rebuildForGamesAsync: (gameIds: GameId[]) => Promise<void>;
 };
 
 export type GameVectorProjectionServiceDeps = {
@@ -80,20 +79,20 @@ export class GameVectorProjectionService implements IGameVectorProjectionService
 		this.cache = await this.buildAsync();
 	};
 
-	rebuildFromClassifications: IGameVectorProjectionServicePort["rebuildFromClassifications"] =
-		async (gameClassifications) => {
-			if (gameClassifications.length === 0) return;
+	rebuildForGamesAsync: IGameVectorProjectionServicePort["rebuildForGamesAsync"] = async (
+		gameIds,
+	) => {
+		if (gameIds.length === 0) return;
 
-			const cache: GameVectorProjection = new Map();
+		const cache: GameVectorProjection = new Map();
 
-			const gameIds = new Set(gameClassifications.map((gc) => gc.GameId));
-			const newVectors = await this.buildAsync(gameIds.values().toArray());
+		const newVectors = await this.buildAsync(gameIds.values().toArray());
 
-			for (const gameId of gameIds) {
-				const newVector = newVectors.get(gameId);
-				if (newVector) cache.set(gameId, newVector);
-			}
+		for (const gameId of gameIds) {
+			const newVector = newVectors.get(gameId);
+			if (newVector) cache.set(gameId, newVector);
+		}
 
-			this.cache = cache;
-		};
+		this.cache = cache;
+	};
 }

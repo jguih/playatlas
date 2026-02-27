@@ -7,7 +7,10 @@ import type {
 import type { GameResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncGamesCommandHandlerPort } from "../commands/sync-games/sync-games.command-handler";
 import type { IGameMapperPort } from "./game.mapper.port";
-import type { IGameRecommendationRecordProjectionWriterPort } from "./recommendation-engine";
+import type {
+	IGameRecommendationRecordProjectionServicePort,
+	IGameRecommendationRecordProjectionWriterPort,
+} from "./recommendation-engine";
 
 export interface ISyncGamesFlowPort {
 	executeAsync: () => Promise<void>;
@@ -21,6 +24,7 @@ export type SyncGameLibraryServiceDeps = {
 	eventBus: IDomainEventBusPort;
 	clock: IClockPort;
 	gameRecommendationRecordProjectionWriter: IGameRecommendationRecordProjectionWriterPort;
+	gameRecommendationRecordProjectionService: IGameRecommendationRecordProjectionServicePort;
 };
 
 export class SyncGamesFlow implements ISyncGamesFlowPort {
@@ -52,6 +56,7 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 			eventBus,
 			clock,
 			gameRecommendationRecordProjectionWriter,
+			gameRecommendationRecordProjectionService,
 		} = this.deps;
 
 		await syncRunner.runAsync({
@@ -61,7 +66,10 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 			persistAsync: async ({ entities: games }) => {
 				await syncGamesCommandHandler.executeAsync({ games });
 
+				const gameIds = new Set(games.map((g) => g.Id)).values().toArray();
+
 				await gameRecommendationRecordProjectionWriter.projectFromGameAsync({ games });
+				await gameRecommendationRecordProjectionService.rebuildForGamesAsync(gameIds);
 
 				eventBus.emit({
 					id: crypto.randomUUID(),

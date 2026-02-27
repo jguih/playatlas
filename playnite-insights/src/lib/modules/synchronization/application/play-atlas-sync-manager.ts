@@ -1,6 +1,7 @@
 import type { IClockPort, IDomainEventBusPort } from "$lib/modules/common/application";
 import type { SyncTarget } from "$lib/modules/common/domain";
 import type {
+	IInstancePreferenceModelServicePort,
 	ISyncCompaniesFlowPort,
 	ISyncCompletionStatusesFlowPort,
 	ISyncGameClassificationsFlowPort,
@@ -23,6 +24,7 @@ export type PlayAtlasSyncManagerDeps = {
 	progressReporter: ISyncProgressReporterPort;
 	clock: IClockPort;
 	eventBus: IDomainEventBusPort;
+	instancePreferenceModelService: IInstancePreferenceModelServicePort;
 };
 
 export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
@@ -35,7 +37,7 @@ export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
 		if (this.syncing) return;
 		this.syncing = true;
 
-		const { progressReporter, clock, eventBus } = this.deps;
+		const { progressReporter, clock, eventBus, instancePreferenceModelService } = this.deps;
 
 		const startedAt = clock.now().getTime();
 		progressReporter.report({ type: "sync-started" });
@@ -59,6 +61,8 @@ export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
 					progressReporter.report({ type: "flow-finished", flow: key });
 				}
 			}
+
+			await instancePreferenceModelService.rebuildAsync();
 		} finally {
 			const elapsed = clock.now().getTime() - startedAt;
 			const remaining = Math.max(0, this.MIN_VISIBLE_MS - elapsed);

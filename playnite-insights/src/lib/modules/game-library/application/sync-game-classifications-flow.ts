@@ -1,4 +1,8 @@
-import type { IClockPort, IDomainEventBusPort } from "$lib/modules/common/application";
+import type {
+	IClockPort,
+	IDomainEventBusPort,
+	IInstancePreferenceModelInvalidationPort,
+} from "$lib/modules/common/application";
 import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
 import type {
 	ISyncRunnerPort,
@@ -10,7 +14,6 @@ import type {
 	IGameRecommendationRecordProjectionServicePort,
 	IGameRecommendationRecordProjectionWriterPort,
 	IGameVectorProjectionServicePort,
-	IInstancePreferenceModelService,
 } from "./recommendation-engine";
 import type { IGameVectorProjectionWriterPort } from "./recommendation-engine/game-vector-projection-writer.service";
 import type { IGameClassificationMapperPort } from "./scoring-engine/game-classification.mapper.port";
@@ -26,7 +29,7 @@ export type SyncGameClassificationsFlowDeps = {
 	syncRunner: ISyncRunnerPort;
 	gameVectorProjectionWriter: IGameVectorProjectionWriterPort;
 	gameVectorProjectionService: IGameVectorProjectionServicePort;
-	instancePreferenceModelService: IInstancePreferenceModelService;
+	instancePreferenceModelInvalidation: IInstancePreferenceModelInvalidationPort;
 	gameRecommendationRecordProjectionWriter: IGameRecommendationRecordProjectionWriterPort;
 	gameRecommendationRecordProjectionService: IGameRecommendationRecordProjectionServicePort;
 	eventBus: IDomainEventBusPort;
@@ -61,7 +64,7 @@ export class SyncGameClassificationsFlow implements ISyncGameClassificationsFlow
 			syncGameClassificationsCommandHandler,
 			gameVectorProjectionWriter,
 			gameVectorProjectionService,
-			instancePreferenceModelService,
+			instancePreferenceModelInvalidation,
 			gameRecommendationRecordProjectionService,
 			gameRecommendationRecordProjectionWriter,
 			eventBus,
@@ -75,17 +78,17 @@ export class SyncGameClassificationsFlow implements ISyncGameClassificationsFlow
 			persistAsync: async ({ entities: gameClassifications }) => {
 				await syncGameClassificationsCommandHandler.executeAsync({ gameClassifications });
 
-				await gameVectorProjectionWriter.projectAsync({ gameClassifications });
-				await gameVectorProjectionService.rebuildFromClassifications(gameClassifications);
+				const gameIds = new Set(gameClassifications.map((gc) => gc.GameId)).values().toArray();
 
-				await instancePreferenceModelService.rebuildAsync();
+				await gameVectorProjectionWriter.projectAsync({ gameClassifications });
+				await gameVectorProjectionService.rebuildForGamesAsync(gameIds);
+
+				instancePreferenceModelInvalidation.invalidate();
 
 				await gameRecommendationRecordProjectionWriter.projectFromGameClassificationAsync({
 					gameClassifications,
 				});
-				await gameRecommendationRecordProjectionService.rebuildFromClassifications(
-					gameClassifications,
-				);
+				await gameRecommendationRecordProjectionService.rebuildForGamesAsync(gameIds);
 
 				eventBus.emit({
 					id: crypto.randomUUID(),
