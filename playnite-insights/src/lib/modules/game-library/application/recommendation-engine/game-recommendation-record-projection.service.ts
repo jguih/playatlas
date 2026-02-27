@@ -43,7 +43,8 @@ export class GameRecommendationRecordProjectionService implements IGameRecommend
 	};
 
 	getRecord: IGameRecommendationRecordProjectionServicePort["getRecord"] = (gameId) => {
-		return this.cache?.get(gameId) ?? null;
+		if (!this.cache) throw new Error("Projection not initialized");
+		return this.cache.get(gameId) ?? null;
 	};
 
 	forEach: IGameRecommendationRecordProjectionServicePort["forEach"] = (callback) => {

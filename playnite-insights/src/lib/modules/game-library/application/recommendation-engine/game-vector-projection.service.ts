@@ -62,7 +62,8 @@ export class GameVectorProjectionService implements IGameVectorProjectionService
 	};
 
 	getVector: IGameVectorProjectionServicePort["getVector"] = (gameId) => {
-		return this.cache?.get(gameId) ?? null;
+		if (!this.cache) throw new Error("Projection not initialized");
+		return this.cache.get(gameId) ?? null;
 	};
 
 	forEach: IGameVectorProjectionServicePort["forEach"] = (callback) => {
