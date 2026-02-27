@@ -3,6 +3,7 @@
 	import { setClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
+	import Spinner from "$lib/ui/components/Spinner.svelte";
 	import "../app.css";
 
 	const { children } = $props();
@@ -21,7 +22,9 @@
 
 {#await apiPromise}
 	<AppLayout>
-		<Main class="p-0!"></Main>
+		<Main>
+			<Spinner variant="primary" />
+		</Main>
 	</AppLayout>
 {:then}
 	{@render children()}
