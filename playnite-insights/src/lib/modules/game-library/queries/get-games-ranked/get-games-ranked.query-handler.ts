@@ -1,3 +1,4 @@
+import { normalize } from "$lib/modules/common/common";
 import { GAME_CLASSIFICATION_INDEX } from "$lib/modules/common/domain";
 import type { IGameVectorProjectionServicePort } from "../../application/recommendation-engine/game-vector-projection.service";
 import type {
@@ -33,7 +34,15 @@ export class GetGamesRankedQueryHandler implements IGetGamesRankedQueryHandlerPo
 		const filters: RecommendationEngineFilter[] = [];
 
 		if (query.filter?.horror) {
-			filters.push(({ vector }): boolean => vector[GAME_CLASSIFICATION_INDEX.HORROR] > 0.4);
+			filters.push(({ record }) => record.Vector[GAME_CLASSIFICATION_INDEX.HORROR] > 0.4);
+		}
+
+		const search = query.filter?.search;
+		if (search) {
+			filters.push(({ record }) => {
+				if (!record.SearchName) return false;
+				return record.SearchName.startsWith(normalize(search));
+			});
 		}
 
 		return filters;

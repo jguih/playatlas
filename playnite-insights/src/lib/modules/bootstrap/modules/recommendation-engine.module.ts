@@ -66,8 +66,8 @@ export class RecommendationEngineModule implements IRecommendationEngineModulePo
 			gameVectorProjectionService: this.gameVectorProjectionService,
 		});
 		this.recommendationEngine = new RecommendationEngine({
-			gameVectorProjectionService: this.gameVectorProjectionService,
 			instancePreferenceModelService: this.instancePreferenceModelService,
+			gameRecommendationRecordProjectionService: this.gameRecommendationRecordProjectionService,
 		});
 	}
 

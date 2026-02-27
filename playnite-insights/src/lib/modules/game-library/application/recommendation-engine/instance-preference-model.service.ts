@@ -7,7 +7,7 @@ import type { IGameVectorProjectionServicePort } from "./game-vector-projection.
 
 export type IInstancePreferenceModelServicePort = IInstancePreferenceModelInvalidationPort & {
 	initializeAsync: () => Promise<void>;
-	getVector: () => Float32Array | null;
+	getVector: () => Float32Array;
 	rebuildAsync: () => Promise<void>;
 };
 
@@ -78,7 +78,11 @@ export class InstancePreferenceModelService implements IInstancePreferenceModelS
 	};
 
 	getVector: IInstancePreferenceModelServicePort["getVector"] = () => {
-		return this.cache ? Float32Array.from(this.cache) : null;
+		if (!this.cache)
+			throw new Error(
+				"InstancePreferenceModelService not initialized. Call initializeAsync() before requesting recommendations.",
+			);
+		return Float32Array.from(this.cache);
 	};
 
 	invalidate: IInstancePreferenceModelInvalidationPort["invalidate"] = () => (this.cache = null);

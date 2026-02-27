@@ -57,7 +57,7 @@
 						iconOnly
 						class="flex items-center gap-1 px-2!"
 						onclick={() => {
-							pager.setQuery({ mode: "query" });
+							pager.setQuery({ mode: "ranked" });
 							void goto(resolve("/game/library")).then(() => search.open());
 						}}
 					>

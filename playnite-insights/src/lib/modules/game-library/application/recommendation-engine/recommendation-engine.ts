@@ -1,5 +1,5 @@
 import type { GameId } from "$lib/modules/common/domain";
-import type { IGameVectorProjectionServicePort } from "./game-vector-projection.service";
+import type { IGameRecommendationRecordProjectionServicePort } from "./game-recommendation-record-projection.service";
 import type { IInstancePreferenceModelServicePort } from "./instance-preference-model.service";
 import type {
 	RecommendationEngineFilter,
@@ -18,8 +18,8 @@ export type IRecommendationEnginePort = {
 };
 
 export type RecommendationEngineDeps = {
-	gameVectorProjectionService: IGameVectorProjectionServicePort;
 	instancePreferenceModelService: IInstancePreferenceModelServicePort;
+	gameRecommendationRecordProjectionService: IGameRecommendationRecordProjectionServicePort;
 };
 
 export class RecommendationEngine implements IRecommendationEnginePort {
@@ -47,19 +47,13 @@ export class RecommendationEngine implements IRecommendationEnginePort {
 		const instanceVector = this.deps.instancePreferenceModelService.getVector();
 		const results: RankedGame[] = [];
 
-		if (!instanceVector) {
-			throw new Error(
-				"InstancePreferenceModelService not initialized. Call initializeAsync() before requesting recommendations.",
-			);
-		}
+		this.deps.gameRecommendationRecordProjectionService.forEach((record) => {
+			if (!applyFilters({ record })) return;
 
-		this.deps.gameVectorProjectionService.forEach((gameId, vector) => {
-			if (!applyFilters({ gameId, vector })) return;
-
-			const sim = this.cosine(instanceVector, vector);
+			const sim = this.cosine(instanceVector, record.Vector);
 
 			results.push({
-				gameId,
+				gameId: record.GameId,
 				similarity: sim,
 			});
 		});

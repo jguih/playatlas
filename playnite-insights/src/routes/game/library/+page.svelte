@@ -38,7 +38,7 @@
 		if (close) search.close();
 
 		if (pager.pagerStateSignal.query.filters.search !== search.searchSignal) {
-			pager.setQuery({ mode: "query", filters: { search: searchSignalSnapshot } });
+			pager.setQuery({ mode: "ranked", filters: { search: searchSignalSnapshot } });
 			await pager.loadMoreAsync();
 		}
 
