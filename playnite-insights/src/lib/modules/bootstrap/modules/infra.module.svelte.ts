@@ -2,8 +2,10 @@ import type { IClockPort, ILogServicePort } from "$lib/modules/common/applicatio
 import type { IPlayAtlasSyncStatePort } from "$lib/modules/common/application/play-atlas-sync-state.port";
 import { IndexedDBNotInitializedError } from "$lib/modules/common/errors";
 import {
+	ClientStorageManager,
 	INDEXEDDB_CURRENT_VERSION,
 	INDEXEDDB_NAME,
+	type IClientStorageManagerPort,
 	type IIndexedDbSchema,
 } from "$lib/modules/common/infra";
 import { PlayAtlasSyncState } from "$lib/modules/game-library/infra";
@@ -19,7 +21,9 @@ export type ClientInfraModuleDeps = {
 
 export class ClientInfraModule implements IClientInfraModulePort {
 	private readonly indexedDbSignal: IndexedDbSignal;
+
 	readonly playAtlasSyncState: IPlayAtlasSyncStatePort;
+	readonly storageManager: IClientStorageManagerPort;
 
 	get dbSignal(): IDBDatabase {
 		if (!this.indexedDbSignal.dbReady || !this.indexedDbSignal.db)
@@ -34,6 +38,7 @@ export class ClientInfraModule implements IClientInfraModulePort {
 		});
 
 		this.playAtlasSyncState = new PlayAtlasSyncState();
+		this.storageManager = new ClientStorageManager();
 	}
 
 	private openIndexedDbAsync = (props: {

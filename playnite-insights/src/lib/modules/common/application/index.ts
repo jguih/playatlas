@@ -13,4 +13,6 @@ export type * from "./play-atlas-sync-state.port";
 export * from "./playatlas-client";
 export type * from "./playatlas-client.port";
 export * from "./recommendation-engine";
+export type * from "./sync-flow.port";
 export * from "./sync-runner.port";
+export type * from "./sync-runner.types";

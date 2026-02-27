@@ -118,7 +118,6 @@ export class TestCompositionRoot {
 			clock: this.clock,
 			syncRunner,
 			gameSessionReadonlyStore: gameSessionReadonlyStore,
-			eventBus: this.eventBus,
 		});
 		await gameLibrary.initializeAsync();
 
@@ -145,6 +144,7 @@ export class TestCompositionRoot {
 			syncGameSessionsFlow: gameSession.syncGameSessionsFlow,
 			instancePreferenceModelService:
 				gameLibrary.recommendationEngineModule.instancePreferenceModelService,
+			storageManager: infra.storageManager,
 		});
 
 		const bootstrapper = new ClientBootstrapper({

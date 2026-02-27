@@ -1,4 +1,3 @@
-import type { IDomainEventBusPort } from "$lib/modules/common/application";
 import type { IClockPort } from "$lib/modules/common/application/clock.port";
 import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
 import { type ISyncRunnerPort } from "$lib/modules/common/application/sync-runner.port";
@@ -104,7 +103,6 @@ export type ClientGameLibraryModuleDeps = {
 	playAtlasClient: IPlayAtlasClientPort;
 	clock: IClockPort;
 	syncRunner: ISyncRunnerPort;
-	eventBus: IDomainEventBusPort;
 } & RecommendationEngineModulePortDeps;
 
 export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
@@ -165,7 +163,6 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 		playAtlasClient,
 		clock,
 		syncRunner,
-		eventBus,
 		gameSessionReadonlyStore,
 	}: ClientGameLibraryModuleDeps) {
 		this.recommendationEngineModule = new RecommendationEngineModule({
@@ -197,8 +194,6 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 			playAtlasClient,
 			syncGamesCommandHandler: this.syncGamesCommandHandler,
 			syncRunner,
-			eventBus,
-			clock,
 			gameRecommendationRecordProjectionWriter:
 				this.recommendationEngineModule.gameRecommendationRecordProjectionWriter,
 			gameRecommendationRecordProjectionService:
@@ -307,8 +302,6 @@ export class ClientGameLibraryModule implements IClientGameLibraryModulePort {
 				this.recommendationEngineModule.gameRecommendationRecordProjectionService,
 			gameRecommendationRecordProjectionWriter:
 				this.recommendationEngineModule.gameRecommendationRecordProjectionWriter,
-			eventBus,
-			clock,
 		});
 		// #endregion
 

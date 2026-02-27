@@ -90,7 +90,6 @@ export class ClientCompositionRoot {
 			clock: this.clock,
 			syncRunner,
 			gameSessionReadonlyStore: gameSessionReadonlyStore,
-			eventBus: this.eventBus,
 		});
 		await gameLibrary.initializeAsync();
 
@@ -117,6 +116,7 @@ export class ClientCompositionRoot {
 			syncGameSessionsFlow: gameSession.syncGameSessionsFlow,
 			instancePreferenceModelService:
 				gameLibrary.recommendationEngineModule.instancePreferenceModelService,
+			storageManager: infra.storageManager,
 		});
 
 		this.startLibrarySync({ auth, synchronization });

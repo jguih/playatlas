@@ -1,13 +1,10 @@
 import type {
-	IClockPort,
-	IDomainEventBusPort,
 	IInstancePreferenceModelInvalidationPort,
-} from "$lib/modules/common/application";
-import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
-import type {
+	ISyncFlowPort,
 	ISyncRunnerPort,
 	SyncRunnerFetchResult,
-} from "$lib/modules/common/application/sync-runner.port";
+} from "$lib/modules/common/application";
+import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
 import type { GameClassificationResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncGameClassificationsCommandHandlerPort } from "../commands/sync-game-classifications/sync-game-classifications.command-handler";
 import type {
@@ -18,9 +15,7 @@ import type {
 import type { IGameVectorProjectionWriterPort } from "./recommendation-engine/game-vector-projection-writer.service";
 import type { IGameClassificationMapperPort } from "./scoring-engine/game-classification.mapper.port";
 
-export interface ISyncGameClassificationsFlowPort {
-	executeAsync: () => Promise<void>;
-}
+export type ISyncGameClassificationsFlowPort = ISyncFlowPort;
 
 export type SyncGameClassificationsFlowDeps = {
 	playAtlasClient: IPlayAtlasClientPort;
@@ -32,8 +27,6 @@ export type SyncGameClassificationsFlowDeps = {
 	instancePreferenceModelInvalidation: IInstancePreferenceModelInvalidationPort;
 	gameRecommendationRecordProjectionWriter: IGameRecommendationRecordProjectionWriterPort;
 	gameRecommendationRecordProjectionService: IGameRecommendationRecordProjectionServicePort;
-	eventBus: IDomainEventBusPort;
-	clock: IClockPort;
 };
 
 export class SyncGameClassificationsFlow implements ISyncGameClassificationsFlowPort {
@@ -67,11 +60,9 @@ export class SyncGameClassificationsFlow implements ISyncGameClassificationsFlow
 			instancePreferenceModelInvalidation,
 			gameRecommendationRecordProjectionService,
 			gameRecommendationRecordProjectionWriter,
-			eventBus,
-			clock,
 		} = this.deps;
 
-		await syncRunner.runAsync({
+		return await syncRunner.runAsync({
 			syncTarget: "gameClassifications",
 			fetchAsync: this.fetchAsync,
 			mapDtoToEntity: ({ dto, now }) => gameClassificationMapper.fromDto(dto, now),
@@ -89,12 +80,6 @@ export class SyncGameClassificationsFlow implements ISyncGameClassificationsFlow
 					gameClassifications,
 				});
 				await gameRecommendationRecordProjectionService.rebuildForGamesAsync(gameIds);
-
-				eventBus.emit({
-					id: crypto.randomUUID(),
-					name: "game-library-updated",
-					occurredAt: clock.now(),
-				});
 			},
 		});
 	};

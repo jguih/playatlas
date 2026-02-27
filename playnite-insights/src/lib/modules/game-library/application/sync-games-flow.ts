@@ -1,9 +1,9 @@
-import type { IClockPort, IDomainEventBusPort } from "$lib/modules/common/application";
-import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
 import type {
+	ISyncFlowPort,
 	ISyncRunnerPort,
 	SyncRunnerFetchResult,
-} from "$lib/modules/common/application/sync-runner.port";
+} from "$lib/modules/common/application";
+import type { IPlayAtlasClientPort } from "$lib/modules/common/application/playatlas-client.port";
 import type { GameResponseDto } from "@playatlas/game-library/dtos";
 import type { ISyncGamesCommandHandlerPort } from "../commands/sync-games/sync-games.command-handler";
 import type { IGameMapperPort } from "./game.mapper.port";
@@ -12,17 +12,13 @@ import type {
 	IGameRecommendationRecordProjectionWriterPort,
 } from "./recommendation-engine";
 
-export interface ISyncGamesFlowPort {
-	executeAsync: () => Promise<void>;
-}
+export type ISyncGamesFlowPort = ISyncFlowPort;
 
 export type SyncGameLibraryServiceDeps = {
 	playAtlasClient: IPlayAtlasClientPort;
 	syncGamesCommandHandler: ISyncGamesCommandHandlerPort;
 	gameMapper: IGameMapperPort;
 	syncRunner: ISyncRunnerPort;
-	eventBus: IDomainEventBusPort;
-	clock: IClockPort;
 	gameRecommendationRecordProjectionWriter: IGameRecommendationRecordProjectionWriterPort;
 	gameRecommendationRecordProjectionService: IGameRecommendationRecordProjectionServicePort;
 };
@@ -53,13 +49,11 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 			syncRunner,
 			gameMapper,
 			syncGamesCommandHandler,
-			eventBus,
-			clock,
 			gameRecommendationRecordProjectionWriter,
 			gameRecommendationRecordProjectionService,
 		} = this.deps;
 
-		await syncRunner.runAsync({
+		return await syncRunner.runAsync({
 			syncTarget: "games",
 			fetchAsync: this.fetchAsync,
 			mapDtoToEntity: ({ dto, now }) => gameMapper.fromDto(dto, now),
@@ -70,12 +64,6 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 
 				await gameRecommendationRecordProjectionWriter.projectFromGameAsync({ games });
 				await gameRecommendationRecordProjectionService.rebuildForGamesAsync(gameIds);
-
-				eventBus.emit({
-					id: crypto.randomUUID(),
-					name: "game-library-updated",
-					occurredAt: clock.now(),
-				});
 			},
 		});
 	};
