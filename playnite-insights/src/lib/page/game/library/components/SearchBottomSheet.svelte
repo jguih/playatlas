@@ -6,13 +6,14 @@
 	import AsideBody from "$lib/ui/components/sidebar/AsideBody.svelte";
 	import BottomSheet from "$lib/ui/components/sidebar/BottomSheet.svelte";
 	import { ArrowLeftIcon, HistoryIcon } from "@lucide/svelte";
-	import { onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import type { EventHandler, FormEventHandler } from "svelte/elements";
 	import { SvelteSet } from "svelte/reactivity";
 	import type { SearchBottomSheetProps } from "./search-bottom-sheet.types";
 
 	let {
 		onClose,
+		onDestroy: OnCallerDestroy,
 		value = $bindable(),
 		onChange,
 		libraryFilterItems,
@@ -51,6 +52,10 @@
 		requestAnimationFrame(() => {
 			if (input) input.focus();
 		});
+	});
+
+	onDestroy(() => {
+		OnCallerDestroy();
 	});
 </script>
 

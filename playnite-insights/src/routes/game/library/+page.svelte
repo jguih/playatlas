@@ -6,7 +6,6 @@
 	import {
 		GameLibraryFiltersSidebar,
 		GameLibraryPager,
-		type GameLibraryPagerState,
 		GameLibrarySearch,
 		SyncProgressViewModel,
 		gameLibraryPageScrollState,
@@ -33,21 +32,33 @@
 	let sentinel = $state<HTMLDivElement | undefined>(undefined);
 	let main = $state<HTMLElement | undefined>(undefined);
 
-	const commitSearchAsync = async () => {
-		const state = $state.snapshot(pager.pagerStateSignal) as unknown as GameLibraryPagerState;
+	const commitSearchAsync = async (close = true) => {
+		const searchSignalSnapshot = search.getSignalSnapshot();
 
-		pager.setQuery({ mode: "query", filters: { search: state.query.filters.search } });
-		await pager.loadMoreAsync();
+		if (close) search.close();
+
+		if (pager.pagerStateSignal.query.filters.search !== search.searchSignal) {
+			pager.setQuery({ mode: "query", filters: { search: searchSignalSnapshot } });
+			await pager.loadMoreAsync();
+		}
+
+		const pagerSignalSnapshot = pager.getSignalSnapshot();
 
 		const command: CreateGameLibraryFilterCommand = {
 			query: {
-				filter: state.query.filters,
-				sort: state.mode === "query" ? state.query.sort : { type: "recentlyUpdated" },
+				filter: pagerSignalSnapshot.query.filters,
+				sort:
+					pagerSignalSnapshot.mode === "query"
+						? pagerSignalSnapshot.query.sort
+						: { type: "recentlyUpdated" },
 			},
 		};
 
-		await api().GameLibrary.Command.CreateGameLibraryFilter.executeAsync(command);
-		await loadLibraryFiltersAsync();
+		void api()
+			.GameLibrary.Command.CreateGameLibraryFilter.executeAsync(command)
+			.then(() => {
+				void loadLibraryFiltersAsync();
+			});
 	};
 
 	const loadLibraryFiltersAsync = async () => {
@@ -115,14 +126,15 @@
 	<SearchBottomSheet
 		onClose={() => {
 			void commitSearchAsync();
-			search.close();
 		}}
-		bind:value={pager.pagerStateSignal.query.filters.search}
+		onDestroy={() => {
+			void commitSearchAsync(false);
+		}}
+		bind:value={search.searchSignal}
 		libraryFilterItems={libraryFilterItems.items}
 		onApplyFilterItem={async (item) => {
-			pager.setQuery({ mode: "query", filters: { search: item.Query.filter?.search } });
-			search.close();
-			await pager.loadMoreAsync();
+			search.searchSignal = item.Query.filter?.search;
+			void commitSearchAsync();
 		}}
 	/>
 {/if}

@@ -20,17 +20,19 @@ let pagerStateSignal = $state<GameLibraryPagerState>({
 });
 
 export class GameLibraryPager {
+	private currentVersion = 0;
+
 	constructor(private readonly deps: GameLibraryPagerDeps) {}
 
-	get pagerStateSignal() {
+	get pagerStateSignal(): Readonly<GameLibraryPagerState> {
 		return pagerStateSignal;
 	}
 
-	private getSnapshots = () => {
+	getSignalSnapshot = (): GameLibraryPagerState => {
 		const pagerStateSnapshot = $state.snapshot(
 			pagerStateSignal,
 		) as unknown as GameLibraryPagerState;
-		return { pagerStateSnapshot };
+		return pagerStateSnapshot;
 	};
 
 	private withLoading = async <T>(fn: () => Promise<T>): Promise<T> => {
@@ -49,8 +51,9 @@ export class GameLibraryPager {
 
 	private loadFromRankedAsync = async () => {
 		await this.withLoading(async () => {
-			const { pagerStateSnapshot } = this.getSnapshots();
+			const pagerStateSnapshot = this.getSignalSnapshot();
 
+			const versionStart = this.currentVersion;
 			if (pagerStateSnapshot.mode !== "ranked") return;
 
 			const result = await this.deps.api().GameLibrary.Query.GetGamesRanked.executeAsync({
@@ -58,6 +61,10 @@ export class GameLibraryPager {
 				filter: pagerStateSnapshot.query.filters,
 				cursor: pagerStateSnapshot.nextKey,
 			});
+
+			if (versionStart !== this.currentVersion) {
+				return;
+			}
 
 			const cardProjectionItems = result.games.map(
 				(i) =>
@@ -76,8 +83,9 @@ export class GameLibraryPager {
 
 	private loadFromQueryAsync = async () => {
 		return await this.withLoading(async () => {
-			const { pagerStateSnapshot } = this.getSnapshots();
+			const pagerStateSnapshot = this.getSignalSnapshot();
 
+			const versionStart = this.currentVersion;
 			if (pagerStateSnapshot.mode !== "query") return;
 
 			const cursor = pagerStateSnapshot.nextKey;
@@ -88,6 +96,10 @@ export class GameLibraryPager {
 				cursor,
 				filter: pagerStateSnapshot.query.filters,
 			});
+
+			if (versionStart !== this.currentVersion) {
+				return;
+			}
 
 			const cardProjectionItems = result.items.map(
 				(i) =>
@@ -155,5 +167,7 @@ export class GameLibraryPager {
 				};
 				break;
 		}
+
+		this.currentVersion++;
 	};
 }
