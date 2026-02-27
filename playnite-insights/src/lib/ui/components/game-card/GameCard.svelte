@@ -20,7 +20,8 @@
 <li
 	{...props}
 	class={[
-		"list-none w-full aspect-[1/1.6] [content-visibility:auto] [contain-intrinsic-size:auto_240px] contain-paint",
+		hideName ? "aspect-[1/1.4]" : "aspect-[1/1.7]",
+		"list-none w-full [content-visibility:auto] [contain-intrinsic-size:auto_240px] contain-paint",
 		"bg-background-1 shadow-default m-0 p-0",
 		"border-3 border-black/20",
 		"hover:border-primary-light-hover-fg",

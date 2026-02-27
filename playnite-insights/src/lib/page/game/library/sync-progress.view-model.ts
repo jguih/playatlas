@@ -16,6 +16,10 @@ export class SyncProgressViewModel {
 				return m["progress.syncing_genres"]();
 			case "gameSessions":
 				return m["progress.syncing_game_sessions"]();
+			case "gameClassifications":
+				return m["progress.syncing_game_classifications"]();
+			case "platforms":
+				return m["progress.syncing_platforms"]();
 			default:
 				return m["progress.syncing_library"]();
 		}

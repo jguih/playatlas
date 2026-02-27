@@ -148,10 +148,12 @@
 						</div>
 
 						<div
-							class="pb-2"
+							class="pb-2 overflow-hidden"
 							bind:this={heroTitleEl}
 						>
-							<h1 class="text-2xl font-semibold leading-tight drop-shadow-md mb-2 wrap-break-word">
+							<h1
+								class="text-2xl font-semibold leading-tight drop-shadow-md mb-2 flex-1 min-w-0 whitespace-normal wrap-anywhere"
+							>
 								{store.game.Playnite?.Name}
 							</h1>
 

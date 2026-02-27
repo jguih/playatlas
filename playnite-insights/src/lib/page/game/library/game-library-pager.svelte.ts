@@ -126,17 +126,6 @@ export class GameLibraryPager {
 		}
 	};
 
-	invalidateSignal = () => {
-		if (pagerStateSignal.loading) return;
-
-		resetGameLibraryScrollPosition();
-
-		pagerStateSignal.exhausted = false;
-		pagerStateSignal.games = [];
-		pagerStateSignal.loading = false;
-		pagerStateSignal.nextKey = null;
-	};
-
 	setQuery = (query: SetGameLibraryPagerQueryProps) => {
 		resetGameLibraryScrollPosition();
 
