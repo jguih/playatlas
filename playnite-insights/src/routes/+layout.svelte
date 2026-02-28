@@ -3,7 +3,6 @@
 	import { resolve } from "$app/paths";
 	import { ClientCompositionRoot, type ClientApiV1 } from "$lib/modules/bootstrap/application";
 	import { setClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
-	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
 	import "../app.css";
@@ -44,11 +43,9 @@
 </script>
 
 {#if loading}
-	<AppLayout>
-		<Main>
-			<Spinner variant="primary" />
-		</Main>
-	</AppLayout>
+	<Main class="h-dvh w-dvw flex items-center justify-center">
+		<Spinner variant="primary" />
+	</Main>
 {:else}
 	{@render children()}
 {/if}

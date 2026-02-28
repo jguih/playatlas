@@ -1,4 +1,5 @@
-import { sessionIdRepositorySchema } from "$lib/modules/auth/infra";
+import { SessionIdMapper, SessionIdProvider } from "$lib/modules/auth/application";
+import { SessionIdRepository, sessionIdRepositorySchema } from "$lib/modules/auth/infra";
 import {
 	AuthenticatedHttpClient,
 	EventBus,
@@ -65,19 +66,27 @@ export class ClientCompositionRoot {
 		});
 		await infra.initializeAsync();
 
+		const { sessionIdProvider } = this.buildInstanceSessionComponents({ infra });
+
 		const authHttpClient = new HttpClient({ url: window.origin });
+		const authAuthenticatedHttpClient = new AuthenticatedHttpClient({
+			httpClient: new HttpClient({ url: window.origin }),
+			sessionIdProvider,
+		});
 		const auth: IAuthModulePort = new AuthModule({
 			httpClient: authHttpClient,
+			authenticatedHttpClient: authAuthenticatedHttpClient,
 			dbSignal: infra.dbSignal,
 			clock: this.clock,
 			logService: this.logService,
 			eventBus: this.eventBus,
+			sessionIdProvider,
 		});
 		await auth.initializeAsync();
 
 		const playAtlasHttpClient = new AuthenticatedHttpClient({
 			httpClient: new HttpClient({ url: window.origin }),
-			sessionIdProvider: auth.sessionIdProvider,
+			sessionIdProvider,
 		});
 		const playAtlasClient = new PlayAtlasClient({ httpClient: playAtlasHttpClient });
 		const syncRunner = new SyncRunner({ clock: this.clock, syncState: infra.playAtlasSyncState });
@@ -145,5 +154,23 @@ export class ClientCompositionRoot {
 		this.eventBus.on("login-successful", () => {
 			this.startLibrarySync(deps);
 		});
+	};
+
+	private buildInstanceSessionComponents = (deps: { infra: IClientInfraModulePort }) => {
+		const sessionIdMapper = new SessionIdMapper();
+		const sessionIdRepository = new SessionIdRepository({
+			dbSignal: deps.infra.dbSignal,
+			sessionIdMapper: sessionIdMapper,
+		});
+		const sessionIdProvider = new SessionIdProvider({
+			sessionIdRepository: sessionIdRepository,
+			clock: this.clock,
+		});
+
+		return {
+			sessionIdMapper,
+			sessionIdRepository,
+			sessionIdProvider,
+		};
 	};
 }
