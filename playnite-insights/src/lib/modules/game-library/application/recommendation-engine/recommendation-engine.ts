@@ -50,6 +50,8 @@ export class RecommendationEngine implements IRecommendationEnginePort {
 
 		this.deps.gameRecommendationRecordProjectionService.forEach((record) => {
 			if (!applyFilters({ record })) return;
+			if (record.Vector.length !== vector.length) return;
+			if (record.GameMagnitude === 0) return;
 
 			const sim = this.cosine(vector, record.Vector) * record.GameMagnitude;
 

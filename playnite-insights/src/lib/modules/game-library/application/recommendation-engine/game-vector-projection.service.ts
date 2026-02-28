@@ -1,4 +1,4 @@
-import { VectorUtils } from "$lib/modules/common/application";
+import { RecommendationEngineVectorUtils } from "$lib/modules/common/application";
 import {
 	GAME_CLASSIFICATION_DIMENSIONS,
 	GAME_CLASSIFICATION_INDEX,
@@ -36,7 +36,7 @@ export class GameVectorProjectionService implements IGameVectorProjectionService
 	constructor(private readonly deps: GameVectorProjectionServiceDeps) {}
 
 	normalizeVector = (v: Float32Array) => {
-		const mag = VectorUtils.magnitude(v);
+		const mag = RecommendationEngineVectorUtils.magnitude(v);
 		if (mag === 0) return v;
 		for (let i = 0; i < v.length; i++) v[i] /= mag;
 		return v;
@@ -70,7 +70,7 @@ export class GameVectorProjectionService implements IGameVectorProjectionService
 		}
 
 		for (const [gameId, vector] of vectorMap) {
-			const magnitude = VectorUtils.magnitude(vector);
+			const magnitude = RecommendationEngineVectorUtils.magnitude(vector);
 
 			this.normalizeVector(vector);
 
