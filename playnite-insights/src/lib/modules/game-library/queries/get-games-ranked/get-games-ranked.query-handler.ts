@@ -32,7 +32,7 @@ export class GetGamesRankedQueryHandler implements IGetGamesRankedQueryHandlerPo
 	private buildFilters = (query: GetGamesRankedQuery) => {
 		const filters: RecommendationEngineFilter[] = [];
 
-		filters.push(({ record }) => record.IsHidden === false);
+		// filters.push(({ record }) => record.IsHidden === false);
 
 		const search = query.filter?.search;
 		if (search) {
