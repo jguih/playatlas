@@ -1,9 +1,5 @@
 import { RecommendationEngineVectorUtils } from "$lib/modules/common/application";
-import {
-	GAME_CLASSIFICATION_DIMENSIONS,
-	GAME_CLASSIFICATION_INDEX,
-	type GameId,
-} from "$lib/modules/common/domain";
+import { GAME_CLASSIFICATION_INDEX, type GameId } from "$lib/modules/common/domain";
 import type {
 	GameVectorReadModel,
 	IGameVectorReadonlyStore,
@@ -61,7 +57,7 @@ export class GameVectorProjectionService implements IGameVectorProjectionService
 			let vec = vectorMap.get(row.GameId);
 
 			if (!vec) {
-				vec = new Float32Array(GAME_CLASSIFICATION_DIMENSIONS);
+				vec = RecommendationEngineVectorUtils.createEmptyVector();
 				vectorMap.set(row.GameId, vec);
 			}
 

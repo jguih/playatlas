@@ -16,3 +16,11 @@ export const extensionRegistrationResponseDtoSchema = z.object({
 export type ExtensionRegistrationResponseDto = z.infer<
 	typeof extensionRegistrationResponseDtoSchema
 >;
+
+export const getExtensionRegistrationsResponseDto = z.object({
+	registrations: z.array(extensionRegistrationResponseDtoSchema),
+});
+
+export type GetExtensionRegistrationsResponseDto = z.infer<
+	typeof getExtensionRegistrationsResponseDto
+>;
