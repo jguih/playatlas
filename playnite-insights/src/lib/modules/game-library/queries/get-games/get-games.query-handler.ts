@@ -96,7 +96,10 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 				cursor: query.cursor,
 				direction: query.sort.direction,
 				scanSourceAsync: this.recentScanSource,
-				filters: this.deps.filterBuilder.createNameFilter(query.filter.search),
+				filters: [
+					this.deps.filterBuilder.createNameFilter(query.filter.search),
+					this.deps.filterBuilder.createNotHiddenFilter(),
+				],
 			});
 		}
 
@@ -106,7 +109,7 @@ export class GetGamesQueryHandler implements IGetGamesQueryHandlerPort {
 				cursor: query.cursor,
 				direction: query.sort.direction,
 				scanSourceAsync: this.recentScanSource,
-				filters: [],
+				filters: [this.deps.filterBuilder.createNotHiddenFilter()],
 			});
 		}
 

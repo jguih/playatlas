@@ -30,16 +30,19 @@ export class GameRecommendationRecordProjectionWriter implements IGameRecommenda
 				const record =
 					await this.deps.gameRecommendationRecordReadonlyStore.getByGameIdAsync(gameId);
 				const vector = this.deps.gameVectorProjectionService.getVector(gameId);
+				const magnitude = this.deps.gameVectorProjectionService.getMagnitude(gameId);
 
-				if (vector && record)
+				if (vector && record && magnitude)
 					await this.deps.gameRecommendationRecordWriteStore.upsertAsync({
 						...record,
 						Vector: vector,
+						GameMagnitude: magnitude,
 					});
-				else if (vector) {
+				else if (vector && magnitude) {
 					await this.deps.gameRecommendationRecordWriteStore.upsertAsync({
 						GameId: gameId,
 						Vector: vector,
+						GameMagnitude: magnitude,
 					});
 				}
 			}
@@ -53,11 +56,13 @@ export class GameRecommendationRecordProjectionWriter implements IGameRecommenda
 				const record =
 					await this.deps.gameRecommendationRecordReadonlyStore.getByGameIdAsync(gameId);
 				const vector = this.deps.gameVectorProjectionService.getVector(gameId);
+				const magnitude = this.deps.gameVectorProjectionService.getMagnitude(gameId);
 
 				if (record)
 					await this.deps.gameRecommendationRecordWriteStore.upsertAsync({
 						...record,
 						Vector: vector ?? new Float32Array(),
+						GameMagnitude: magnitude ?? 0,
 						IsHidden: game.Playnite?.Hidden,
 						SearchName: game.SearchName ?? undefined,
 					});
@@ -65,6 +70,7 @@ export class GameRecommendationRecordProjectionWriter implements IGameRecommenda
 					await this.deps.gameRecommendationRecordWriteStore.upsertAsync({
 						GameId: gameId,
 						Vector: vector ?? new Float32Array(),
+						GameMagnitude: magnitude ?? 0,
 						IsHidden: game.Playnite?.Hidden,
 						SearchName: game.SearchName ?? undefined,
 					});

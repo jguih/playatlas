@@ -5,6 +5,7 @@ import { gameRecommendationRecordStoreMeta as meta } from "./game-recommendation
 export type GameRecommendationRecordReadModel = Readonly<{
 	GameId: GameId;
 	Vector: Float32Array;
+	GameMagnitude: number;
 	IsHidden?: boolean;
 	SearchName?: string;
 }>;

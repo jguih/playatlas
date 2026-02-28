@@ -9,6 +9,7 @@ import type {
 export type RankedGame = {
 	gameId: GameId;
 	similarity: number;
+	searchName?: string;
 };
 
 export type IRecommendationEnginePort = {
@@ -39,22 +40,23 @@ export class RecommendationEngine implements IRecommendationEnginePort {
 		return dot;
 	};
 
-	recommendForInstanceAsync: IRecommendationEnginePort["recommendForInstanceAsync"] = async (
-		props = {},
-	) => {
-		const { filters } = props;
+	private recommendForVectorAsync = (props: {
+		vector: Float32Array;
+		filters?: RecommendationEngineFilter[];
+	}): RankedGame[] => {
+		const { filters, vector } = props;
 		const applyFilters = this.combineFilters(...(filters ?? []));
-		const instanceVector = this.deps.instancePreferenceModelService.getVector();
 		const results: RankedGame[] = [];
 
 		this.deps.gameRecommendationRecordProjectionService.forEach((record) => {
 			if (!applyFilters({ record })) return;
 
-			const sim = this.cosine(instanceVector, record.Vector);
+			const sim = this.cosine(vector, record.Vector) * record.GameMagnitude;
 
 			results.push({
 				gameId: record.GameId,
 				similarity: sim,
+				searchName: record.SearchName,
 			});
 		});
 
@@ -65,5 +67,12 @@ export class RecommendationEngine implements IRecommendationEnginePort {
 		});
 
 		return results;
+	};
+
+	recommendForInstanceAsync: IRecommendationEnginePort["recommendForInstanceAsync"] = async (
+		props = {},
+	) => {
+		const instanceVector = this.deps.instancePreferenceModelService.getVector();
+		return this.recommendForVectorAsync({ vector: instanceVector, filters: props.filters });
 	};
 }
