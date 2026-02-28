@@ -133,11 +133,9 @@ export class ClientCompositionRoot {
 		auth: IAuthModulePort;
 		synchronization: ISynchronizationModulePort;
 	}) => {
-		void deps.auth.sessionIdProvider.getAsync().then((sessionId) => {
-			if (sessionId) {
-				void deps.synchronization.syncManager.executeAsync();
-			}
-		});
+		if (deps.auth.hasSession()) {
+			void deps.synchronization.syncManager.executeAsync();
+		}
 	};
 
 	private setupDomainEventListeners = (deps: {

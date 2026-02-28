@@ -16,4 +16,6 @@ export interface IAuthModulePort {
 	get authFlow(): IAuthFlowPort;
 
 	initializeAsync: () => Promise<void>;
+
+	hasSession: () => boolean;
 }

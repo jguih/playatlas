@@ -1,4 +1,4 @@
-import type { IAuthFlowPort } from "$lib/modules/auth/application";
+import type { IAuthFlowPort, ISessionIdCheckerPort } from "$lib/modules/auth/application";
 import type { IDomainEventBusPort } from "$lib/modules/common/application";
 import type { IRecommendationEnginePort } from "$lib/modules/game-library/application";
 import type {
@@ -71,6 +71,7 @@ export interface ClientApiV1 {
 	};
 	Auth: {
 		Flow: IAuthFlowPort;
+		hasSession: ISessionIdCheckerPort["hasSession"];
 	};
 	GameSession: {
 		GameSessionReadonlyStore: IGameSessionReadonlyStorePort;

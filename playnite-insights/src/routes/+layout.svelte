@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { ClientCompositionRoot, type ClientApiV1 } from "$lib/modules/bootstrap/application";
 	import { setClientApiContext } from "$lib/modules/bootstrap/application/client-api.context";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
@@ -9,25 +11,44 @@
 	const { children } = $props();
 	const root = new ClientCompositionRoot();
 	const apiPromise: Promise<ClientApiV1> = root.buildAsync();
+	let loading = $state(true);
 
 	let api: ClientApiV1;
 	const getApi = (): ClientApiV1 => api;
 
-	void apiPromise.then(async (clientApi) => {
-		api = clientApi;
-	});
+	const coordinateAppStartupAsync = async () => {
+		const health = await api.Auth.Flow.checkHealthAsync();
+		const hasSession = api.Auth.hasSession();
+
+		if (!health) return;
+
+		if (health.instanceRegistrationStatus !== "registered") {
+			await goto(resolve("/auth/register"));
+			return;
+		}
+
+		if (!hasSession) {
+			await goto(resolve("/auth/login"));
+			return;
+		}
+	};
+
+	void apiPromise
+		.then(async (clientApi) => {
+			api = clientApi;
+			await coordinateAppStartupAsync();
+		})
+		.finally(() => (loading = false));
 
 	setClientApiContext(getApi);
 </script>
 
-{#await apiPromise}
+{#if loading}
 	<AppLayout>
 		<Main>
 			<Spinner variant="primary" />
 		</Main>
 	</AppLayout>
-{:then}
+{:else}
 	{@render children()}
-{:catch}
-	<p class="text-error">Failed to initialize application</p>
-{/await}
+{/if}

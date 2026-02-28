@@ -72,6 +72,7 @@ export class ClientBootstrapper {
 			},
 			Auth: {
 				Flow: auth.authFlow,
+				hasSession: auth.hasSession,
 			},
 			EventBus: eventBus,
 		};

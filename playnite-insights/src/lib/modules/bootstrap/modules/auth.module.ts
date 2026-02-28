@@ -31,8 +31,6 @@ export class AuthModule implements IAuthModulePort {
 	readonly authFlow: IAuthFlowPort;
 
 	constructor({ httpClient, dbSignal, clock, logService, eventBus }: AuthModuleDeps) {
-		this.authService = new AuthService({ httpClient });
-
 		this.sessionIdMapper = new SessionIdMapper();
 		this.sessionIdRepository = new SessionIdRepository({
 			dbSignal,
@@ -42,6 +40,8 @@ export class AuthModule implements IAuthModulePort {
 			sessionIdRepository: this.sessionIdRepository,
 			clock,
 		});
+
+		this.authService = new AuthService({ httpClient });
 
 		this.authFlow = new AuthFlow({
 			authService: this.authService,
@@ -54,5 +54,9 @@ export class AuthModule implements IAuthModulePort {
 
 	initializeAsync = async (): Promise<void> => {
 		await this.sessionIdProvider.loadFromDbAsync();
+	};
+
+	hasSession: IAuthModulePort["hasSession"] = () => {
+		return this.sessionIdProvider.hasSession();
 	};
 }
