@@ -1,4 +1,5 @@
-import { sessionIdRepositorySchema } from "$lib/modules/auth/infra";
+import { SessionIdMapper, SessionIdProvider } from "$lib/modules/auth/application";
+import { SessionIdRepository, sessionIdRepositorySchema } from "$lib/modules/auth/infra";
 import {
 	EventBus,
 	PlayAtlasClient,
@@ -98,12 +99,24 @@ export class TestCompositionRoot {
 		});
 		await infra.initializeAsync();
 
+		const sessionIdMapper = new SessionIdMapper();
+		const sessionIdRepository = new SessionIdRepository({
+			dbSignal: infra.dbSignal,
+			sessionIdMapper: sessionIdMapper,
+		});
+		const sessionIdProvider = new SessionIdProvider({
+			sessionIdRepository,
+			clock: this.clock,
+		});
+
 		const auth: IAuthModulePort = new AuthModule({
 			httpClient: this.mocks.httpClient,
+			authenticatedHttpClient: this.mocks.httpClient,
 			dbSignal: infra.dbSignal,
 			clock: this.clock,
 			logService: this.mocks.logService,
 			eventBus: this.eventBus,
+			sessionIdProvider,
 		});
 		await auth.initializeAsync();
 
