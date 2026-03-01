@@ -41,7 +41,9 @@
 	role="dialog"
 	aria-modal="true"
 	class={[
-		"bg-background-1 fixed bottom-0 right-0 z-50 max-h-full w-full overflow-y-hidden shadow",
+		"absolute left-0 right-0 bottom-0",
+		"w-full",
+		"bg-background-1 overflow-y-hidden shadow-default pointer-events-auto",
 		props.class,
 	]}
 	style:height={`${height}dvh`}

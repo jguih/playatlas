@@ -3,6 +3,7 @@
 	import ExtensionRegistrationCard from "$lib/page/onboarding/extension-registration/ExtensionRegistrationCard.svelte";
 	import { m } from "$lib/paraglide/messages";
 	import Divider from "$lib/ui/components/Divider.svelte";
+	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
 	import type { ExtensionRegistrationResponseDto } from "@playatlas/auth/dtos";
@@ -62,68 +63,74 @@
 		.finally(() => (registrationState.loading = false));
 </script>
 
-<Main class="h-dvh w-dvw flex items-center justify-center">
-	{#if registrationState.loading}
-		<Spinner variant="primary" />
-	{:else}
-		<div class="w-full">
-			<h1 class="text-3xl mb-4">
-				<span class="text-primary-light-active-fg">
-					{m["product_extension_name"]()}
-				</span>
-				{m["onboarding_page.extension_registration.title.suffix"]()}
-			</h1>
-			{#if registrationState.pendingRegistrations.length > 0}
-				<p class="text-sm mb-2">
-					{m["onboarding_page.extension_registration.make_sure_fingerprint_matches.prefix"]()}
-					<span class="font-semibold">{m.product_extension_name()}</span>.
-				</p>
-				<Divider />
-				<ul class="space-y-4 overflow-y-auto max-h-[65dvh] w-full p-2">
-					{#each registrationState.pendingRegistrations as registration (registration.Id)}
-						<li>
-							<ExtensionRegistrationCard {registration} />
-						</li>
-					{/each}
-				</ul>
-			{:else}
-				<p>
-					{m["onboarding_page.extension_registration.description.prefix"]()}
-					<span class="font-semibold">
-						{m.product_extension_name()}
+<AppLayout>
+	<Main class="h-dvh w-full flex items-center justify-center">
+		{#if registrationState.loading}
+			<Spinner variant="primary" />
+		{:else}
+			<div class="w-full">
+				<h1 class="text-3xl mb-4">
+					<span class="text-primary-light-active-fg">
+						{m["product_extension_name"]()}
 					</span>
-					{m["onboarding_page.extension_registration.description.suffix"]()}
-				</p>
-				<img
-					src="/onboarding/exporter-register-extension.jpg"
-					width="400"
-					height="200"
-					alt="PlayAtlas exporter extension config screenshot"
-					class="shadow-default my-4 object-cover w-full aspect-auto"
-				/>
-				<Divider />
-				<div class="w-fit mx-auto space-y-2 my-4">
-					<ol class="list-decimal ms-8">
-						<li>{m["onboarding_page.extension_registration.request_approval_steps.step_1"]()}</li>
-						<li>
-							{m["onboarding_page.extension_registration.request_approval_steps.step_2.action"]()}
-							<span class="font-semibold">
-								{m["onboarding_page.extension_registration.request_approval_steps.step_2.target"]()}
-							</span>
-						</li>
-						<li>
-							{m["onboarding_page.extension_registration.request_approval_steps.step_3.action"]()}
-							<span class="font-semibold">
-								{m["onboarding_page.extension_registration.request_approval_steps.step_3.target"]()}
-							</span>
-						</li>
-						<li>{m["onboarding_page.extension_registration.request_approval_steps.step_4"]()}</li>
-					</ol>
-					<p class="text-sm text-foreground/80">
-						{m["onboarding_page.extension_registration.request_approval_steps.hint"]()}
+					{m["onboarding_page.extension_registration.title.suffix"]()}
+				</h1>
+				{#if registrationState.pendingRegistrations.length > 0}
+					<p class="text-sm mb-2">
+						{m["onboarding_page.extension_registration.make_sure_fingerprint_matches.prefix"]()}
+						<span class="font-semibold">{m.product_extension_name()}</span>.
 					</p>
-				</div>
-			{/if}
-		</div>
-	{/if}
-</Main>
+					<Divider />
+					<ul class="space-y-4 overflow-y-auto max-h-[65dvh] w-full p-2">
+						{#each registrationState.pendingRegistrations as registration (registration.Id)}
+							<li>
+								<ExtensionRegistrationCard {registration} />
+							</li>
+						{/each}
+					</ul>
+				{:else}
+					<p>
+						{m["onboarding_page.extension_registration.description.prefix"]()}
+						<span class="font-semibold">
+							{m.product_extension_name()}
+						</span>
+						{m["onboarding_page.extension_registration.description.suffix"]()}
+					</p>
+					<img
+						src="/onboarding/exporter-register-extension.jpg"
+						width="400"
+						height="200"
+						alt="PlayAtlas exporter extension config screenshot"
+						class="shadow-default my-4 object-cover w-full aspect-auto"
+					/>
+					<Divider />
+					<div class="w-fit mx-auto space-y-2 my-4">
+						<ol class="list-decimal ms-8">
+							<li>{m["onboarding_page.extension_registration.request_approval_steps.step_1"]()}</li>
+							<li>
+								{m["onboarding_page.extension_registration.request_approval_steps.step_2.action"]()}
+								<span class="font-semibold">
+									{m[
+										"onboarding_page.extension_registration.request_approval_steps.step_2.target"
+									]()}
+								</span>
+							</li>
+							<li>
+								{m["onboarding_page.extension_registration.request_approval_steps.step_3.action"]()}
+								<span class="font-semibold">
+									{m[
+										"onboarding_page.extension_registration.request_approval_steps.step_3.target"
+									]()}
+								</span>
+							</li>
+							<li>{m["onboarding_page.extension_registration.request_approval_steps.step_4"]()}</li>
+						</ol>
+						<p class="text-sm text-foreground/80">
+							{m["onboarding_page.extension_registration.request_approval_steps.hint"]()}
+						</p>
+					</div>
+				{/if}
+			</div>
+		{/if}
+	</Main>
+</AppLayout>

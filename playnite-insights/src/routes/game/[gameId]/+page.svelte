@@ -16,6 +16,8 @@
 	import Header from "$lib/ui/components/header/Header.svelte";
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
+	import AppOverlayLayout from "$lib/ui/components/layout/AppOverlayLayout.svelte";
+	import OverlayContainer from "$lib/ui/components/layout/OverlayContainer.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
 	import { DurationFormatter, GameAssets } from "$lib/ui/utils";
 	import { ArrowLeftIcon, ClockIcon, NotebookPenIcon } from "@lucide/svelte";
@@ -63,35 +65,39 @@
 	$inspect(store.latestGameClassifications?.get("SURVIVAL"));
 </script>
 
-<Header
-	class={[
-		"transition-colors-default fixed inset-x-0 top-0 z-20 border-b",
-		showHeaderTitle
-			? "bg-background-1 shadow border-b-neutral-700/60"
-			: "bg-transparent shadow-none border-b-transparent",
-	]}
->
-	<div class="absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/60 to-transparent"></div>
-	<div class="relative mr-auto w-fit pointer-events-auto flex items-center gap-1">
-		<LightButton
-			variant="neutral"
-			iconOnly
-			onclick={() => history.back()}
+<AppOverlayLayout>
+	<OverlayContainer>
+		<Header
+			class={[
+				"transition-colors-default sticky inset-x-0 top-0 z-20 border-b",
+				showHeaderTitle
+					? "bg-background-1 shadow border-b-neutral-700/60"
+					: "bg-transparent shadow-none border-b-transparent",
+			]}
 		>
-			<Icon>
-				<ArrowLeftIcon />
-			</Icon>
-		</LightButton>
-		{#if showHeaderTitle}
-			<p
-				class={["font-semibold leading-tight text-lg truncate max-w-[70dvw]"]}
-				transition:fade={{ duration: 150, easing: cubicInOut }}
-			>
-				{store.game?.Playnite?.Name}
-			</p>
-		{/if}
-	</div>
-</Header>
+			<div class="absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/60 to-transparent"></div>
+			<div class="relative mr-auto w-fit pointer-events-auto flex items-center gap-1">
+				<LightButton
+					variant="neutral"
+					iconOnly
+					onclick={() => history.back()}
+				>
+					<Icon>
+						<ArrowLeftIcon />
+					</Icon>
+				</LightButton>
+				{#if showHeaderTitle}
+					<p
+						class={["font-semibold leading-tight text-lg truncate max-w-[70dvw]"]}
+						transition:fade={{ duration: 150, easing: cubicInOut }}
+					>
+						{store.game?.Playnite?.Name}
+					</p>
+				{/if}
+			</div>
+		</Header>
+	</OverlayContainer>
+</AppOverlayLayout>
 
 <AppLayout>
 	<Main class="p-0!">

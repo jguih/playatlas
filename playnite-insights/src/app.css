@@ -55,6 +55,7 @@ html {
 	--pl-color-success-900: hsl(152, 55%, 24%);
 	--pl-color-success-950: hsl(152, 55%, 18%);
 
+	--pl-color-background-desktop: hsl(228, 48%, 6%);
 	--pl-color-background: hsl(228, 48%, 10%);
 	--pl-color-background-1: hsl(228, 48%, 15%);
 	--pl-color-background-2: hsl(228, 48%, 18%);
@@ -67,6 +68,7 @@ html {
 	/* ==== ==== */
 
 	/* ==== Semantic Tokens ==== */
+	--color-background-desktop: var(--pl-color-background-desktop);
 	--color-background: var(--pl-color-background);
 	--color-background-1: var(--pl-color-background-1);
 	--color-background-2: var(--pl-color-background-2);
@@ -306,7 +308,7 @@ html {
 }
 
 body {
-	@apply text-foreground bg-background overflow-hidden;
+	@apply text-foreground bg-background-desktop overflow-hidden;
 }
 
 .transition-colors-default {

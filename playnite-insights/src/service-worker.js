@@ -188,11 +188,7 @@ async function networkFirst(request, cacheName) {
  */
 async function handleImageRequest(request) {
 	try {
-		const response = await fetch(request);
-		if (!response.ok) {
-			throw new Error("Image fetch failed");
-		}
-		return response;
+		return await fetch(request);
 	} catch {
 		if (request.url.includes("/cover")) {
 			return fetch("/placeholder/cover.png");

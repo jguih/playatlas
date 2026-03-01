@@ -41,11 +41,13 @@
 	role="dialog"
 	aria-modal="true"
 	class={[
-		"bg-background-1 fixed left-0 right-0 top-0 z-50 h-full max-w-full overflow-y-hidden shadow-xl",
+		"absolute bottom-0 left-0 top-0",
+		"h-full max-w-full",
+		"bg-background-1 overflow-y-hidden shadow-default pointer-events-auto",
 		props.class,
 	]}
-	style:width={`min(${width}dvw, 28rem)`}
-	transition:fly={{ x: `-${width}dvw`, duration: 200, easing: cubicInOut }}
+	style:width={`min(${width}%, 28rem)`}
+	transition:fly={{ x: `-${width}%`, duration: 200, easing: cubicInOut }}
 >
 	{#if props.children && showChildren}
 		{@render props.children()}
