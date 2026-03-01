@@ -1,0 +1,149 @@
+<script lang="ts">
+	import { normalize } from "$lib/modules/common/common";
+	import { m } from "$lib/paraglide/messages";
+	import SolidButton from "$lib/ui/components/buttons/SolidButton.svelte";
+	import SolidChip from "$lib/ui/components/chip/SolidChip.svelte";
+	import Divider from "$lib/ui/components/Divider.svelte";
+	import Spinner from "$lib/ui/components/Spinner.svelte";
+	import type { ComponentVariant } from "$lib/ui/components/types";
+	import type { ExtensionRegistrationResponseDto } from "@playatlas/auth/dtos";
+
+	const { registration }: { registration: ExtensionRegistrationResponseDto } = $props();
+
+	const osName = $derived.by(() => {
+		const os = registration.Os;
+		if (os && normalize(os).includes("windows")) {
+			return "Windows";
+		}
+		return "Unknown";
+	});
+
+	const requestedAt = $derived.by(() => {
+		const createdAt = new Date(registration.CreatedAt);
+		const createdAtMs = createdAt.getTime();
+		const diffMs = Date.now() - createdAtMs;
+		const diffS = Math.floor(diffMs / 1000);
+		const diffMins = Math.floor(diffS / 60);
+		const diffHours = Math.floor(diffMins / 60);
+		const diffDays = Math.floor(diffHours / 24);
+
+		if (diffS <= 60) return `just now`;
+
+		if (diffMins <= 60) return m["duration.minutes_ago"]({ mins: diffMins });
+
+		if (diffHours <= 24) return m["duration.hours_ago"]({ hours: diffHours });
+
+		if (diffDays <= 7) return m["duration.days_ago"]({ days: diffDays });
+
+		return createdAt.toLocaleString();
+	});
+
+	const actionButtonMeta = {
+		trust: {
+			label: "Trust this PC",
+			variant: "success",
+			action: () => {},
+		},
+		reject: {
+			label: "Reject",
+			variant: "neutral",
+			action: () => {},
+		},
+		revoke: {
+			label: "Revoke",
+			variant: "error",
+			action: () => {},
+		},
+	} as const satisfies Record<
+		string,
+		{ label: string; variant: ComponentVariant; action: () => void }
+	>;
+
+	type ActionButtonMeta = (typeof actionButtonMeta)[keyof typeof actionButtonMeta];
+
+	const actionButtons = $derived.by(() => {
+		const status = registration.Status;
+		const buttons: ActionButtonMeta[] = [];
+
+		switch (status) {
+			case "trusted": {
+				buttons.push(actionButtonMeta.revoke);
+				break;
+			}
+			case "pending": {
+				buttons.push(actionButtonMeta.reject, actionButtonMeta.trust);
+				break;
+			}
+		}
+
+		return buttons;
+	});
+
+	const fingerprintFromPemAsync = async (pem: string): Promise<string> => {
+		const base64 = pem
+			.replace(/-----BEGIN PUBLIC KEY-----/g, "")
+			.replace(/-----END PUBLIC KEY-----/g, "")
+			.replace(/\s/g, "");
+
+		const binary = atob(base64);
+		const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+
+		const hash = await crypto.subtle.digest("SHA-256", bytes);
+		const arr = Array.from(new Uint8Array(hash)).slice(0, 6);
+
+		return arr.map((b) => b.toString(16).padStart(2, "0").toUpperCase()).join(":");
+	};
+</script>
+
+{#snippet statusChip(status: ExtensionRegistrationResponseDto["Status"])}
+	{#if status === "pending"}
+		<SolidChip variant="warning">
+			{m["onboarding_page.extension_registration.registration_status.pending"]()}
+		</SolidChip>
+	{:else if status === "rejected"}
+		<SolidChip variant="error">
+			{m["onboarding_page.extension_registration.registration_status.rejected"]()}
+		</SolidChip>
+	{:else if status === "trusted"}
+		<SolidChip variant="primary">
+			{m["onboarding_page.extension_registration.registration_status.trusted"]()}
+		</SolidChip>
+	{/if}
+{/snippet}
+
+<div class="bg-background-1 px-4 py-2">
+	<h1>
+		<span class="text-primary-light-active-fg text-lg">{registration.Hostname}</span> •
+		<span class="">{osName}</span>
+	</h1>
+	<p class="font-semibold text-sm text-foreground/80">
+		{m["onboarding_page.extension_registration.registration_requested_at.prefix"]()}
+		{requestedAt}
+	</p>
+	<Divider />
+	<div class="mb-2 mt-2 w-fit mx-auto">
+		{@render statusChip(registration.Status)}
+	</div>
+	<div class="mb-2">
+		<p class="font-semibold w-fit mx-auto mb-1">Fingerprint:</p>
+		<p class="px-1 py-0.5 bg-neutral-bg/40 font-mono w-fit mx-auto tracking-widest">
+			{#await fingerprintFromPemAsync(registration.PublicKey)}
+				<Spinner size="sm" />
+			{:then fingerprint}
+				{fingerprint}
+			{:catch}
+				invalid fingerprint
+			{/await}
+		</p>
+	</div>
+	<div class="mt-6 flex gap-2 justify-end">
+		{#each actionButtons as button (button.label)}
+			<SolidButton
+				variant={button.variant}
+				onclick={button.action}
+			>
+				{button.label}
+			</SolidButton>
+		{/each}
+	</div>
+</div>

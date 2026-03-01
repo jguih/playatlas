@@ -17,7 +17,7 @@
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
-	import { GameAssets, PlaytimeFormatter } from "$lib/ui/utils";
+	import { DurationFormatter, GameAssets } from "$lib/ui/utils";
 	import { ArrowLeftIcon, ClockIcon, NotebookPenIcon } from "@lucide/svelte";
 	import { onMount, tick } from "svelte";
 	import { cubicInOut } from "svelte/easing";
@@ -258,7 +258,7 @@
 						)}
 						{@render detailSection(
 							"Playtime",
-							PlaytimeFormatter.toHoursMinutesSeconds(store.game.Playnite?.Playtime ?? 0),
+							DurationFormatter.toHoursMinutesSeconds(store.game.Playnite?.Playtime ?? 0),
 						)}
 					</GameInfoSection>
 

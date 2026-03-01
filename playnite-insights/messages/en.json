@@ -2,6 +2,7 @@
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"language_name": "English",
 	"product_name": "PlayAtlas",
+	"product_extension_name": "PlayAtlas Exporter",
 	"login_page": {
 		"title": { "prefix": "Login into this ", "suffix": " instance" },
 		"validation": {
@@ -18,7 +19,45 @@
 		"placeholder_instance_password": "Instance password...",
 		"register_label": "Register"
 	},
+	"onboarding_page": {
+		"extension_registration": {
+			"title": { "suffix": " extension" },
+			"make_sure_fingerprint_matches": {
+				"prefix": "Make sure the fingerprint matches the one shown in "
+			},
+			"description": {
+				"prefix": "To connect Playnite with this PlayAtlas instance, register the",
+				"suffix": " extension:"
+			},
+			"request_approval_steps": {
+				"step_1": "Open Playnite",
+				"step_2": {
+					"action": "Open",
+					"target": " Settings → Add-ons → Generic → PlayAtlas Exporter"
+				},
+				"step_3": {
+					"action": "Click",
+					"target": " Register Extension"
+				},
+				"step_4": "Return here to approve the request",
+				"hint": "Once you click Register Extension, a new approval card will appear below."
+			},
+			"registration_status": {
+				"pending": "Waiting for approval",
+				"rejected": "Rejected",
+				"trusted": "Trusted"
+			},
+			"registration_requested_at": {
+				"prefix": "Requested "
+			}
+		}
+	},
 	"duration": {
+		"minutes": "{mins}m",
+		"minutes_ago": "{mins}m ago",
+		"hours:": "{hours}h",
+		"hours_ago": "{hours}h ago",
+		"days_ago": "{days} days ago",
 		"hours_and_minutes": "{hours}h {mins}m",
 		"hours_minutes_seconds": "{hours}h {mins}m {secs}s"
 	},

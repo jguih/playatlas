@@ -66,7 +66,15 @@ export class ClientCompositionRoot {
 		});
 		await infra.initializeAsync();
 
-		const { sessionIdProvider } = this.buildInstanceSessionComponents({ infra });
+		const sessionIdMapper = new SessionIdMapper();
+		const sessionIdRepository = new SessionIdRepository({
+			dbSignal: infra.dbSignal,
+			sessionIdMapper: sessionIdMapper,
+		});
+		const sessionIdProvider = new SessionIdProvider({
+			sessionIdRepository,
+			clock: this.clock,
+		});
 
 		const authHttpClient = new HttpClient({ url: window.origin });
 		const authAuthenticatedHttpClient = new AuthenticatedHttpClient({
@@ -154,23 +162,5 @@ export class ClientCompositionRoot {
 		this.eventBus.on("login-successful", () => {
 			this.startLibrarySync(deps);
 		});
-	};
-
-	private buildInstanceSessionComponents = (deps: { infra: IClientInfraModulePort }) => {
-		const sessionIdMapper = new SessionIdMapper();
-		const sessionIdRepository = new SessionIdRepository({
-			dbSignal: deps.infra.dbSignal,
-			sessionIdMapper: sessionIdMapper,
-		});
-		const sessionIdProvider = new SessionIdProvider({
-			sessionIdRepository: sessionIdRepository,
-			clock: this.clock,
-		});
-
-		return {
-			sessionIdMapper,
-			sessionIdRepository,
-			sessionIdProvider,
-		};
 	};
 }
