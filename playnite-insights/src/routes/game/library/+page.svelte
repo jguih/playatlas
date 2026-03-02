@@ -17,7 +17,6 @@
 	import Icon from "$lib/ui/components/Icon.svelte";
 	import AppLayout from "$lib/ui/components/layout/AppLayout.svelte";
 	import AppOverlayLayout from "$lib/ui/components/layout/AppOverlayLayout.svelte";
-	import OverlayContainer from "$lib/ui/components/layout/OverlayContainer.svelte";
 	import Main from "$lib/ui/components/Main.svelte";
 	import Sidebar from "$lib/ui/components/sidebar/Sidebar.svelte";
 	import Spinner from "$lib/ui/components/Spinner.svelte";
@@ -122,28 +121,24 @@
 
 <AppOverlayLayout>
 	{#if filters.shouldOpen}
-		<OverlayContainer>
-			<Sidebar onClose={filters.close} />
-		</OverlayContainer>
+		<Sidebar onClose={filters.close} />
 	{/if}
 
 	{#if search.shouldOpen}
-		<OverlayContainer>
-			<SearchBottomSheet
-				onClose={() => {
-					void commitSearchAsync();
-				}}
-				onDestroy={() => {
-					void commitSearchAsync(false);
-				}}
-				bind:value={search.searchSignal}
-				libraryFilterItems={libraryFilterItems.items}
-				onApplyFilterItem={async (item) => {
-					search.searchSignal = item.Query.filter?.search;
-					void commitSearchAsync();
-				}}
-			/>
-		</OverlayContainer>
+		<SearchBottomSheet
+			onClose={() => {
+				void commitSearchAsync();
+			}}
+			onDestroy={() => {
+				void commitSearchAsync(false);
+			}}
+			bind:value={search.searchSignal}
+			libraryFilterItems={libraryFilterItems.items}
+			onApplyFilterItem={async (item) => {
+				search.searchSignal = item.Query.filter?.search;
+				void commitSearchAsync();
+			}}
+		/>
 	{/if}
 </AppOverlayLayout>
 
