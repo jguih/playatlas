@@ -5,12 +5,13 @@ A self-hosted recommendation engine that turns your <strong>Playnite</strong> li
 </h3>
 
 <p align="center">
-<img src="docs/docs/screenshots/playatlas.jpg" width="800" title="PlayAtlas Main Screenshot">
+<img src="docs/mkdocs/docs/screenshots/playatlas.jpg" width="800" title="PlayAtlas Main Screenshot">
 </p>
 
 ## Links
 
-- [Docs](https://jguih.github.io/playatlas/)
+- [Public Documentation](https://jguih.github.io/playatlas/)
+- [Architecture Decision Records](./docs/adr/)
 
 ## Introduction
 
@@ -36,10 +37,6 @@ Instead of recommending what to buy, **PlayAtlas helps users rediscover what the
 
 It does so without relying on external services, opaque algorithms, or cloud infrastructure.
 
-## Getting Started
-
-TODO: how to install PlayAtlas
-
 ## System Overview
 
 PlayAtlas consists of three components operating within the same local network:
@@ -64,23 +61,53 @@ To learn more about the internals of score engines and how to create new ones, v
 
 ## Security Model
 
-### Trust Boundary
+### Intended Deployment
 
-PlayAtlas is designed to operate inside a controlled LAN environment.
+**PlayAtlas is a self-hosted LAN application.**
 
-It assumes:
-- The Linux host running PlayAtlas is trusted.
-- The Windows host running Playnite + Exporter is trusted.
-- LAN clients accessing the Web UI are trusted.
-- The application is not directly exposed to the public internet.
+It is designed to run inside a trusted local network and must not be exposed directly to the public internet.
 
-PlayAtlas is not designed to be internet-facing.
+The system assumes the following machines are trusted:
 
-### Exporter Trust Model
+- The Linux host running the PlayAtlas server
+- The Windows machine running Playnite + Exporter
+- Browsers accessing the web interface from the same LAN
 
-PlayAtlas enforces a strict trust boundary between the Playnite extension and the server. The server does not assume that any connecting extension is legitimate. **Initial registration requests are treated as untrusted** and **require explicit user approval** before the extension is granted access. Until approved, the extension cannot submit metadata, trigger synchronization, or interact with persistent state. This ensures that knowledge of the server endpoint alone is insufficient to gain access, preventing unauthorized clients from injecting or modifying data.
+PlayAtlas does not implement a hardened internet authentication model.
+Instead, security is enforced at the application level through explicit approval and session authorization.
 
-From the extension’s perspective, configuration of the server address constitutes an initial trust assumption. The extension has no built-in mechanism to verify the authenticity of the remote endpoint and therefore assumes the user-provided address is correct. However, all interactions remains gated by the server’s authorization workflow. Trust is established explicitly at the application layer rather than implicitly at the network layer, reflecting a zero-trust design appropriate for self-hosted deployments.
+### Why the Server Requires Approval
+
+The Playnite Exporter is treated as an **untrusted client by default**.
+
+Knowing the server address alone is not enough to interact with PlayAtlas.
+
+When a new exporter connects:
+
+1. The server registers it as pending
+2. The user must explicitly approve it in the UI
+3. Only after approval can it send metadata or trigger synchronization
+
+Until approved, the exporter cannot:
+
+- upload game data
+- modify stored information
+- trigger sync operations
+
+This prevents another machine on the network from pretending to be your Playnite instance and injecting data into your library.
+
+### Trust Direction
+
+Trust is established **by the server, not by the extension**.
+
+The exporter assumes the user entered the correct server address and does not verify the server’s identity.
+The server, however, verifies and authorizes the exporter before allowing any interaction.
+
+This creates a simple zero-trust rule inside the LAN: **every client must be explicitly approved**, even inside the local network.
+
+## Getting Started
+
+TODO: how to install PlayAtlas
 
 ## Development Setup
 
