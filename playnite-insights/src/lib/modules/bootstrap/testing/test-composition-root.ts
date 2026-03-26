@@ -208,6 +208,7 @@ export class TestCompositionRoot {
 			instancePreferenceModelService,
 			storageManager: infra.storageManager,
 			projectionCoordinator: projectionReconciler,
+			playAtlasSyncState: infra.playAtlasSyncState,
 		});
 
 		const bootstrapper = new ClientBootstrapper({
