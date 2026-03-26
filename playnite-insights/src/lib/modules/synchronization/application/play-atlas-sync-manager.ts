@@ -1,6 +1,7 @@
 import type {
 	IClockPort,
 	IDomainEventBusPort,
+	IPlayAtlasSyncStatePort,
 	ISyncFlowPort,
 	SyncRunnerResult,
 } from "$lib/modules/common/application";
@@ -25,6 +26,7 @@ export type PlayAtlasSyncManagerDeps = {
 	instancePreferenceModelService: IInstancePreferenceModelServicePort;
 	storageManager: IClientStorageManagerPort;
 	projectionCoordinator: IProjectionCoordinatorPort;
+	playAtlasSyncState: IPlayAtlasSyncStatePort;
 };
 
 export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
@@ -44,6 +46,7 @@ export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
 			instancePreferenceModelService,
 			storageManager,
 			projectionCoordinator,
+			playAtlasSyncState,
 		} = this.deps;
 
 		const startedAt = clock.now().getTime();
@@ -77,6 +80,8 @@ export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
 			if (instancePreferenceModelService.isInvalid()) {
 				await instancePreferenceModelService.rebuildAsync();
 			}
+
+			playAtlasSyncState.persistQueuedCursors();
 
 			if (updatedEntities > 0) {
 				const ensureDurableStorageInBackground = storageManager.ensureDurableStorageAsync();

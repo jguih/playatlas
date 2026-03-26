@@ -178,6 +178,7 @@ export class ClientCompositionRoot {
 			instancePreferenceModelService,
 			storageManager: infra.storageManager,
 			projectionCoordinator: projectionReconciler,
+			playAtlasSyncState: infra.playAtlasSyncState,
 		});
 
 		this.startLibrarySync({ auth, synchronization });

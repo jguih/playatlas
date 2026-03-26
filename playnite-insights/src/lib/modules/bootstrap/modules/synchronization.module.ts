@@ -1,4 +1,4 @@
-import type { IDomainEventBusPort } from "$lib/modules/common/application";
+import type { IDomainEventBusPort, IPlayAtlasSyncStatePort } from "$lib/modules/common/application";
 import type { IClientStorageManagerPort } from "$lib/modules/common/infra";
 import type {
 	IInstancePreferenceModelServicePort,
@@ -33,6 +33,7 @@ export type SynchronizationModuleDeps = {
 	instancePreferenceModelService: IInstancePreferenceModelServicePort;
 	projectionCoordinator: IProjectionCoordinatorPort;
 	storageManager: IClientStorageManagerPort;
+	playAtlasSyncState: IPlayAtlasSyncStatePort;
 };
 
 export class SynchronizationModule implements ISynchronizationModulePort {
@@ -55,6 +56,7 @@ export class SynchronizationModule implements ISynchronizationModulePort {
 			instancePreferenceModelService: this.deps.instancePreferenceModelService,
 			projectionCoordinator: this.deps.projectionCoordinator,
 			storageManager: this.deps.storageManager,
+			playAtlasSyncState: this.deps.playAtlasSyncState,
 		});
 	}
 }

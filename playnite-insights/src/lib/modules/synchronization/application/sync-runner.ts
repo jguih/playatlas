@@ -21,7 +21,7 @@ export class SyncRunner implements ISyncRunnerPort {
 		const { clock, syncState } = this.deps;
 
 		const now = clock.now();
-		const lastCursor = syncState.getLastServerSyncCursor(syncTarget);
+		const lastCursor = syncState.getSyncCursor(syncTarget);
 
 		const response = await fetchAsync({ lastCursor });
 
@@ -35,7 +35,7 @@ export class SyncRunner implements ISyncRunnerPort {
 
 		if (entities.length > 0) await persistAsync({ entities });
 
-		syncState.setLastServerSyncCursor(syncTarget, response.nextCursor);
+		syncState.enqueueSyncCursor(syncTarget, response.nextCursor);
 
 		return {
 			success: true,
