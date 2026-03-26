@@ -54,7 +54,9 @@ export class SyncGameClassificationsFlow implements ISyncGameClassificationsFlow
 			fetchAsync: this.fetchAsync,
 			mapDtoToEntity: ({ dto, now }) => gameClassificationMapper.fromDto(dto, now),
 			persistAsync: async ({ entities: gameClassifications }) => {
-				await syncGameClassificationsCommandHandler.executeAsync({ gameClassifications });
+				const persistInBackground = syncGameClassificationsCommandHandler.executeAsync({
+					gameClassifications,
+				});
 
 				const projectionInputs: GameVectorProjectionInput[] = gameClassifications.map((gc) => ({
 					gameId: gc.GameId,
@@ -66,6 +68,8 @@ export class SyncGameClassificationsFlow implements ISyncGameClassificationsFlow
 					source: "gameClassifications",
 					inputs: projectionInputs,
 				});
+
+				await persistInBackground;
 			},
 		});
 	};

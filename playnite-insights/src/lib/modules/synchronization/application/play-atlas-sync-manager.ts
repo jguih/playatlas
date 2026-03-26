@@ -72,10 +72,6 @@ export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
 				}
 			}
 
-			if (updatedEntities > 0) {
-				await storageManager.ensureDurableStorageAsync();
-			}
-
 			await projectionCoordinator.reconcileAsync();
 
 			if (instancePreferenceModelService.isInvalid()) {
@@ -83,11 +79,15 @@ export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
 			}
 
 			if (updatedEntities > 0) {
+				const ensureDurableStorageInBackground = storageManager.ensureDurableStorageAsync();
+
 				eventBus.emit({
 					id: crypto.randomUUID(),
 					name: "game-library-updated",
 					occurredAt: this.deps.clock.now(),
 				});
+
+				await ensureDurableStorageInBackground;
 			}
 		} finally {
 			const elapsed = clock.now().getTime() - startedAt;

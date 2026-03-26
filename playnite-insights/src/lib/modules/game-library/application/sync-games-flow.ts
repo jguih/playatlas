@@ -49,7 +49,7 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 			fetchAsync: this.fetchAsync,
 			mapDtoToEntity: ({ dto, now }) => gameMapper.fromDto(dto, now),
 			persistAsync: async ({ entities: games }) => {
-				await syncGamesCommandHandler.executeAsync({ games });
+				const persistInBackground = syncGamesCommandHandler.executeAsync({ games });
 
 				const recommendationRecordInputs: GameRecommendationRecordProjectionInput[] = games.map(
 					(g) => ({
@@ -61,6 +61,8 @@ export class SyncGamesFlow implements ISyncGamesFlowPort {
 				);
 
 				projectionInvalidator.invalidate({ source: "games", inputs: recommendationRecordInputs });
+
+				await persistInBackground;
 			},
 		});
 	};
