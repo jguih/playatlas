@@ -8,6 +8,8 @@ describe("Sync Runner", () => {
 	const syncState: IPlayAtlasSyncStatePort = {
 		getSyncCursor: vi.fn(),
 		setSyncCursor: vi.fn(),
+		enqueueSyncCursor: vi.fn(),
+		persistQueuedCursors: vi.fn(),
 	};
 	const sut = new SyncRunner({ clock, syncState });
 
