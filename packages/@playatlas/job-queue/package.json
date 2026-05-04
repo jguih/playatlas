@@ -16,7 +16,8 @@
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"@faker-js/faker": "catalog:",
-		"vitest": "catalog:"
+		"vitest": "catalog:",
+		"@playatlas/testing": "workspace:*"
 	},
 	"dependencies": {
 		"@playatlas/common": "workspace:*",

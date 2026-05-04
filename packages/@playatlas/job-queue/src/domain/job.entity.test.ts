@@ -1,5 +1,5 @@
 import { WorkerIdParser } from "@playatlas/common/domain";
-import { makeStubClock } from "@playatlas/common/testing";
+import { makeStubClock } from "@playatlas/testing/testing";
 import { describe, expect, it } from "vitest";
 import { makeJobFactory } from "../application";
 

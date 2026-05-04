@@ -1,6 +1,5 @@
+import { makeClock, type IClockPort } from "@playatlas/common/infra";
 import { vi } from "vitest";
-import { makeClock } from "../infra";
-import type { IClockPort } from "../infra/clock.port";
 
 export type MakeStubClockDeps = {
 	now?: Date;
