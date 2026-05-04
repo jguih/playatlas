@@ -79,7 +79,7 @@ export const makeJob = (props: MakeJobProps, { clock }: BuildJobDeps) => {
 
 	const tryClaim = (workerId: WorkerId): boolean => {
 		if (_status !== "queued") return false;
-		if (_locked_at) return false;
+		if (_locked_at) return false; // TODO: check stale lock
 		if (_run_at > clock.now()) return false;
 
 		_status = "processing";

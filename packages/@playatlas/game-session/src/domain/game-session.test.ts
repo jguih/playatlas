@@ -5,7 +5,7 @@ import { ulid } from "ulid";
 import { describe, expect, it } from "vitest";
 import { makeGameSessionFactory } from "../application";
 
-describe("Game Session Domain", () => {
+describe("Game Session Aggregate", () => {
 	const sessionId = GameSessionIdParser.fromTrusted("session-1");
 	const clock = makeClock();
 	const factory = makeGameSessionFactory({ clock });

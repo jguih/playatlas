@@ -8,6 +8,11 @@
 		"./domain": "./src/domain/index.ts",
 		"./infra": "./src/infra/index.ts"
 	},
+	"scripts": {
+		"test": "vitest run",
+		"test:unit": "vitest run --project unit",
+		"test:watch": "vitest --watch"
+	},
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"@faker-js/faker": "catalog:",
