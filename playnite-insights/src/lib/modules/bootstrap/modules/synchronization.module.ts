@@ -1,4 +1,4 @@
-import type { IDomainEventBusPort } from "$lib/modules/common/application";
+import type { IDomainEventBusPort, IPlayAtlasSyncStatePort } from "$lib/modules/common/application";
 import type { IClientStorageManagerPort } from "$lib/modules/common/infra";
 import type {
 	IInstancePreferenceModelServicePort,
@@ -16,6 +16,7 @@ import {
 	type IPlayAtlasSyncManagerPort,
 	type ISyncProgressReporterPort,
 } from "$lib/modules/synchronization/application";
+import type { IProjectionCoordinatorPort } from "$lib/modules/synchronization/application/projection-coordinator.port";
 import type { IClockPort } from "@playatlas/common/infra";
 import type { ISynchronizationModulePort } from "./synchronization.module.port";
 
@@ -30,7 +31,9 @@ export type SynchronizationModuleDeps = {
 	clock: IClockPort;
 	eventBus: IDomainEventBusPort;
 	instancePreferenceModelService: IInstancePreferenceModelServicePort;
+	projectionCoordinator: IProjectionCoordinatorPort;
 	storageManager: IClientStorageManagerPort;
+	playAtlasSyncState: IPlayAtlasSyncStatePort;
 };
 
 export class SynchronizationModule implements ISynchronizationModulePort {
@@ -51,7 +54,9 @@ export class SynchronizationModule implements ISynchronizationModulePort {
 			syncPlatformsFlow: this.deps.syncPlatformsFlow,
 			syncGameSessionsFlow: this.deps.syncGameSessionsFlow,
 			instancePreferenceModelService: this.deps.instancePreferenceModelService,
+			projectionCoordinator: this.deps.projectionCoordinator,
 			storageManager: this.deps.storageManager,
+			playAtlasSyncState: this.deps.playAtlasSyncState,
 		});
 	}
 }

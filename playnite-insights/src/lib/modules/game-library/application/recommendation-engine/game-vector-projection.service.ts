@@ -16,6 +16,7 @@ export type IGameVectorProjectionServicePort = {
 	initializeAsync: () => Promise<void>;
 	getVector: (gameId: GameId) => Float32Array | null;
 	getMagnitude: (gameId: GameId) => number | null;
+	size: number;
 	forEach: (callback: (gameId: GameId, record: GameVectorProjectionRecord) => void) => void;
 	invalidate: () => void;
 	rebuildAsync: () => Promise<void>;
@@ -31,7 +32,7 @@ export class GameVectorProjectionService implements IGameVectorProjectionService
 
 	constructor(private readonly deps: GameVectorProjectionServiceDeps) {}
 
-	normalizeVector = (v: Float32Array) => {
+	private normalizeVector = (v: Float32Array) => {
 		const mag = RecommendationEngineVectorUtils.magnitude(v);
 		if (mag === 0) return v;
 		for (let i = 0; i < v.length; i++) v[i] /= mag;
@@ -80,6 +81,10 @@ export class GameVectorProjectionService implements IGameVectorProjectionService
 		this.cache = await this.buildAsync();
 	};
 
+	get size() {
+		return this.cache?.size ?? 0;
+	}
+
 	getVector: IGameVectorProjectionServicePort["getVector"] = (gameId) => {
 		if (!this.cache) throw new Error("Projection not initialized");
 		return this.cache.get(gameId)?.vector ?? null;
@@ -108,16 +113,12 @@ export class GameVectorProjectionService implements IGameVectorProjectionService
 		gameIds,
 	) => {
 		if (gameIds.length === 0) return;
+		if (!this.cache) throw new Error("Projection not initialized");
 
-		const cache: GameVectorProjection = new Map();
+		const newProjections = await this.buildAsync(gameIds.values().toArray());
 
-		const newVectors = await this.buildAsync(gameIds.values().toArray());
-
-		for (const gameId of gameIds) {
-			const newVector = newVectors.get(gameId);
-			if (newVector) cache.set(gameId, newVector);
+		for (const [gameId, projection] of newProjections) {
+			this.cache.set(gameId, projection);
 		}
-
-		this.cache = cache;
 	};
 }

@@ -1,6 +1,7 @@
 import type {
 	IClockPort,
 	IDomainEventBusPort,
+	IPlayAtlasSyncStatePort,
 	ISyncFlowPort,
 	SyncRunnerResult,
 } from "$lib/modules/common/application";
@@ -8,6 +9,7 @@ import type { SyncTarget } from "$lib/modules/common/domain";
 import type { IClientStorageManagerPort } from "$lib/modules/common/infra";
 import type { IInstancePreferenceModelServicePort } from "$lib/modules/game-library/application";
 import type { IPlayAtlasSyncManagerPort } from "./play-atlas-sync-manager.port";
+import type { IProjectionCoordinatorPort } from "./projection-coordinator.port";
 import type { ISyncProgressReporterPort } from "./sync-progress-reporter.svelte";
 
 export type PlayAtlasSyncManagerDeps = {
@@ -23,6 +25,8 @@ export type PlayAtlasSyncManagerDeps = {
 	eventBus: IDomainEventBusPort;
 	instancePreferenceModelService: IInstancePreferenceModelServicePort;
 	storageManager: IClientStorageManagerPort;
+	projectionCoordinator: IProjectionCoordinatorPort;
+	playAtlasSyncState: IPlayAtlasSyncStatePort;
 };
 
 export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
@@ -35,8 +39,15 @@ export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
 		if (this.syncing) return;
 		this.syncing = true;
 
-		const { progressReporter, clock, eventBus, instancePreferenceModelService, storageManager } =
-			this.deps;
+		const {
+			progressReporter,
+			clock,
+			eventBus,
+			instancePreferenceModelService,
+			storageManager,
+			projectionCoordinator,
+			playAtlasSyncState,
+		} = this.deps;
 
 		const startedAt = clock.now().getTime();
 		progressReporter.report({ type: "sync-started" });
@@ -64,15 +75,24 @@ export class PlayAtlasSyncManager implements IPlayAtlasSyncManagerPort {
 				}
 			}
 
-			if (updatedEntities > 0) {
-				await storageManager.ensureDurableStorageAsync();
+			await projectionCoordinator.reconcileAsync();
+
+			if (instancePreferenceModelService.isInvalid()) {
 				await instancePreferenceModelService.rebuildAsync();
+			}
+
+			playAtlasSyncState.persistQueuedCursors();
+
+			if (updatedEntities > 0) {
+				const ensureDurableStorageInBackground = storageManager.ensureDurableStorageAsync();
 
 				eventBus.emit({
 					id: crypto.randomUUID(),
 					name: "game-library-updated",
 					occurredAt: this.deps.clock.now(),
 				});
+
+				await ensureDurableStorageInBackground;
 			}
 		} finally {
 			const elapsed = clock.now().getTime() - startedAt;

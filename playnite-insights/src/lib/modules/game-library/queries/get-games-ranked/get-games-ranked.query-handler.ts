@@ -32,7 +32,8 @@ export class GetGamesRankedQueryHandler implements IGetGamesRankedQueryHandlerPo
 	private buildFilters = (query: GetGamesRankedQuery) => {
 		const filters: RecommendationEngineFilter[] = [];
 
-		// filters.push(({ record }) => record.IsHidden === false);
+		filters.push(({ record }) => record.IsHidden === false);
+		filters.push(({ record }) => record.IsDeleted === false);
 
 		const search = query.filter?.search;
 		if (search) {
@@ -61,7 +62,7 @@ export class GetGamesRankedQueryHandler implements IGetGamesRankedQueryHandlerPo
 
 		const rankedGames: ExpandedGame[] = [...games.values()].map((g) => ({
 			...g,
-			Synergy: rankedMap.get(g.Id) ?? 0,
+			Similarity: rankedMap.get(g.Id) ?? 0,
 		}));
 
 		return { games: rankedGames, nextKey };

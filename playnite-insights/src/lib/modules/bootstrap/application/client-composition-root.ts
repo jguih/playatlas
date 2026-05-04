@@ -4,11 +4,12 @@ import {
 	AuthenticatedHttpClient,
 	EventBus,
 	HttpClient,
-	LogService,
+	LogServiceFactory,
 	PlayAtlasSSEClient,
 	type IClockPort,
 	type IDomainEventBusPort,
-	type ILogServicePort,
+	type IHttpClientPort,
+	type ILogServiceFactory,
 	type IPlayAtlasSSEClientPort,
 } from "$lib/modules/common/application";
 import { PlayAtlasClient } from "$lib/modules/common/application/playatlas-client";
@@ -25,6 +26,7 @@ import {
 	platformRepositorySchema,
 } from "$lib/modules/game-library/infra";
 import { GameSessionReadonlyStore, gameSessionStoreSchema } from "$lib/modules/game-session/infra";
+import { ProjectionReconciler } from "$lib/modules/synchronization/application/projection-reconciler";
 import { SyncRunner } from "$lib/modules/synchronization/application/sync-runner";
 import {
 	ClientGameLibraryModule,
@@ -38,13 +40,14 @@ import {
 } from "../modules";
 import { AuthModule } from "../modules/auth.module";
 import type { IAuthModulePort } from "../modules/auth.module.port";
+import { RecommendationEngineModuleCompositor } from "../modules/game-library/composition";
 import type { ClientApiV1 } from "./client-api.v1";
 import { ClientBootstrapper } from "./client-bootstrapper";
 
 export class ClientCompositionRoot {
-	private readonly logService: ILogServicePort = new LogService();
-	private readonly eventBus: IDomainEventBusPort = new EventBus();
-	private readonly clock: IClockPort = new Clock();
+	private readonly logServiceFactory: ILogServiceFactory;
+	private readonly eventBus: IDomainEventBusPort;
+	private readonly clock: IClockPort;
 	#playAtlasSSEClient: PlayAtlasSSEClient | null = null;
 
 	get playAtlasSSEClient(): IPlayAtlasSSEClientPort {
@@ -52,11 +55,17 @@ export class ClientCompositionRoot {
 		return this.#playAtlasSSEClient;
 	}
 
-	constructor() {}
+	constructor() {
+		this.eventBus = new EventBus();
+		this.clock = new Clock();
+		this.logServiceFactory = new LogServiceFactory({ clock: this.clock });
+	}
 
 	buildAsync = async (): Promise<ClientApiV1> => {
+		const buildLogger = (context: string) => this.logServiceFactory.build(context);
+
 		const infra: IClientInfraModulePort = new ClientInfraModule({
-			logService: this.logService,
+			logService: buildLogger("Infra"),
 			schemas: [
 				gameRepositorySchema,
 				genreRepositorySchema,
@@ -84,9 +93,9 @@ export class ClientCompositionRoot {
 			clock: this.clock,
 		});
 
-		const authHttpClient = new HttpClient({ url: window.origin });
+		const authHttpClient = this.buildHttpClient();
 		const authAuthenticatedHttpClient = new AuthenticatedHttpClient({
-			httpClient: new HttpClient({ url: window.origin }),
+			httpClient: this.buildHttpClient(),
 			sessionIdProvider,
 		});
 		const auth: IAuthModulePort = new AuthModule({
@@ -94,39 +103,66 @@ export class ClientCompositionRoot {
 			authenticatedHttpClient: authAuthenticatedHttpClient,
 			dbSignal: infra.dbSignal,
 			clock: this.clock,
-			logService: this.logService,
+			logService: buildLogger("AuthModule"),
 			eventBus: this.eventBus,
 			sessionIdProvider,
 		});
 		await auth.initializeAsync();
 
+		const gameSessionReadonlyStore = new GameSessionReadonlyStore({ dbSignal: infra.dbSignal });
+
+		const recommendationEngineParts = RecommendationEngineModuleCompositor.buildParts({
+			dbSignal: infra.dbSignal,
+			clock: this.clock,
+			gameSessionReadonlyStore,
+			logService: buildLogger("RecommendationEngineModuleCompositor"),
+		});
+
+		const {
+			gameRecommendationRecordProjectionService,
+			gameRecommendationRecordProjectionWriter,
+			gameVectorProjectionService,
+			gameVectorProjectionWriter,
+			instancePreferenceModelInvalidation,
+			instancePreferenceModelService,
+		} = recommendationEngineParts;
+
+		const projectionReconciler = new ProjectionReconciler({
+			gameRecommendationRecordProjectionService,
+			gameRecommendationRecordProjectionWriter,
+			gameVectorProjectionService,
+			gameVectorProjectionWriter,
+			instancePreferenceModelInvalidation,
+			logService: buildLogger("ProjectionReconciler"),
+		});
+
 		const playAtlasHttpClient = new AuthenticatedHttpClient({
-			httpClient: new HttpClient({ url: window.origin }),
+			httpClient: this.buildHttpClient(),
 			sessionIdProvider,
 		});
 		const playAtlasClient = new PlayAtlasClient({ httpClient: playAtlasHttpClient });
 		const syncRunner = new SyncRunner({ clock: this.clock, syncState: infra.playAtlasSyncState });
-
-		const gameSessionReadonlyStore = new GameSessionReadonlyStore({ dbSignal: infra.dbSignal });
 
 		const gameLibrary: IClientGameLibraryModulePort = new ClientGameLibraryModule({
 			dbSignal: infra.dbSignal,
 			playAtlasClient,
 			clock: this.clock,
 			syncRunner,
-			gameSessionReadonlyStore: gameSessionReadonlyStore,
+			projectionInvalidator: projectionReconciler,
+			gameRecommendationRecordProjectionService,
+			gameVectorProjectionService,
+			instancePreferenceModelService,
 		});
 		await gameLibrary.initializeAsync();
 
 		const gameSession: IClientGameSessionModulePort = new GameSessionModule({
 			clock: this.clock,
 			dbSignal: infra.dbSignal,
-			logService: this.logService,
+			logService: buildLogger("GameSessionModule"),
 			playAtlasClient,
 			syncRunner,
 			gameSessionReadonlyStore,
-			instancePreferenceModelInvalidation:
-				gameLibrary.recommendationEngineModule.instancePreferenceModelService,
+			projectionInvalidator: projectionReconciler,
 		});
 
 		const synchronization = new SynchronizationModule({
@@ -139,16 +175,17 @@ export class ClientCompositionRoot {
 			syncGenresFlow: gameLibrary.syncGenresFlow,
 			syncPlatformsFlow: gameLibrary.syncPlatformsFlow,
 			syncGameSessionsFlow: gameSession.syncGameSessionsFlow,
-			instancePreferenceModelService:
-				gameLibrary.recommendationEngineModule.instancePreferenceModelService,
+			instancePreferenceModelService,
 			storageManager: infra.storageManager,
+			projectionCoordinator: projectionReconciler,
+			playAtlasSyncState: infra.playAtlasSyncState,
 		});
 
 		this.startLibrarySync({ auth, synchronization });
 		this.setupDomainEventListeners({ auth, synchronization });
 
 		this.#playAtlasSSEClient = new PlayAtlasSSEClient({
-			logService: this.logService,
+			logService: buildLogger("PlayAtlasSSEClient"),
 		});
 
 		const bootstrapper = new ClientBootstrapper({
@@ -157,6 +194,10 @@ export class ClientCompositionRoot {
 			playAtlasEventHub: this.#playAtlasSSEClient,
 		});
 		return bootstrapper.bootstrap();
+	};
+
+	private buildHttpClient = (): IHttpClientPort => {
+		return new HttpClient({ url: window.origin });
 	};
 
 	private startLibrarySync = (deps: {
