@@ -5,6 +5,7 @@ export * from "./game-id";
 export * from "./game-session-id";
 export * from "./game-session-status";
 export * from "./genre-id";
+export * from "./job_queue";
 export * from "./platform-id";
 export * from "./playnite-company-id";
 export * from "./playnite-completion-status-id";
