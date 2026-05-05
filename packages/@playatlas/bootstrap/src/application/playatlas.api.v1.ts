@@ -35,6 +35,10 @@ import type {
 } from "@playatlas/game-session/commands";
 import type { IGetAllGameSessionsQueryHandlerPort } from "@playatlas/game-session/queries";
 import type {
+	IClaimNextJobCommandHandler,
+	IEnqueueJobCommandHandler,
+} from "@playatlas/job-queue/commands";
+import type {
 	ILibraryManifestServicePort,
 	IPlayniteSyncServicePort,
 } from "@playatlas/playnite-integration/application";
@@ -95,6 +99,12 @@ export type PlayAtlasApiV1 = {
 		};
 		queries: {
 			getGetAllGameSessionsQueryHandler: () => IGetAllGameSessionsQueryHandlerPort;
+		};
+	};
+	jobQueue: {
+		commands: {
+			getEnqueueJobCommandHandler: () => IEnqueueJobCommandHandler;
+			getClaimNextJobCommandHandler: () => IClaimNextJobCommandHandler;
 		};
 	};
 	getLogService: () => ILogServicePort;

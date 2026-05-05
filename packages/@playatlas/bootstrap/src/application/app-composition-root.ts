@@ -2,7 +2,12 @@ import { makeEventBus } from "@playatlas/common/application";
 import { makeClock, type AppEnvironmentVariables } from "@playatlas/common/infra";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapV1 } from "./bootstrap.service";
-import { makeAuthModule, makeGameLibraryModule, makeSystemModule } from "./modules";
+import {
+	makeAuthModule,
+	makeGameLibraryModule,
+	makeJobQueueModule,
+	makeSystemModule,
+} from "./modules";
 import { makeGameSessionModule } from "./modules/game-session.module";
 import { makeInfraModule } from "./modules/infra.module";
 import type { IInfraModulePort } from "./modules/infra.module.port";
@@ -85,6 +90,8 @@ export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot
 			gameRepository: gameLibrary.getGameRepository(),
 		});
 
+		const jobQueue = makeJobQueueModule({ ...baseDeps });
+
 		return bootstrapV1({
 			backendLogService: logService,
 			eventBus,
@@ -95,6 +102,7 @@ export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot
 				infra,
 				playniteIntegration,
 				system,
+				jobQueue,
 			},
 		});
 	};

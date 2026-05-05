@@ -7,10 +7,11 @@ import type { MakeJobProps, RehydrateJobProps } from "../domain/job.entity.types
 
 type MakeJobPropsWithOptionalId = Omit<
 	MakeJobProps,
-	"id" | "status" | "lastError" | "lockedAt" | "workerId" | "attempts" | "maxAttempts"
+	"id" | "status" | "lastError" | "lockedAt" | "workerId" | "attempts" | "maxAttempts" | "runAt"
 > & {
 	id?: MakeJobProps["id"];
 	maxAttempts?: MakeJobProps["maxAttempts"];
+	runAt?: MakeJobProps["runAt"];
 };
 
 export type IJobFactoryPort = IEntityFactoryPort<
@@ -25,19 +26,21 @@ export type JobFactoryDeps = {
 
 export const makeJobFactory = (deps: JobFactoryDeps): IJobFactoryPort => {
 	const ulid = monotonicFactory();
+	const { clock } = deps;
 
 	return {
 		create: (props) =>
 			makeJob(
 				{
 					...props,
-					id: props.id ?? JobIdParser.fromTrusted(ulid()),
 					status: "queued",
 					lastError: null,
 					lockedAt: null,
 					workerId: null,
 					attempts: 0,
+					id: props.id ?? JobIdParser.fromTrusted(ulid()),
 					maxAttempts: props.maxAttempts ?? 3,
+					runAt: props.runAt ?? clock.now(),
 				},
 				deps,
 			),

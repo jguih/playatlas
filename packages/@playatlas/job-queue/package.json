@@ -6,7 +6,8 @@
 	"exports": {
 		"./application": "./src/application/index.ts",
 		"./domain": "./src/domain/index.ts",
-		"./infra": "./src/infra/index.ts"
+		"./infra": "./src/infra/index.ts",
+		"./commands": "./src/commands/index.ts"
 	},
 	"scripts": {
 		"test": "vitest run",

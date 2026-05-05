@@ -1,132 +1,40 @@
-import { makeEventBus, type ILogServicePort } from "@playatlas/common/application";
+import { makeEventBus } from "@playatlas/common/application";
 import type { AppEnvironmentVariables } from "@playatlas/common/infra";
-import type {
-	Company,
-	CompletionStatus,
-	Game,
-	Genre,
-	Platform,
-	Tag,
-} from "@playatlas/game-library/domain";
-import {
-	makeTestGameFactory,
-	makeTestHorrorScoreEngine,
-	type ITestHorrorScoreEnginePort,
-} from "@playatlas/game-library/testing";
+import { makeTestHorrorScoreEngine } from "@playatlas/game-library/testing";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapV1, type PlayAtlasApiV1 } from "../application";
 import {
 	makeAuthModule,
 	makeGameLibraryModule,
+	makeJobQueueModule,
 	makeSystemModule,
-	type IAuthModulePort,
-	type IGameLibraryModulePort,
-	type IInfraModulePort,
-	type IPlayniteIntegrationModulePort,
-	type ISystemModulePort,
 } from "../application/modules";
 import { makeGameSessionModule } from "../application/modules/game-session.module";
-import type { IGameSessionModulePort } from "../application/modules/game-session.module.port";
 import { makeInfraModule } from "../application/modules/infra.module";
 import { makePlayniteIntegrationModule } from "../application/modules/playnite-integration.module";
-import { makeTestClock, type TestClock } from "./test-clock";
-import { makeTestFactoryModule, type ITestFactoryModulePort } from "./test-factory.module";
+import { makeSeedDataModule } from "./modules/seed-data.module";
+import { makeTestFactoryModule } from "./modules/test-factory.module";
+import { bootstrapTestApiV1 } from "./test-bootstrap.service";
+import { makeTestClock } from "./test-clock";
+import type { TestDoubleServices } from "./test.api.types";
 import type { PlayAtlasTestApiV1 } from "./test.api.v1";
 
 export type TestCompositionRootDeps = {
 	env: AppEnvironmentVariables;
 };
 
-export type TestRoot = {
-	buildAsync: () => Promise<PlayAtlasApiV1>;
-	cleanup: () => Promise<void>;
-	getFactory: () => ITestFactoryModulePort;
-	seedCompany: (company: Company | Company[]) => void;
-	seedGame: (game: Game | Game[]) => void;
-	seedGenre: (genre: Genre | Genre[]) => void;
-	seedPlatform: (platform: Platform | Platform[]) => void;
-	seedCompletionStatus: (completionStatus: CompletionStatus | CompletionStatus[]) => void;
-	seedTags: (tag: Tag | Tag[]) => void;
-	seedGameRelationships: () => void;
-	seedDefaultClassifications: () => void;
-	getGameRelationshipOptions: () => {
-		completionStatusList: CompletionStatus[];
-		companyList: Company[];
-		genreList: Genre[];
-		platformList: Platform[];
-	};
-	testApi: PlayAtlasTestApiV1;
-	resetDbAsync: () => Promise<void>;
+export type ITestRootPort = {
+	buildAsync: () => Promise<{ api: PlayAtlasApiV1; testApi: PlayAtlasTestApiV1 }>;
 };
 
-type Self = {
-	system: ISystemModulePort;
-	infra: IInfraModulePort;
-	gameLibrary: IGameLibraryModulePort;
-	auth: IAuthModulePort;
-	playniteIntegration: IPlayniteIntegrationModulePort;
-	gameSession: IGameSessionModulePort;
-	backendLogService: ILogServicePort;
-	factory: ITestFactoryModulePort;
-	gameRelationshipOptions: {
-		completionStatusList: CompletionStatus[];
-		companyList: Company[];
-		genreList: Genre[];
-		platformList: Platform[];
-		tagList: Tag[];
-	};
-	clock: TestClock;
-	stubs: {
-		scoreEngine: { horrorScoreEngine: ITestHorrorScoreEnginePort };
-	};
-};
-
-export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestRoot => {
-	let self: Self | null = null;
-
-	const withSelf = <T>(fn: (self: Self) => T): T => {
-		if (!self) throw new Error("Test root not built. Call buildAsync() first.");
-		return fn(self);
-	};
-
-	const setupGameFactory = (self: Self) => {
-		const { companyList, completionStatusList, genreList, platformList, tagList } =
-			self.gameRelationshipOptions;
-
-		const completionStatusOptions = completionStatusList.map((c) => c.getId());
-		const companyOptions = companyList.map((c) => c.getId());
-		const genreOptions = genreList.map((g) => g.getId());
-		const platformOptions = platformList.map((p) => p.getId());
-		const tagOptions = tagList.map((t) => t.getId());
-
-		self.factory.setGameFactory(
-			makeTestGameFactory({
-				companyOptions,
-				completionStatusOptions,
-				genreOptions,
-				platformOptions,
-				tagOptions,
-				gameFactory: self.gameLibrary.getGameFactory(),
-				gameMapper: self.gameLibrary.getGameMapper(),
-			}),
-		);
-	};
-
-	const initEnvironmentAsync = async (self: Self) => {
-		self.backendLogService.info("Initializing environment");
-		await self.infra.initEnvironment();
-		self.backendLogService.info("Initializing database");
-		await self.infra.initDb();
-		await self.playniteIntegration.getLibraryManifestService().write();
-	};
-
-	const buildAsync = async (): Promise<PlayAtlasApiV1> => {
+export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): ITestRootPort => {
+	const _build_base_deps = () => {
 		const system = makeSystemModule({ env });
 
 		const logServiceFactory = makeLogServiceFactory({
 			getCurrentLogLevel: () => system.getSystemConfig().getLogLevel(),
 		});
-		const backendLogService = logServiceFactory.build("SvelteBackend");
+		const logService = logServiceFactory.build("SvelteBackend");
 
 		const eventBus = makeEventBus({
 			logService: logServiceFactory.build("EventBus"),
@@ -134,15 +42,30 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 
 		const clock = makeTestClock();
 
+		return { system, logServiceFactory, logService, eventBus, clock };
+	};
+
+	const _build_test_double_services = (): TestDoubleServices => {
+		const testHorrorScoreEngine = makeTestHorrorScoreEngine();
+
+		return {
+			gameLibrary: { scoreEngine: { horror: testHorrorScoreEngine } },
+		};
+	};
+
+	const buildAsync: ITestRootPort["buildAsync"] = async () => {
+		const { clock, eventBus, logService, logServiceFactory, system } = _build_base_deps();
+		const testDoubleServices = _build_test_double_services();
+
 		const infra = makeInfraModule({
 			logServiceFactory,
 			envService: system.getEnvService(),
 			systemConfig: system.getSystemConfig(),
 		});
+		await infra.initEnvironment();
+		await infra.initDb();
 
 		const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus, clock };
-
-		const testHorrorScoreEngine = makeTestHorrorScoreEngine();
 
 		const gameLibrary = makeGameLibraryModule({
 			...baseDeps,
@@ -150,7 +73,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			systemConfig: system.getSystemConfig(),
 			scoreEngine: {
 				engineOverride: {
-					HORROR: testHorrorScoreEngine,
+					HORROR: testDoubleServices.gameLibrary.scoreEngine.horror,
 				},
 			},
 		});
@@ -160,7 +83,7 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			signatureService: infra.getSignatureService(),
 		});
 
-		const factory = makeTestFactoryModule({
+		const testFactory = makeTestFactoryModule({
 			companyFactory: gameLibrary.getCompanyFactory(),
 			completionStatusFactory: gameLibrary.getCompletionStatusFactory(),
 			platformFactory: gameLibrary.getPlatformFactory(),
@@ -168,7 +91,10 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			tagFactory: gameLibrary.getTagFactory(),
 			extensionRegistrationFactory: auth.getExtensionRegistrationFactory(),
 			clock,
+			gameFactory: gameLibrary.getGameFactory(),
+			gameMapper: gameLibrary.getGameMapper(),
 		});
+		testFactory.init();
 
 		const playniteIntegration = makePlayniteIntegrationModule({
 			...baseDeps,
@@ -178,40 +104,19 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 			gameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory(),
 			gameLibraryUnitOfWork: gameLibrary.getGameLibraryUnitOfWork(),
 		});
+		await playniteIntegration.getLibraryManifestService().write();
 
 		const gameSession = makeGameSessionModule({
 			...baseDeps,
 			gameRepository: gameLibrary.getGameRepository(),
 		});
 
-		self = {
-			auth,
-			backendLogService,
-			gameLibrary,
-			gameSession,
-			infra,
-			playniteIntegration,
-			system,
-			factory,
-			gameRelationshipOptions: {
-				completionStatusList: factory.getCompletionStatusFactory().buildDefaultList(),
-				companyList: factory.getCompanyFactory().buildList(200),
-				genreList: factory.getGenreFactory().buildList(200),
-				platformList: factory.getPlatformFactory().buildList(30),
-				tagList: factory.getTagFactory().buildList(1000),
-			},
-			clock,
-			stubs: {
-				scoreEngine: { horrorScoreEngine: testHorrorScoreEngine },
-			},
-		};
+		const jobQueue = makeJobQueueModule({ ...baseDeps });
 
-		setupGameFactory(self);
+		const seedData = makeSeedDataModule({ gameLibrary });
 
-		await initEnvironmentAsync(self);
-
-		return bootstrapV1({
-			backendLogService,
+		const api = bootstrapV1({
+			backendLogService: logService,
 			eventBus,
 			modules: {
 				auth,
@@ -220,123 +125,28 @@ export const makeTestCompositionRoot = ({ env }: TestCompositionRootDeps): TestR
 				infra,
 				playniteIntegration,
 				system,
+				jobQueue,
 			},
 		});
-	};
 
-	const cleanup = async () => {
-		await withSelf(async ({ system, backendLogService, infra }) => {
-			const dataDir = system.getEnvService().getDataDir();
-			backendLogService.warning(`Deleting integration test data dir at ${dataDir}`);
-			await infra.getFsService().rm(dataDir, { force: true, recursive: true });
+		const testApi = bootstrapTestApiV1({
+			backendLogService: logService,
+			eventBus,
+			modules: {
+				gameLibrary,
+				infra,
+				system,
+				seedData,
+				testFactory,
+			},
+			clock,
+			testDoubleServices,
 		});
-	};
 
-	const seedCompany = (company: Company | Company[]) => {
-		withSelf(({ gameLibrary }) => {
-			gameLibrary.getCompanyRepository().upsert(company);
-		});
-	};
-
-	const seedGame = (game: Game | Game[]) => {
-		withSelf(({ gameLibrary }) => {
-			gameLibrary.getGameRepository().upsert(game);
-		});
-	};
-
-	const seedGenre = (genre: Genre | Genre[]) => {
-		withSelf(({ gameLibrary }) => {
-			gameLibrary.getGenreRepository().upsert(genre);
-		});
-	};
-
-	const seedPlatform = (platform: Platform | Platform[]) => {
-		withSelf(({ gameLibrary }) => {
-			gameLibrary.getPlatformRepository().upsert(platform);
-		});
-	};
-
-	const seedCompletionStatus = (completionStatus: CompletionStatus | CompletionStatus[]) => {
-		withSelf(({ gameLibrary }) => {
-			gameLibrary.getCompletionStatusRepository().upsert(completionStatus);
-		});
-	};
-
-	const seedTags = (tag: Tag | Tag[]) => {
-		withSelf(({ gameLibrary }) => {
-			gameLibrary.getTagRepository().upsert(tag);
-		});
-	};
-
-	const seedGameRelationships = () => {
-		withSelf(({ gameLibrary, gameRelationshipOptions }) => {
-			const { companyList, completionStatusList, genreList, platformList, tagList } =
-				gameRelationshipOptions;
-
-			gameLibrary.getCompletionStatusRepository().upsert(completionStatusList);
-			gameLibrary.getCompanyRepository().upsert(companyList);
-			gameLibrary.getGenreRepository().upsert(genreList);
-			gameLibrary.getPlatformRepository().upsert(platformList);
-			gameLibrary.getTagRepository().upsert(tagList);
-		});
-	};
-
-	const seedDefaultClassifications = () => {
-		withSelf(({ gameLibrary }) => {
-			gameLibrary.scoreEngine.commands
-				.getApplyDefaultClassificationsCommandHandler()
-				.execute({ type: "default" });
-		});
-	};
-
-	const resetDbAsync = async () => {
-		await withSelf(async ({ infra }) => {
-			infra.getDb().close();
-			await infra.initDb();
-		});
+		return { api, testApi };
 	};
 
 	return {
 		buildAsync,
-		getFactory: () => {
-			return withSelf(({ factory }) => factory);
-		},
-		cleanup,
-		seedCompany,
-		seedGame,
-		seedGenre,
-		seedPlatform,
-		seedCompletionStatus,
-		seedTags,
-		seedGameRelationships,
-		seedDefaultClassifications,
-		getGameRelationshipOptions: () => {
-			return withSelf(({ gameRelationshipOptions }) => gameRelationshipOptions);
-		},
-		resetDbAsync,
-		testApi: {
-			getClock: () => withSelf(({ clock }) => clock),
-			gameLibrary: {
-				commands: {
-					getApplyDefaultClassificationsCommandHandler: () => {
-						return withSelf(({ gameLibrary }) =>
-							gameLibrary.scoreEngine.commands.getApplyDefaultClassificationsCommandHandler(),
-						);
-					},
-				},
-				scoreEngine: {
-					getScoreBreakdownNormalizer: () =>
-						withSelf(({ gameLibrary }) => gameLibrary.scoreEngine.getScoreBreakdownNormalizer()),
-					getHorrorScoreEngine: () => withSelf(({ stubs }) => stubs.scoreEngine.horrorScoreEngine),
-
-					evidenceExtractors: {
-						getRunBasedEvidenceExtractor: () =>
-							withSelf(({ gameLibrary }) =>
-								gameLibrary.scoreEngine.evidenceExtractors.getRunBasedEvidenceExtractor(),
-							),
-					},
-				},
-			},
-		},
 	};
 };
