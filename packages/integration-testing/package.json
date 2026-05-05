@@ -21,6 +21,7 @@
 		"@playatlas/game-session": "workspace:*",
 		"@playatlas/playnite-integration": "workspace:*",
 		"@playatlas/system": "workspace:*",
+		"@playatlas/job-queue": "workspace:*",
 		"zod": "catalog:",
 		"sharp": "catalog:",
 		"ulid": "catalog:"

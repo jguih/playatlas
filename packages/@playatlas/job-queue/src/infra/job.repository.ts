@@ -44,6 +44,7 @@ export const makeJobRepository = ({
 	const TABLE_NAME = "job" as const;
 	const COLUMNS: (keyof JobModel)[] = [
 		"Id",
+		"Type",
 		"Payload",
 		"Status",
 		"Attempts",
