@@ -1,8 +1,15 @@
 import { ISODateSchema } from "@playatlas/common/common";
-import { jobIdSchema, jobStatuses, jobTypes, workerIdSchema } from "@playatlas/common/domain";
+import {
+	jobIdSchema,
+	JobStatus,
+	jobStatuses,
+	jobTypes,
+	workerIdSchema,
+} from "@playatlas/common/domain";
 import { makeBaseRepository, type BaseRepositoryDeps } from "@playatlas/common/infra";
 import z from "zod";
 import type { IJobMapperPort } from "../application/job.mapper";
+import { JOB_QUEUE_LOCK_TIMEOUT_MS } from "../domain/job.constants";
 import type { IJobRepositoryPort } from "./job.repository.port";
 
 export const jobSchema = z.object({
@@ -78,5 +85,76 @@ export const makeJobRepository = ({
 		base._update(job);
 	};
 
-	return { ...base.public, add, upsert, update };
+	const claimNext: IJobRepositoryPort["claimNext"] = ({ workerId, now }) => {
+		return base.run(({ db }) => {
+			const staleCutoff = new Date(now.getTime() - JOB_QUEUE_LOCK_TIMEOUT_MS).toISOString();
+			const nowString = now.toISOString();
+			const query = `
+				UPDATE job
+				SET
+					Status = ?,
+					LockedAt = ?,
+					WorkerId = ?,
+					Attempts = Attempts + 1,
+					LastError = NULL,
+					LastUpdatedAt = ?
+				WHERE Id = (
+					SELECT Id
+					FROM job
+					WHERE
+						Status = ?
+						AND RunAt <= ?
+						AND DeletedAt IS NULL
+						AND (
+							LockedAt IS NULL
+							OR LockedAt <= ?
+						)
+					ORDER BY Priority DESC, CreatedAt ASC
+					LIMIT 1
+				)
+				AND Status = ?;
+			`;
+
+			const stmt = db.prepare(query);
+			const result = stmt.run(
+				JobStatus.processing,
+				nowString,
+				workerId,
+				nowString,
+				JobStatus.queued,
+				nowString,
+				staleCutoff,
+				JobStatus.queued,
+			);
+
+			if (result.changes === 0) {
+				return null;
+			}
+
+			const getJobQuery = `
+				SELECT * 
+				FROM job 
+				WHERE WorkerId = ? 
+					AND Status = ?
+				ORDER BY LockedAt DESC LIMIT 1;
+			`;
+			const record = db.prepare(getJobQuery).get(workerId, JobStatus.processing);
+
+			if (!record) {
+				return null;
+			}
+
+			const { success, data: model, error } = jobSchema.safeParse(record);
+
+			if (!success) {
+				throw base.buildValidationError(error, { entity: "job", operation: "load" });
+			}
+
+			logService.debug(`Query returned record ${model.Id}`);
+
+			return jobMapper.toDomain(model);
+		}, `claimNext()`);
+	};
+
+	return { ...base.public, add, upsert, update, claimNext };
 };

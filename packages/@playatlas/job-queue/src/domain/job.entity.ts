@@ -7,6 +7,11 @@ import {
 	type JobType,
 	type WorkerId,
 } from "@playatlas/common/domain";
+import {
+	JOB_QUEUE_BACKOFF_DELAY_MS,
+	JOB_QUEUE_LOCK_TIMEOUT_MS,
+	JOB_QUEUE_MAX_BACKOFF_DELAY_MS,
+} from "./job.constants";
 import type { BuildJobDeps, MakeJobProps, RehydrateJobProps } from "./job.entity.types";
 
 export type Job = BaseEntity<JobId> &
@@ -29,9 +34,6 @@ export type Job = BaseEntity<JobId> &
 
 export const makeJob = (props: MakeJobProps, { clock }: BuildJobDeps) => {
 	const now = clock.now();
-	const LOCK_TIMEOUT_MS = 5 * clock.MINUTE_MS;
-	const BACKOFF_DELAY_MS = 5 * clock.MINUTE_MS;
-	const MAX_BACKOFF_DELAY_MS = 60 * clock.MINUTE_MS;
 
 	const _id = props.id;
 	const _type = props.type;
@@ -81,13 +83,16 @@ export const makeJob = (props: MakeJobProps, { clock }: BuildJobDeps) => {
 	};
 
 	const _has_stale_lock = () =>
-		_locked_at && clock.now().getTime() - _locked_at.getTime() >= LOCK_TIMEOUT_MS;
+		_locked_at && clock.now().getTime() - _locked_at.getTime() >= JOB_QUEUE_LOCK_TIMEOUT_MS;
 
 	const _is_runnable = () =>
 		_status === "queued" && _run_at <= clock.now() && (!_locked_at || _has_stale_lock());
 
 	const _compute_backoff_delay = (attempts: number) =>
-		Math.min(BACKOFF_DELAY_MS * Math.pow(2, attempts - 1), MAX_BACKOFF_DELAY_MS);
+		Math.min(
+			JOB_QUEUE_BACKOFF_DELAY_MS * Math.pow(2, attempts - 1),
+			JOB_QUEUE_MAX_BACKOFF_DELAY_MS,
+		);
 
 	const _backoff = (attempts: number): Date => {
 		const delay = _compute_backoff_delay(attempts);

@@ -1,5 +1,6 @@
 export * from "./base-entity";
 export * from "./base-entity.types";
+export * from "./clock.constants";
 export type * from "./disposable";
 export type * from "./domain-filter.types";
 export * from "./entity-relationship";
