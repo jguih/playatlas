@@ -184,6 +184,9 @@ describe("Job Aggregate", () => {
 		// Act
 		job.tryClaim(workerId);
 		job.fail("error");
+
+		clock.now.mockReturnValue(job.getRunAt());
+
 		job.tryClaim(workerId);
 
 		// Assert
@@ -203,9 +206,72 @@ describe("Job Aggregate", () => {
 		// Act
 		job.tryClaim(workerId);
 		job.fail("error");
+		// simulate time passing
+		const nextRunAt = job.getRunAt();
+		clock.now.mockReturnValue(nextRunAt);
+		// second attempt
 		job.tryClaim(workerId);
 
 		// Assert
 		expect(job.getAttempts()).toBe(2);
+	});
+
+	it("does not allow retry before backoff expires", () => {
+		// Arrange
+		const job = factory.create({
+			payload: "{}",
+			priority: 1,
+			runAt: clock.now(),
+			type: "game-library-sync",
+		});
+		const workerId = WorkerIdParser.fromTrusted(crypto.randomUUID());
+
+		// Act
+		job.tryClaim(workerId);
+		job.fail("error");
+		const claimed = job.tryClaim(workerId);
+
+		// Assert
+		expect(claimed).toBe(false);
+	});
+
+	it("increases backoff delay with each attempt", () => {
+		// Arrange
+		const job = factory.create({
+			payload: "{}",
+			priority: 1,
+			runAt: clock.now(),
+			type: "game-library-sync",
+			maxAttempts: 4,
+		});
+		const workerId = WorkerIdParser.fromTrusted(crypto.randomUUID());
+		const baseTime = clock.now().getTime();
+
+		// --- Attempt 1 ---
+		job.tryClaim(workerId);
+		job.fail("error");
+		const runAt1 = job.getRunAt().getTime();
+
+		clock.now.mockReturnValue(new Date(runAt1));
+
+		// --- Attempt 2 ---
+		job.tryClaim(workerId);
+		job.fail("error");
+		const runAt2 = job.getRunAt().getTime();
+
+		clock.now.mockReturnValue(new Date(runAt2));
+
+		// --- Attempt 3 ---
+		job.tryClaim(workerId);
+		job.fail("error");
+		const runAt3 = job.getRunAt().getTime();
+
+		const delay1 = runAt1 - baseTime;
+		const delay2 = runAt2 - runAt1;
+		const delay3 = runAt3 - runAt2;
+
+		// Assert
+		expect(delay2).toBeGreaterThan(delay1);
+		expect(delay3).toBeGreaterThan(delay2);
 	});
 });

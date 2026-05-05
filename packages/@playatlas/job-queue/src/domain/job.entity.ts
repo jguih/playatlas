@@ -29,6 +29,9 @@ export type Job = BaseEntity<JobId> &
 
 export const makeJob = (props: MakeJobProps, { clock }: BuildJobDeps) => {
 	const now = clock.now();
+	const LOCK_TIMEOUT_MS = 5 * clock.MINUTE_MS;
+	const BACKOFF_DELAY_MS = 5 * clock.MINUTE_MS;
+	const MAX_BACKOFF_DELAY_MS = 60 * clock.MINUTE_MS;
 
 	const _id = props.id;
 	const _type = props.type;
@@ -77,10 +80,22 @@ export const makeJob = (props: MakeJobProps, { clock }: BuildJobDeps) => {
 		_worker_id = null;
 	};
 
+	const _has_stale_lock = () =>
+		_locked_at && clock.now().getTime() - _locked_at.getTime() >= LOCK_TIMEOUT_MS;
+
+	const _is_runnable = () =>
+		_status === "queued" && _run_at <= clock.now() && (!_locked_at || _has_stale_lock());
+
+	const _compute_backoff_delay = (attempts: number) =>
+		Math.min(BACKOFF_DELAY_MS * Math.pow(2, attempts - 1), MAX_BACKOFF_DELAY_MS);
+
+	const _backoff = (attempts: number): Date => {
+		const delay = _compute_backoff_delay(attempts);
+		return new Date(clock.now().getTime() + delay);
+	};
+
 	const tryClaim = (workerId: WorkerId): boolean => {
-		if (_status !== "queued") return false;
-		if (_locked_at) return false; // TODO: check stale lock
-		if (_run_at > clock.now()) return false;
+		if (!_is_runnable()) return false;
 
 		_status = "processing";
 		_locked_at = clock.now();
@@ -117,7 +132,7 @@ export const makeJob = (props: MakeJobProps, { clock }: BuildJobDeps) => {
 			_status = "failed";
 		} else {
 			_status = "queued";
-			_run_at = clock.now(); // TODO: add backoff
+			_run_at = _backoff(_attempts);
 		}
 
 		_release_lock();
