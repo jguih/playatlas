@@ -6,14 +6,14 @@ import {
 } from "@playatlas/playnite-integration/commands";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { recordDomainEvents } from "../test.lib";
-import { api, factory, root } from "../vitest.global.setup";
+import { api, testApi } from "../vitest.global.setup";
 
 describe("Game Library Sync", { timeout: 20_000 }, () => {
 	let unsubscribe: () => void;
 	let events: DomainEvent[];
 
 	beforeEach(() => {
-		root.seedDefaultClassifications();
+		testApi.seed.seedDefaultClassifications();
 		({ events, unsubscribe } = recordDomainEvents());
 	});
 
@@ -24,7 +24,7 @@ describe("Game Library Sync", { timeout: 20_000 }, () => {
 	it("adds games", async () => {
 		// Arrange
 		const sampleSize = 5000;
-		const addedItems = factory.getSyncGameRequestDtoFactory().buildList(sampleSize);
+		const addedItems = testApi.factory.getSyncGameRequestDtoFactory().buildList(sampleSize);
 
 		const requestDto: SyncGamesRequestDto = {
 			AddedItems: addedItems,
@@ -60,7 +60,7 @@ describe("Game Library Sync", { timeout: 20_000 }, () => {
 
 	it("removes games", async () => {
 		// Arrange
-		const initialItems = factory.getSyncGameRequestDtoFactory().buildList(2000);
+		const initialItems = testApi.factory.getSyncGameRequestDtoFactory().buildList(2000);
 		const removedItems = faker.helpers.arrayElements(initialItems, 500);
 
 		const seedCommand = makeSyncGamesCommand({
@@ -109,10 +109,10 @@ describe("Game Library Sync", { timeout: 20_000 }, () => {
 	it("updates games", async () => {
 		// Arrange
 		const genreOptions = faker.helpers.arrayElements(
-			factory.getSyncGameRequestDtoFactory().genreOptions,
+			testApi.factory.getSyncGameRequestDtoFactory().genreOptions,
 			{ min: 3, max: 3 },
 		);
-		const initialSyncItems = factory.getSyncGameRequestDtoFactory().buildList(2000);
+		const initialSyncItems = testApi.factory.getSyncGameRequestDtoFactory().buildList(2000);
 		const itemsToUpdate = faker.helpers.arrayElements(initialSyncItems, 500);
 
 		const updatedItems = itemsToUpdate.map((game) => ({

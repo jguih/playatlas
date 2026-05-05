@@ -1,25 +1,25 @@
 import { faker } from "@faker-js/faker";
 import { describe, expect, it } from "vitest";
 import { isCursorAfter } from "../../test.lib";
-import { api, factory, root } from "../../vitest.global.setup";
+import { api, testApi } from "../../vitest.global.setup";
 
 describe("Game Library Synchronization / Platform", () => {
 	it("Sync cursor invariant: correctly returns updated items across distinct timestamps", () => {
 		// Arrange
-		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
-		const platforms = factory.getPlatformFactory().buildList(500);
-		root.seedPlatform(platforms);
+		testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const platforms = testApi.factory.getPlatformFactory().buildList(500);
+		testApi.seed.seedPlatform(platforms);
 
 		// Act
 		const firstResult = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute();
 		const firstData = firstResult.data;
 		const firstIds = new Set(firstData.map((g) => g.Id));
 
-		root.testApi.getClock().advance(1000);
-		const newPlatforms = factory
+		testApi.getClock().advance(1000);
+		const newPlatforms = testApi.factory
 			.getPlatformFactory()
 			.buildList(500, { name: `${faker.lorem.words({ min: 1, max: 3 })} (New)` });
-		root.seedPlatform(newPlatforms);
+		testApi.seed.seedPlatform(newPlatforms);
 
 		const secondResult = api.gameLibrary.queries
 			.getGetAllPlatformsQueryHandler()

@@ -1,20 +1,20 @@
 import { faker } from "@faker-js/faker";
 import { PlayniteCompletionStatusIdParser } from "@playatlas/common/domain";
 import { describe, expect, it } from "vitest";
-import { api, factory, root } from "../../vitest.global.setup";
+import { api, testApi } from "../../vitest.global.setup";
 
 describe("Game Library Synchronization / Completion Status", () => {
 	it("Sync cursor invariant: correctly returns updated items across distinct timestamps", async () => {
 		// Arrange
-		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
+		testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
 
-		const completionStatuses = factory.getCompletionStatusFactory().buildList(50);
-		root.seedCompletionStatus(completionStatuses);
+		const completionStatuses = testApi.factory.getCompletionStatusFactory().buildList(50);
+		testApi.seed.seedCompletionStatus(completionStatuses);
 		const firstQueryResult = api.gameLibrary.queries
 			.getGetAllCompletionStatusesQueryHandler()
 			.execute();
 
-		root.testApi.getClock().advance(1000);
+		testApi.getClock().advance(1000);
 
 		const itemsToUpdate = faker.helpers.arrayElements(completionStatuses, 20);
 		itemsToUpdate.forEach((i) =>
@@ -23,7 +23,7 @@ describe("Game Library Synchronization / Completion Status", () => {
 				playniteId: PlayniteCompletionStatusIdParser.fromTrusted(`${i.getPlayniteId()}-(updated)`),
 			}),
 		);
-		root.seedCompletionStatus(itemsToUpdate);
+		testApi.seed.seedCompletionStatus(itemsToUpdate);
 
 		// Act
 		const queryResult = api.gameLibrary.queries

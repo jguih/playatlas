@@ -1,12 +1,12 @@
 import type { CompanyResponseDto } from "@playatlas/game-library/dtos";
 import { describe, expect, it } from "vitest";
-import { api, factory, root } from "../vitest.global.setup";
+import { api, testApi } from "../vitest.global.setup";
 
 describe("Game Library / Company", () => {
 	it("persists a company", () => {
 		// Arrange
-		const company = factory.getCompanyFactory().build();
-		root.seedCompany(company);
+		const company = testApi.factory.getCompanyFactory().build();
+		testApi.seed.seedCompany(company);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllCompaniesQueryHandler().execute();

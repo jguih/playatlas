@@ -11,13 +11,13 @@ import type { DomainEvent } from "@playatlas/common/application";
 import { ExtensionRegistrationIdParser } from "@playatlas/common/domain";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { recordDomainEvents } from "../test.lib";
-import { api, factory } from "../vitest.global.setup";
+import { api, testApi } from "../vitest.global.setup";
 
 const buildRegisterCommand = (): {
 	registration: ExtensionRegistration;
 	command: RegisterExtensionCommand;
 } => {
-	const registration = factory.getExtensionRegistrationFactory().build();
+	const registration = testApi.factory.getExtensionRegistrationFactory().build();
 	const command: RegisterExtensionCommand = {
 		extensionId: registration.getExtensionId(),
 		publicKey: registration.getPublicKey(),

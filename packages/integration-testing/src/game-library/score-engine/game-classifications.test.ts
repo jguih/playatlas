@@ -6,13 +6,15 @@ import {
 	type SyncGamesRequestDtoItem,
 } from "@playatlas/playnite-integration/commands";
 import { beforeEach, describe, expect, it } from "vitest";
-import { api, factory, root } from "../../vitest.global.setup";
+import { api, testApi } from "../../vitest.global.setup";
 
 describe("Game Library / Score Engine Game Classifications", () => {
 	const syncGamesAsync = async (props: { items?: SyncGamesRequestDtoItem[] } = {}) => {
 		const { items } = props;
 		const sampleSize = items ? items.length : 2000;
-		const addedItems = items ? items : factory.getSyncGameRequestDtoFactory().buildList(sampleSize);
+		const addedItems = items
+			? items
+			: testApi.factory.getSyncGameRequestDtoFactory().buildList(sampleSize);
 
 		const requestDto: SyncGamesRequestDto = {
 			AddedItems: addedItems,
@@ -31,7 +33,7 @@ describe("Game Library / Score Engine Game Classifications", () => {
 	};
 
 	beforeEach(() => {
-		root.seedDefaultClassifications();
+		testApi.seed.seedDefaultClassifications();
 	});
 
 	it("creates one classification per game per engine", async () => {
@@ -50,7 +52,7 @@ describe("Game Library / Score Engine Game Classifications", () => {
 	});
 
 	it("is idempotent when nothing changes", async () => {
-		const syncItems = factory.getSyncGameRequestDtoFactory().buildList(2000);
+		const syncItems = testApi.factory.getSyncGameRequestDtoFactory().buildList(2000);
 		await syncGamesAsync({ items: syncItems });
 
 		const firstQueryResult = api.gameLibrary.scoreEngine.queries
@@ -71,8 +73,8 @@ describe("Game Library / Score Engine Game Classifications", () => {
 		// Arrange
 		const engineV1: ScoreEngineVersion = "v1.0.0";
 		const engineV2: ScoreEngineVersion = "v2.0.0";
-		const syncItems = root.getFactory().getSyncGameRequestDtoFactory().buildList(1);
-		const horrorEngine = root.testApi.gameLibrary.scoreEngine.getHorrorScoreEngine();
+		const syncItems = testApi.factory.getSyncGameRequestDtoFactory().buildList(1);
+		const horrorEngine = testApi.gameLibrary.scoreEngine.getHorrorScoreEngine();
 
 		horrorEngine.setVersion(engineV1);
 		horrorEngine.setScore(10);

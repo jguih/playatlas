@@ -7,7 +7,7 @@ import {
 } from "@playatlas/game-library/dtos";
 import { describe, expect, it } from "vitest";
 import z from "zod";
-import { root } from "../../vitest.global.setup";
+import { testApi } from "../../vitest.global.setup";
 
 const envelopeJson = (version: string, payload: unknown) =>
 	JSON.stringify({ breakdownSchemaVersion: version, payload });
@@ -25,12 +25,12 @@ describe("Game Library /  Score Engine Breakdown Normalizer", () => {
 			normalizedTotal: 0,
 			tier: "none",
 		};
-		const breakdown = root.testApi.gameLibrary.scoreEngine
+		const breakdown = testApi.gameLibrary.scoreEngine
 			.getHorrorScoreEngine()
 			.serializeBreakdown(rawBreakdown);
 
 		// Act
-		const result = root.testApi.gameLibrary.scoreEngine
+		const result = testApi.gameLibrary.scoreEngine
 			.getScoreBreakdownNormalizer()
 			.normalize(breakdown);
 		const resultBreakdown = result.type === "normalized" ? result.breakdown : null;
@@ -57,7 +57,7 @@ describe("Game Library /  Score Engine Breakdown Normalizer", () => {
 		};
 		const breakdown = envelopeJson(LATEST_SCORE_BREAKDOWN_SCHEMA_VERSION, rawBreakdown);
 
-		const normalizer = root.testApi.gameLibrary.scoreEngine.getScoreBreakdownNormalizer();
+		const normalizer = testApi.gameLibrary.scoreEngine.getScoreBreakdownNormalizer();
 
 		// Act
 		const first = normalizer.normalize(breakdown);
@@ -73,7 +73,7 @@ describe("Game Library /  Score Engine Breakdown Normalizer", () => {
 
 	it("throws on invalid JSON", () => {
 		expect(() =>
-			root.testApi.gameLibrary.scoreEngine.getScoreBreakdownNormalizer().normalize("not json"),
+			testApi.gameLibrary.scoreEngine.getScoreBreakdownNormalizer().normalize("not json"),
 		).toThrow();
 	});
 
@@ -83,7 +83,7 @@ describe("Game Library /  Score Engine Breakdown Normalizer", () => {
 
 		// Assert
 		expect(() =>
-			root.testApi.gameLibrary.scoreEngine.getScoreBreakdownNormalizer().normalize(envelope),
+			testApi.gameLibrary.scoreEngine.getScoreBreakdownNormalizer().normalize(envelope),
 		).toThrow();
 	});
 
@@ -92,7 +92,7 @@ describe("Game Library /  Score Engine Breakdown Normalizer", () => {
 		const payload = { invalid: "payload" };
 
 		// Act
-		const result = root.testApi.gameLibrary.scoreEngine
+		const result = testApi.gameLibrary.scoreEngine
 			.getScoreBreakdownNormalizer()
 			.normalize(envelopeJson("unknown_version", payload));
 		const resultPayload = result.type === "raw" ? result.payload : null;
@@ -106,7 +106,7 @@ describe("Game Library /  Score Engine Breakdown Normalizer", () => {
 	it("falls back to raw when payload validation fails", () => {
 		const invalidPayload = { totally: "wrong" };
 
-		const result = root.testApi.gameLibrary.scoreEngine
+		const result = testApi.gameLibrary.scoreEngine
 			.getScoreBreakdownNormalizer()
 			.normalize(envelopeJson(LATEST_SCORE_BREAKDOWN_SCHEMA_VERSION, invalidPayload));
 		const resultPayload = result.type === "raw" ? result.payload : null;
@@ -127,7 +127,7 @@ describe("Game Library /  Score Engine Breakdown Normalizer", () => {
 		};
 
 		// Act
-		const result = root.testApi.gameLibrary.scoreEngine
+		const result = testApi.gameLibrary.scoreEngine
 			.getScoreBreakdownNormalizer()
 			.normalize(envelopeJson(SCORE_BREAKDOWN_SCHEMA_V1_0_0, payload));
 		const resultPayload = result.type === "normalized" ? result.breakdown : null;

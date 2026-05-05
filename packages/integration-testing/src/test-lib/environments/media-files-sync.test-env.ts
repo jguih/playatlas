@@ -8,7 +8,7 @@ import { once } from "events";
 import { createReadStream, openAsBlob } from "fs";
 import * as fsAsync from "fs/promises";
 import { join } from "path";
-import { api, factory, fixturesDirPath, root } from "../../vitest.global.setup";
+import { api, fixturesDirPath, testApi } from "../../vitest.global.setup";
 
 export type MediaFilesSyncTestEnvironment = {
 	game: Game;
@@ -113,9 +113,9 @@ export class MediaFilesSyncTestEnvironmentBuilder {
 
 	buildAsync = async (): Promise<MediaFilesSyncTestEnvironment> => {
 		const gameId = PlayniteGameIdParser.fromTrusted(faker.string.uuid());
-		const snapshot = factory.getGameFactory().buildPlayniteSnapshot({ id: gameId });
-		const game = factory.getGameFactory().build({ playniteSnapshot: snapshot });
-		root.seedGame(game);
+		const snapshot = testApi.factory.getGameFactory().buildPlayniteSnapshot({ id: gameId });
+		const game = testApi.factory.getGameFactory().build({ playniteSnapshot: snapshot });
+		testApi.seed.seedGame(game);
 
 		const gameContext = api.gameLibrary.getGameAssetsContextFactory().buildContext(gameId);
 

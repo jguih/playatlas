@@ -1,13 +1,13 @@
 import { faker } from "@faker-js/faker";
 import { describe, expect, it } from "vitest";
 import { isCursorAfter } from "../test.lib";
-import { api, factory, root } from "../vitest.global.setup";
+import { api, testApi } from "../vitest.global.setup";
 
 describe("Game Library / Genre", () => {
 	it("persists a new genre", () => {
 		// Arrange
-		const genre = factory.getGenreFactory().build();
-		root.seedGenre(genre);
+		const genre = testApi.factory.getGenreFactory().build();
+		testApi.seed.seedGenre(genre);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGenresQueryHandler().execute();
@@ -25,8 +25,8 @@ describe("Game Library / Genre", () => {
 	it("returns a big list of genres", () => {
 		// Arrange
 		const newGenresCount = 3000;
-		const newGenres = factory.getGenreFactory().buildList(newGenresCount);
-		root.seedGenre(newGenres);
+		const newGenres = testApi.factory.getGenreFactory().buildList(newGenresCount);
+		testApi.seed.seedGenre(newGenres);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGenresQueryHandler().execute();
@@ -38,20 +38,20 @@ describe("Game Library / Genre", () => {
 
 	it("ENFORCES sync cursor invariant: ORDER BY LastUpdatedAt ASC, Id ASC", () => {
 		// Arrange
-		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
-		const genres = factory.getGenreFactory().buildList(500);
-		root.seedGenre(genres);
+		testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
+		const genres = testApi.factory.getGenreFactory().buildList(500);
+		testApi.seed.seedGenre(genres);
 
 		// Act
 		const firstResult = api.gameLibrary.queries.getGetAllGenresQueryHandler().execute();
 		const firstData = firstResult.data;
 		const firstIds = new Set(firstData.map((g) => g.Id));
 
-		root.testApi.getClock().advance(1000);
-		const newGenres = factory
+		testApi.getClock().advance(1000);
+		const newGenres = testApi.factory
 			.getGenreFactory()
 			.buildList(500, { name: `${faker.book.genre()} (New)` });
-		root.seedGenre(newGenres);
+		testApi.seed.seedGenre(newGenres);
 
 		const secondResult = api.gameLibrary.queries
 			.getGetAllGenresQueryHandler()

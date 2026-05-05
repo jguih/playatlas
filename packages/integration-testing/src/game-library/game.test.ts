@@ -2,21 +2,21 @@ import { faker } from "@faker-js/faker";
 import { GameIdParser, PlayniteGameIdParser } from "@playatlas/common/domain";
 import { makeSyncGamesCommand } from "@playatlas/playnite-integration/commands";
 import { beforeEach, describe, expect, it } from "vitest";
-import { api, factory, root } from "../vitest.global.setup";
+import { api, testApi } from "../vitest.global.setup";
 
 describe("Game Library / Game", { timeout: 20_000 }, () => {
 	beforeEach(() => {
-		root.seedGameRelationships();
-		root.seedDefaultClassifications();
+		testApi.seed.seedGameRelationships(testApi.data.getGameRelationshipOptions());
+		testApi.seed.seedDefaultClassifications();
 	});
 
 	it("persists games", () => {
 		// Arrange
-		const games = factory.getGameFactory().buildList(10);
+		const games = testApi.factory.getGameFactory().buildList(10);
 		const randomGame = faker.helpers.arrayElement(games);
 
 		// Act
-		root.seedGame(games);
+		testApi.seed.seedGame(games);
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
 		const added = queryResult.data;
 		const addedRandomGame = added.find((g) => g.Id === randomGame.getId());
@@ -30,12 +30,12 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 
 	it("persists a game and eager load its developers", () => {
 		// Arrange
-		const dev = factory.getCompanyFactory().build();
+		const dev = testApi.factory.getCompanyFactory().build();
 		const devId = dev.getId();
-		root.seedCompany(dev);
+		testApi.seed.seedCompany(dev);
 
-		const game = factory.getGameFactory().build({ developerIds: [devId] });
-		root.seedGame(game);
+		const game = testApi.factory.getGameFactory().build({ developerIds: [devId] });
+		testApi.seed.seedGame(game);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
@@ -50,12 +50,12 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 
 	it("persists a game and eager load its publishers", () => {
 		// Arrange
-		const publisher = factory.getCompanyFactory().build();
+		const publisher = testApi.factory.getCompanyFactory().build();
 		const publisherId = publisher.getId();
-		root.seedCompany(publisher);
+		testApi.seed.seedCompany(publisher);
 
-		const game = factory.getGameFactory().build({ publisherIds: [publisherId] });
-		root.seedGame(game);
+		const game = testApi.factory.getGameFactory().build({ publisherIds: [publisherId] });
+		testApi.seed.seedGame(game);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
@@ -70,12 +70,12 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 
 	it("persists a game and eager load its genres", () => {
 		// Arrange
-		const genre = factory.getGenreFactory().build();
+		const genre = testApi.factory.getGenreFactory().build();
 		const genreId = genre.getId();
-		root.seedGenre(genre);
+		testApi.seed.seedGenre(genre);
 
-		const game = factory.getGameFactory().build({ genreIds: [genreId] });
-		root.seedGame(game);
+		const game = testApi.factory.getGameFactory().build({ genreIds: [genreId] });
+		testApi.seed.seedGame(game);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
@@ -90,12 +90,12 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 
 	it("persists a game and eager load its platforms", () => {
 		// Arrange
-		const platform = factory.getPlatformFactory().build();
+		const platform = testApi.factory.getPlatformFactory().build();
 		const platformId = platform.getId();
-		root.seedPlatform(platform);
+		testApi.seed.seedPlatform(platform);
 
-		const game = factory.getGameFactory().build({ platformIds: [platformId] });
-		root.seedGame(game);
+		const game = testApi.factory.getGameFactory().build({ platformIds: [platformId] });
+		testApi.seed.seedGame(game);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
@@ -110,12 +110,12 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 
 	it("persists a game and eager load its tags", () => {
 		// Arrange
-		const tag = factory.getTagFactory().build();
+		const tag = testApi.factory.getTagFactory().build();
 		const tagId = tag.getId();
-		root.seedTags(tag);
+		testApi.seed.seedTags(tag);
 
-		const game = factory.getGameFactory().build({ tagIds: [tagId] });
-		root.seedGame(game);
+		const game = testApi.factory.getGameFactory().build({ tagIds: [tagId] });
+		testApi.seed.seedGame(game);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
@@ -130,9 +130,9 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 
 	it("returns game manifest data", async () => {
 		// Arrange
-		const game = factory.getGameFactory().build();
+		const game = testApi.factory.getGameFactory().build();
 		const gameId = game.getPlayniteSnapshot()?.id;
-		root.seedGame(game);
+		testApi.seed.seedGame(game);
 
 		// Act
 		await api.playniteIntegration.getLibraryManifestService().write();
@@ -155,11 +155,11 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 	it("returns all games with large list", () => {
 		// Arrange
 		const listLength = 10000;
-		const games = factory.getGameFactory().buildList(listLength);
+		const games = testApi.factory.getGameFactory().buildList(listLength);
 		const gameIds = games.map((g) => g.getId());
 		const oneGame = faker.helpers.arrayElement(games);
 		const oneGamePlayniteSnapshot = oneGame.getPlayniteSnapshot();
-		root.seedGame(games);
+		testApi.seed.seedGame(games);
 
 		// Act
 		const queryResult = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
@@ -203,13 +203,13 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 
 	it("returns empty array when no relationship", () => {
 		// Arrange
-		const game = factory.getGameFactory().build({
+		const game = testApi.factory.getGameFactory().build({
 			genreIds: null,
 			platformIds: null,
 			developerIds: null,
 			publisherIds: null,
 		});
-		root.seedGame([game]);
+		testApi.seed.seedGame([game]);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
@@ -226,7 +226,7 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 
 	it("shows null values as null and not empty string", () => {
 		// Arrange
-		const game = factory.getGameFactory().build({
+		const game = testApi.factory.getGameFactory().build({
 			playniteSnapshot: {
 				name: null,
 				description: null,
@@ -244,7 +244,7 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 				completionStatusId: null,
 			},
 		});
-		root.seedGame([game]);
+		testApi.seed.seedGame([game]);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllGamesQueryHandler().execute();
@@ -264,9 +264,9 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 
 	it("deletion don't actually delete games, but mark them as deleted", async () => {
 		// Arrange
-		root.testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
+		testApi.getClock().setCurrent(new Date("2026-01-01T00:00:00Z"));
 
-		const syncItems = factory.getSyncGameRequestDtoFactory().buildList(200);
+		const syncItems = testApi.factory.getSyncGameRequestDtoFactory().buildList(200);
 
 		const seedCommand = makeSyncGamesCommand({
 			AddedItems: syncItems,
@@ -279,8 +279,8 @@ describe("Game Library / Game", { timeout: 20_000 }, () => {
 			.executeAsync(seedCommand);
 		expect(seedResult.success).toBe(true);
 
-		root.testApi.getClock().advance(1000);
-		const deletedAtTime = root.testApi.getClock().now();
+		testApi.getClock().advance(1000);
+		const deletedAtTime = testApi.getClock().now();
 
 		const itemsToDelete = faker.helpers.arrayElements(syncItems, 20);
 		const deleteCommand = makeSyncGamesCommand({

@@ -1,6 +1,6 @@
 import { beforeEach } from "vitest";
-import { root } from "./vitest.global.setup";
+import { testApi } from "./vitest.global.setup";
 
 beforeEach(async () => {
-	await root.resetDbAsync();
+	await testApi.resetDbAsync();
 });

@@ -1,11 +1,11 @@
 import { DEFAULT_CLASSIFICATIONS } from "@playatlas/game-library/commands";
 import { describe, expect, it } from "vitest";
-import { api, root } from "../../vitest.global.setup";
+import { api, testApi } from "../../vitest.global.setup";
 
 describe("Game Library / Score Engine Classifications", () => {
 	it("creates default classifications", () => {
 		// Act
-		root.testApi.gameLibrary.commands
+		testApi.gameLibrary.commands
 			.getApplyDefaultClassificationsCommandHandler()
 			.execute({ type: "default" });
 		const { data: classifications } = api.gameLibrary.scoreEngine.queries
@@ -20,8 +20,7 @@ describe("Game Library / Score Engine Classifications", () => {
 
 	it("command handler is idempotent", () => {
 		// Act
-		const handler =
-			root.testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
+		const handler = testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
 
 		handler.execute({ type: "default" });
 		handler.execute({ type: "default" });
@@ -40,8 +39,7 @@ describe("Game Library / Score Engine Classifications", () => {
 		const v1 = "v1.0.0";
 		const v2 = "v2.0.0";
 
-		const handler =
-			root.testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
+		const handler = testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
 		const classificationsV1 = [...DEFAULT_CLASSIFICATIONS].map((c) => ({
 			...c,
 			version: v1,
@@ -89,8 +87,7 @@ describe("Game Library / Score Engine Classifications", () => {
 
 	it("soft delete existing classifications if missing from default list", () => {
 		// Arrange
-		const handler =
-			root.testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
+		const handler = testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
 
 		handler.execute({
 			type: "default",
@@ -121,8 +118,7 @@ describe("Game Library / Score Engine Classifications", () => {
 
 	it("restores soft-deleted classifications if they reappear", () => {
 		// Arrange
-		const handler =
-			root.testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
+		const handler = testApi.gameLibrary.commands.getApplyDefaultClassificationsCommandHandler();
 
 		handler.execute({ type: "default" });
 

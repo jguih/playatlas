@@ -1,13 +1,13 @@
 import type { PlatformResponseDto } from "@playatlas/game-library/dtos";
 import { describe, expect, it } from "vitest";
-import { api, factory, root } from "../vitest.global.setup";
+import { api, testApi } from "../vitest.global.setup";
 
 describe("Game Library / Platform", () => {
 	it("persists a new platform", () => {
 		// Arrange
 		const platformName = "test-platform#12" as const;
-		const platform = factory.getPlatformFactory().build({ name: platformName });
-		root.seedPlatform(platform);
+		const platform = testApi.factory.getPlatformFactory().build({ name: platformName });
+		testApi.seed.seedPlatform(platform);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute();
@@ -24,8 +24,8 @@ describe("Game Library / Platform", () => {
 	it("handles a big list of platforms", () => {
 		// Arrange
 		const newPlatformsCount = 3000;
-		const newPlatforms = factory.getPlatformFactory().buildList(newPlatformsCount);
-		root.seedPlatform(newPlatforms);
+		const newPlatforms = testApi.factory.getPlatformFactory().buildList(newPlatformsCount);
+		testApi.seed.seedPlatform(newPlatforms);
 
 		// Act
 		const result = api.gameLibrary.queries.getGetAllPlatformsQueryHandler().execute();
