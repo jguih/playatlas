@@ -25,6 +25,7 @@
 		"@playatlas/game-library": "workspace:*",
 		"@playatlas/auth": "workspace:*",
 		"@playatlas/playnite-integration": "workspace:*",
+		"@playatlas/job-queue": "workspace:*",
 		"zod": "catalog:",
 		"ulid": "catalog:"
 	}

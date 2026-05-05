@@ -151,6 +151,9 @@ importers:
       '@playatlas/game-session':
         specifier: workspace:*
         version: link:../game-session
+      '@playatlas/job-queue':
+        specifier: workspace:*
+        version: link:../job-queue
       '@playatlas/playnite-integration':
         specifier: workspace:*
         version: link:../playnite-integration

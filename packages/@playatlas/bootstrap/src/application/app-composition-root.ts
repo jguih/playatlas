@@ -1,14 +1,8 @@
-import { makeEventBus, type ILogServicePort } from "@playatlas/common/application";
+import { makeEventBus } from "@playatlas/common/application";
 import { makeClock, type AppEnvironmentVariables } from "@playatlas/common/infra";
 import { makeLogServiceFactory } from "@playatlas/system/application";
 import { bootstrapV1 } from "./bootstrap.service";
-import {
-	makeAuthModule,
-	makeGameLibraryModule,
-	makeSystemModule,
-	type IGameLibraryModulePort,
-	type IPlayniteIntegrationModulePort,
-} from "./modules";
+import { makeAuthModule, makeGameLibraryModule, makeSystemModule } from "./modules";
 import { makeGameSessionModule } from "./modules/game-session.module";
 import { makeInfraModule } from "./modules/infra.module";
 import type { IInfraModulePort } from "./modules/infra.module.port";
@@ -34,30 +28,13 @@ export type AppRoot = {
 export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot => {
 	let infra: IInfraModulePort;
 
-	const initEnvironmentAsync = async (props: {
-		logService: ILogServicePort;
-		infra: IInfraModulePort;
-		playniteIntegration: IPlayniteIntegrationModulePort;
-		gameLibrary: IGameLibraryModulePort;
-	}) => {
-		const { logService, infra, playniteIntegration, gameLibrary } = props;
-		logService.info("Initializing environment");
-		await infra.initEnvironment();
-		logService.info("Initializing database");
-		await infra.initDb();
-		await playniteIntegration.getLibraryManifestService().write();
-
-		logService.info(`Initializing game library module`);
-		gameLibrary.init();
-	};
-
-	const buildAsync = async (): Promise<PlayAtlasApiV1> => {
+	const _make_base_deps = () => {
 		const system = makeSystemModule({ env });
 
 		const logServiceFactory = makeLogServiceFactory({
 			getCurrentLogLevel: () => system.getSystemConfig().getLogLevel(),
 		});
-		const backendLogService = logServiceFactory.build("SvelteBackend");
+		const logService = logServiceFactory.build("SvelteBackend");
 
 		const eventBus = makeEventBus({
 			logService: logServiceFactory.build("EventBus"),
@@ -65,11 +42,19 @@ export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot
 
 		const clock = makeClock();
 
+		return { system, logServiceFactory, logService, eventBus, clock };
+	};
+
+	const buildAsync = async (): Promise<PlayAtlasApiV1> => {
+		const { clock, eventBus, logService, logServiceFactory, system } = _make_base_deps();
+
 		infra = makeInfraModule({
 			logServiceFactory,
 			envService: system.getEnvService(),
 			systemConfig: system.getSystemConfig(),
 		});
+		await infra.initEnvironment();
+		await infra.initDb();
 
 		const baseDeps = { getDb: infra.getDb, logServiceFactory, eventBus, clock };
 
@@ -78,6 +63,7 @@ export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot
 			fileSystemService: infra.getFsService(),
 			systemConfig: system.getSystemConfig(),
 		});
+		gameLibrary.init();
 
 		const playniteIntegration = makePlayniteIntegrationModule({
 			...baseDeps,
@@ -87,6 +73,7 @@ export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot
 			gameAssetsContextFactory: gameLibrary.getGameAssetsContextFactory(),
 			gameLibraryUnitOfWork: gameLibrary.getGameLibraryUnitOfWork(),
 		});
+		await playniteIntegration.getLibraryManifestService().write();
 
 		const auth = makeAuthModule({
 			...baseDeps,
@@ -98,15 +85,8 @@ export const makeAppCompositionRoot = ({ env }: AppCompositionRootDeps): AppRoot
 			gameRepository: gameLibrary.getGameRepository(),
 		});
 
-		await initEnvironmentAsync({
-			logService: backendLogService,
-			infra,
-			playniteIntegration,
-			gameLibrary,
-		});
-
 		return bootstrapV1({
-			backendLogService,
+			backendLogService: logService,
 			eventBus,
 			modules: {
 				auth,
